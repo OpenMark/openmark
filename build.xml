@@ -1,33 +1,17 @@
 <project name="Om" basedir="." default="all">
  
   <description>
-    Builds the Om (OpenMark) project.
+    Builds the Om (OpenMark) project. Use the 'all' target to build all webapps
+	  including required libraries. Use 'all-nolibs' if you are going to install
+	  the required libraries (Apache Axis plus mail.jar and activation.jar from
+	  J2EE) elsewhere in your application server.
   </description>
 	
-  <!-- 
-		If building the equationgrammar target (not necessary unless altering
-		grammar), you need to install JavaCC and put its location here 
-	-->
-  <property name="javacchome" value=""/>
-	
-	<!-- Specify the desired build folder -->
-	<property name="build" value="/tmp/om-build"/>
-	
-	<!-- Version number -->
-	<property name="buildversion" value="1.3.0 (M46)"/>
-	
-	<!-- 
-		Modify JDK home if necessary - this sets the default for the developer
-		servlet, to make life easier for question developers. 
-		-->
-	<property name="jdkhome" value="${java.home}"/>
-
-	<!-- 
-		Modify Ant home if necessary - this sets the default for the developer
-		servlet, to make life easier for question developers. Should point to
-		an Ant 1.7 install on developer machines.
-		-->
-	<property name="anthome" value="${ant.home}"/>
+	<!--
+	  1. Prerequisite locations
+	  
+	  You definitely need to set the following properties.
+	  -->
 	
 	<!--
 	  Modify Axis home. Should point to an Axis 1.4 install on the build 
@@ -51,10 +35,65 @@
   	  -->
 	<property name="servletapi" value=""/>
 	
+
+	<!-- 
+	  2. Other locations
+	  
+	  On a Unix/OS X machine, the following properties may be OK, but you might
+	  want to configure them.
+	  -->
+
+	<!-- 
+	  Specify the desired build folder. This folder is COMPLETELY DELETED each
+	  time you build! Please bear that in mind.
+	  -->
+	<property name="build" value="/tmp/om-build"/>
+	
 	<!--
-	  Alter where the results of the 'javadoc' target are built to.
+	  Alter where the results of the 'javadoc' target are built to. 
+	  This folder is COMPLETELY DELETED when you build the javadoc target.
 	  -->
 	<property name="javadoc" value="${build}/javadoc"/>
+
+	
+	<!-- 
+	  3 Developer servlet defaults
+	  
+	  These just set up options in the devservlet's web.xml file. They default
+	  to options that should work on your machine, but may not be appropriate
+	  for question author machines, so change if needed. You can also directly
+	  modify the devservlet's web.xml after building.
+	  -->
+
+	<!-- 
+		Modify JDK home if necessary - this sets the default for the developer
+		servlet, to make life easier for question developers. 
+		-->
+	<property name="jdkhome" value="${java.home}"/>
+
+	<!-- 
+		Modify Ant home if necessary - this sets the default for the developer
+		servlet, to make life easier for question developers. Should point to
+		an Ant 1.7 install on developer machines.
+		-->
+	<property name="anthome" value="${ant.home}"/>
+	
+
+	<!--
+	  4. Things you don't need to change.
+	  
+	  Don't mess with these unless you know what you're doing.
+	  -->
+	
+  <!-- 
+		If building the equationgrammar target (not necessary unless altering
+		grammar), you need to install JavaCC and put its location here 
+	-->
+  <property name="javacchome" value=""/>
+	
+	<!-- Version number -->
+	<property name="buildversion" value="1.3.0 (M46)"/>
+	
 	
 	<!-- Create fresh build folder -->
 	<target name="init">
@@ -152,18 +191,19 @@
 	<!-- Build development server webapp -->
 	<target name="devserver" depends="jar">
 		
-		<mkdir dir="${build}/devserver/om"/>
-		<mkdir dir="${build}/devserver/om/WEB-INF"/>
-		<mkdir dir="${build}/devserver/om/WEB-INF/lib"/>
+		<mkdir dir="${build}/webapps/om"/>
+		<mkdir dir="${build}/webapps/om/WEB-INF"/>
+		<mkdir dir="${build}/webapps/om/WEB-INF/lib"/>
+		<mkdir dir="${build}/webapps/om/questions"/>
 		
 		<!-- Copy most of webinf -->
-		<copy todir="${build}/devserver/om/WEB-INF">
+		<copy todir="${build}/webapps/om/WEB-INF">
 			<fileset dir="webinf-dev">
 				<exclude name="web.xml"/>
 			</fileset>
 		</copy>
 		<!-- Copy web.xml but fill in JDKHOME -->
-		<copy todir="${build}/devserver/om/WEB-INF">
+		<copy todir="${build}/webapps/om/WEB-INF">
 			<fileset dir="webinf-dev">
 				<include name="web.xml"/>
 			</fileset>
@@ -174,20 +214,20 @@
 			</filterset>
 		</copy>
 		<!-- To avoid duplicating code, grab labels from test nav -->
-		<copy todir="${build}/devserver/om/WEB-INF">
+		<copy todir="${build}/webapps/om/WEB-INF">
 			<fileset dir="webinf-tnavigator">
 				<include name="labels/**"/>
 			</fileset>
 		</copy>
 
-		<copy todir="${build}/devserver/om/WEB-INF/lib" file="${build}/jars/om-dev.jar"/>
+		<copy todir="${build}/webapps/om/WEB-INF/lib" file="${build}/jars/om-dev.jar"/>
 		
-    <jar jarfile="${build}/devserver/om.war" basedir="${build}/devserver/om"/>
+    <jar jarfile="${build}/webapps/om.war" basedir="${build}/webapps/om"/>
 	</target>
 	
 	
 	<!-- Build question engine webapp -->	
-	<target name="qengine" depends="jar">
+	<target name="qengine-base" depends="jar">
 		
 		<mkdir dir="${build}/webapps/om-qe"/>
 		<mkdir dir="${build}/webapps/om-qe/WEB-INF"/>
@@ -200,20 +240,23 @@
 			</fileset>
 		</copy>
 		
+		<copy todir="${build}/webapps/om-qe/WEB-INF/lib" file="${build}/jars/om-engine.jar"/>
+	</target>
+	<target name="qengine-nolibs" depends="qengine-base">
+    <jar jarfile="${build}/webapps/om-qe.war" basedir="${build}/webapps/om-qe"/>
+	</target>
+	<target name="qengine" depends="qengine-base">
 		<copy todir="${build}/webapps/om-qe/WEB-INF/lib">
 			<fileset dir="${axishome}/lib">
 				<include name="*.jar"/>
 			</fileset>
 		</copy>
-		<copy todir="${build}/webapps/om-qe/WEB-INF/lib" file="${build}/jars/om-engine.jar"/>
-		
     <jar jarfile="${build}/webapps/om-qe.war" basedir="${build}/webapps/om-qe"/>
-		
 	</target>
 	
 	
 	<!-- Build test navigator webapp -->
-	<target name="tnavigator" depends="jar">
+	<target name="tnavigator-base" depends="jar">
 		
 		<mkdir dir="${build}/webapps/om-tn"/>
 		<mkdir dir="${build}/webapps/om-tn/WEB-INF"/>
@@ -236,6 +279,15 @@
 			</fileset>
 		</copy>
 
+		<copy todir="${build}/webapps/om-tn/WEB-INF/lib" file="${build}/jars/om-navigator.jar"/>
+		
+    <jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn"/>
+		
+	</target>
+	<target name="tnavigator-nolibs" depends="tnavigator-base">
+    <jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn"/>
+	</target>
+	<target name="tnavigator" depends="tnavigator-base">
 		<copy todir="${build}/webapps/om-tn/WEB-INF/lib">
 			<fileset dir="${axishome}/lib">
 				<include name="*.jar"/>
@@ -247,15 +299,15 @@
 				<include name="mail.jar"/>
 			</fileset>
 		</copy>
-		<copy todir="${build}/webapps/om-tn/WEB-INF/lib" file="${build}/jars/om-navigator.jar"/>
-		
     <jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn"/>
-		
 	</target>
 
 	
 	<target name="all" depends="qengine,tnavigator,devserver" 
 		description="Build question engine, test navigator, and devserver webapps"/>
+	
+	<target name="all-nolibs" depends="qengine-nolibs,tnavigator-nolibs,devserver" 
+		description="Build question engine, test navigator, and devserver webapps without external libraries"/>
 	
 	
 	<path id="axis.classpath">
@@ -267,6 +319,7 @@
 			<include name="${build}*/jars*/om-engine.jar"/>			
 		</fileset>
 	</path>
+	<!-- The next line may show as a warning because axishome isn't set. -->
 	<taskdef resource="axis-tasks.properties" classpathref="axis.classpath"/>
 
 

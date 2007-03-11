@@ -40,10 +40,6 @@
 		this you will find that many of the questions will be
 		slightly different, to give you extra practice.</p>
                 
-                <p>At the end of the quiz,
-                you will be asked for some brief feedback on how you found the quiz
-                and any improvements which you would like to suggest for the future.</p>
-                
                 <p>At any time you can click on the 'end test' button at the top right to finish.</p>
 
                 <p>When you have completed the quiz,
@@ -69,12 +65,6 @@
             <rescore marks="18" axis="Module5" fromaxis=""></rescore>
         </section>
 			
-	<section>
-	    <title>Feedback</title>
-	    <!-- questions -->
-            <question id="samples.mu120.module5.question07"> </question>
-	</section>
-
     </content>
 	
     <confirm button="Finish">

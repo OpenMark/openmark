@@ -18,7 +18,7 @@
 	
 	<context-param>
 		<param-name>ant-home</param-name>
-		<!-- Modify this value to point to the home folder of a Java 1.4+ JDK -->
+		<!-- Modify this value to point to the home folder of an Ant 1.7 install -->
 		<param-value>@ANTHOME@</param-value>		
 	</context-param>	
 	

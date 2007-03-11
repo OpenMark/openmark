@@ -54,15 +54,13 @@ doesn't tell you how to install them.
 </p>
 
 <ul>
-<li><a href="http://java.sun.com/javase/downloads/"><strong>Java JDK 1.4+</strong></a><ul>
-<li><small>MacOS users note: due to a bug in Apple Java 1.4, Java 1.5 (available only
-in OS X 10.4+) is required to run the system, though not to compile it.</small></li>
-</ul></li>
+<li><a href="http://java.sun.com/javase/downloads/"><strong>Java JDK 1.4+</strong></a></li>
 <li>A working Java application server such as <a href="http://tomcat.apache.org"><strong>Apache Tomcat</strong></a> running on 
-any operating system.</li>
+any operating system. <small>(Due to a bug in Mac OS X 10.3, users of this platform must be running 10.4+)</small></li>
 <li><a href="http://ant.apache.org/"><strong>Apache Ant</strong></a> build system (included in most IDEs). We used 1.7.0.</li>
 <li>A working <a href="http://www.postgresql.org/"><strong>PostgreSQL</strong></a> or <strong>Microsoft SQL Server</strong> database server.</li>
 <li>The TrueType/OpenType <strong>fonts</strong> 'Verdana' and 'Times New Roman', in all styles.</li>
+<li>A working <strong>SMTP server</strong> so that the server can send email.</li>
 </ul>
 
 <h3>Database servers</h3>
@@ -73,7 +71,7 @@ ourselves but would appreciate contributions in this regard. See the
 <tt>om.tnavigator.db</tt> package within the code.</p>
 
 <p>You do not need a database to run the developer servlet. Only the test
-navigator requires access.</p>
+navigator requires access to it.</p>
 
 <h3>Fonts</h3>
 
@@ -161,7 +159,7 @@ here is a snippet of the included file:</p>
 <p>Supposing you installed Axis in /somewhere/axis-1_4, then you could edit
 the property line to read:</p>
 
-<p><tt>&lt;property name="axishome" value="/somewhere/axis-1_4"/></tt></p>
+<pre>&lt;property name="axishome" value="/somewhere/axis-1_4"/></pre>
 
 <p>All the properties you need to edit are at the beginning of the file.</p>
 
@@ -270,14 +268,273 @@ default is a <tt>javadoc</tt> folder inside the build folder.</li>
 See comments in <tt>build.xml</tt> for details of other options which basically 
 affect how the developer servlet is set up. The defaults should work correctly 
 when running the developer servlet on your own machine and you can change them
-in the developer servlet's <tt>web.xml</tt> anyway.
+later in the developer servlet's <tt>web.xml</tt> anyway.
 </p>
 
-<h2>7 Yay! Let's build!</h2>
+<h2>7 Run Ant build</h2>
 
+<p>Run Ant to build the system. You should see output like the following:</p>
 
+<pre>
+Buildfile: /Users/sam/Documents/workspace/openmark-svn/build.xml
+init:
+   [delete] Deleting directory /tmp/om-build
+    [mkdir] Created dir: /tmp/om-build
+compile:
+    [mkdir] Created dir: /tmp/om-build/compiled
+    [javac] Compiling 182 source files to /tmp/om-build/compiled
+copydata:
+     [copy] Copying 40 files to /tmp/om-build/compiled
+jar:
+    [mkdir] Created dir: /tmp/om-build/jars
+      [jar] Building jar: /tmp/om-build/jars/om-dev.jar
+      [jar] Building jar: /tmp/om-build/jars/om-engine.jar
+      [jar] Building jar: /tmp/om-build/jars/om-navigator.jar
+qengine-base:
+    [mkdir] Created dir: /tmp/om-build/webapps/om-qe
+    [mkdir] Created dir: /tmp/om-build/webapps/om-qe/WEB-INF
+    [mkdir] Created dir: /tmp/om-build/webapps/om-qe/WEB-INF/lib
+    [mkdir] Created dir: /tmp/om-build/webapps/om-qe/questioncache
+     [copy] Copying 2 files to /tmp/om-build/webapps/om-qe/WEB-INF
+     [copy] Copying 1 file to /tmp/om-build/webapps/om-qe/WEB-INF/lib
+qengine:
+     [copy] Copying 8 files to /tmp/om-build/webapps/om-qe/WEB-INF/lib
+      [jar] Building jar: /tmp/om-build/webapps/om-qe.war
+tnavigator-base:
+    [mkdir] Created dir: /tmp/om-build/webapps/om-tn
+    [mkdir] Created dir: /tmp/om-build/webapps/om-tn/WEB-INF
+    [mkdir] Created dir: /tmp/om-build/webapps/om-tn/WEB-INF/lib
+    [mkdir] Created dir: /tmp/om-build/webapps/om-tn/logs
+     [copy] Copying 51 files to /tmp/om-build/webapps/om-tn/WEB-INF
+     [move] Moving 1 file to /tmp/om-build/webapps/om-tn
+     [copy] Copying 9 files to /tmp/om-build/webapps/om-tn
+     [copy] Copying 1 file to /tmp/om-build/webapps/om-tn/WEB-INF/lib
+      [jar] Building jar: /tmp/om-build/webapps/om-tn.war
+tnavigator:
+     [copy] Copying 10 files to /tmp/om-build/webapps/om-tn/WEB-INF/lib
+      [jar] Building jar: /tmp/om-build/webapps/om-tn.war
+devserver:
+    [mkdir] Created dir: /tmp/om-build/webapps/om
+    [mkdir] Created dir: /tmp/om-build/webapps/om/WEB-INF
+    [mkdir] Created dir: /tmp/om-build/webapps/om/WEB-INF/lib
+     [copy] Copying 1 file to /tmp/om-build/webapps/om/WEB-INF
+     [copy] Copying 3 files to /tmp/om-build/webapps/om/WEB-INF
+     [copy] Copying 1 file to /tmp/om-build/webapps/om/WEB-INF/lib
+      [jar] Building jar: /tmp/om-build/webapps/om.war
+all:
+BUILD SUCCESSFUL
+Total time: 19 seconds
+</pre>
 
+<p>That's it; the system is now built. You can find the resulting webapps, 
+assuming you didn't change the default build folder, in <tt>/tmp/om-build/webapps</tt>.
+They are available in both unpacked and packed .war formats.</p>
 
+<h2>8 Install and test developer servlet</h2>
+
+<p>The developer servlet is for question authors. It allows you
+to build and test individual questions. It only supports a single user at a
+time, so it's not suitable for running tests.</p>
+
+<h3>Basic installation</h3>
+
+<ol>
+<li>Install the Web application by deploying <tt>/tmp/om-build/webapps/om.war</tt>,
+or copying the <tt>/tmp/om-build/webapps/om</tt> folder in its entirety into your
+application server's web application folder.</li>
+<li>Visit the web application's home page in a browser. If you are using Tomcat with default
+settings on the local computer this will be <a href="http://localhost:8080/om/">http://localhost:8080/om/</a>.</li>
+</ol>
+
+<p>You should see:</p>
+
+<p><img src="devservlet.png" alt="Initial screen of developer servlet" /></p>
+
+<h3>Configuring a question</h3>
+
+<p>A range of sample questions are included in the <tt>samples</tt> folder of
+the OpenMark source tree. In order to test that the developer servlet is working
+we will set it up to build one of these questions.</p>
+
+<ol>
+<li>Under 'Source tree', enter the absolute path to your copy of the 
+<tt>samples</tt> folder. In my system, this is <tt>/Users/sam/Documents/workspace/openmark-svn/samples</tt>.</li>
+<li>Under 'Extra package', enter <tt>samples.shared</tt>. (Some questions use shared 
+classes from this package; entering it here means those shared classes are built 
+into each question).</li>
+<li>By 'Package', enter the package name of a sample question, such as <tt>samples.numeric.singleentry</tt>.</li>
+<li>Click Create.</li>
+</ol>
+  
+<p>
+This will create an XML file defining all the information needed to build the
+question package, and the question should appear in the list up above.
+</p>
+
+<ul><li>If you instead get an error like
+<tt>java.io.FileNotFoundException:</tt>...<tt>/om/questions/samples.numeric.singleentry.xml (Permission denied)</tt>,
+then your application server does not have permission to write to the <tt>questions</tt> 
+folder within the developer servlet web application. Change permissions of this
+folder so that the application server can write to it (for example by using the
+Unix commands <tt>chown</tt> and <tt>chmod</tt>) then try again.</li></ul>
+
+<h3>Building and running a question</h3>
+
+<p>Click Build next to the question in the list. You should see output like the 
+following:</p>
+
+<pre>
+Buildfile: questionbuild.ant
+compile:
+[mkdir] Created dir: /Users/sam/Documents/webapps/om/questions/tempbuild
+[javac] Compiling 11 source files to /Users/sam/Documents/webapps/om/questions/tempbuild
+copydata:
+copymeta:
+[copy] Copying 1 file to /Users/sam/Documents/webapps/om/questions/tempbuild
+jar:
+[jar] Building jar: /Users/sam/Documents/webapps/om/questions/samples.numeric.singleentry.jar
+clean:
+[delete] Deleting directory /Users/sam/Documents/webapps/om/questions/tempbuild
+all:
+BUILD SUCCESSFUL
+Total time: 3 seconds
+</pre>
+
+<ul><li>
+If you instead get an error like <tt>om.OmException: Error running Ant build</tt>,
+then you need to check the webapp is correctly configured to point to an Ant 1.7
+install. Inside the webapp, open <tt>WEB-INF/web.xml</tt> in a text editor and
+alter the value of the parameter <tt>ant-home</tt>, then restart the webapp and
+try again.
+</li></ul>
+
+<p>
+After it successfully builds, the question will immediately run. (If there
+were syntax errors, it would remain on the build page so you can see them.)
+You should be able to try out answering the question and also restart the
+question with various accessibility options for testing.
+</p>
+
+<h2>9 Install and test question engine and test navigator</h2>
+
+<p>The question engine is a Web service that runs questions. The test navigator
+provides a user interface, manages access permissions, and stores information 
+in a database.</p>
+
+<h3>Basic installation</h3>
+
+<p>Install the Web applications by deploying <tt>/tmp/om-build/webapps/om-qe.war</tt> and <tt>om-tn.war</tt>,
+or copying the <tt>/tmp/om-build/webapps/om-qe</tt> and <tt>om-tn</tt> folders in their entirety into your
+application server's web application folder.</p>
+
+<h3>Configuring the test navigator</h3>
+
+<p>The test navigator is configured with a file <tt>navigator.xml</tt> in the
+root of the webapp. You need to modify this file, so it doesn't exist by default.
+Begin by copying <tt>navigator.sample.xml</tt> to <tt>navigator.xml</tt>, then
+open the file for editing.</p>
+
+<ol>
+<li>Configure your database.<ul>
+<li>In your database system, create a new database for
+Om (you can also reuse an existing one if you really want; all our tables begin
+with <tt>nav_</tt>) and create a user that has full access to this database,
+including the ability to create tables.</li>
+<li>In the <tt>&lt;database></tt> configuration element, set all the values to
+match your database settings (Postgres/SQL Server plugin, server address, database name,
+username, and password).</li></ul></li>
+<li>Set up the question engine URL.<ul><li>
+Under <tt>&lt;questionengines></tt>, correct the URL of the question engine
+if necessary. It should be the address of the question engine webapp followed by 
+<tt>/services/Om</tt>. The default is correct for a default Tomcat install.</li></ul></li>
+<li>Set up the test navigator's own URL.<ul><li>
+Under <tt>&lt;testnavigators></tt>, again correct the URL of the test navigator
+if necessary. This should be the address of the test navigator webapp. 
+Again, the default is correct for a default Tomcat install.</li></ul></li>
+<li>Enter email details.<ul><li>
+<tt>&lt;smtpserver></tt> should point to an SMTP server that the webapp can use
+to send mail.</li>
+<li>The <tt>&lt;alertmail></tt> section should have a <tt>&lt;from></tt> address that the SMTP
+server will accept as valid, and you should put your own address in <tt>&lt;to></tt>.</li>
+<li>The server will use these details to send you email if an error message 
+occurs.</li></ul></li>
+</ol>
+
+<p>You probably don't need to change any of the other settings right away.
+(By the way, be careful! This page tells you how to set up a system to make
+sure it works, not how to secure it for production use on assessed tests.)</p>
+ 
+<p>When you're done, save <tt>navigator.xml</tt> and restart the test navigator
+webapp.</p>
+
+<h3>Running the sample test</h3>
+
+<p>To make life easier, a sample test is preinstalled. It's a test that helps
+students for an Open University course determine whether they understand
+simple diagrams. (Please note that the version of this test that we took to
+use as a sample may not have been completely finished - it is included as an 
+example only and doesn't necessarily reflect the final product.)</p>
+
+<p>The test navigator doesn't have a home page; instead you need to directly
+access the test. The URL you go to includes the name of the test's 'deploy file'
+inside the <tt>testbank</tt> folder. In this case, that is <tt>mu120.module5.deploy.xml</tt> 
+so the URL to visit, if you are using Tomcat with default configuration, is
+<a href="http://localhost:8080/om-tn/mu120.module5/">http://localhost:8080/om-tn/mu120.module5/</a>.</p>
+
+<p>The test should now begin and you should be able to try it out.</p>
+
+<ul>
+<li>If instead you get an error like: <tt>Error creating log file</tt> then you
+need to ensure that the server has write access to the <tt>logs</tt> folder 
+inside the webapp, for example using the Unix commands <tt>chown</tt> and <tt>chmod</tt>.</li>
+<li>After you fix this and begin the test you might get another error, this time from the question
+engine: <tt>om.OmException: Failed to save question file</tt>. This means you 
+need to give the same permissions to the <tt>questioncache</tt> folder inside the
+question engine webapp. (The question engine obtains copies of questions
+from the test navigator, but caches them in its own folder.)</li>
+</ul> 
+
+<h2>10 Building javadoc</h2>
+
+<p>You can build javadoc API documentation for the source code - vitally
+important if you want to start creating questions. This isn't built by default,
+so just build the <tt>javadoc</tt> Ant target to get it.</p>
+
+<h2>11 Where to go from here</h2>
+
+<p>
+You've got all parts of the system working - great. Now you run into the limits
+of the documentation we've written. :)
+</p>
+
+<h3>Question and test creation</h3>
+
+<p>
+Existing documentation intended for University staff - and not revised - is included
+in the <tt>doc</tt> folder. This includes documents for question authors (two
+of them? hrm, wonder which is better), the format of the test/deployment files,
+and about how you can embed Om questions inside other HTML pages.
+</p>
+
+<h3>Things you can do but we haven't documented</h3>
+
+<p>
+Apart from that you might want documentation on the following, which is already possible in
+the existing system:
+</p>
+
+<ul>
+<li>Core system concepts like the architecture, how questions are handled, what happens
+if users close their browser and come back later, etc.</li>
+<li>How to deploy a secure, robust system.</li>
+<li>How to set up simple authentication so that users have to log in.</li>
+<li>How to contribute code (code guidelines, etc.)</li>
+</ul>
+
+<p>
+For that you could try pestering us in the forums here and maybe we will 
+improve the documentation!
+</p>
 
 </body>
 </html>
