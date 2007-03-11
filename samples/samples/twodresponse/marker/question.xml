@@ -1,0 +1,66 @@
+<question class="samples.twodresponse.marker.markerPosition" plainmode="no">
+
+	<scoring>
+		<marks>3</marks>
+	</scoring>
+
+ 	<layout>
+  		<column width="592"/>
+  		<row height="500"/>
+  		<row height="100"/>
+	</layout>
+ 
+ 	<!-- Defines the left-hand question box -->
+ 	<box gridx="0" gridy="0" id="inputbox" background="input">
+	
+		Please place the marker on the headquarters of the Open University.
+		<gap/>
+		<canvas id="map" filePath="mkmap.png" width="543" height="420" type="png" alt="">
+<!--  			<world id="w1" px="40" py="8" pw="218" ph="155"
+			xleft="0" xright="4" ybottom="0" ytop="20">  -->
+  			<world id="w1" px="0" py="0" pw="543" ph="420"
+			xleft="0" xright="1" ybottom="0" ytop="1">  
+<!--				<function id="f1" colour="graph1" lineWidth="2"/> 
+				<grid minX="0" maxX="4" minY="0" maxY="20" XSpacing="1,1" YSpacing="5,5"/>
+				<xAxis ticks="1,0.2" tickSide="-" numbers="1" labelFont="Times" label="x" />
+				<yAxis ticks="5,1" tickSide="-" numbers="5" labelFont="Times" label="y" rotateLabel="no"/>
+-->			</world>			
+
+<!-- <marker x='30' y='10' labelJS='label=x+","+y;' world='w1'/>  -->
+ 
+			<marker x="150" y="10" labelJS='label="OU";'/>
+		</canvas>	
+
+
+	  	<gap/>
+
+		<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+		<!--<button action="actionGiveUp" label="%%lGIVEUP%%"/>-->
+  
+	</box>
+
+ 	<!-- Defines the right-hand answer box, which is initially hidden  -->
+ 	<box gridx="0" gridy="1" id="answerbox" display="no" background="answer">
+   
+		<t id="wrong">Your answer is <t id="still">still</t> incorrect.<gap/></t>
+		<t id="right">Your answer is correct.<gap/></t>
+		<t id="pass"></t>	
+	
+		<t id="up" display="no">Up a bit... </t>
+		<t id="down" display="no">Down a bit... </t>
+		<t id="left" display="no">Left a bit... </t>
+		<t id="goright" display="no">Right a bit... </t>
+		<gap/>
+		 
+		<t id="feedback"></t>
+
+		<t id="answer">
+			That's it.
+		</t>
+			
+		<button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+	   
+ 	</box>
+
+</question>

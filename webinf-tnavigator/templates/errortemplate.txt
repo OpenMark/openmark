@@ -1,0 +1,4 @@
+%%STATUSCODE%% %%TITLE%%: %%MESSAGE%%
+* Request: %%REQUEST%% * Username: %%OUCU%%
+* QE: %%QENGINE%% * Access: %%ACCESS%%
+* Test index/seq: %%TINDEX%%/%%TSEQ%%

@@ -1,0 +1,17 @@
+.om .radiobox
+{
+  border:1px solid pink;
+  padding:4px;  
+}
+.om .radioboxcontents
+{
+  display:inline;
+}
+.om .radioboxcheck
+{
+  vertical-align:top;
+}
+* html om .radioboxcheck
+{
+  margin-right:4px;
+}

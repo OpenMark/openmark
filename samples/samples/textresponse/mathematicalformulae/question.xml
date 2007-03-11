@@ -1,0 +1,108 @@
+<!-- S151 PA Chapter 10 Question 6
+	G P Black September 2005
+-->
+
+<question class="samples.textresponse.mathematicalformulae.SecondDerivative">
+
+	<scoring>
+		<marks>3</marks>
+	</scoring>	
+
+	<layout>
+		<row height="300"/>
+		<column width="296"/>
+		<column width="296"/>  
+	</layout>
+ 
+	<!-- Defines the left-hand question box -->
+	<box gridx="0" gridy="0" id="inputbox" background="input">
+
+		What is the second derivative of
+	    <equation alt="z equals __A__ times t cubed plus __B__ times t squared 
+						minus two times t plus three">
+			z = __A__t^3 + __B__t^2 - 2t + 3
+		</equation>
+		with respect to <eq>t</eq>?
+		<gap/>
+		Complete the equation
+	    <gap/>
+		<equation alt="d two z by d t squared equals">
+			\frac {\mbox{d}^2z}{\mbox{d}t^2} =
+		<eplace width='140' height='20' label='second derivative'>
+			<advancedfield id="input" type="superscript" cols="14"/>
+		</eplace></equation>
+		<gap/>
+		<gap/>
+		<gap/>
+
+		<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+		<!--<button action="actionGiveUp" label="%%lGIVEUP%%"/>-->
+  
+	</box>
+
+	<!-- Defines the right-hand answer box, which is initially hidden  -->
+	<box gridx="1" gridy="0" id="answerbox" display="no" background="answer">
+   
+		<t id="wrong">Your answer is <t id="still">still</t> incorrect.</t>
+		<t id="right">Your answer is correct.</t>
+		<t id="pass">You passed on this question.</t>	
+		<gap/>
+	
+	    <t id="wrongDerivative" display="no">
+			You have given the first derivative of <eq>z</eq> with respect to <eq>t</eq>.
+	        Note that the question asked for the second derivative. See Section 10.2.5.
+			<gap/>
+		</t>
+
+		<t id="feedback">
+			<t id="default">
+				You need to differentiate
+				<gap/>
+				<indent>
+				<equation alt="z equals __A__ times t cubed plus __B__ times t squared
+								minus two times t plus three">
+					z = __A__t^3 + __B__t^2 - 2t + 3
+				</equation>
+				</indent>
+				<gap/>
+				twice with respect to <eq>t</eq>. You should apply the rules for differentiation
+				given in Section 10.2.2 and Section 10.2.4.
+				<gap/>
+			</t>
+		</t>	 
+   
+		<t id="answer">
+			<indent>
+				<equation alt="z equals __A__ times t cubed plus __B__ times t squared 
+					minus two times t plus three">
+					z = __A__t^3 + __B__t^2 - 2t + 3
+				</equation>
+			</indent>
+	        <gap/>
+	        so 
+	        <gap/>
+			<indent>
+			<equation alt="d z by d t equals (__A__ times three times t squared)
+				plus (__B__ times two times t) minus two equals __C__ times t squared
+				plus __D__ times t minus two">
+				\frac {\mbox{d}z}{\mbox{d}t} = (__A__ × 3t^2) + (__B__ × 2t) - 2 = __C__t^2 + __D__t - 2
+			</equation>
+			</indent>
+			<gap/>
+	        and
+	        <gap/>
+			<indent>
+			<equation alt="d two z by d t squared equals (__C__ times two times t)
+				plus __D__ minus zero equals __E__ times t plus __D__">
+				\frac {\mbox{d}^2z}{\mbox{d}t^2} = (__C__ × 2t) + __D__ = __E__t + __D__
+			</equation>
+			</indent>
+			<gap/>
+		</t>
+		
+		<button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+   
+	</box>
+ 
+</question>

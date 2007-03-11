@@ -1,0 +1,15 @@
+.om em.bold
+{
+  font-style:normal;
+  font-weight:bold;
+}
+.om em.italic
+{
+  font-style:italic;
+  font-weight:normal;
+}
+.om em.bolditalic
+{
+  font-style:italic;
+  font-weight:bold;
+}

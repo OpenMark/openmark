@@ -1,0 +1,98 @@
+<question class="samples.misc.equations.q1" plainmode="no">
+
+	<scoring>
+		<marks>3</marks>
+	</scoring>
+
+	<layout>
+		<row height="300"/>
+		<row height="200"/>
+		<column width="590"/>
+	</layout>
+  
+	<box gridx="0" gridy="0" id="inputbox" background="input">
+
+		The state of a certain one-dimensional quantum mechanical harmonic oscillator
+		at time <eq>t</eq> is represented by the wave function
+		<gap/>
+		<equation alt="Mark to provide words">__EQ__</equation>
+		<gap/>
+		where <equation alt="Mark to provide words">\Psi _n(x,t)</equation>
+		are normalised harmonic oscillator eigenfunctions with corresponding energy eigenvalues
+		<equation alt="Mark to provide words">E = \left(n+\frac{1}{2}\right)ћ\omega _0</equation>.
+		<break/>
+		What is the probability that a measurement of energy will yield a value of
+		<equation alt="Mark to provide words">__F__\frac{ћ\omega _0}{2}</equation>.
+		when the system is in the state represented by 
+		<equation alt="Mark to provide words">\Psi _n(x,t)</equation>?
+		Please express your answer as a fraction in its simplest form.
+			
+		<indent>
+			fraction = 
+			<equation alt="Enter two values, numerator and denominator">
+				\frac{<eplace label="Numerator"><editfield id="numerator" cols="3"/></eplace>}
+					 {<eplace label="Denominator"><editfield id="denominator" cols="3"/></eplace>}		
+			</equation>
+
+			<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+		</indent>
+   
+	</box>
+
+	<box gridx="0" gridy="1" id="answerbox" display="no" background="answer">
+		 
+		<t id="wrong">Your answer is <t id="still">still</t> incorrect.</t>
+		<t id="right">Your answer is correct.</t>
+		<t id="pass"></t> 
+		<gap/>
+		<t id="wrongfunction" display="no">
+			You haven't identified the correct eigenfunction. Please think about which
+			eigenfunction corresponds to
+			<equation alt="Mark to provide words">E = __F__\frac{ћ\omega _0}{2}</equation>,
+			then calculate the probability that a measurement will find the
+			harmonic oscillator in this state.
+			<gap/>
+		</t>
+		<t id="coefficient" display="no">
+			Your answer is the <emphasis type="italic">coefficient</emphasis> of an eigenfunction.
+			Think about how the probability of measuring that eigenfunction is related
+			to the coefficient.
+			<gap/>
+		</t>
+		<t id="total" display="no">
+			You have given the <emphasis type="italic">total probability</emphasis> of measuring something.
+			What is the probability of measuring the value
+			<equation alt="Mark to provide words">E = __F__\frac{ћ\omega _0}{2}</equation>?
+			<gap/>
+		</t>
+	  
+		<t id="feedback">
+			<t id="default">
+				Please think about which eigenfunction corresponds to
+				<equation alt="Mark to provide words">E = __F__\frac{ћ\omega _0}{2}</equation>,
+				then calculate the probability that a measurement will find the harmonic
+				oscillator in this state.
+				<gap/>
+				</t>
+	    </t>   
+   
+		<t id="answer">
+			<equation alt="Mark to provide words">E = __F__\frac{ћ\omega _0}{2}</equation>
+			is the eigenvalue corresponding to the <emphasis type="italic">n</emphasis> = __EE__ eigenfunction.
+			<break/>
+			In the wave function, this eigenfunction has coefficient
+			<equation alt="Mark to provide words">__G__(x,t) = __E2__exp\left(\frac{-__F__i\omega _{0}t}{2}\right)</equation>.
+			<break/>
+			The probability of the measurement finding the oscillator in this state is
+			<gap/>
+			<eq>p = |__G__(x,t)|^2</eq>
+			= <equation alt="__N__ over __D__">\frac{__N__}{__D__}</equation>
+			<gap/>
+		</t>
+      
+	    <button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+   
+	</box>
+ 
+</question>

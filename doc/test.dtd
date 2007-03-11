@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+	<test> contains required elements:
+		<title> - Name of test
+		<content> - Actual questions (and stuff)
+		<options> - Test options
+		<confirm> - Text for page users get to confirm whether to submit the test 
+		  (optional; if omitted, uses default)
+		<final> - Page users see after completing test
+	-->	
+<!ELEMENT test (title,options,content,confirm?,final)>
+
+
+
+<!--
+	<options> specifies test options:
+	  freesummary=yes - Allow user to see summary any time
+  		summaryscores=yes - Include marks in free summary
+			summaryattempts=yes - Include attempts information (right/wrong/#attempts)
+			summaryquestions=no - Do not show questions/answers in summary
+		freestop=yes - Allow user to end test at any time
+	  navigation=yes - Allow user to jump between questions
+		navlocation=left - Put navigation on left instead of at bottom
+	  redoquestion=yes - Allow user to redo questions
+	  redoquestionauto=yes - Automatically redo question when user clicks back on it
+	    (same as redoquestion, but without having to click the 'Redo question'
+	    button)
+		redotest=yes - Allow user to redo entire test		
+		questionnames=yes - Use titles for question (that have them) instead of 
+		  number alone
+		endsummary=no - Do not show summary at 'end check' page
+      labelset=science - Use Science label set (default to use normal label set)		
+	-->
+<!ELEMENT options EMPTY>
+<!ATTLIST options
+	freesummary (yes|no) #IMPLIED
+	freestop (yes|no) #IMPLIED
+	navigation (yes|no) #IMPLIED
+	navlocation (bottom|left) #IMPLIED
+	redoquestion (yes|no) #IMPLIED
+	redoquestionauto (yes|no) #IMPLIED
+	redotest (yes|no) #IMPLIED
+	summaryscores (yes|no) #IMPLIED
+	summaryattempts (yes|no) #IMPLIED
+	summaryquestions (yes|no) #IMPLIED
+	questionnames (yes|no) #IMPLIED
+	endsummary (yes|no) #IMPLIED
+	labelset CDATA #IMPLIED
+>
+
+
+<!-- 
+	<text> contains an optional <title> followed by paragraphs <p>. The
+	<title> is used for text pages to display them when allowing navigation.
+	-->	 
+<!ELEMENT info (title?,p*)>
+
+<!-- <title> just contains text -->
+<!ELEMENT title (#PCDATA)>
+
+<!-- <p> just contains text -->
+<!ELEMENT p (#PCDATA)>
+
+
+<!-- Standard question-equivalent items -->
+<!ENTITY % questionbasecontents
+     "(question | text |  random | group)*">
+
+<!-- Stuff that goes inside a normal thingy -->
+<!ENTITY % questioncontents
+     "(rescore*,%questionbasecontents;)">
+
+<!-- Attributes that go on questions and question groups -->
+<!ENTITY % questionbaseattrs
+ "depends CDATA #IMPLIED"
+  >
+	
+<!-- All shared group attributes (ID is optional for groups) -->
+<!ENTITY % questiongroupattrs
+ "%questionbaseattrs;
+  id CDATA #IMPLIED"
+	>
+
+<!-- 
+	<questions> tag can contain standard question contents and has a specified
+	total of marks (optional). marks= can be a number (in which case it applies
+	to all axes) or a comma-separated list of axis=number pairs.
+	-->
+<!ELEMENT content (rescore*, text, (section+ | %questioncontents;))>
+
+<!-- Groups don't do anything special -->
+<!ELEMENT group %questioncontents;>
+<!ATTLIST group %questiongroupattrs;>
+
+<!-- Sections may have titles, otherwise normal. If you don't include a title
+	   then they'll be called 'Section 1' etc. -->
+<!ELEMENT section (title?,%questioncontents;)>
+<!ATTLIST section %questiongroupattrs;>
+
+<!-- Random chooses N elements from the children (also in random order).
+	   If you leave out choose=, you get all the elements but shuffled. -->
+<!ELEMENT random %questioncontents;>
+<!ATTLIST random 
+	%questiongroupattrs;
+	choose CDATA #IMPLIED>
+
+<!-- 
+	Questions don't have any children. The ID is required. An optional 
+	engine= parameter can be used to override the default selection of
+	question engine. 
+-->
+<!ELEMENT question (rescore*)>
+<!ATTLIST question
+  %questionbaseattrs;
+	id CDATA #REQUIRED
+	version CDATA #IMPLIED
+	engine CDATA #IMPLIED
+>
+
+<!-- 
+	Rescore element works as follows:
+	* If none are included, question/group has its natural scores on all axes
+	* If some are included then they fully define the total scores (all not used
+	  in a <rescore> are discarded)
+	* Each <rescore> element adds marks to the new score, so you can use several
+	  to create weighted proportions
+		
+	marks=: Total marks which can be added to the new ('target') score. 
+	  Calculated as a proportion of the 'source' score. All calculations are in
+		floating point, but the number must be an integer.
+  axis=: Target axis to which marks will be added. If omitted, uses default
+	  axis.
+	fromaxis=: Source axis from which the proportion of previous marks is 
+	  calculated. If omitted, uses default axis. 
+
+  Note that question metadata will define the axes that the question produces,
+	and available marks on each. We expect a large majority of questions to give 
+	marks on only a single (default) axis.
+-->
+<!ELEMENT rescore EMPTY>
+<!ATTLIST rescore
+  axis CDATA #IMPLIED
+	fromaxis CDATA #IMPLIED
+	marks CDATA #REQUIRED
+>
+
+<!--
+  <confirm> represents the confirm page where users can choose to submit their
+  results. If this tag is included, it replaces the default confirm text.
+  It contains:
+    <title> - Optional title (to replace 'Are you sure you want to end the test?')
+    <p> - Paragraphs of text (displayed above the summary table and button)
+  
+  button=: Set to text for button (default is 'Submit test')      
+  -->
+<!ELEMENT confirm (title?,p*)>
+<!ATTLIST confirm
+  button CDATA #IMPLIED>
+
+<!--
+	<final> represents the last page. It contains:
+		<p> - Text paragraph
+		<scores> - End result (total score) displayed to user
+		<conditional> - Text paragraphs (or more conditions) conditional on scores
+		<summary> - Summary of user answers (and possibly marks)
+	-->		
+<!ELEMENT final (p|scores|conditional|summary)*>
+
+<!--
+	<scores> 
+		marks=yes - Show user the marks they got and the total
+		percentage=yes - Show user the percantage they got
+		<axislabel> - Give a label to score axes, otherwise they used default
+	-->
+<!ELEMENT scores (axislabel*)>
+<!ATTLIST scores
+	marks (yes|no) #IMPLIED
+	percentage (yes|no) #IMPLIED
+>
+
+
+<!--
+	<axislabel>
+	  Text content - used as a label before the axis score
+		axis=a - ID of axis
+		hide=yes - Don't display score for selected axis
+ -->
+<!ELEMENT axislabel (#PCDATA)>
+<!ATTLIST axislabel
+  axis NMTOKEN #IMPLIED
+	hide (yes|no) #IMPLIED
+>
+
+<!--
+	<conditional>
+	  on=marks|percentage: condition is on that number
+	  axis: score axis to consider (omit for default)
+		gt,gte,lt,lte: >, >=, <, <=
+		Multiple conditions permitted. Can also nest
+		conditionals.
+ -->
+<!ELEMENT conditional (p,conditional?)>
+<!ATTLIST conditional
+	axis NMTOKEN #IMPLIED
+	gt NMTOKEN #IMPLIED
+	gte NMTOKEN #IMPLIED
+	lt NMTOKEN #IMPLIED
+	lte NMTOKEN #IMPLIED
+	on (marks|percentage) #REQUIRED
+>
+
+<!--
+	<summary>
+	  marks=yes: show marks for each question in addition to user question/answer
+	-->
+<!ELEMENT summary EMPTY>
+<!ATTLIST summary 
+	marks (yes|no) #IMPLIED
+>
+

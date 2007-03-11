@@ -1,0 +1,129 @@
+<question class="samples.mu120.module5.question04.Q4">
+
+    <scoring>
+        <marks>3</marks>
+    </scoring>
+
+    <layout>
+        <row height="330"/>
+        <row height="370"/>
+        <column width="592"/>
+    </layout>
+  
+    <!-- Defines the question box -->
+    <box gridx="0" gridy="0" id="inputbox" background="input">
+        <layoutgrid cols ="2">
+            <t>
+                On the right is a graph with a number of points marked on it.
+                <gap/>
+                What are the co-ordinates of the following points?
+                <gap/>
+                <layoutgrid cols ="4" widths="30%,25%,25%,20%">
+                    <t>point __ABs__,</t>
+                    <t>x: <editfield id="rABx" label="enter value" cols="3"/></t>
+                    <t>y: <editfield id="rABy" label="enter value" cols="3"/></t>
+                    <t>
+                        <image id="wrong0" display="no" filePath="wrong.gif" alt="part 1 is wrong"/>
+                        <image id="right0" display="no" filePath="right.gif" alt="part 1 is right"/>
+                    </t>
+                    <t>point __CDs__,</t>
+                    <t>x: <editfield id="rCDx" label="enter value" cols="3"/></t>
+                    <t>y: <editfield id="rCDy" label="enter value" cols="3"/></t>
+                    <t>
+                        <image id="wrong1" display="no" filePath="wrong.gif" alt="part 1 is wrong"/>
+                        <image id="right1" display="no" filePath="right.gif" alt="part 1 is right"/>
+                    </t>
+                    <t>point __EFs__,</t>
+                    <t>x: <editfield id="rEFx" label="enter value" cols="3"/></t>
+                    <t>y: <editfield id="rEFy" label="enter value" cols="3"/></t>
+                    <t>
+                        <image id="wrong2" display="no" filePath="wrong.gif" alt="part 1 is wrong"/>
+                        <image id="right2" display="no" filePath="right.gif" alt="part 1 is right"/>
+                    </t>
+                    <t>point __GHs__,</t>
+                    <t>x: <editfield id="rGHx" label="enter value" cols="3"/></t>
+                    <t>y: <editfield id="rGHy" label="enter value" cols="3"/></t>
+                    <t>
+                        <image id="wrong3" display="no" filePath="wrong.gif" alt="part 1 is wrong"/>
+                        <image id="right3" display="no" filePath="right.gif" alt="part 1 is right"/>
+                    </t>
+                </layoutgrid>
+            </t>
+            <canvas id="graph1" width="256" height="256"></canvas>	
+        </layoutgrid>
+
+        <button action="actionSubmit" label="%%lENTERANSWER%%"/>
+        <button id="hintButton" action="actionHint" label="Hint"/>
+        <!--button action="actionGiveUp" label="%%lGIVEUP%%"/-->
+    </box>
+
+    <!-- Defines the right-hand answer box, which is initially hidden  -->
+    <box gridx="0" gridy="1" id="answerbox" display="no" background="answer">
+		 
+        <t id="wrong">Your answer is <t id="still">still</t> incorrect.<gap/></t>
+        <t id="right">Your answer is correct.<gap/></t>
+        <t id="pass">You passed on this question.<gap/></t>
+
+        <t id="hints">
+            <t id="hint">
+                Find the named point on the graph,
+                pick out the X coordinate on the horizontal axis,
+                the Y coordinate on the vertical axis
+                to complete your answer.
+                <gap/>
+            </t>
+        </t>
+
+        <t id="feedback">
+            <t id="nonumber">
+                The answer is incomplete,
+                please enter two numbers for each point,
+                i.e. eight in all.
+                <gap/>
+            </t>
+            <t id="correct">
+                You have __CORRECT__ out of 4 correct answers.
+                <gap/>
+            </t>
+            <t id="switched">
+                __SWITCHED__ of your answers are correct but the wrong way round.
+                <gap/>
+            </t>
+            <t id="feedback2">
+                The first, or x co-ordinate of the point is the position on the x axis
+                and the second the position on the y axis,
+                whether positive or negative..
+                <gap/>
+            </t>   
+        </t>
+
+        <t id="answer">
+            <layoutgrid cols ="2">
+                <t>
+                    Please verify the following against the graph
+                    <gap/>
+                    <gap/>
+                    point __ABs__ has coordinates x: __ABx__, y: __ABy__
+                    <break/>
+                    point __CDs__ has coordinates x: __CDx__, y: __CDy__
+                    <break/>
+                    point __EFs__ has coordinates x: __EFx__, y: __EFy__
+                    <break/>
+                    point __GHs__ has coordinates x: __GHx__, y: __GHy__
+                    <break/>
+                </t>
+                <canvas id="graph2" width="256" height="256"></canvas>	
+            </layoutgrid>
+        </t>
+
+        <t id="reference">
+            Please see MU120 Preparatory Resource Book B section 5.3.1
+            <gap/>
+        </t>
+     
+        <button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+        <button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+   
+    </box>
+ 
+</question>

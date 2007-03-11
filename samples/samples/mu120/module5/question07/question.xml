@@ -1,0 +1,64 @@
+<question class="samples.mu120.module5.question07.Q7">
+
+    <scoring>
+        <marks>0</marks>
+    </scoring>
+
+    <layout>
+        <row height="400"/>
+        <row height="100"/>
+        <column width="592"/>
+    </layout>
+  
+    <!-- Defines the question box -->
+    <box gridx="0" gridy="0" id="inputbox" background="input">
+        This is the end of the MU120 quiz
+        <emphasis type="italic">Can you use diagrams?</emphasis> 
+        <break/> 
+        As it is a pilot we would be grateful for your feedback.
+        Please answer the following short questions.
+        <gap/>
+
+        How long did it take you altogether ?
+        <editfield id="response1" label="time taken" cols="4"/> min
+        <gap/> 
+
+        Did you enjoy it ?
+        <editfield id="response2" label="yes or no" cols="20"/>
+        <gap/> 
+
+        Did you find the feedback useful ?
+        <editfield id="response3" label="yes or no" cols="20"/>
+        <gap/> 
+
+        Can you suggest any improvements ?
+        <editfield id="response4" label="suggestions" rows="8" cols="72"/>
+        <gap/> 
+        <gap/> 
+
+        <button action="actionSubmit" label="Continue"/>
+        <button id="hintButton" action="actionHint" label="Hint" display="no"/>
+        <button action="actionGiveUp" label="%%lGIVEUP%%" display="no"/>
+    </box>
+
+    <!-- Defines the right-hand answer box, which is initially hidden  -->
+    <box gridx="0" gridy="1" id="answerbox" display="no" background="answer">
+		 
+        <t id="wrong"><t id="still"></t></t>
+        <t id="right"></t>
+        <t id="pass">You passed on this question.<gap/></t>
+        <t id="hints"></t>
+        <t id="feedback"></t>
+		
+        <t id="answer">
+            Thank you for your comments.
+            <gap/> 
+        </t>
+
+        <t id="reference"></t>
+        
+        <button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/> 
+        <button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/> 
+    </box>
+ 
+</question>

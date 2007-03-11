@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+	<deploy> contains:
+		<definition> - ID of test
+		<access> - Controls access to test
+		<dates> - Dates affecting test (optional; if omitted test is always available)
+-->	
+<!ELEMENT deploy (definition,access,dates?)>
+
+
+<!-- <definition> is just text (test definition ID) -->
+<!ELEMENT definition (#PCDATA)>
+
+
+<!-- 
+	<access> contains:
+	  <users> - Access details for user-level privileges
+		<admins> - Access details for admin-level privileges; optional for no admins
+-->  
+<!ELEMENT access (users,admins?)>
+
+
+<!-- Two ways to specify access -->
+<!ENTITY % accessmethods "(oucu|authid)*">
+
+<!--
+	<users> defines people with user-level privileges
+	world=yes => free access, no need for SAMS
+-->
+<!ELEMENT users %accessmethods;>
+<!ATTLIST users
+  world (yes|no) #IMPLIED>
+
+<!--
+	<admins> defines people with admin-level privileges
+-->
+<!ELEMENT admins %accessmethods;>
+
+<!-- OUCUs are just text, but can contain reports='yes' to allow viewing of
+     reports (only applies to admins) -->
+<!ELEMENT oucu (#PCDATA)>
+<!ATTLIST oucu 
+  reports (yes|no) #IMPLIED>
+<!-- As are authids -->
+<!ELEMENT authid (#PCDATA)>
+<!ATTLIST authid 
+  reports (yes|no) #IMPLIED>
+
+
+<!--
+	<dates> contains:
+	  <open> - Date at which test becomes visible to users
+		  [omitted = test visible immediately]
+		<close> - Date at which a warning appears on test for users
+		  [omitted = test never closes]
+		<forbid> - Date at which users (except admins) may not even take test
+		  [omitted = users can always take test]
+		<feedback> - Date at which users can return to site for feedback
+		  [omitted = you get feedback once you finish the test
+-->
+<!ELEMENT dates (open?,close?,forbid?,feedback?)>
+
+<!--
+	All the dates are in standard format:
+	2005-03-01 (time defaults to 00:00 for <open>, <feedback> and 23:59:59 for 
+	  <close>)
+	or
+	2005-03-01 10:16:00
+	-->
+<!ELEMENT open (#PCDATA)>
+<!ELEMENT close (#PCDATA)>
+<!ELEMENT feedback (#PCDATA)>

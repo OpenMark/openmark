@@ -1,0 +1,12 @@
+iframe
+{
+	border:1px SOLID %%COLOUR:text%%;
+}
+.advancedfielddisabled
+{
+    border-color: %%COLOUR:innerbg%%;
+}
+.advancedfielddisabledfixed
+{
+	border:1px DOTTED;
+}

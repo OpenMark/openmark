@@ -1,0 +1,44 @@
+.om,.om input,.om textarea
+{
+  font: %%SIZE:13px%%/%%SIZE:16px%% Verdana, sans-serif;
+}
+.om
+{
+  color: %%COLOUR:text%%
+}
+.om .gridcontainer
+{
+  float:left;
+  position:relative;
+  padding:4px;
+  _overflow:hidden;
+}
+.om .gridgroup
+{
+  float:left;
+}
+
+.om .clear
+{
+  clear:both;
+}
+.om .endform
+{
+  clear:both;
+	background:%%COLOUR:bg%%; /* needed for IE */
+  font-size:0;
+  height:1px;
+}
+
+/* If you don't do code like the below, sub/sup take loads of room plus IE 
+   doesn't leave enough space for them */
+.winie-6 sub,.winie-7 sub
+{
+  vertical-align: -%%SIZE:4px%%;
+  line-height:%%SIZE:20px%%;
+}
+.winie-6 sup,.winie-7 sup
+{
+  vertical-align: %%SIZE:5px%%;
+  line-height:%%SIZE:21px%%;
+}

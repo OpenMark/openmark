@@ -1,0 +1,36 @@
+<!-- MU120 diagnostic questions for Module 5 of the Preparatory Resource Book: test deployment -->
+<deploy>
+
+	<!-- Test ID -->
+	<definition>mu120.module5</definition>
+
+	<access>
+
+		<!--
+			Users who are to take the test [they have restricted permissions as per
+			test definition]. Can have optional attribute world="yes", in which case
+			should be otherwise empty.
+		-->
+		<users world="yes" />
+
+		<!--
+			Admin staff who are putting the test together [they can 'take' it as
+			many times as they like, outside the dates below, etc.]
+		-->
+		<admins>
+			<oucu reports="yes">admin</oucu>
+		</admins>
+
+	</access>
+
+	<dates>
+
+		<!--
+			Open date in standard format, UK time. 'yes' means always available.
+			Test opens at 00:00 unless a time is specified.
+		-->
+		<open>yes</open>
+
+	</dates>
+
+</deploy>

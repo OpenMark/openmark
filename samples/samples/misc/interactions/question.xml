@@ -1,0 +1,93 @@
+<question class="samples.misc.interactions.EquationBalancing" plainmode="no">
+
+	<scoring><marks>3</marks></scoring>
+
+	<layout>
+		<row height="340"/>
+		<column width="326"/>
+		<column width="266"/>  
+	</layout>
+ 
+	<!-- Defines the left-hand question box -->
+	<box gridx="0" gridy="0" id="inputbox" background="input">
+
+		Click on the + and - buttons to alter the coefficients in this chemical reaction.
+		When you think the equation is balanced, click on the check button.
+		<gap/>
+		
+		<layoutgrid cols="3">
+			<table id="lhs" rows="4" cols="2" head="1">
+			<row><t><centre>atom</centre></t><t><centre>  n  </centre></t></row>
+			<row><t><centre>C</centre></t><t><centre>__T1__</centre></t></row>
+			<row><t><centre>H</centre></t><t><centre>__T2__</centre></t></row>
+			<row><t><centre>O</centre></t><t><centre>__T3__</centre></t></row>
+		</table>
+		
+		<canvas id="seesaws" width="70" height="110" alt="">	
+		</canvas>
+		
+		<table id="rhs" rows="4" cols="2" head="1">
+			<row><t><centre>atom</centre></t><t>  n  </t></row>
+			<row><t><centre>C</centre></t><t><centre>__T4__</centre></t></row>
+			<row><t><centre>H</centre></t><t><centre>__T5__</centre></t></row>
+			<row><t><centre>O</centre></t><t><centre>__T6__</centre></t></row>
+		</table>
+		</layoutgrid>
+		
+		<gap/>
+
+		<button action="actionBalanceUp1" id="up1" label="+"/>        
+		<button action="actionBalanceUp2" id="up2" label="+"/>         
+		<button action="actionBalanceUp3" id="up3" label="+"/>        
+		<button action="actionBalanceUp4" id="up4" label="+"/> 
+		<break/>
+		    <eq>__N1__\mbox{C_3H_8}</eq>  +  <eq>__N2__\mbox{O_2}</eq>
+			<image id="arrow" filePath="arrow.png" alt="reacts to give"></image>
+			<eq>__N3__\mbox{CO_2}</eq>  +     <eq>__N4__\mbox{H_2O}</eq>
+		<break/>
+		<button action="actionBalanceDown1" id="down1" label="-"/>         
+		<button action="actionBalanceDown2" id="down2" label="-"/>         
+		<button action="actionBalanceDown3" id="down3" label="-"/>         
+		<button action="actionBalanceDown4" id="down4" label="-"/>
+
+		<gap/>
+		<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+		<gap/>
+  
+	</box>
+
+ 	<!-- Defines the right-hand answer box, which is initially hidden  -->
+ 	<box gridx="1" gridy="0" id="answerbox" display="no" background="answer">
+   
+		<t id="wrong">Your answer is <t id="still">still</t> incorrect.</t>
+		<t id="right">Your answer is correct.</t>
+		<t id="pass">You passed on this question.</t>	
+		<gap/>
+		
+		<t id="feedback">
+			Approach this by first of all balancing the carbon atoms and then the hydrogen atoms.
+	        Leave the oxygen atoms until last because you can add oxygen on the left hand side
+	        without affecting the numbers of carbon and hydrogen atoms that are present.
+		</t>	 
+   
+		<t id="scaled" display="no">
+			The equation is balanced, but you need to scale the coefficients down 
+			to their lowest whole number ratios.
+		</t>
+	
+		<t id="answer">
+			This is the combustion of propane with oxygen to form carbon dioxide and water:
+			<gap/>
+			<indent>
+				<eq>\mbox{C_3H_8}</eq> + <eq>5\mbox{O_2}</eq>  →  <eq>3\mbox{CO_2}</eq> + <eq>4\mbox{H_2O}</eq>
+			</indent>
+		</t>
+		
+		<gap/>
+		
+		<button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+   
+ 	</box>
+ 
+</question>

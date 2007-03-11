@@ -1,0 +1,105 @@
+<question class="samples.twodresponse.jme.jmeQuestion" plainmode="no">
+
+	<scoring><marks>3</marks></scoring>
+
+	<layout>
+		<row height="420"/>
+		<row height="240"/>
+		<column width="592"/>  
+	</layout>
+ 
+	<!-- Defines the left-hand question box -->
+	<box gridx="0" gridy="0" id="inputbox" background="input">
+	
+		What is the most likely structure for the compound that
+		gives rise to the <eq>\mbox{^{13}C}</eq> NMR spectrum shown below.
+		<gap/>
+		<image id="chart" alt="13C correleation chart" filePath="q13chart.png"></image>
+		<gap/>
+		<image id="chart" alt="13C spectrum" filePath="q13.png"></image>
+		<gap/>
+		Using the JME editor draw your answer and click on OK in the JME window.
+		<jme id="myjme" action="actionSubmit" label="Start JME"/>
+		<!--<button action="actionGiveUp" label="pass"/>-->
+	
+	</box>
+
+	<!-- Defines the right-hand answer box, which is initially hidden  -->
+	<box gridx="0" gridy="1" id="answerbox" display="no" background="answer">
+   
+		<t id="wrong">Your answer is <t id="still">still</t> incorrect.</t>
+		<t id="right">Your answer is correct.</t>
+		<t id="pass">You passed on this question.</t>	
+		<gap/>
+	
+		<t id="feedback">
+			<t id="default">
+				To answer this question you need to evaluate the three pieces of
+				information provided by the NMR spectrum, namely the number of
+				peaks, the chemical shift and the results from the off-resonance
+				spectrum.
+				<gap/>
+			</t>
+		</t>	 
+		<t id="formula" display="no">
+			The chemical formula is <eq>\mbox{C_7H_{14}O}</eq>.
+			<gap/>
+		</t>
+		
+		<t id="rightgroupwrongcarbons" display="no">
+			You have the correct functional group but an incorrect
+			number of carbon atoms.
+			<break/>
+		</t>
+		<t id="rightoxygens" display="no">
+			Your answer contains the right number of oxygen atoms.
+			<break/>
+		</t>
+		<t id="rightcarbons" display="no">
+			Your answer contains the right number of carbon atoms.
+			<break/>
+		</t>
+		
+<!--	<gap/> -->
+		
+		<t id="nooxygen" display="no">
+			Your compound does not have the functional group that leads to the peak
+			at just over 200 ppm.
+			<break/>
+		</t>
+		<t id="tooManyCarbons" display="no">
+			Your answer contains too many carbon atoms.
+			<break/>
+		</t>
+
+		<t id="tooFewCarbons" display="no">
+			Your answer contains too few carbon atoms.
+			<break/>
+		</t>
+		
+		<t id="nonitrogen" display="no">
+			There are no nitrogen atoms in this compound.
+			<break/>
+		</t>
+		<t id="notriple" display="no">
+			There are no triple bonds in this compound.
+			<break/>
+		</t>
+		
+		<t id="answer">
+			There are seven peaks in the n.m.r. spectrum so there must be seven
+			non-equivalent carbon environments. The peak at 202 ppm is labelled a doublet and is
+			therefore an aldehyde. The remaining six peaks are in the alkane region
+			and with five triplets and one quartet there can be no chain branching.
+			The molecule is therefore heptanal.
+			<break/>
+			<image id="heptanal" alt="heptanal" filePath="q13ans.png"></image>
+
+			<gap/>
+		</t>
+		<button id="ok" action="actionOK" label="OK"/>
+		<button id="next" action="actionOK" label="Next" display="no"/>
+   
+	</box>
+ 
+</question>

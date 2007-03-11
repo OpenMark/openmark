@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Om iframe embedding sample</title>
+<body style="font-family: Verdana,serif; font-size:13px">
+<h1 style="font-size:1em">Om iframe embedding sample</h1>
+<p>
+To embed questions you need to begin by setting up (in the <b>testbank</b> folder of
+an Om server) a single-question deploy file 
+for the question concerned. This controls access to the question.
+</p>
+<p>
+There should be only one deploy file per question. If you need to extend access
+to an existing question, do so by adding more access entries into the existing
+file rather than creating a new file. This means that it's easy to see who has
+access to each question.
+</p>
+<p>
+The file should be 
+named q.<b>samples.camera</b>.deploy.xml (assuming samples.camera is the 
+ID of your question). Here is a minimal deploy file for public, world-accessible 
+questions:
+</p>
+<pre>
+&lt;deploy> 
+	&lt;question><b>samples.camera</b>&lt;/question>
+	&lt;access>&lt;users world="yes"/>&lt;/access>
+	&lt;dates>&lt;open>yes&lt;/open>&lt;/dates>
+&lt;/deploy>
+</pre>
+<p>
+After setting up the deploy file on a server you can test it by
+visiting the URL directly: <a href="https://students.open.ac.uk/openmark/q.samples.camera/">https://students.open.ac.uk/openmark/<b>q.samples.camera</b>/</a>
+for the live server, or <a href="http://kestrel.open.ac.uk/om-tn/q.samples.camera/">http://kestrel.open.ac.uk/om-tn/<b>q.samples.camera</b>/</a>
+for the Kestrel test server.
+</p>
+<p>
+Once you know the deploy file works, use the following code to embed the camera sample into 
+an ordinary web page:
+</p>
+<pre>
+&lt;iframe src="https://students.open.ac.uk/openmark/<b>q.samples.camera</b>/"
+  width="<b>620</b>" height="<b>536</b>" frameborder="0">
+  &lt;a href="https://students.open.ac.uk/openmark/<b>q.samples.camera</b>/">Interactive question&lt;/a>
+&lt;/iframe>
+</pre>
+<p>
+You need to specify:
+</p>
+<ul>
+<li>The <b>deploy file</b> for the question, <b>q.samples.camera</b>.deploy.xml in 
+this case.</li>
+<li>Iframe <b>width</b>. Standard Om questions are currently required to be 600
+pixels wide (two columns totalling 592 pixels plus an 8 pixel margin). You must
+add a further 20 pixels, making <b>620</b>.</li>
+<li>Iframe <b>height</b>. Om questions can be of any height. Take the 
+height specified in question.xml (total all the row heights, then add 8 pixels 
+for each margin between multiple rows). Add <b>48</b> pixels to find the minimum
+height.</li>
+</ul>
+<p>
+Note that the height and width requirements are different for each browser, but
+these settings allow space for both (I think). Also note that if users choose 
+'display options' and make the font bigger, they will have to scroll within 
+the same area. Unfortunately this cannot be avoided. Where accessibility is 
+paramount, use a full test, or provide a separate direct link to the question.
+</p>
+<iframe src="https://students.open.ac.uk/openmark/q.samples.camera/"
+  width="620" height="536" frameborder="0">
+  <a href="https://students.open.ac.uk/openmark/q.samples.camera/">Interactive question</a>
+</iframe>
+</body>
+</html>

@@ -1,0 +1,41 @@
+table
+{
+border-collapse:collapse;
+background:%%COLOUR:innerbg%%;
+border:1px solid %%COLOUR:text%%;
+}
+
+td
+{
+border: 1px solid %%COLOUR:text%%;
+margin:0;
+padding:2px;
+}
+
+th
+{
+border: 1px solid %%COLOUR:text%%;
+margin:0;
+padding:2px;
+background:%%COLOUR:innerbghi%%;
+}
+
+th.left
+{
+background:%%COLOUR:innerbghi%%;
+}
+
+th.foot
+{
+background:%%COLOUR:innerbghi%%;
+}
+
+td.foot
+{
+background:%%COLOUR:innerbghi%%;
+}
+
+td.right
+{
+background:%%COLOUR:innerbghi%%;
+}

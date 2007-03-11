@@ -1,0 +1,138 @@
+<question class="samples.multichoice.dragwordstoimages.Oceanfloor" plainmode="no">
+
+	<scoring><marks>3</marks></scoring>
+ 	<layout>
+  		<row height="350"/>
+  		<row height="280"/>
+  		<column width="592"/>
+ 	</layout>
+ 
+ 	<!-- Defines the left-hand question box -->
+ 	<box gridx="0" gridy="0" id="inputbox" background="input">
+	
+		Identify the features in this cross-section by dragging
+		the labels into the boxes.
+		<gap/>
+		 
+		<indent>
+			<dragbox id="a0">island<break/>arc</dragbox>
+			<dragbox id="a1">mid-ocean<break/>ridge</dragbox>
+			<dragbox id="a2">abyssal<break/>plain</dragbox>
+			<dragbox id="a3">continental<break/>rise</dragbox>
+			<break/>
+			<dragbox id="a4">ocean<break/>trench</dragbox>
+			<dragbox id="a5">continental<break/>slope</dragbox>
+			<dragbox id="a6">mountain<break/>belt</dragbox>
+			<dragbox id="a7">continental<break/>shelf</dragbox>
+		</indent>
+		<gap/>
+		<image id="seafloor" display="yes" filePath="fig06.jpg" alt="A cross-section of the ocean floor">
+			<iplace left="50" top="30" label="">
+				<dropbox id="d0" forceborder="yes"/>
+			</iplace>
+			<iplace left="170" top="0" label="">
+				<dropbox id="d1" forceborder="yes"/>
+			</iplace>
+			<iplace left="315" top="0" label="">
+				<dropbox id="d2" forceborder="yes"/>
+			</iplace>
+			<iplace left="420" top="0" label="">
+				<dropbox id="d3" forceborder="yes"/>
+			</iplace>
+			<iplace left="105" top="80" label="">
+				<dropbox id="d4" forceborder="yes"/>
+			</iplace>
+			<iplace left="205" top="110" label="">
+				<dropbox id="d5" forceborder="yes"/>
+			</iplace>
+			<iplace left="372" top="40" label="">
+				<dropbox id="d6" forceborder="yes"/>
+			</iplace>
+			<iplace left="475" top="95" label="">
+				<dropbox id="d7" forceborder="yes"/>
+			</iplace>
+		</image>
+		<break/>
+	   	<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+		<break/>	 
+		<emphasis type="italic">
+			Use the mouse to drag the boxed words into the empty boxes.
+			Alternatively, use the tab key to select an empty box, then use the 
+			space key to cycle through the options.
+		</emphasis>
+		<gap/> 
+
+ 	</box>
+
+ 	<!-- Defines the right-hand answer box, which is initially hidden  -->
+ 	<box gridx="0" gridy="1" id="answerbox" display="no" background="answer">
+	   
+		<t id="wrong">Your answer is <t id="still">still </t>incorrect.</t>
+		<t id="right">Your answer is correct.</t>
+		<t id="pass"></t>	
+		<gap/>
+		<t id="oneWrong">
+			1 box is incorrectly completed.
+			<gap/>
+		</t>		
+		<t id="manyWrong">
+			__CROSSES__ boxes are incorrectly completed.
+			<gap/>
+		</t>		
+
+		<t id="plain">
+			 • The abyssal plain is a flat almost featureless expanse 
+			 of ocean floor 4km to 6km below sea-level.
+			<break/>
+		</t>
+		<t id="rise">
+			• The continental rise is the gently sloping
+			part of the ocean floor beyond the continental slope.
+			<break/>
+		</t>
+		<t id="shelf">
+			• The continental shelf is the gently 
+			sloping ocean floor just offshore from the land.
+			<break/>
+		</t>
+		<t id="slope">
+			• The continental slope is the relatively steep
+			part of the ocean floor beyond the continental shelf.
+			<break/>
+		</t>
+		<t id="ridge">
+			• A mid-ocean ridge is a broad submarine ridge
+			several kilometres high.
+			<break/>
+		</t>
+		<t id="belt">
+			• A mountain belt is a long range of mountains.
+			<break/>
+		</t>
+		<t id="arc">
+			 • An island arc is a chain of volcanic islands.
+			<break/>
+		</t>
+		<t id="trench">
+			• An oceanic trench is a deep trough in the ocean floor.
+			<break/>
+		</t>
+		 
+		<t id="feedback"></t>
+		 
+		<t id="answer">
+			<t id="corrected">
+				The correct locations are now indicated on the diagram.
+				<gap/> 
+			</t>
+			More information about the major features of the Earth's surface
+			can be found in Block 3, Section 6.2.
+			<gap/>	
+		</t>
+		
+		<button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+		   
+	 </box>
+ 
+</question>
