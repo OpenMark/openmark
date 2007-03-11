@@ -5,7 +5,279 @@
 </head>
 <body>
 
-<h3>Placeholder</h3>
+<h1>How to build OpenMark</h1>
+
+<p>
+This document takes you through the process from obtaining the OpenMark source,
+through obtaining prerequisites, to building, and finally installing so that
+you can see the samples running.
+</p>
+
+<p>
+You should probably set aside about an hour for this.
+</p>
+
+<h2>1 Component overview</h2>
+
+<p>
+OpenMark consists of three servlets:
+</p>
+
+<ul>
+<li><strong>Developer servlet</strong><br />
+This is used by question authors,
+typically running on a Tomcat install on their own machine, to build and test
+questions. It is strictly a development environment and can only handle requests
+from one user at a time.</li>
+<li><strong>Question engine</strong><br />
+This runs question code and provides a Web service to the test navigator. 
+It has no user interface.</li>
+<li><strong>Test navigator</strong><br />
+This handles authentication, database storage, and all user interaction. Actual
+question work is handed off to the question engine web service.</li>
+</ul>
+
+<p>
+The single build script builds all three components.
+</p>
+
+<h2>2 Requirements</h2>
+
+<p>
+The intended reader of this document is familiar with Java web applications
+(installing them, managing them in an application server like Tomcat).
+</p>
+
+<p>
+You need to have these things set up before you begin. This document
+doesn't tell you how to install them.
+</p>
+
+<ul>
+<li><a href="http://java.sun.com/javase/downloads/"><strong>Java JDK 1.4+</strong></a><ul>
+<li><small>MacOS users note: due to a bug in Apple Java 1.4, Java 1.5 (available only
+in OS X 10.4+) is required to run the system, though not to compile it.</small></li>
+</ul></li>
+<li>A working Java application server such as <a href="http://tomcat.apache.org"><strong>Apache Tomcat</strong></a> running on 
+any operating system.</li>
+<li><a href="http://ant.apache.org/"><strong>Apache Ant</strong></a> build system (included in most IDEs). We used 1.7.0.</li>
+<li>A working <a href="http://www.postgresql.org/"><strong>PostgreSQL</strong></a> or <strong>Microsoft SQL Server</strong> database server.</li>
+<li>The TrueType/OpenType <strong>fonts</strong> 'Verdana' and 'Times New Roman', in all styles.</li>
+</ul>
+
+<h3>Database servers</h3>
+
+<p>Postgres and SQL Server are the only supported databases at present. It is 
+possible to add support for other database servers. We will not be doing this
+ourselves but would appreciate contributions in this regard. See the 
+<tt>om.tnavigator.db</tt> package within the code.</p>
+
+<p>You do not need a database to run the developer servlet. Only the test
+navigator requires access.</p>
+
+<h3>Fonts</h3>
+
+<p>Verdana and Times New Roman are included as standard on Windows and OS X,
+but users of other operating systems may need to obtain a copy of these fonts and install them in 
+the lib/fonts folder within your Java runtime. 
+(<a href="http://java.sun.com/j2se/1.4.2/docs/guide/intl/font.html">Information
+about fonts in Java.</a>)</p>
+
+<p>You need these fonts on any server that runs the developer servlet or
+question engine. They are not needed for the test navigator servlet.</p>
+
+<h2>3 Obtaining OpenMark source</h2>
+
+<p>
+The OpenMark code repository uses SubVersion. You can check it out without
+needing a dev.java.net account.
+</p>
+
+<p>
+We have not yet worked out release management so at the moment your
+only option is to check out the development version. (Hmmmm.) We'll probably
+fix that.
+</p>
+
+<ul>
+<li>Command-line checkout:<br />
+<tt>svn checkout https://openmark.dev.java.net/svn/openmark/trunk openmark --username guest</tt></li>
+<li>We recommend the Eclipse IDE. If you are using this, install the 
+<a href="http://subclipse.tigris.org/">Subclipse plugin</a>. You can then check 
+out as follows:
+<ul>
+<li>File / New / Project; Checkout projects from SVN; enter the URL
+<tt>https://openmark.dev.java.net/svn/openmark</tt></li>
+<li>Select 'trunk' from the resulting list and click Next</li>
+<li>Choose to create a new project using the wizard, and select a Java project
+under Java 1.4 with source and binaries in different folders.</li>
+<li>When prompted to enter a username, enter <strong>guest</strong>, no password</li>
+</ul></li>
+</ul>
+
+<p>OpenMark's repository should begin to download.</p>
+
+<h2>4 About Apache Ant</h2>
+
+<p>Apache Ant is a build system - sort of like <tt>make</tt>, but works in 
+a different way. Using Ant you can define XML scripts that build a piece of
+software (or do something else). We use Ant to build OpenMark.</p>
+
+<p>In order to build OpenMark you don't need to know how Ant works but you do
+need to know how to run it and how to change properties.</p>
+
+<h3>Running Ant</h3>
+
+<p><strong>Don't run Ant yet!</strong> You need to finish configuring the build
+script first, otherwise it will fail and could potentially delete things you don't
+want deleting.</p>
+
+<ul>
+<li>If Ant is installed in a typical Unix system you can run it from the command
+line by changing to the directory that includes the <tt>build.xml</tt> script
+and typing <tt>ant</tt>.</li>
+<li>If you're using Eclipse you can run Ant by right-clicking on <tt>build.xml</tt>
+and clicking 'Run as / Ant script'.</li>
+</ul>
+
+<h3>Setting properties</h3>
+
+<p>If you're using Eclipse, you can choose extra options such as setting 
+properties without having to alter <tt>build.xml</tt> itself. Choose 'Run as /
+Ant script...' and use the tabbed dialog. Other IDEs are likely to have similar
+options.</p>
+
+<p>It's also easy to set properties by editing the file directly. For example,
+here is a snippet of the included file:</p>
+
+<pre>
+&lt;!--
+  Modify Axis home. Should point to an Axis 1.4 install on the build 
+  machine. Used to obtain Axis lib files.
+  -->
+&lt;property name="axishome" value=""/>
+</pre>
+
+<p>Supposing you installed Axis in /somewhere/axis-1_4, then you could edit
+the property line to read:</p>
+
+<p><tt>&lt;property name="axishome" value="/somewhere/axis-1_4"/></tt></p>
+
+<p>All the properties you need to edit are at the beginning of the file.</p>
+
+<h2>5 Prerequisites</h2>
+
+<p>
+If you use Eclipse or another IDE you will probably notice a hideous number of
+errors as it attempts to build the project. This is because it's missing a bunch
+of prerequisite software programs from other people (Sun, Apache) which you need
+to install.
+</p>
+
+<p>
+The jar files contributed by these prerequisites will be built into the OpenMark
+web applications as needed, so you don't need to install them in any particular
+location. It's OK to just set them up in your own folder for the purpose of building.
+</p>
+
+<p>
+OpenMark builds using an Ant build script <tt>build.xml</tt> which contains properties
+for the location of each prerequisite. You need to edit these properties, 
+either by editing <tt>build.xml</tt> directly or by using facilities in your IDE to 
+set them up, once you've downloaded the prerequisites.
+</p>
+
+<p>
+If using an IDE, you should see that there are no errors in the project after
+you configure all the below prerequisites. (There are still some warnings, I'm
+afraid.)
+</p>
+
+<h3>servlet-api.jar</h3>
+
+<p>(Required for building all components.)</p>
+
+<p>The servlet API is included in your application server. If you use Apache
+Tomcat, it's in your Tomcat install folder under <tt>common/lib</tt>.</p>
+
+<ol>
+<li>Set the <tt>build.xml</tt> property <tt>servletapi</tt> to the folder that
+includes this file. On my computer this is <tt>/opt/local/share/java/tomcat5/common/lib</tt>.</li>
+<li>If you use an IDE, find <tt>servlet-api.jar</tt> and add it to the build path.</li>
+</ol>
+
+<h3>Apache Axis</h3>
+
+<p>(Required to build question engine and test navigator.)</p>
+
+<ol>
+<li><a href="http://ws.apache.org/axis/">Download Axis</a>. We have tested
+only with Axis 1.4.</li>
+<li>Unpack the software and place it somewhere (anywhere). I put
+it in <tt>/Users/sam/javalibs/axis-1_4</tt>.
+<li>Set the <tt>build.xml</tt> property <tt>axishome</tt> to the above folder.</li>
+<li>If you use an IDE, add all the jar files from the <tt>lib</tt> folder inside
+<tt>axis-1_4</tt> to the build path.</li>
+</ol>
+
+<h3>Java Activation Framework</h3>
+
+<p>(Required to build test navigator.)</p>
+
+<ol>
+<li><a href="http://java.sun.com/products/javabeans/jaf/">Download the Java Activation Framework</a>. We have tested
+only with JAF 1.1.</li>
+<li>Unpack the software and place it somewhere (anywhere). I put
+it in <tt>/Users/sam/javalibs/jaf-1.1</tt>.
+<li>Set the <tt>build.xml</tt> property <tt>jafhome</tt> to the above folder.</li>
+<li>If you use an IDE, add <tt>activation.jar</tt> from the 
+<tt>jaf-1.1</tt> folder to the build path.</li>
+</ol>
+
+<h3>Java Mail</h3>
+
+<p>(Required to build test navigator.)</p>
+
+<ol>
+<li><a href="http://java.sun.com/products/javamail/">Download Java Mail</a>. We have tested
+only with Java Mail 1.4.</li>
+<li>Unpack the software and place it somewhere (anywhere). I put
+it in <tt>/Users/sam/javalibs/javamail-1.4</tt>.
+<li>Set the <tt>build.xml</tt> property <tt>javamailhome</tt> to the above folder.</li>
+<li>If you use an IDE, add <tt>mail.jar</tt> from the 
+<tt>javamail-1.4</tt> folder to the build path.</li>
+</ol>
+
+<h2>6 Other build settings</h2>
+
+<p>
+You may also need to set the following build options as Ant properties.
+</p>
+
+<ul>
+<li><tt>build</tt><br />
+Folder in which the build output is placed, along with intermediate files. Note
+that this folder is <strong>completely deleted</strong> every time you build, so 
+be very careful! The default is <tt>/tmp/om-build</tt>.</li>
+<li><tt>javadoc</tt><br />
+Folder for javadoc. Javadoc only gets built when you build the 'javadoc' ant
+target, it's not part of the default 'all' target. When it is built, this folder
+is <strong>completely deleted</strong> and current javadoc is placed there. The
+default is a <tt>javadoc</tt> folder inside the build folder.</li>
+</ul>
+
+<p>
+See comments in <tt>build.xml</tt> for details of other options which basically 
+affect how the developer servlet is set up. The defaults should work correctly 
+when running the developer servlet on your own machine and you can change them
+in the developer servlet's <tt>web.xml</tt> anyway.
+</p>
+
+<h2>7 Yay! Let's build!</h2>
+
+
+
+
 
 </body>
 </html>
