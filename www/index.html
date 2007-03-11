@@ -1,45 +1,91 @@
 <html>
 <head>
-<title>Project Home Page</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Online assessment system</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
+<body>
 
-<body bgcolor="#FFFFFF" text="#000000">
-<h1>Default project home page </h1>
-<p>Congratulations on your new java.net project! </p>
-<p>This page is the home page for your new project. This content is appearing 
-  because you have selected the option <b>Use project index.html</b>. To edit 
-  the information displayed on this page, just use CVS to check out your project's 
-  CVS repository and edit index.html in directory www. You can get more information 
-  on how to set-up your local CVS client, click on <b>Version Control</b> on the 
-  left nav bar. </p>
-<p>If you don't want to use CVS to manage your home page, click on the <b>Edit 
-  project</b> link on this page and unclick the option <b>Use project index.html</b>. 
-  Your project home page contents will be generated from the <b>Edit project</b> 
-  field <b>Description</b>. Edit the text on that field to change your home page 
-  contents. Click on <b>Submit changes</b> to save your edits. </p>
-<p>If you are looking for <a href="https://java-net.dev.java.net/ProjectPages.html#templates">sample 
-  home page templates</a>, check out the <a href="https://java-net.dev.java.net/ProjectPages.html">java.net 
-  Project Starter Kit</a>. Copy either of the templates into your project's html 
-  to get started on your project's home page. </p>
-<p>You can find lots of helpful information in the Starter Kit to get your project 
-  started. Some of the things you will find in there include:</p>
+<h2>What is OpenMark?</h2>
+
+<p>
+OpenMark is a computer-assisted assessment (CAA) system that has its foundations
+in computer-assisted learning. It was developed by 
+<a href="http://www.open.ac.uk">The Open University</a>, where it has been used
+by thousands of students, and is now released as open source software under
+the Gnu Public license.
+</p>
+
+<h2>Pedagogical overview</h2>
+
+<p>
+OpenMark differs from traditional CAA systems in:
+</p>
+
 <ul>
-  <li>Hints on how to <a href="https://java-net.dev.java.net/ProjectPages.html#pages">set-up 
-    your project's</a> home page</li>
-  <li>Ideas on how to <a href="https://java-net.dev.java.net/ProjectPages.html#publicity">publicize 
-    your project</a> including RSS feeds</li>
-  <li>Hints on <a href="https://java-net.dev.java.net/pagedesign.html">project 
-    page HTML</a></li>
-  <li>Setting up project <a href="https://java-net.dev.java.net/ProjectPages.html#wiki">wiki 
-    pages</a></li>
-  <li>And places to go if <a href="https://java-net.dev.java.net/ProjectPages.html#feedback">you 
-    have questions</a>.</li>
+<li>The emphasis we place on feedback. All Open University students are 
+distance learners and within the university we emphasise the importance of 
+giving feedback on written assessments. The design of OpenMark assumes that 
+feedback, perhaps at multiple levels, will be included.</li>
+<li>Allowing multiple attempts. OpenMark is an interactive system, and 
+consequently we can ask students to act on feedback that we give 'there and 
+then', while the problem is still in their mind. If their first answer is 
+incorrect, they can have an immediate second, or third, attempt.</li>
+<li>The breadth of interactions supported. We aim to use the full capabilities 
+of modern multimedia computers to create engaging assessments.</li>
+<li>The design for anywhere, anytime use. OpenMark assessments are designed to 
+enable students to complete them in their own time in a manner that fits with 
+normal life. They can be interrupted at any point and resumed later from the 
+same location or from elsewhere on the internet.</li>
 </ul>
-<p>Remember that you will attract more new members and your project team will 
-  work more effectively if you, as the project owner, supply sufficient information 
-  about your project for visitors to your project space. Good luck with your new 
-  project! </p>
+
+<h2>System overview</h2>
+
+<p>
+OpenMark ('Om' for short) is very different from most question systems in that
+each question contains code as well as data. Although you do not need high-level
+Java abilities to create questions, this may still make it impractical for use
+in organisations that don't have software development skills. (It is a long-term
+goal to provide a way of defining basic 'question types' that can be created
+using Web forms, like other system, as well as more advanced questions.)
+</p>
+
+<h3>Creating questions</h3>
+
+<ul>
+<li>An XML language allows question
+authors to create and arrange the components that make up their question (such as text,
+equations, graphics, input boxes, draggable markers, audio clips).</li>
+<li>Using Java, authors define how their question reacts to user input - Java
+code checks the values of question components and determines which feedback to
+display, which score to grant, etc.</li>
+</ul>
+
+<p>
+A question author servlet, installed on the author's machine, allows them
+to compile and test questions. You don't need to use an IDE (although you 
+will probably want to, just for the editing interface) or compile them by hand.
+</p>
+
+<h3>Live system</h3>
+
+<p>
+The live system is based around two servlets: the <strong>question engine</strong>
+and the <strong>test navigator</strong>. The test navigator deals with all
+direct communication with students, handles authentication, and handles details
+of tests - which question comes when, any explanatory information, and so on.
+Question engines deal only with the actual processing behind questions and do
+not communicate directly with the user or with the database that records user
+actions. All the question code runs on question engines.
+</p>
+
+<p>
+You can run a system with one test navigator and one question engine. For 
+robustness, it is possible to use more than one test navigator (we run two; you'd
+probably be good up to, say, five or ten). The number of question engines can
+scale infinitely as they are completely independent of each other and of any
+other system.
+</p>
+
 </body>
 </html>
 
