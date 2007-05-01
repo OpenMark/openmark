@@ -23,15 +23,25 @@ import java.util.*;
 
 import javax.servlet.*;
 
+/**
+ * Implementation of ServletContext used for performance testing.
+ */
 public class TestServletContext implements ServletContext
 {
 	private File fContextPath;
+	/**
+	 * Constructor.
+	 * @param fContextPath 
+	 */
 	public TestServletContext(File fContextPath)
 	{
 		this.fContextPath=fContextPath;
 	}
 	public ServletContext getContext(String arg0)
 	{
+		return null;
+	}
+	public String getContextPath() {
 		return null;
 	}
 	public int getMajorVersion()
