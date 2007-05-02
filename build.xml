@@ -90,11 +90,11 @@
 		grammar), you need to install JavaCC and put its location here 
 	-->
 	<property name="javacchome" value=""/>
-	
-	<!-- Version number -->
-	<property name="buildversion" value="1.3.0 (M46)"/>
-	
-	
+
+	<!-- Version number - loaded into ${buildversion} -->
+	<property file="version.properties"/>
+
+
 	<!-- Create fresh build folder -->
 	<target name="init">
 		<tstamp>
