@@ -98,8 +98,11 @@
 	<!-- Create fresh build folder -->
 	<target name="init">
 		<tstamp>
-			<format property="buildstamp" pattern="yyyy-MM-dd HH:mm:ss"/>
+			<format property="newbuildstamp" pattern="yyyy-MM-dd HH:mm:ss"/>
 		</tstamp>
+		<condition property="buildstamp" value="${buildstamp}" else="${newbuildstamp}">
+			<isset property="${buildstamp}"/>
+		</condition>
 		<delete dir="${build}" quiet="true"/>
 		<mkdir dir="${build}"/>
 	</target>
