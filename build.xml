@@ -267,9 +267,7 @@
 		<mkdir dir="${build}/webapps/om-tn/logs"/>
 		
 		<copy todir="${build}/webapps/om-tn/WEB-INF">
-			<fileset dir="webinf-tnavigator">
-				<include name="**/*"/>
-			</fileset>
+			<fileset dir="webinf-tnavigator"/>
 		</copy>
 		<!-- Sample navigator.xml doesn't go in web-inf -->
 		<move file="${build}/webapps/om-tn/WEB-INF/navigator.sample.xml"
@@ -277,9 +275,7 @@
 		
 		<!-- Copy sample tests -->
 		<copy todir="${build}/webapps/om-tn/">
-			<fileset dir="samples/tests">
-				<include name="**/*"/>
-			</fileset>
+			<fileset dir="samples/tests"/>
 		</copy>
 
 		<copy todir="${build}/webapps/om-tn/WEB-INF/lib" file="${build}/jars/om-navigator.jar"/>
@@ -389,7 +385,6 @@
 		
 		<delete quiet="true">
 			<fileset dir="${javadoc}">			
-				<include name="**/*"/>
 				<exclude name="**/cvs/"/>
 				<exclude name="**/cvs"/>
 			</fileset>
