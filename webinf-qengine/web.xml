@@ -43,7 +43,7 @@
 	</mime-mapping>
 
   <security-constraint>
-    <display-name>Prevent questionbank access</display-name>
+    <!-- Prevent questionbank access -->
     <web-resource-collection>
       <web-resource-name>Question cache</web-resource-name>
       <url-pattern>/questioncache/*</url-pattern>
