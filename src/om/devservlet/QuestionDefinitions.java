@@ -22,7 +22,8 @@ import java.util.*;
 
 import javax.servlet.ServletContext;
 
-import om.*;
+import om.OmDeveloperException;
+import om.OmException;
 import util.misc.IO;
 
 /**
@@ -71,10 +72,12 @@ public class QuestionDefinitions
 				"ant-home context parameter not set");
 		fAntHome=new File(sAntHome);
 		if(!fAntHome.exists())
-			throw new OmDeveloperException(
-				"ant-home context parameter appears to be set wrong");
-		//fAntBat=new File(sc.getRealPath("WEB-INF/apache-ant-1.6.2/bin/ant.bat"));
-			
+		{
+			fAntHome=new File(sc.getRealPath(sAntHome));
+			if(!fAntHome.exists())
+				throw new OmDeveloperException(
+					"ant-home context parameter appears to be set wrong");
+		}
 		sJDKHome=sc.getInitParameter("jdk-home");
 		if(sJDKHome==null)
 			throw new OmDeveloperException(
