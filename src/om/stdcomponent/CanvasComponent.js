@@ -2,11 +2,12 @@ var canvasList=new Array();
 
 
 
-function canvasInit(canvasId,enabled,imageOffset,keyStep,fg,bg,labelSize)
+function canvasInit(canvasId,enabled,imageOffsetX,imageOffsetY,keyStep,fg,bg,labelSize)
 {
   canvas=new Object()
   canvas.enabled=enabled;
-  canvas.imageOffset=imageOffset;
+  canvas.imageOffsetX=imageOffsetX;
+  canvas.imageOffsetY=imageOffsetY;
   canvas.keyStep=keyStep;
   canvas.fg=fg;
   canvas.bg=bg;
@@ -105,11 +106,11 @@ function canvasMarkerInit(canvasId,labelJS,originX,originY,factorX,factorY)
 
 function canvasGetMarkerX(marker)
 {
-  return marker.offsetLeft-marker.mCanvas.img.offsetLeft+marker.mCanvas.imageOffset;
+  return marker.offsetLeft-marker.mCanvas.img.offsetLeft+marker.mCanvas.imageOffsetX;
 }
 function canvasGetMarkerY(marker)
 {
-  return marker.offsetTop-marker.mCanvas.img.offsetTop+marker.mCanvas.imageOffset;
+  return marker.offsetTop-marker.mCanvas.img.offsetTop+marker.mCanvas.imageOffsetY;
 }
 
 function canvasMarkerKeydown(e,marker)
@@ -177,9 +178,9 @@ function canvasMarkerMove(e,marker)
   
   // Get x/y relative to canvas
   var canvasX=(e.mPageX-marker.mStartX)+
-	marker.mStartLeft-marker.mCanvas.img.offsetLeft+marker.mCanvas.imageOffset;
+	marker.mStartLeft-marker.mCanvas.img.offsetLeft+marker.mCanvas.imageOffsetX;
   var canvasY=(e.mPageY-marker.mStartY)+
-	marker.mStartTop-marker.mCanvas.img.offsetTop+marker.mCanvas.imageOffset;
+	marker.mStartTop-marker.mCanvas.img.offsetTop+marker.mCanvas.imageOffsetY;
 	
   canvasSetPos(marker,canvasX,canvasY);
 }
@@ -197,8 +198,8 @@ function canvasSetPos(marker,canvasX,canvasY)
   marker.mY.value=canvasY;
   
   // Update position
-  marker.style.left=(1*canvasX+marker.mCanvas.img.offsetLeft-marker.mCanvas.imageOffset)+"px";
-  marker.style.top=(1*canvasY+marker.mCanvas.img.offsetTop-marker.mCanvas.imageOffset)+"px";
+  marker.style.left=(1*canvasX+marker.mCanvas.img.offsetLeft-marker.mCanvas.imageOffsetX)+"px";
+  marker.style.top=(1*canvasY+marker.mCanvas.img.offsetTop-marker.mCanvas.imageOffsetY)+"px";
   
   // Update label
   marker.updateLabel();

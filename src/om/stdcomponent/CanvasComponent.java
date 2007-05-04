@@ -125,6 +125,8 @@ public class CanvasComponent extends QComponent implements World.Context
 	private static final String PROPERTY_ANTIALIAS="antialias";
 	private static final String PROPERTY_FILEPATH="filePath";
 	private static final String PROPERTY_REQUIREBG="requirebg";
+	private static final String PROPERTY_MARKERIMAGE="markerimage";
+	private static final String PROPERTY_MARKERHOTSPOT="markerhotspot";
 	
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
@@ -161,7 +163,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		
 		/** Javascript expression for label text */
 		String sLabelJS;
-		
+
 		/** ID of world for co-ordinates in label expression */
 		String sWorld;
 	}
@@ -202,11 +204,15 @@ public class CanvasComponent extends QComponent implements World.Context
 		defineBoolean(PROPERTY_ANTIALIAS);
 		defineString(PROPERTY_FILEPATH);
 		defineBoolean(PROPERTY_REQUIREBG);
+		defineString(PROPERTY_MARKERIMAGE);
+		defineString(PROPERTY_MARKERHOTSPOT);
 
 		setString(PROPERTY_ALT,"");
 		setString(PROPERTY_TYPE,"png");
 		setBoolean(PROPERTY_ANTIALIAS,true);
 		setBoolean(PROPERTY_REQUIREBG,false);
+		setString(PROPERTY_MARKERIMAGE,null);
+		setString(PROPERTY_MARKERHOTSPOT,"8,8|11,11|15,15");
 	}
 	
 	protected void initChildren(Element eThis) throws OmException
@@ -585,26 +591,62 @@ public class CanvasComponent extends QComponent implements World.Context
 		eImg.setAttribute("src","%%RESOURCES%%/"+sFilename);
 		eImg.setAttribute("alt",getString("alt"));
 		
-		// Get zoom and  marker size
+		// Get zoom, marker size and hotspot position.
 		double dZoom=getQuestion().getZoom();
-		int iMarkerSize=dZoom>=2.0 ? 31 
-			:	dZoom>=1.5 ? 23 : 15;
+		int iMarkerSize;
+		if (dZoom>=2.0)
+		{
+			iMarkerSize=31;
+		}
+		else if (dZoom>=1.5)
+		{
+			iMarkerSize=23;
+		}
+		else
+		{
+			iMarkerSize=15;
+		}
 
-		String sMarkerPrefix="canvasm"+iMarkerSize;
-		
+		int[] hotspotPositions=parseHotspotProperty(getString(PROPERTY_MARKERHOTSPOT),iMarkerSize);
+
+		String sMarkerPrefix=getString(PROPERTY_MARKERIMAGE);
 		if(bInit && !lMarkers.isEmpty())
 		{
-			try
-			{				
-				qc.addResource(sMarkerPrefix+".gif","image/gif",
-					IO.loadResource(CanvasComponent.class,sMarkerPrefix+".gif"));
-				qc.addResource(sMarkerPrefix+"d.gif","image/gif",
-					IO.loadResource(CanvasComponent.class,sMarkerPrefix+"d.gif"));
-			}
-			catch(IOException e)
+			if (sMarkerPrefix==null)
 			{
-				throw new OmUnexpectedException(e);
+				setString(PROPERTY_MARKERIMAGE, "canvasm");
+				sMarkerPrefix="canvasm"+iMarkerSize;
+				try
+				{		
+					qc.addResource(sMarkerPrefix+".gif","image/gif",
+						IO.loadResource(CanvasComponent.class,sMarkerPrefix+".gif"));
+					qc.addResource(sMarkerPrefix+"d.gif","image/gif",
+						IO.loadResource(CanvasComponent.class,sMarkerPrefix+"d.gif"));
+				}
+				catch(IOException e)
+				{
+					throw new OmUnexpectedException(e);
+				}
 			}
+			else 
+			{
+				sMarkerPrefix+=iMarkerSize;
+				try
+				{		
+					qc.addResource(sMarkerPrefix+".gif","image/gif",
+							getQuestion().loadResource(sMarkerPrefix+".gif"));
+					qc.addResource(sMarkerPrefix+"d.gif","image/gif",
+							getQuestion().loadResource(sMarkerPrefix+"d.gif"));
+				}
+				catch(IOException e)
+				{
+					throw new OmDeveloperException("Marker image not found: "+sMarkerPrefix, e);
+				}
+			}
+		}
+		else
+		{
+			sMarkerPrefix+=iMarkerSize;
 		}
 		if(!lMarkers.isEmpty())
 		{
@@ -612,7 +654,7 @@ public class CanvasComponent extends QComponent implements World.Context
 			eScript.setAttribute("type","text/javascript");
 			XML.createText(eScript,
 				"addOnLoad(function() { canvasInit('"+getID()+"',"+
-				isEnabled()+","+(iMarkerSize/2)+","+
+				isEnabled()+","+hotspotPositions[0]+","+hotspotPositions[1]+","+
 				((int)(dZoom * 4.0)) + ",'"+
 				(getQuestion().isFixedColour() ? getQuestion().getFixedColourFG() : "black")+
 				"','"+
@@ -671,7 +713,26 @@ public class CanvasComponent extends QComponent implements World.Context
 		XML.createText(eEnsureSpaces," ");		
 		qc.addTextEquivalent(getString("alt"));
 	}
-	
+
+	private int[] parseHotspotProperty(String property, int markerSize) throws OmDeveloperException
+	{
+		OmDeveloperException hotspotException = new OmDeveloperException(
+				"The " + PROPERTY_MARKERHOTSPOT +
+				" property must be of the form \"8,8|11,11|15,15\". You specified \"" + property + "\".");
+		String[] hotspotPositions = property.split("\\|");
+		if (hotspotPositions.length != 3) throw hotspotException;
+		// Converts 15, 23, 31 to 0, 1, 2 respectively.
+		String[] coords = hotspotPositions[markerSize/10 - 1].split(",");
+		if (coords.length != 2) throw hotspotException;
+		int[] result = new int[2];
+		try {
+			result[0] = Integer.parseInt(coords[0]);
+			result[1] = Integer.parseInt(coords[1]);
+		} catch (Exception e) {
+			throw hotspotException;
+		}
+		return result;
+	}
 	private String getWorldFactors(World w,double dZoom)
 	{
 		return (w==null ? "0,0,"+dZoom+","+dZoom : 
@@ -693,9 +754,9 @@ public class CanvasComponent extends QComponent implements World.Context
 			{
 				try
 				{
-					m.iX=(int)((double)Integer.parseInt(
+					m.iX=(int)(Integer.parseInt(
 						ap.getParameter("canvasmarker_"+getID()+"_"+i+"x")) / dZoom);
-					m.iY=(int)((double)Integer.parseInt(
+					m.iY=(int)(Integer.parseInt(
 						ap.getParameter("canvasmarker_"+getID()+"_"+i+"y")) / dZoom);
 				}
 				catch(NumberFormatException nfe)
