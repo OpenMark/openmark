@@ -74,6 +74,16 @@ Setting requirebg='yes' also makes any graph use normal colours even if the
 question is in fixed-colour accessibility mode; be aware that this option
 is bad for accessibility.
 </td></tr> 
+<tr><td>markerimage</td><td>(string)</td><td>If specified, use a custom marker image
+instead of the standard cross-hairs.
+If you specify markerimage="arrow", you must supply images arrow15.gif, arrow23.gif,
+arrow31.gif, arrow15d.gif, arrow23d.gif, arrow31d.gif. These must be square images
+with size 15, 23 and 31 pixels respectively. The 'd' images are for the disabled state. 
+</td></tr> 
+<tr><td>markerhotspot</td><td>(string)</td><td>Specify the position of the 
+marker hotspot within the image, in the form x,y|x,y|x,y, for the three sizes.
+If you omit this, the hotspot is in the centre of the image, that is 8,8|11,11|15,15.
+</td></tr> 
 </table>
 <h2>Contents</h2>
 <h3>Graphs</h3>
