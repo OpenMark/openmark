@@ -41,7 +41,7 @@ public class PostgreSQL extends OmQueries
 
 	public int getInsertedSequenceID(Transaction dat,String table,String column) throws SQLException
 	{
-		ResultSet rs=dat.query("SELECT currval('"+table+"_"+column+"_seq')");
+		ResultSet rs=dat.query("SELECT currval('"+getPrefix()+table+"_"+column+"_seq')");
 		rs.next();
 		return rs.getInt(1);
 	}

@@ -421,7 +421,7 @@ public abstract class OmQueries
 	 * sequence column, this method returns the value of the ID that was just
 	 * added.
 	 * @param dat Transaction (insert must be previous command)
-	 * @param table Table name
+	 * @param table Table name, without the prefix.
 	 * @param column Column name
 	 * @return ID value
 	 * @throws SQLException If database throws a wobbly

@@ -1181,7 +1181,7 @@ public class NavigatorServlet extends HttpServlet
 				// Use same PI as OUCU for non-logged-in guests
 				us.ud.isLoggedIn() ? us.ud.getPersonID() : us.sOUCU,
 				us.iFixedVariant);			
-			us.iDBti=oq.getInsertedSequenceID(dat,"nav_tests","ti");
+			us.iDBti=oq.getInsertedSequenceID(dat,"tests","ti");
 			
 			for(int i=0;i<us.atl.length;i++)
 			{
@@ -2641,7 +2641,7 @@ public class NavigatorServlet extends HttpServlet
 			
 			// Initially zero version - we set this later when question is started
 			oq.insertQuestion(dat,us.iDBti,tq.getID(),iAttempt);			
-			us.iDBqi=oq.getInsertedSequenceID(dat,"nav_questions","qi");
+			us.iDBqi=oq.getInsertedSequenceID(dat,"questions","qi");
 		}
 		finally
 		{
