@@ -51,6 +51,9 @@ public class NavigatorConfig
 	/** Database name e.g. "oms-dev" */
 	private String dbName;
 	
+	/** Database prefix e.g. "nav_" */
+	private String dbPrefix;
+
 	/** Set of InetAddress; Trusted IP addresses for question engines */
 	private Set trustedQEs=new HashSet();
 	
@@ -84,6 +87,11 @@ public class NavigatorConfig
 		return dbClass;
 	}
 	
+	String getDBPrefix()
+	{
+		return dbPrefix;
+	}
+
 	private static Map getParams(Element parent) throws IOException
 	{
 		Map m=new HashMap();
@@ -96,6 +104,15 @@ public class NavigatorConfig
 		return m;
 	}
 	
+	/**
+	 * Get a parameter from the <authentication> section of navigator.xml.
+	 * @param name as in, <param name=''>.
+	 * @param type A type name. For example <code>String.class</code> or <code>URL.class</code>.
+	 * @param required if false, this method will return null if the parameter is missing. If true,
+	 * 		it will throw an exception.
+	 * @return The value of the named parameter, as and Object of the type specified.
+	 * @throws IOException
+	 */
 	public Object getAuthParam(String name,Class type,boolean required) throws IOException
 	{
 		String value=(String)authParams.get(name);
@@ -135,6 +152,7 @@ public class NavigatorConfig
 		dbClass=XML.getRequiredAttribute(eDB,"plugin");
 		dbServer=XML.getText(eDB,"server");
 		dbName=XML.getText(eDB,"name");
+		dbPrefix=XML.getText(eDB,"prefix");
 		dbUsername=XML.getText(eDB,"username");
 		dbPassword=XML.getText(eDB,"password");
 		

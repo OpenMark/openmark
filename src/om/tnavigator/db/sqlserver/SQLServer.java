@@ -23,8 +23,18 @@ import om.tnavigator.db.*;
 import om.tnavigator.db.DatabaseAccess.Transaction;
 import util.misc.Strings;
 
+/**
+ * Specialisation of OmQueries for Microsoft SQL Server.
+ */
 public class SQLServer extends OmQueries
 {
+	/**
+	 * @param prefix the database prefix to use.
+	 */
+	public SQLServer(String prefix) {
+		super(prefix);
+	}
+
 	public String getURL(String server,String database,String username,String password)
 		throws ClassNotFoundException
 	{
@@ -45,7 +55,7 @@ public class SQLServer extends OmQueries
 	{
 		return dat.query( 
 			"SELECT TOP 1 ti,rseed,finished,variant,testposition " +
-			"FROM nav_tests " +
+			"FROM " + getPrefix() + "tests " +
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(deploy)+" " +
 			"ORDER BY attempt DESC;");
 	}

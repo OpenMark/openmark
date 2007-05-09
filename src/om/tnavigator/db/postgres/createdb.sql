@@ -4,7 +4,7 @@
 -- 1) SQL format comments (only) are permitted in this file. 
 -- 2) Each statement must end in semicolon.
 
-CREATE TABLE nav_tests (
+CREATE TABLE prefix_tests (
   ti SERIAL PRIMARY KEY,
   oucu VARCHAR(8) NOT NULL,
   deploy VARCHAR(64) NOT NULL,
@@ -19,16 +19,16 @@ CREATE TABLE nav_tests (
   finishedclock TIMESTAMP WITH TIME ZONE
 ); 
 
-CREATE INDEX nav_tests_deploy ON nav_tests (deploy);
-CREATE INDEX nav_tests_oucu ON nav_tests (oucu);
+CREATE INDEX prefix_tests_deploy ON prefix_tests (deploy);
+CREATE INDEX prefix_tests_oucu ON prefix_tests (oucu);
 
-CREATE TABLE nav_infopages (
-  ti INTEGER NOT NULL REFERENCES nav_tests,
+CREATE TABLE prefix_infopages (
+  ti INTEGER NOT NULL REFERENCES prefix_tests,
   testposition SMALLINT NOT NULL
 );
 
-CREATE TABLE nav_testquestions (
-  ti INTEGER NOT NULL REFERENCES nav_tests,
+CREATE TABLE prefix_testquestions (
+  ti INTEGER NOT NULL REFERENCES prefix_tests,
   questionnumber SMALLINT NOT NULL,
   question VARCHAR(64) NOT NULL,
   requiredversion SMALLINT,
@@ -36,9 +36,9 @@ CREATE TABLE nav_testquestions (
   PRIMARY KEY(ti,questionnumber)  
 );
 
-CREATE TABLE nav_questions (
+CREATE TABLE prefix_questions (
   qi SERIAL PRIMARY KEY,
-  ti INTEGER NOT NULL REFERENCES nav_tests,
+  ti INTEGER NOT NULL REFERENCES prefix_tests,
   question VARCHAR(64) NOT NULL,
   attempt INTEGER NOT NULL,
   finished SMALLINT NOT NULL,
@@ -47,49 +47,49 @@ CREATE TABLE nav_questions (
   minorversion SMALLINT NOT NULL
 );
 
-CREATE INDEX nav_questions_ti on nav_questions (ti);
+CREATE INDEX prefix_questions_ti on prefix_questions (ti);
 
-CREATE TABLE nav_scores (
-  qi INTEGER NOT NULL REFERENCES nav_questions,
+CREATE TABLE prefix_scores (
+  qi INTEGER NOT NULL REFERENCES prefix_questions,
   axis VARCHAR(64) NOT NULL,
   score SMALLINT NOT NULL,
   PRIMARY KEY(qi,axis)
 );
 
-CREATE TABLE nav_results (
-  qi INTEGER NOT NULL PRIMARY KEY REFERENCES nav_questions,
+CREATE TABLE prefix_results (
+  qi INTEGER NOT NULL PRIMARY KEY REFERENCES prefix_questions,
   questionline VARCHAR(255) NOT NULL,
   answerline VARCHAR(255) NOT NULL,
   actions TEXT NOT NULL,
   attempts INTEGER NOT NULL
 );
 
-CREATE TABLE nav_customresults (
-  qi INTEGER NOT NULL PRIMARY KEY REFERENCES nav_questions,
+CREATE TABLE prefix_customresults (
+  qi INTEGER NOT NULL PRIMARY KEY REFERENCES prefix_questions,
   name VARCHAR(64) NOT NULL,
   customresult TEXT NOT NULL
 );
   
-CREATE TABLE nav_actions (
-  qi INTEGER NOT NULL REFERENCES nav_questions,
+CREATE TABLE prefix_actions (
+  qi INTEGER NOT NULL REFERENCES prefix_questions,
   seq SMALLINT NOT NULL,
   clock TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(qi,seq)
 );
 
-CREATE TABLE nav_params (
-  qi INTEGER NOT NULL REFERENCES nav_questions,
+CREATE TABLE prefix_params (
+  qi INTEGER NOT NULL REFERENCES prefix_questions,
   seq SMALLINT NOT NULL,
   paramname VARCHAR(255),
   paramvalue VARCHAR(2048),
   PRIMARY KEY(qi,seq,paramname)  
 );
 
-CREATE TABLE nav_sessioninfo (
-  ti INTEGER NOT NULL REFERENCES nav_tests,
+CREATE TABLE prefix_sessioninfo (
+  ti INTEGER NOT NULL REFERENCES prefix_tests,
   ip VARCHAR(255),
   useragent VARCHAR(255),
   clock TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-CREATE INDEX nav_sessioninfo_ti on nav_sessioninfo (ti);
+CREATE INDEX prefix_sessioninfo_ti on prefix_sessioninfo (ti);
  

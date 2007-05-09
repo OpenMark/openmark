@@ -22,8 +22,18 @@ import java.sql.*;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.db.DatabaseAccess.Transaction;
 
+/**
+ * Specialisation of OmQueries for PostgreSQL.
+ */
 public class PostgreSQL extends OmQueries
 {
+	/**
+	 * @param prefix the database prefix to use.
+	 */
+	public PostgreSQL(String prefix) {
+		super(prefix);
+	}
+
 	public void checkDatabaseConnection(Transaction dat) throws SQLException
 	{
 		dat.query("SELECT version()");

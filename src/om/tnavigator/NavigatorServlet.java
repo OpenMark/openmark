@@ -146,9 +146,11 @@ public class NavigatorServlet extends HttpServlet
 		lastSessionKillerError=new long[nc.getOtherNavigators().length];
 		
 		String dbClass=nc.getDBClass();
+		String dbPrefix=nc.getDBPrefix();
 		try
 		{
-			oq=(OmQueries)Class.forName(dbClass).newInstance();
+			oq=(OmQueries)Class.forName(dbClass).getConstructor(new Class[] {String.class}).
+					newInstance(new Object[] {dbPrefix});
 			da=new DatabaseAccess(nc.getDatabaseURL(oq),
 				nc.hasDebugFlag("log-sql") ? l : null);
 		}

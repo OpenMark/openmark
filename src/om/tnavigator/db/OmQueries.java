@@ -29,6 +29,15 @@ import util.misc.*;
  */
 public abstract class OmQueries
 {
+	private final String prefix;
+
+	/**
+	 * @param prefix String prepended to the name of each database table.
+	 */
+	protected OmQueries(String prefix) {
+		this.prefix = prefix;
+	}
+
 	/**
 	 * Obtains JDBC URL for this database. Must also call Class.forName for the
 	 * JDBC driver.
@@ -37,6 +46,7 @@ public abstract class OmQueries
 	 * @param username Username
 	 * @param password Password
 	 * @return JDB string
+	 * @throws ClassNotFoundException 
 	 */
 	public abstract String getURL(String server,String database,String username,String password)
 	  throws ClassNotFoundException;
@@ -45,9 +55,9 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT tq.questionnumber,q.finished,r.questionline,r.answerline,tq.question,r.attempts,tq.sectionname "+ 
-			"FROM nav_testquestions tq " +
-			"LEFT JOIN nav_questions q ON tq.question=q.question AND tq.ti=q.ti " +
-			"LEFT JOIN nav_results r ON q.qi=r.qi " +
+			"FROM " + getPrefix() + "testquestions tq " +
+			"LEFT JOIN " + getPrefix() + "questions q ON tq.question=q.question AND tq.ti=q.ti " +
+			"LEFT JOIN " + getPrefix() + "results r ON q.qi=r.qi " +
 			"WHERE tq.ti="+ti+" " +
 			"ORDER BY tq.questionnumber, q.attempt DESC");
 	}
@@ -56,7 +66,7 @@ public abstract class OmQueries
 	{
 		return dat.query( 
 			"SELECT ti,rseed,finished,variant,testposition " +
-			"FROM nav_tests " +
+			"FROM " + getPrefix() + "tests " +
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(deploy)+" " +
 			"ORDER BY attempt DESC LIMIT 1");
 	}
@@ -65,9 +75,9 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT tq.question,q.majorversion,q.minorversion,q.attempt,s.axis,s.score,tq.requiredversion "+ 
-			"FROM nav_testquestions tq " +
-			"LEFT JOIN nav_questions q ON tq.question=q.question AND tq.ti=q.ti " +
-			"LEFT JOIN nav_scores s ON s.qi=q.qi " +
+			"FROM " + getPrefix() + "testquestions tq " +
+			"LEFT JOIN " + getPrefix() + "questions q ON tq.question=q.question AND tq.ti=q.ti " +
+			"LEFT JOIN " + getPrefix() + "scores s ON s.qi=q.qi " +
 			"WHERE tq.ti="+ti+" " +
 			"ORDER BY tq.question,SIGN(q.finished) DESC,q.attempt DESC;");	
 	}
@@ -77,7 +87,7 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT COUNT(qi) " +
-			"FROM nav_questions " +
+			"FROM " + getPrefix() + "questions " +
 			"WHERE ti="+ti+";");	
 	}
 	
@@ -86,7 +96,7 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT DISTINCT q.question " +
-			"FROM nav_questions q " +
+			"FROM " + getPrefix() + "questions q " +
 			"WHERE q.ti="+ti+" AND q.finished>=1");	
 	}
 	
@@ -95,7 +105,7 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT testposition " +
-			"FROM nav_infopages " +
+			"FROM " + getPrefix() + "infopages " +
 			"WHERE ti="+ti+";");	
 	}
 	
@@ -104,7 +114,7 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT MAX(attempt) " +
-			"FROM nav_questions " +
+			"FROM " + getPrefix() + "questions " +
 			"WHERE ti="+ti+" AND question="+Strings.sqlQuote(questionID)+";");	
 	}
 	
@@ -113,7 +123,7 @@ public abstract class OmQueries
   {
 		return dat.query(
 			"SELECT MAX(attempt) " +
-			"FROM nav_tests " +
+			"FROM " + getPrefix() + "tests " +
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(testID)+";");
 	}
 	
@@ -122,11 +132,11 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT q.qi, MAX(a.seq), q.finished,q.attempt,q.majorversion,q.minorversion "+ 
-			"FROM nav_questions q "+
-			"LEFT JOIN nav_actions a ON q.qi=a.qi "+
+			"FROM " + getPrefix() + "questions q "+
+			"LEFT JOIN " + getPrefix() + "actions a ON q.qi=a.qi "+
 			"WHERE q.ti="+ti+" AND q.question="+Strings.sqlQuote(questionID)+" "+
 			"AND attempt=("+
-				"SELECT MAX(attempt) FROM nav_questions q2 "+
+				"SELECT MAX(attempt) FROM " + getPrefix() + "questions q2 "+
 				"WHERE q2.ti="+ti+" AND q2.question="+Strings.sqlQuote(questionID)+") "+
 			"GROUP BY q.qi,q.finished,q.attempt,q.majorversion,q.minorversion");
 	}
@@ -136,7 +146,7 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT seq, paramname, paramvalue " +
-			"FROM nav_params " +
+			"FROM " + getPrefix() + "params " +
 			"WHERE qi="+qi+" "+
 			"ORDER BY seq");
 	}
@@ -146,7 +156,7 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT questionline,answerline,attempts " +
-			"FROM nav_results " +
+			"FROM " + getPrefix() + "results " +
 			"WHERE qi="+qi	);
 	}
 	
@@ -158,9 +168,9 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT oucu,pi,clock,finished,admin,finishedclock " +
-			"FROM nav_tests t " +
+			"FROM " + getPrefix() + "tests t " +
 			"WHERE deploy="+Strings.sqlQuote(testID)+" " +
-			"AND (SELECT COUNT(*) FROM nav_questions q WHERE q.ti=t.ti AND finished>0)>0 "+
+			"AND (SELECT COUNT(*) FROM " + getPrefix() + "questions q WHERE q.ti=t.ti AND finished>0)>0 "+
 			"ORDER BY finished DESC,pi,clock DESC");
 	}
 	
@@ -169,10 +179,10 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT q.question, sum(s.score),count(s.score),max(q.majorversion),tq.questionnumber " +
-			"FROM nav_tests t " +				
-			"LEFT JOIN nav_testquestions tq ON t.ti=tq.ti "+
-			"LEFT JOIN nav_questions q ON t.ti=q.ti AND q.question=tq.question " +
-			"LEFT JOIN nav_scores s ON q.qi=s.qi " +
+			"FROM " + getPrefix() + "tests t " +				
+			"LEFT JOIN " + getPrefix() + "testquestions tq ON t.ti=tq.ti "+
+			"LEFT JOIN " + getPrefix() + "questions q ON t.ti=q.ti AND q.question=tq.question " +
+			"LEFT JOIN " + getPrefix() + "scores s ON q.qi=s.qi " +
 			"WHERE s.axis='' AND s.score IS NOT NULL " +
 			"AND t.deploy="+Strings.sqlQuote(testID)+" "+
 			"GROUP BY q.question,tq.questionnumber " +
@@ -185,10 +195,10 @@ public abstract class OmQueries
 		return dat.query(
 	  		"SELECT t.pi,t.oucu,q.attempt,q.clock," +
 			  "r.questionline,r.answerline,r.actions,r.attempts,s.axis,s.score "+
-			"FROM nav_tests t " +
-			"INNER JOIN nav_questions q ON t.ti=q.ti " +
-			"INNER JOIN nav_results r ON q.qi=r.qi " +
-			"LEFT JOIN nav_scores s ON q.qi=s.qi " +
+			"FROM " + getPrefix() + "tests t " +
+			"INNER JOIN " + getPrefix() + "questions q ON t.ti=q.ti " +
+			"INNER JOIN " + getPrefix() + "results r ON q.qi=r.qi " +
+			"LEFT JOIN " + getPrefix() + "scores s ON q.qi=s.qi " +
 			"WHERE t.deploy="+Strings.sqlQuote(testID)+" AND q.question="+Strings.sqlQuote(questionID)+" AND q.finished>0 " +
 			"ORDER BY t.pi,q.attempt");
   }
@@ -198,8 +208,8 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT t.attempt,si.clock,si.ip,si.useragent " +
-			"FROM nav_tests t " +
-			"INNER JOIN nav_sessioninfo si ON t.ti=si.ti " +
+			"FROM " + getPrefix() + "tests t " +
+			"INNER JOIN " + getPrefix() + "sessioninfo si ON t.ti=si.ti " +
 			"WHERE t.deploy="+Strings.sqlQuote(testID)+" AND t.pi="+Strings.sqlQuote(pi)+" " +
 			"ORDER BY t.attempt,si.clock");
 	}
@@ -209,13 +219,13 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT t.attempt,t.finished,q.question,q.attempt,q.clock,r.questionline,r.answerline,r.actions,r.attempts,s.axis,s.score,tq.questionnumber,t.finishedclock," +
-				"(SELECT MIN(a2.clock) FROM nav_actions a2 WHERE a2.qi=q.qi) AS minaction,"+
-				"(SELECT MAX(a2.clock) FROM nav_actions a2 WHERE a2.qi=q.qi) AS maxaction "+
-			"FROM nav_tests t " +
-				"INNER JOIN nav_questions q ON t.ti=q.ti " +
-				"INNER JOIN nav_testquestions tq ON t.ti=tq.ti AND q.question=tq.question "+
-				"INNER JOIN nav_results r ON q.qi=r.qi " +
-				"LEFT OUTER JOIN nav_scores s ON q.qi=s.qi " +
+				"(SELECT MIN(a2.clock) FROM " + getPrefix() + "actions a2 WHERE a2.qi=q.qi) AS minaction,"+
+				"(SELECT MAX(a2.clock) FROM " + getPrefix() + "actions a2 WHERE a2.qi=q.qi) AS maxaction "+
+			"FROM " + getPrefix() + "tests t " +
+				"INNER JOIN " + getPrefix() + "questions q ON t.ti=q.ti " +
+				"INNER JOIN " + getPrefix() + "testquestions tq ON t.ti=tq.ti AND q.question=tq.question "+
+				"INNER JOIN " + getPrefix() + "results r ON q.qi=r.qi " +
+				"LEFT OUTER JOIN " + getPrefix() + "scores s ON q.qi=s.qi " +
 			"WHERE t.deploy="+Strings.sqlQuote(testID)+" AND t.pi="+Strings.sqlQuote(pi)+" AND q.finished>0 " +
 			"ORDER BY t.attempt,tq.questionnumber,q.clock");
 	}
@@ -223,13 +233,13 @@ public abstract class OmQueries
 	public void insertAction(DatabaseAccess.Transaction dat,int qi,int seq) 
 	  throws SQLException
 	{
-		dat.update("INSERT INTO nav_actions VALUES ("+qi+","+seq+",DEFAULT);");
+		dat.update("INSERT INTO " + getPrefix() + "actions VALUES ("+qi+","+seq+",DEFAULT);");
 	}
 	
 	public void insertParam(DatabaseAccess.Transaction dat,int qi,int seq,String name,String value)
   		throws SQLException
 	{
-		dat.update("INSERT INTO nav_params VALUES ("+qi+","+seq+
+		dat.update("INSERT INTO " + getPrefix() + "params VALUES ("+qi+","+seq+
 			","+Strings.sqlQuote(name)+","+unicode(Strings.sqlQuote(value))+");");
 	}
 	
@@ -237,7 +247,7 @@ public abstract class OmQueries
 		int attempts)
 		throws SQLException
 	{
-		dat.update("INSERT INTO nav_results (qi,questionline,answerline,actions,attempts) VALUES("+
+		dat.update("INSERT INTO " + getPrefix() + "results (qi,questionline,answerline,actions,attempts) VALUES("+
 			qi+
 			","+unicode(Strings.sqlQuote(questionLine))+
 			","+unicode(Strings.sqlQuote(answerLine))+
@@ -248,14 +258,14 @@ public abstract class OmQueries
 	public void insertScore(DatabaseAccess.Transaction dat,int qi,String axis,int marks)
 		throws SQLException
 	{
-		dat.update("INSERT INTO nav_scores VALUES("+qi+","+
+		dat.update("INSERT INTO " + getPrefix() + "scores VALUES("+qi+","+
 			Strings.sqlQuote(axis)+","+marks+");");
 	}
 
 	public void insertCustomResult(DatabaseAccess.Transaction dat,int qi,String name,String value)
 		throws SQLException
 	{
-		dat.update("INSERT INTO nav_customresults VALUES("+qi+
+		dat.update("INSERT INTO " + getPrefix() + "customresults VALUES("+qi+
 			","+Strings.sqlQuote(name)+
 			","+unicode(Strings.sqlQuote(value))+");");
 	}
@@ -264,7 +274,7 @@ public abstract class OmQueries
 		throws SQLException
 	{
 		dat.update(
-			"INSERT INTO nav_questions (ti,question,attempt,finished,clock,majorversion,minorversion) " +
+			"INSERT INTO " + getPrefix() + "questions (ti,question,attempt,finished,clock,majorversion,minorversion) " +
 			"VALUES ("+ti+","+Strings.sqlQuote(questionID)+","+attempt+",0,DEFAULT,0,0);");
 	}
 	
@@ -273,7 +283,7 @@ public abstract class OmQueries
 		throws SQLException
 	{
 		dat.update(
-			"INSERT INTO nav_testquestions (ti,questionnumber,question,requiredversion,sectionname) " +
+			"INSERT INTO " + getPrefix() + "testquestions (ti,questionnumber,question,requiredversion,sectionname) " +
 			"VALUES("+ti+","+number+","+Strings.sqlQuote(questionID)+","+
 			( requiredVersion==-1 ? "NULL" : ""+requiredVersion)+","+
 			(sectionName==null? "NULL" : Strings.sqlQuote(sectionName))+
@@ -285,7 +295,7 @@ public abstract class OmQueries
 		throws SQLException
 	{
 		dat.update(
-			"INSERT INTO nav_tests (oucu,deploy,rseed,attempt,finished,clock,admin,pi,variant,testposition) VALUES ("+
+			"INSERT INTO " + getPrefix() + "tests (oucu,deploy,rseed,attempt,finished,clock,admin,pi,variant,testposition) VALUES ("+
 			Strings.sqlQuote(oucu)+","+Strings.sqlQuote(testID)+","+
 			rseed+","+attempt+",0,DEFAULT,"+
 			(admin?"1":"0")+","+Strings.sqlQuote(pi)+
@@ -295,46 +305,46 @@ public abstract class OmQueries
 	public void insertInfoPage(DatabaseAccess.Transaction dat,int ti,int index)
 	  throws SQLException
 	{
-		dat.update("INSERT INTO nav_infopages (ti,testposition) VALUES ("+ti+","+index+");");
+		dat.update("INSERT INTO " + getPrefix() + "infopages (ti,testposition) VALUES ("+ti+","+index+");");
 	}
 	
 	public void insertSessionInfo(DatabaseAccess.Transaction dat,int ti,String ip,String agent)
 	  throws SQLException
 	{
 		dat.update(
-			"INSERT INTO nav_sessioninfo(ti,ip,useragent) VALUES("+ti+","+Strings.sqlQuote(ip)+","+
+			"INSERT INTO " + getPrefix() + "sessioninfo(ti,ip,useragent) VALUES("+ti+","+Strings.sqlQuote(ip)+","+
 			Strings.sqlQuote(agent)+");");
 	}
 	
 	public void updateQuestionFinished(DatabaseAccess.Transaction dat,int qi,int finished)
 		throws SQLException
 	{
-		dat.update("UPDATE nav_questions SET finished="+finished+" WHERE qi="+qi+";");
+		dat.update("UPDATE " + getPrefix() + "questions SET finished="+finished+" WHERE qi="+qi+";");
 	}
 
 	public void updateTestFinished(DatabaseAccess.Transaction dat,int ti)
 		throws SQLException
 	{
-		dat.update("UPDATE nav_tests SET finished=1,finishedclock="+currentDateFunction()+" WHERE ti="+ti+";");
+		dat.update("UPDATE " + getPrefix() + "tests SET finished=1,finishedclock="+currentDateFunction()+" WHERE ti="+ti+";");
 	}
 	
 	public void updateTestVariant(DatabaseAccess.Transaction dat,int ti,int variant)
 	  throws SQLException
 	{
-		dat.update("UPDATE nav_tests SET variant="+variant+" WHERE ti="+ti+";");
+		dat.update("UPDATE " + getPrefix() + "tests SET variant="+variant+" WHERE ti="+ti+";");
 	}
 	
 	public void updateSetTestPosition(DatabaseAccess.Transaction dat,int ti, int position)
 	  throws SQLException
 	{
-		dat.update("UPDATE nav_tests SET testposition="+position+" WHERE ti="+ti);
+		dat.update("UPDATE " + getPrefix() + "tests SET testposition="+position+" WHERE ti="+ti);
 	}
 	
 	public void updateSetQuestionVersion(DatabaseAccess.Transaction dat,int qi, int major,int minor)
 	  throws SQLException
 	{
 		dat.update(
-			"UPDATE nav_questions " +
+			"UPDATE " + getPrefix() + "questions " +
 			"SET majorversion="+major+", minorversion="+minor+" " +
 			"WHERE qi="+qi);
 	}
@@ -356,7 +366,7 @@ public abstract class OmQueries
 	public void checkTables(DatabaseAccess.Transaction dat) throws SQLException,IOException
 	{
 		// Check if we've already got them
-		if(tableExists(dat,"nav_tests")) return;
+		if(tableExists(dat,getPrefix() + "tests")) return;
 
 		// Get statements
 		String sStatements=
@@ -367,6 +377,9 @@ public abstract class OmQueries
 		sStatements=sStatements.replaceAll("!!!LINE!!!--.*?(?=!!!LINE!!!)","");
 		sStatements=sStatements.replaceAll("!!!LINE!!!"," ");
 		sStatements=sStatements.replaceAll("\\s"," ");
+
+		// Replace the database prefix
+		sStatements=sStatements.replaceAll("prefix_",getPrefix());
 
 		// Split on ; and process each line
 		String[] asStatements=sStatements.split(";");			
@@ -415,4 +428,11 @@ public abstract class OmQueries
 	 */
 	public abstract int getInsertedSequenceID(DatabaseAccess.Transaction dat,
 		String table,String column) throws SQLException;
+
+	/**
+	 * @return the prefix
+	 */
+	public String getPrefix() {
+		return prefix;
+	}
 }
