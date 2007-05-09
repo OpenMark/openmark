@@ -625,6 +625,7 @@ public class NavigatorServlet extends HttpServlet
 			if ("".equals(sCommand) && !request.getRequestURI().endsWith("/"))
 			{
 				response.sendRedirect(request.getRequestURI()+"/");
+				return;
 			}
 			if(sCommand.startsWith("_")) sCommand=""; // Used to allow random different URLs in plain mode
 			if(request.getQueryString()!=null) sCommand+="?"+request.getQueryString();		
