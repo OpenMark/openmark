@@ -67,12 +67,12 @@ public abstract class StandardQuestion implements Question
 	// Interface implementation and related
 	///////////////////////////////////////
 		
-	public Rendering init(Document d,InitParams ip) throws OmException
+	public Rendering init(Document d,InitParams initParams) throws OmException
 	{
-		this.ip=ip;
+		this.ip=initParams;
 		
 		// Initialise available components and add question-specific components
-		QComponentManager qcm=new QComponentManager(ip);
+		QComponentManager qcm=new QComponentManager(initParams);
 		Element[] aeDefines=
 			XML.getChildren(d.getDocumentElement(),"define-component");
 		for(int i=0;i<aeDefines.length;i++)
@@ -111,8 +111,8 @@ public abstract class StandardQuestion implements Question
 		}
 		
 		// Set not-so-random number if variant has been fixed
-		if(ip.hasFixedVariant())
-			nsr=new NotSoRandom(ip.getFixedVariant());
+		if(initParams.hasFixedVariant())
+			nsr=new NotSoRandom(initParams.getFixedVariant());
 		
 		// Build component tree
 		qd=new QDocument(this,d,qcm);
@@ -180,7 +180,7 @@ public abstract class StandardQuestion implements Question
 	 * NO LONGER IN USE (marked final so it gives an error if your question
 	 * overrides it)
 	 */	
-	protected final void init(InitParams ip) throws OmException
+	protected final void init(InitParams initParams) throws OmException
 	{
 	}
 	
@@ -326,7 +326,7 @@ public abstract class StandardQuestion implements Question
 	}
 	
 	
-	/** Returns and clears the debug display log */
+	/** @return the debug display log, and clear it. */
 	public String eatLog()
 	{
 		String sReturn=sbDebug.toString();
@@ -431,6 +431,8 @@ public abstract class StandardQuestion implements Question
 		 * Get the fixed number (note: all other members actually work randomly).
 		 * After returning the fixed number FIXLIMIT times, this reverts to 
 		 * ordinary random generator behaviour.
+		 * @param iRange the bound on the number to be returned
+		 * @return the fixed number.
 		 */
 		public int nextInt(int iRange) 
 		{ 

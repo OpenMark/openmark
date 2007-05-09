@@ -110,7 +110,7 @@ public abstract class SimpleQuestion1 extends StandardQuestion
    * their answer. Calls checkAnswer for further processing.
    * @throws OmException
    */
-  public void actionGiveUp() throws OmDeveloperException
+  public void actionGiveUp() throws OmException
   {
   	getResults().appendActionSummary("Passed");
   	getResults().setAnswerLine("Passed");
@@ -223,11 +223,11 @@ public abstract class SimpleQuestion1 extends StandardQuestion
 	 * This is a simple right/wrong flag. To provide feedback as to how they were
 	 * wrong, you should call setFeedbackID() [probably only for wrong answers
 	 * and certain attempts]. 
-	 * @param iAttempt Question attempt (1 for first, 2 for second, etc.)
+	 * @param attempt Question attempt (1 for first, 2 for second, etc.)
 	 * @return True if the user is right; false if they are wrong.
 	 * @throws OmDeveloperException
 	 */
-  protected abstract boolean isRight(int iAttempt) throws OmDeveloperException;
+  protected abstract boolean isRight(int attempt) throws OmDeveloperException;
 
   /**
    * Override this method to change the scoring. The method should call
@@ -275,11 +275,11 @@ public abstract class SimpleQuestion1 extends StandardQuestion
    * @param bRight True if user was right
    * @param bWrong True if they were wrong
    * @param bPass True if they passed
-   * @param iAttempt Attempt number (1 is first attempt)
+   * @param attempt Attempt number (1 is first attempt)
    * @throws OmDeveloperException
    */
 	protected void doAdditionalAnswerProcessing(
-		boolean bRight,boolean bWrong,boolean bPass,int iAttempt) throws OmDeveloperException
+		boolean bRight,boolean bWrong,boolean bPass,int attempt) throws OmDeveloperException
 	{
 		// Default does nothing
 	}    

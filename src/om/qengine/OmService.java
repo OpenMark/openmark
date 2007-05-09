@@ -322,6 +322,7 @@ public class OmService implements ServiceLifecycle
 	 * of Test Navigator. In general, if additional parameters or return values 
 	 * are added, a new method should be defined.
 	 * @param questionSession
+	 * @throws OmException
 	 */
 	public void stop(String questionSession) throws OmException
 	{
@@ -376,9 +377,10 @@ public class OmService implements ServiceLifecycle
 	 * @param values Form parameters (must be an array of equal size to
 	 *   names)
 	 * @return New XHTML etc.
+	 * @throws OmException
 	 */
 	public ProcessReturn process(String questionSession,String[] names,String[] values)
-    throws OmException
+    		throws OmException
 	{
 		if(names==null) names=new String[0];
 		if(values==null) values=new String[0];
