@@ -613,14 +613,19 @@ public class NavigatorServlet extends HttpServlet
 			}
 
 			// Get test ID and determine type of request			
-			Pattern pURL=Pattern.compile("^/([^/]+)/(.*)$");
+			Pattern pURL=Pattern.compile("^/([^/]+)/?(.*)$");
 			Matcher m=pURL.matcher(sPath);
 			if(!m.matches())
 			{
 				sendError(us,request,response,
 					HttpServletResponse.SC_NOT_FOUND,false, null, "Not found", "The URL you requested is not provided by this server.", null);
 			}		
-			String sTestID=m.group(1),sCommand=m.group(2);						
+			String sTestID=m.group(1),sCommand=m.group(2);
+
+			if ("".equals(sCommand) && !request.getRequestURI().endsWith("/"))
+			{
+				response.sendRedirect(request.getRequestURI()+"/");
+			}
 			if(sCommand.startsWith("_")) sCommand=""; // Used to allow random different URLs in plain mode
 			if(request.getQueryString()!=null) sCommand+="?"+request.getQueryString();		
 
