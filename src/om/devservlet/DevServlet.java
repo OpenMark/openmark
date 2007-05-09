@@ -298,6 +298,7 @@ public class DevServlet extends HttpServlet
 		if("".equals(sAfter) && !request.getRequestURI().endsWith("/"))
 		{
 			response.sendRedirect(request.getRequestURI()+"/");
+			return;
 		}
 
 		if("save".equals(request.getQueryString()))
@@ -499,6 +500,7 @@ public class DevServlet extends HttpServlet
 				else
 				{
 					response.sendRedirect(request.getRequestURI()+"/");
+					return;
 				}
 			}
 			else if(sPath.startsWith("/build/"))
