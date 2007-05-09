@@ -255,8 +255,8 @@ public class DevServlet extends HttpServlet
 	{
 		resetQuestion();
 		
-		String sQuestion=sRemainingPath.replaceAll("^([^/]*)/.*$","$1");
-		String sAfter=sRemainingPath.replaceAll("^[^/]*/(.*)$","$1");
+		String sQuestion=sRemainingPath.replaceAll("^([^/]*)/?.*$","$1");
+		String sAfter=sRemainingPath.replaceAll("^[^/]*/?(.*)$","$1");
 		
 		if(!sAfter.equals(""))
 		{
@@ -291,9 +291,15 @@ public class DevServlet extends HttpServlet
 	private void handleRun(boolean bPost,String sRemainingPath,
 		HttpServletRequest request,HttpServletResponse response) throws Exception
 	{
-		String sQuestion=sRemainingPath.replaceAll("^([^/]*)/.*$","$1");
-		String sAfter=sRemainingPath.replaceAll("^[^/]*/(.*)$","$1");
-		
+		String sQuestion=sRemainingPath.replaceAll("^([^/]*)/?.*$","$1");
+		String sAfter=sRemainingPath.replaceAll("^[^/]*/?(.*)$","$1");
+
+		// Must access page with / at end
+		if("".equals(sAfter) && !request.getRequestURI().endsWith("/"))
+		{
+			response.sendRedirect(request.getRequestURI()+"/");
+		}
+
 		if("save".equals(request.getQueryString()))
 		{
 			// Delete existing saved files
