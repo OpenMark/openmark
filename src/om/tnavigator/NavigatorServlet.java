@@ -56,6 +56,7 @@ public class NavigatorServlet extends HttpServlet
 		
 	/** Database access */
 	DatabaseAccess da;
+	/** @return the DatabaseAccess object used by this servlet. */
 	public DatabaseAccess getDatabaseAccess() { return da; }
 	
 	/** Authentication system */
@@ -63,6 +64,7 @@ public class NavigatorServlet extends HttpServlet
 	
 	/** Config file contents */
 	private NavigatorConfig nc;
+	/** @return the NavigatorConfig for this servlet. */
 	public NavigatorConfig getNavigatorConfig() { return nc; }
 	
 	/** Question bank folder */
@@ -79,6 +81,7 @@ public class NavigatorServlet extends HttpServlet
 	
 	/** Log */
 	private Log l;
+	/** @return the log for this servlet. */
 	public Log getLog() { return l; }
 	
 	/** Load balancer for Om question engines */ 
@@ -202,7 +205,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 		
 		// Start expiry thread
-		se=new SessionExpirer();
+		sessionExpirer=new SessionExpirer();
 	}
 	
 	/** How long an unused session lurks around before expiring (8 hrs) */
@@ -212,7 +215,7 @@ public class NavigatorServlet extends HttpServlet
 	private final static int SESSIONCHECKDELAY=15*60*1000;
 	
 	/** Session expiry thread */
-	private SessionExpirer se;
+	private SessionExpirer sessionExpirer;
 	
 	/** Thread that gets rid of unused sessions */
 	class SessionExpirer extends PeriodicThread
@@ -253,7 +256,7 @@ public class NavigatorServlet extends HttpServlet
 	public void destroy()
 	{
 		// Kill expiry thread
-		se.close();
+		sessionExpirer.close();
 		
 		// Close SAMS and kill their threads
 		auth.close();
@@ -1582,7 +1585,7 @@ public class NavigatorServlet extends HttpServlet
 	
 	private static String displayScore(double dScore)
 	{
-		if(Math.abs(dScore - (double)Math.round(dScore)) < 0.001)
+		if(Math.abs(dScore - Math.round(dScore)) < 0.001)
 		{
 			return (int)Math.round(dScore)+"";
 		}
@@ -1790,7 +1793,7 @@ public class NavigatorServlet extends HttpServlet
 
 		// Question parameters
 		NameValuePairs p=new NameValuePairs();
-		p.add("randomseed",(us.lRandomSeed+(long)iAttempt)+"");
+		p.add("randomseed",(us.lRandomSeed+iAttempt)+"");
 		String sAccess=getAccessibilityCookie(request);
 		if(sAccess.indexOf("[plain]")!=-1)
 			p.add("plain","yes");
@@ -1931,7 +1934,11 @@ public class NavigatorServlet extends HttpServlet
 				(us.ud.isLoggedIn() ? us.ud.getPersonID() : "guest"),
 				"",null,null,XML.saveString(dTemp),false, request, response, true);
 	}
-	
+
+	/**
+	 * Do everything possible to the response to stop the browser's back button from working.
+	 * @param response the response to add headers too.
+	 */
 	public void breakBack(HttpServletResponse response)
 	{
 		response.setHeader("Pragma","No-cache");
@@ -2015,7 +2022,7 @@ public class NavigatorServlet extends HttpServlet
 					if("yes".equals(e.getAttribute("percentage")))
 					{
 						int iPercentage=(int)	Math.round(
-							100.0 * ps.getScore(sAxis) / (double)ps.getMax(sAxis));
+							100.0 * ps.getScore(sAxis) / ps.getMax(sAxis));
 						Element eSpan=XML.createChild(eLI,"span");
 						eSpan.setAttribute("class","percentage");
 						XML.createText(eSpan,iPercentage+"%");					
@@ -2034,7 +2041,7 @@ public class NavigatorServlet extends HttpServlet
 				}
 				else if(sOn.equals("percentage"))
 				{
-					iCompare=(int)Math.round(ps.getScore(sAxis) * 100.0 / (double)ps.getMax(sAxis)); 
+					iCompare=(int)Math.round(ps.getScore(sAxis) * 100.0 / ps.getMax(sAxis)); 
 				}
 				else throw new OmFormatException("Unexpected on= for conditional: "+sOn);
 				
@@ -2173,7 +2180,7 @@ public class NavigatorServlet extends HttpServlet
 			{
 				Integer iThis=(Integer)qsd.mAxes.get(asMax[iAxis].getAxis());
 				int iValue=iThis==null ? 0 : iThis.intValue();
-				ps.setScore(asMax[iAxis].getAxis(),(double)iValue,asMax[iAxis].getMarks());
+				ps.setScore(asMax[iAxis].getAxis(),iValue,asMax[iAxis].getMarks());
 			}
 			
 			// Find the TestQuestion
@@ -2660,6 +2667,9 @@ public class NavigatorServlet extends HttpServlet
 		}
 	}
 	
+	/**
+	 * @return the OmQueries object for this servlet.
+	 */
 	public OmQueries getOmQueries()
 	{
 		return oq;
@@ -3782,7 +3792,10 @@ public class NavigatorServlet extends HttpServlet
 	/** Cached template documents */
 	private Document plainTemplate,template,singlesPlainTemplate,singlesTemplate;
 
-	/** Returns a bit that goes in navigator(here).css name depending on access cookie */ 
+	/**
+	 * @param request the reqiest we are responding to.
+	 * @return a bit that goes inthe navigator(here).css name depending on access cookie.
+	 */ 
 	public String getAccessCSSAppend(HttpServletRequest request)
 	{
 		// Fix up accessibility details from cookie
