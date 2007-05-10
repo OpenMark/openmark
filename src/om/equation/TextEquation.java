@@ -106,6 +106,11 @@ public class TextEquation
 		}		
 	}
 	
+	/**
+	 * Test method.
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception
 	{
 //		test("N_0");		
