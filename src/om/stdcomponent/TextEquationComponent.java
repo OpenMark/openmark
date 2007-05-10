@@ -46,6 +46,7 @@ alt property to make it say something more sensible.
 <tr><td>textfont</td><td>(boolean)</td><td>Uses default text font instead of the equation font</td></tr>
 <tr><td>alt</td><td>(string)</td><td>Optional alt tag, use if the default alternate text is not clear enough.</td></tr>
 <tr><td>italic</td><td>(boolean)</td><td>Set 'no' to stop letters being italicised.</td></tr>
+<tr><td>wrap</td><td>(boolean)</td><td>Set 'no' to ensure the equation is kept on a single line.</td></tr>
 </table>
 */
 public class TextEquationComponent extends QComponent
@@ -56,6 +57,8 @@ public class TextEquationComponent extends QComponent
 	public final static String PROPERTY_ALT="alt";
 	/** Boolean property: if false, does not make letters italic */
 	public final static String PROPERTY_ITALIC="italic";
+	/** Boolean property: if false, prevent word-wraps in the middle of the equation */
+	public final static String PROPERTY_WRAP="wrap";
 	
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
@@ -73,6 +76,8 @@ public class TextEquationComponent extends QComponent
 		setBoolean(PROPERTY_TEXTFONT,false);
 		defineBoolean(PROPERTY_ITALIC);
 		setBoolean(PROPERTY_ITALIC,true);
+		defineBoolean(PROPERTY_WRAP);
+		setBoolean(PROPERTY_WRAP,true);
 		defineString(PROPERTY_ALT);
 	}
 	
@@ -121,9 +126,10 @@ public class TextEquationComponent extends QComponent
 		eContent.removeAttribute("alt");
 		qc.addTextEquivalent(sAlt);
 
+		// Add XHTML
 		if(!bPlain)
 		{
-			// Add XHTML
+			// Set the right font/size
 			if(getBoolean(PROPERTY_TEXTFONT))
 			{
 				// Use default font
@@ -137,9 +143,14 @@ public class TextEquationComponent extends QComponent
 					eContent.setAttribute("style","font-size: "+Math.round(getQuestion().getZoom()*14)+"px");
 				}
 			}
-			qc.addInlineXHTML(eContent);
 			
-			// Hack in the 
+			// Prevent wrapping, if requested.
+			if (!getBoolean(PROPERTY_WRAP))
+			{
+				eContent.setAttribute("class",eContent.getAttribute("class") + " nowrap");
+			}
+
+			qc.addInlineXHTML(eContent);
 		}
 		else
 		{

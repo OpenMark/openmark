@@ -22,6 +22,10 @@
 {
   clear:both;
 }
+.om .nowrap
+{
+  white-space: nowrap;
+}
 .om .endform
 {
   clear:both;
