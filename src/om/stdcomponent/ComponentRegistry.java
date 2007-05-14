@@ -40,6 +40,7 @@ public class ComponentRegistry
 		EditFieldComponent.class,
 		EmphasisComponent.class,
 		EquationComponent.class,
+		FlashComponent.class,
 		GapComponent.class,
 		IfComponent.class,
 		ImageComponent.class,
