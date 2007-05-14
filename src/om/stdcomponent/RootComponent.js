@@ -137,8 +137,8 @@ function inlinePositionFix(imageID)
 		{
 		  moveUp=true;
 		}
-		
-    if(isIE && ph.firstChild && ph.firstChild.currentStyle.display=="inline")
+
+    if(isIE && ph.firstChild && ph.firstChild.nodeType==1 && ph.firstChild.currentStyle.display=="inline")
     {
       // In IE, if you don't put some text (such as this 0-size NBSP) before the
       // first item in the placeholder, then in some (only some) cases, it adds 
