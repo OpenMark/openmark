@@ -2128,6 +2128,7 @@ public class NavigatorServlet extends HttpServlet
 				// the sort order that makes the latest finished attempt appear first)
 				if(sCurQuestion.equals(sQuestion) && iAttempt!=iCurAttempt)
 					continue;
+				sCurQuestion = sQuestion;
 
 				// Find question. If it's not there create it - all questions get
 				// an entry in the hashmap even if they have no results
