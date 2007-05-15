@@ -18,7 +18,7 @@
     <mkdir dir="${build}"/>
 
     <!-- Compile question -->    
-    <javac srcdir="${source}" destdir="${build}" debug="on" source="1.4" target="1.4">
+    <javac srcdir="${source}" destdir="${build}" debug="on" source="1.6" target="1.6">
 			
 			<include name="${questionpackage}/**/*.java"/>
 			<ADDPACKAGESMARKER type="javac"/>
