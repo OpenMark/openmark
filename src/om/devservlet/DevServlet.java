@@ -50,7 +50,7 @@ public class DevServlet extends HttpServlet
 	private String sInProgressID=null;
 
 	/** Map of String (filename) -> Resource */
-	private Map mResources=new HashMap();
+	private Map<String,Resource> mResources=new HashMap<String,Resource>();
 	
 	/** CSS */
 	private String sCSS=null;
@@ -84,6 +84,7 @@ public class DevServlet extends HttpServlet
 		}
 	}
 	
+	@Override
 	public void init() throws ServletException
 	{
 		try
@@ -109,13 +110,15 @@ public class DevServlet extends HttpServlet
 			throw new ServletException(oe);
 		}		
 	}
-		
+
+	@Override
 	protected void doGet(HttpServletRequest request,HttpServletResponse response)
 		throws ServletException,IOException
 	{
 		handle(false,request,response);
 	}
 	
+	@Override
 	protected void doPost(HttpServletRequest request,HttpServletResponse response)
 		throws ServletException,IOException
 	{
@@ -402,7 +405,7 @@ public class DevServlet extends HttpServlet
 			}
 			else if(sAfter.startsWith("resources/"))
 			{
-				Resource r=(Resource)mResources.get(sAfter.substring("resources/".length()));
+				Resource r=mResources.get(sAfter.substring("resources/".length()));
 				if(r==null)
 				{
 					sendError(request,response,
@@ -604,7 +607,7 @@ public class DevServlet extends HttpServlet
 		}
 		
 		// Fix up the replacement variables
-		Map mReplace=new HashMap(getLabelReplaceMap());
+		Map<String,String> mReplace=new HashMap<String,String>(getLabelReplaceMap());
 		mReplace.put("RESOURCES","resources");
 		mReplace.put("FORMTARGET","./");
 		mReplace.put("FORMFIELD","");
@@ -623,7 +626,7 @@ public class DevServlet extends HttpServlet
 	}
 	
 	/** Cache label replacement (Map of String (labelset id) -> Map ) */
-	private Map mLabelReplace=new HashMap();
+	private Map<String,Map<String,String> > mLabelReplace=new HashMap<String,Map<String, String> >();
 	
 	/**
 	 * Returns the map of label replacements appropriate for the current session.
@@ -631,16 +634,16 @@ public class DevServlet extends HttpServlet
 	 * @return Map of replacements (don't change this)
 	 * @throws IOException Any problems loading it
 	 */
-	private Map getLabelReplaceMap() throws IOException
+	private Map<String, String> getLabelReplaceMap() throws IOException
 	{
 		String sKey="!default";
 		
 		// Get from cache
-		Map mLabels=(Map)mLabelReplace.get(sKey);
+		Map<String, String> mLabels=mLabelReplace.get(sKey);
 		if(mLabels!=null) return mLabels;
 		
 		// Load from file
-		Map m=new HashMap();
+		Map<String, String> m=new HashMap<String, String>();
 		File f=new File(getServletContext().getRealPath("WEB-INF/labels/"+sKey+".xml"));
 		if(!f.exists())
 			throw new IOException("Unable to find requested label set: "+sKey);

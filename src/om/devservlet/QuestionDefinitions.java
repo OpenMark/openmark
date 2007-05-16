@@ -37,7 +37,7 @@ public class QuestionDefinitions
 	final static int CACHEMILLISECONDS=30*1000;
 	
 	/** Map of String (id) -> QuestionDefinition */
-	private Map mCache=new HashMap();
+	private Map<String,QuestionDefinition> mCache=new HashMap<String,QuestionDefinition>();
 
 	/** Folder where question definitions are kept */
 	private File fFolder;
@@ -52,6 +52,7 @@ public class QuestionDefinitions
 	/**
 	 * Constructs for a given servlet.
 	 * @param sc Servlet to create for
+	 * @throws OmException 
 	 */
 	public QuestionDefinitions(ServletContext sc) throws OmException
 	{
@@ -134,7 +135,7 @@ public class QuestionDefinitions
 	public QuestionDefinition getQuestionDefinition(String sID) throws OmDeveloperException
 	{
 		// See if it's cached
-		QuestionDefinition qd=(QuestionDefinition)mCache.get(sID);
+		QuestionDefinition qd=mCache.get(sID);
 		if(qd!=null && !qd.isOutdated()) return qd;
 		
 		// Load the file
@@ -153,7 +154,7 @@ public class QuestionDefinitions
 	{
 		// List all files in the folder and get or make question definition for each one
 		File[] af=IO.listFiles(fFolder);
-		List l=new LinkedList();
+		List<QuestionDefinition> l=new LinkedList<QuestionDefinition>();
 		for(int i=0;i<af.length;i++)
 		{
 			if(!af[i].getName().endsWith(".xml")) continue;
@@ -161,7 +162,7 @@ public class QuestionDefinitions
 			l.add(getQuestionDefinition(sID));
 		}
 		
-		return (QuestionDefinition[])l.toArray(new QuestionDefinition[0]);
+		return l.toArray(new QuestionDefinition[0]);
 	}
 
 }

@@ -134,7 +134,7 @@ public class QuestionDefinition
 				"questionbuild.xml"));
 			
 			// Fill in standard properties
-			Map mReplace=new HashMap();
+			Map<String,String> mReplace=new HashMap<String,String>();
 			mReplace.put("WEBAPP",fWebapp.getAbsolutePath());
 			mReplace.put("JAR",fJar.getAbsolutePath());
 			mReplace.put("SOURCE",getSourceFolder().getAbsolutePath());
