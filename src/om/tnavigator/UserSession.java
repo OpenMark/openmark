@@ -20,6 +20,7 @@ package om.tnavigator;
 import java.util.HashMap;
 import java.util.Map;
 
+import om.axis.qengine.Resource;
 import om.tnavigator.auth.UserDetails;
 
 /** Data stored about particular user */
@@ -80,7 +81,7 @@ public class UserSession
 	boolean bAllowReports=false;
 	
 	/** Map of String (filename) -> Resource */
-	Map mResources=new HashMap();
+	Map<String,Resource> mResources=new HashMap<String,Resource>();
 	
 	/** CSS */
 	String sCSS="";
