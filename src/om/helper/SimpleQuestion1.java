@@ -64,6 +64,7 @@ public abstract class SimpleQuestion1 extends StandardQuestion
   /** Max marks, or 0 if no scoring */
   private int iMaxMarks=0;
   
+  @Override
   public Rendering init(Document d,InitParams ip) throws OmException
 	{
 		Rendering r=super.init(d,ip);

@@ -26,6 +26,7 @@ import om.OmDeveloperException;
  */
 public class BlankQuestion extends SimpleQuestion1
 {
+	@Override
 	protected boolean isRight(int iAttempt) throws OmDeveloperException
 	{
 		return false;

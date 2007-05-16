@@ -19,6 +19,10 @@ package om.helper;
 
 import om.stdquestion.StandardQuestion;
 
+/**
+ * This may be useful for testing question.xml files, without writing a class. You can instantiate
+ * this class, whereas you can't instantiate the abstract class StandardQuestion.
+ */
 public class NullQuestion extends StandardQuestion
 { 
 }
