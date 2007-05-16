@@ -40,15 +40,13 @@ class ReportPages
 		try
 		{
 			// OU-specific CMA system
-			Class cmaReportClass=Class.forName("om.cma.CMAReport");
-			cmaReport=cmaReportClass.
-				getConstructor(new Class[] {NavigatorServlet.class}).
-				newInstance(new Object[] {ns});
+			Class<? extends Object> cmaReportClass=Class.forName("om.cma.CMAReport");
+			cmaReport=cmaReportClass.getConstructor(NavigatorServlet.class).newInstance(ns);
 			handleReportsCMA=cmaReportClass.getMethod("handleReportsCMA",
-				new Class[] {UserSession.class,HttpServletRequest.class,HttpServletResponse.class});
+					UserSession.class,HttpServletRequest.class,HttpServletResponse.class);
 			handleReportsCMAData=cmaReportClass.getMethod("handleReportsCMAData",
-				new Class[] {UserSession.class,String.class,HttpServletRequest.class,HttpServletResponse.class});
-			tidyCMAData=cmaReportClass.getMethod("tidyCMAData",new Class[] {});
+					UserSession.class,String.class,HttpServletRequest.class,HttpServletResponse.class);
+			tidyCMAData=cmaReportClass.getMethod("tidyCMAData");
 		}
 		catch(Exception e)
 		{
@@ -113,8 +111,10 @@ class ReportPages
 			tidyCMAData.invoke(cmaReport,new Object[] {});
 		}
 			
-		List lFinished=new LinkedList(),lUnfinished=new LinkedList(),
-			lAdmin=new LinkedList(),lQuestions=new LinkedList();
+		List<DbInfoPerson> lFinished=new LinkedList<DbInfoPerson>();
+		List<DbInfoPerson> lUnfinished=new LinkedList<DbInfoPerson>();
+		List<DbInfoPerson> lAdmin=new LinkedList<DbInfoPerson>();
+		List<DbInfoQuestion> lQuestions=new LinkedList<DbInfoQuestion>();
 	
 		SimpleDateFormat 
 			sdfD=new SimpleDateFormat("dd MMMM yyyy"),
@@ -132,7 +132,7 @@ class ReportPages
 			// * Within categories (finished/unfinished), sorting by PI
 			// I achieve this by setting the sort order and dropping all but the first
 			// result for each PI.
-			Set sPIsDone=new HashSet();
+			Set<String> sPIsDone=new HashSet<String>();
 			ResultSet rs=ns.getOmQueries().queryTestAttempters(dat,us.sTestID);
 			while(rs.next())
 			{				
@@ -278,7 +278,7 @@ class ReportPages
 		try
 		{
 			// Get session info
-			Map mSessionInfo=new HashMap();
+			Map<Integer, String> mSessionInfo=new HashMap<Integer, String>();
 			ResultSet rs=ns.getOmQueries().queryUserReportSessions(dat,us.sTestID,sUser);
 			while(rs.next()) 
 			{
@@ -287,8 +287,7 @@ class ReportPages
 				String sIP=rs.getString(3);
 				String sUserAgent=rs.getString(4);
 				
-				Integer iKey=new Integer(iTAttempt);
-				String sOutput=(String)mSessionInfo.get(iKey);
+				String sOutput=mSessionInfo.get(iTAttempt);
 				if(sOutput==null) sOutput=
 					"<div class='sessions'>" +
 					"<table class='topheaders'>"+
@@ -298,7 +297,7 @@ class ReportPages
 				sOutput+="<tr><td class='time'>"+sdf.format(tsDate)+
 					"</td><td class='ip'>"+sIP+"</td><td class='useragent'>"+
 					XHTML.escape(sUserAgent, XHTML.ESCAPE_TEXT)+"</td></tr></table></div>";
-				mSessionInfo.put(iKey,sOutput);
+				mSessionInfo.put(iTAttempt,sOutput);
 			}
 			
 			rs=ns.getOmQueries().queryUserReportTest(dat,us.sTestID,sUser);
@@ -341,7 +340,7 @@ class ReportPages
 								)+")</h3>");
 					bInTest=true;
 					
-					String sSessionInfo=(String)mSessionInfo.get(new Integer(iTAttempt));
+					String sSessionInfo=mSessionInfo.get(iTAttempt);
 					if(sSessionInfo!=null) sb.append(sSessionInfo);
 				}
 				

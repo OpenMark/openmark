@@ -28,10 +28,13 @@ import java.util.*;
 public class ShutdownManager
 {
 	/** Set of classes that have requested notification */
-	private static Set sShutdownListeners=new HashSet();
+	private static Set<Class<?> > sShutdownListeners=new HashSet<Class<?> >();
 	
-	/** Call from within classes that need notification */
-	public static void requestShutdownNotification(Class c)
+	/**
+	 * Call from within classes that need notification 
+	 * @param c class to be notified when the servlet is shut down.
+	 */
+	public static void requestShutdownNotification(Class<?> c)
 	{
 		sShutdownListeners.add(c);
 	}
@@ -40,13 +43,12 @@ public class ShutdownManager
 	public static void shutdown()
 	{
 		// Call shutdown on each class
-		for(Iterator i=sShutdownListeners.iterator();i.hasNext();)
+		for(Class<?> c : sShutdownListeners)
 		{
-			Class c=(Class)i.next();
 			try
 			{
-				Method m=c.getMethod("shutdown",null);
-				m.invoke(null,null);
+				Method m=c.getMethod("shutdown");
+				m.invoke(null);
 			}
 			catch(Exception e)
 			{
