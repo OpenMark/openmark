@@ -114,7 +114,7 @@
 		<mkdir dir="${build}/compiled"/>
 		
 		<!-- Compile everything -->		
-		<javac srcdir="src" destdir="${build}/compiled" debug="on" source="1.4" target="1.4">
+		<javac srcdir="src" destdir="${build}/compiled" debug="on" source="1.6" target="1.6">
 			<!-- Include all lib files -->
 			<classpath>
 				<fileset dir="${servletapi}">
@@ -392,7 +392,7 @@
 
 		<mkdir dir="${javadoc}"/>
 		
-		<javadoc sourcepath="src" destdir="${javadoc}" source="1.4"
+		<javadoc sourcepath="src" destdir="${javadoc}" source="1.6"
 			packagenames="om.*,util.*"
 			excludepackagenames="om.equation.generated.*,om.axis.*">
 			<classpath>
