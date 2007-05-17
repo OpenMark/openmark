@@ -17,6 +17,9 @@
  */
 package util.misc;
 
+/**
+ * Base class for a thread that does something at regular intervals.
+ */
 public abstract class PeriodicThread extends Thread
 {
 	/** Delay between runs */
@@ -42,6 +45,7 @@ public abstract class PeriodicThread extends Thread
 	protected abstract void tick();
 	
 	/** Run method can't be overridden */
+	@Override
 	public final void run()
 	{
 		while(true)

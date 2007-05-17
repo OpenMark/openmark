@@ -45,11 +45,16 @@ public abstract class DataURL
 	{
 		private byte[] abData;
 		
+		/**
+		 * Construct, based on a byte[].
+		 * @param abData
+		 */
 		public MyStreamHandler(byte[] abData)
 		{
 			this.abData=abData;
 		}
 		
+		@Override
 		protected URLConnection openConnection(URL u) throws IOException
 		{
 			return new MyConnection(u,abData);
@@ -60,16 +65,23 @@ public abstract class DataURL
 	{
 		private ByteArrayInputStream bais;
 		
+		/**
+		 * Construct, based on a URL and abyte[].
+		 * @param u
+		 * @param abData
+		 */
 		public MyConnection(URL u,byte[] abData)
 		{
 			super(u);
 			bais=new ByteArrayInputStream(abData);
 		}
 		
+		@Override
 		public void connect() throws IOException
 		{
 		}
 		
+		@Override
 		public InputStream getInputStream() throws IOException
 		{
 			return bais;

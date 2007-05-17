@@ -22,6 +22,9 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Provides a method for analysing browser user agent strings.
+ */
 public class UserAgent
 {
 	private static final Pattern IEVERSION=Pattern.compile(
@@ -31,6 +34,7 @@ public class UserAgent
 
 
 	/**
+	 * @param request the request to analyse the user-agent header of.
 	 * @return A string identifying the browser that made the request, 
 	 *   of the form gecko-1-8 or ie-5[space]ie-5-5, or
 	 *   empty string if unknown 

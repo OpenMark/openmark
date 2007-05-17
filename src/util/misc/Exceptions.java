@@ -23,10 +23,15 @@ import java.io.*;
 public abstract class Exceptions
 {
 	/** 
-	 * Strings used to indicate exception trace within the message of another
+	 * Strings used to indicate start of an exception trace within the message of another
 	 * exception.
 	 */ 
-	public final static String BEGIN="[[BEGINEXCEPTION]]",END="[[ENDEXCEPTION]]";
+	public final static String BEGIN="[[BEGINEXCEPTION]]";
+	/** 
+	 * Strings used to indicate end of an exception trace within the message of another
+	 * exception.
+	 */ 
+	public final static String END="[[ENDEXCEPTION]]";
 	
 	/**
 	 * Converts an exception (including class, message, and trace) into a nice 
@@ -212,6 +217,10 @@ public abstract class Exceptions
 		return sResult;
 	}
 
+	/**
+	 * Test method.
+	 * @param args
+	 */
 	public static void main(String[] args)
 	{		
 		String sTest="	at org.apache.axis.client.Call.invoke(Call.java:1804)\n";

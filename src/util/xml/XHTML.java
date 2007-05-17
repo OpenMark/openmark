@@ -27,21 +27,10 @@ import org.w3c.dom.*;
 /** Class creates XHTML format data from DOM nodes. */
 public class XHTML
 {
-	private static Set sMinimize=new HashSet();
-	static
-	{
-		// List of elements that must be minimized (no close tags) and may contain
-		// no content
-		String[] asMinimize=
-		{
-			"br","img","hr","meta","link","input"
-		};
-		for (int i= 0; i < asMinimize.length; i++)
-		{
-			sMinimize.add(asMinimize[i]);
-		}
-	}
-
+	// List of elements that must be minimized (no close tags) and may contain
+	// no content
+	private static Collection<String> sMinimize=new HashSet<String>(Arrays.asList(
+			new String[] {"br","img","hr","meta","link","input"}));
 
 	/**
 	 * Saves an XHTML element to a Writer.
@@ -210,6 +199,7 @@ public class XHTML
 	 * Saves an XHTML node to a string. Does not include the junk that goes at
 	 * the start of a document, e.g. doctype etc.
 	 * @param n Node to save
+	 * @return The string representation of the XML with root n.
 	 * @throws IOException If there is an I/O error (no, really?)
 	 */
 	public static String saveString(Node n) throws IOException

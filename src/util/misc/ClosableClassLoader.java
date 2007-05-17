@@ -64,7 +64,8 @@ public class ClosableClassLoader extends ClassLoader
 	}
 	
 	
-	protected synchronized Class findClass(String sName) throws ClassNotFoundException
+	@Override
+	protected synchronized Class<?> findClass(String sName) throws ClassNotFoundException
 	{
 		if(jf==null) throw new Error("Cannot load: "+sName+", classloader closed");
 		try
@@ -90,6 +91,7 @@ public class ClosableClassLoader extends ClassLoader
 		}		
 	}
 	
+	@Override
 	public synchronized URL findResource(String sName)
 	{
 		if(jf==null) throw new Error("Cannot load: "+sName+", classloader closed");

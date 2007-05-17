@@ -25,21 +25,23 @@ import java.util.regex.*;
 public class MimeTypes 
 {
 	/** Map from extension (after .) to MIME type */
-	private static Map mTypes=null;
+	private static Map<String,String> mTypes=null;
 	
 	/** Pattern matches a valid non-comment line in mime.types. Captures are
 	 * $1 = MIME type, $2 = whitespace-separated list of extensions */
 	private final static Pattern TYPESLINE=Pattern.compile(
 		"(?!#)(\\S+)((?:\\s+(?:\\S+))+)");
 	
-	/** Given a file or path name, return the mime-type
-	 *  @param sPath The path/file name
+	/**
+	 * Given a file or path name, return the mime-type
+	 * @param sPath The path/file name
+	 * @return the deduced mime-type
 	 */
 	public static String getMimeType(String sPath)
 	{
 		if(mTypes==null)
 		{
-			mTypes=new HashMap();
+			mTypes=new HashMap<String,String>();
 			try
 			{
 				// Read mime.types
@@ -79,13 +81,17 @@ public class MimeTypes
 			sExtension=sPath.substring(iDot+1).toLowerCase();
 		}
 		
-		String sType=(String)mTypes.get(sExtension);
+		String sType=mTypes.get(sExtension);
 		if(sType!=null)
 			return sType;
 		else
 			return "application/octet-stream";
 	}
 	
+	/**
+	 * main method for testing.
+	 * @param args
+	 */
 	public static void main(String[] args)
 	{
 		System.err.println(getMimeType("jre-1_5_0-windows-i586.exe"));

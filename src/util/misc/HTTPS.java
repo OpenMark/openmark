@@ -22,6 +22,9 @@ import java.security.cert.*;
 
 import javax.net.ssl.*;
 
+/**
+ * HTTPS Utilities.
+ */
 public class HTTPS
 {
 	/** Synch for SSL certs */

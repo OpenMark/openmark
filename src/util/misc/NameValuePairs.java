@@ -23,17 +23,18 @@ import java.util.*;
 public class NameValuePairs
 {
 	/** Names and values */
-	private List lNames=new LinkedList(),lValues=new LinkedList();
+	private List<String> lNames=new LinkedList<String>();
+	private List<String> lValues=new LinkedList<String>();
 	
 	/** @return Names array */
 	public String[] getNames()
 	{
-		return (String[]) lNames.toArray(new String[0]);
+		return lNames.toArray(new String[0]);
 	}
 	/** @return Values array */
 	public String[] getValues()
 	{
-		return (String[]) lValues.toArray(new String[0]);
+		return lValues.toArray(new String[0]);
 	}
 	/**
 	 * Add new entry to arrays.
@@ -46,6 +47,7 @@ public class NameValuePairs
 		lValues.add(sValue);
 	}
 	
+	@Override
 	public int hashCode()
 	{		
 		int iCode=0;

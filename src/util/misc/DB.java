@@ -23,6 +23,10 @@ import java.sql.*;
 /** Database utilities */
 public abstract class DB
 {
+	/**
+	 * Run a query on a database connection, and dump the resuts to c:/lastquery.csv. 
+	 * @param c
+	 */
 	public static void connectDirect(Connection c) 
 	{
 		try

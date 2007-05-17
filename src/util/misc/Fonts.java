@@ -31,7 +31,8 @@ public abstract class Fonts
 	private final static boolean DEBUGMETRICS=false;
 	
 	/** Map of Font -> String (character) -> CharacterInfo */
-	private static Map mCache=new HashMap();
+	private static Map<Font,Map<String,CharacterInfo> > mCache=
+			new HashMap<Font,Map<String,CharacterInfo> >();
 	
 	/** 
 	 * BufferedImage used for calculating character information (retained to
@@ -164,15 +165,15 @@ public abstract class Fonts
 		synchronized(mCache)
 		{
 			// Get map for character
-			Map mCharacters=(Map)mCache.get(f);
+			Map<String,CharacterInfo> mCharacters=mCache.get(f);
 			if(mCharacters==null)
 			{
-				mCharacters=new HashMap();
+				mCharacters=new HashMap<String,CharacterInfo>();
 				mCache.put(f,mCharacters);
 			}
 			if(isBrokenMacOS && c>255) c='?';
 			String sCharacter=c+"";
-			CharacterInfo ci=(CharacterInfo)mCharacters.get(sCharacter);
+			CharacterInfo ci=mCharacters.get(sCharacter);
 			if(ci==null)
 			{
 				ci=new CharacterInfo();
@@ -293,7 +294,7 @@ public abstract class Fonts
 	 */
 	private final static boolean filled(final byte b)
 	{
-		return (((int)b)&0xff) > 10;
+		return (b&0xff) > 10;
 	}
 	
 	/**
