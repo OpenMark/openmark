@@ -51,6 +51,13 @@ public abstract class OmQueries
 	public abstract String getURL(String server,String database,String username,String password)
 	  throws ClassNotFoundException;
 
+	/**
+	 * Get a summary of a user's attempt at a test.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet querySummary(DatabaseAccess.Transaction dat,int ti) throws SQLException
 	{
 		return dat.query(
@@ -62,15 +69,30 @@ public abstract class OmQueries
 			"ORDER BY tq.questionnumber, q.attempt DESC");
 	}
 	
-	public ResultSet queryUnfinishedSessions(DatabaseAccess.Transaction dat,String oucu,String deploy) throws SQLException
+	/**
+	 * Get a user's most recent attempt at a test.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param oucu the user's username.
+	 * @param testID the deploy file ID.
+	 * @return the requestedt data.
+	 * @throws SQLException
+	 */
+	public ResultSet queryUnfinishedSessions(DatabaseAccess.Transaction dat,String oucu,String testID) throws SQLException
 	{
 		return dat.query( 
 			"SELECT ti,rseed,finished,variant,testposition " +
 			"FROM " + getPrefix() + "tests " +
-			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(deploy)+" " +
+			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(testID)+" " +
 			"ORDER BY attempt DESC LIMIT 1");
 	}
 	
+	/**
+	 * Get a user's scores on a test attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryScores(DatabaseAccess.Transaction dat,int ti) throws SQLException
 	{
 		return dat.query(
@@ -82,6 +104,13 @@ public abstract class OmQueries
 			"ORDER BY tq.question,SIGN(q.finished) DESC,q.attempt DESC;");	
 	}
 	
+	/**
+	 * Get the number of question attempts a user has had within a test attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryQuestionAttemptCount(DatabaseAccess.Transaction dat,int ti)
 	  throws SQLException
 	{
@@ -91,6 +120,13 @@ public abstract class OmQueries
 			"WHERE ti="+ti+";");	
 	}
 	
+	/**
+	 * Let the list of questions a user has completed within a test attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryDoneQuestions(DatabaseAccess.Transaction dat,int ti)
 	  throws SQLException
 	{
@@ -100,6 +136,13 @@ public abstract class OmQueries
 			"WHERE q.ti="+ti+" AND q.finished>=1");	
 	}
 	
+	/**
+	 * Get the list of info pages a user has seen within a test attempt. 
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryDoneInfoPages(DatabaseAccess.Transaction dat,int ti)
 	  throws SQLException
 	{
@@ -109,6 +152,14 @@ public abstract class OmQueries
 			"WHERE ti="+ti+";");	
 	}
 	
+	/**
+	 * Get the number of attempts that a user has made at a question in a test attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @param questionID question id.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryMaxQuestionAttempt(DatabaseAccess.Transaction dat,int ti,String questionID)
 	  throws SQLException
 	{
@@ -118,6 +169,14 @@ public abstract class OmQueries
 			"WHERE ti="+ti+" AND question="+Strings.sqlQuote(questionID)+";");	
 	}
 	
+	/**
+	 * Get the number of attempts a user has made at a test.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param oucu the user's username.
+	 * @param testID the deploy file ID.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryMaxTestAttempt(DatabaseAccess.Transaction dat,String oucu,String testID)
 		throws SQLException
   {
@@ -127,6 +186,14 @@ public abstract class OmQueries
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(testID)+";");
 	}
 	
+	/**
+	 * Get the current state of all questions in a test attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @param questionID question id.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryQuestionActions(DatabaseAccess.Transaction dat,int ti,String questionID)
 		throws SQLException
 	{
@@ -141,6 +208,13 @@ public abstract class OmQueries
 			"GROUP BY q.qi,q.finished,q.attempt,q.majorversion,q.minorversion");
 	}
 
+	/**
+	 * Get all the parameter for all actions in a question attempt. 
+	 * @param dat the transaction within which the query should be executed.
+	 * @param qi question instance id.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryQuestionActionParams(DatabaseAccess.Transaction dat,int qi)
 		throws SQLException
 	{
@@ -151,6 +225,13 @@ public abstract class OmQueries
 			"ORDER BY seq");
 	}
 	
+	/**
+	 * Get the results of a particular attempt on a question.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param qi question instance id.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryQuestionResults(DatabaseAccess.Transaction dat,int qi)
 		throws SQLException
 	{
@@ -160,9 +241,21 @@ public abstract class OmQueries
 			"WHERE qi="+qi	);
 	}
 	
+	/**
+	 * Check that a database connection is working.
+	 * @param dat the transaction within which the query should be executed.
+	 * @throws SQLException
+	 */
 	public abstract void checkDatabaseConnection(DatabaseAccess.Transaction dat)
 		throws SQLException;
 	
+	/**
+	 * Get a list of all the people who have attempted a particular test.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param testID the deploy file ID.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryTestAttempters(DatabaseAccess.Transaction dat,String testID)
 	  throws SQLException
 	{
@@ -174,6 +267,13 @@ public abstract class OmQueries
 			"ORDER BY finished DESC,pi,clock DESC");
 	}
 	
+	/**
+	 * Get a list of all the questions attempts for all questions in a test.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param testID the deploy file ID.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryQuestionList(DatabaseAccess.Transaction dat,String testID)
 		throws SQLException
 	{
@@ -189,6 +289,14 @@ public abstract class OmQueries
 			"ORDER BY tq.questionnumber");
 	}
 	
+	/**
+	 * Get a report of all users' interactions with a particular question in a test.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param testID the deploy file ID.
+	 * @param questionID question id.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryQuestionReport(DatabaseAccess.Transaction dat,String testID,String questionID)
 	  throws SQLException
   {
@@ -203,6 +311,14 @@ public abstract class OmQueries
 			"ORDER BY t.pi,q.attempt");
   }
 	
+	/**
+	 * Get a list of a user's sessions where they interacted with a particular test.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param testID the deploy file ID.
+	 * @param pi the PI of the user.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryUserReportSessions(DatabaseAccess.Transaction dat,String testID,String pi)
 	  throws SQLException
 	{
@@ -214,6 +330,14 @@ public abstract class OmQueries
 			"ORDER BY t.attempt,si.clock");
 	}
 	
+	/**
+	 * Get the results of a user's attempt on a test.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param testID the deploy file ID.
+	 * @param pi the PI of the user.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
 	public ResultSet queryUserReportTest(DatabaseAccess.Transaction dat,String testID,String pi)
 	  throws SQLException
 	{
@@ -230,12 +354,28 @@ public abstract class OmQueries
 			"ORDER BY t.attempt,tq.questionnumber,q.clock");
 	}
 	
+	/**
+	 * Store a user's action within an question attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param qi question instance id.
+	 * @param seq action sequence number, starts at 1.
+	 * @throws SQLException
+	 */
 	public void insertAction(DatabaseAccess.Transaction dat,int qi,int seq) 
 	  throws SQLException
 	{
 		dat.update("INSERT INTO " + getPrefix() + "actions VALUES ("+qi+","+seq+",DEFAULT);");
 	}
 	
+	/**
+	 * Store a parameter of an action.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param qi question instance id.
+	 * @param seq action sequence number.
+	 * @param name parameter name.
+	 * @param value parameter value.
+	 * @throws SQLException
+	 */
 	public void insertParam(DatabaseAccess.Transaction dat,int qi,int seq,String name,String value)
   		throws SQLException
 	{
@@ -243,6 +383,17 @@ public abstract class OmQueries
 			","+Strings.sqlQuote(name)+","+unicode(Strings.sqlQuote(value))+");");
 	}
 	
+	/**
+	 * Store the results of a question attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param qi question instance id.
+	 * @param questionLine Text summary of question.
+	 * @param answerLine Text summary of user's answer.
+	 * @param actionSummary Text summary of all the user's actions.
+	 * @param attempts number of attempts at the question. 1 = right first time,
+	 * 		2 = right second time, etc.; 0 = pass, -1 = wrong.
+	 * @throws SQLException
+	 */
 	public void insertResult(DatabaseAccess.Transaction dat,int qi,String questionLine,String answerLine,String actionSummary,
 		int attempts)
 		throws SQLException
@@ -255,6 +406,14 @@ public abstract class OmQueries
 			","+attempts+");");
 	}
 	
+	/**
+	 * Store a score for a question attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param qi question instance id.
+	 * @param axis the axis the score should be recorded against.
+	 * @param marks the score.
+	 * @throws SQLException
+	 */
 	public void insertScore(DatabaseAccess.Transaction dat,int qi,String axis,int marks)
 		throws SQLException
 	{
@@ -262,6 +421,14 @@ public abstract class OmQueries
 			Strings.sqlQuote(axis)+","+marks+");");
 	}
 
+	/**
+	 * Store a custom result for a question attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param qi question instance id.
+	 * @param name custom result name.
+	 * @param value custom result value.
+	 * @throws SQLException
+	 */
 	public void insertCustomResult(DatabaseAccess.Transaction dat,int qi,String name,String value)
 		throws SQLException
 	{
@@ -270,6 +437,14 @@ public abstract class OmQueries
 			","+unicode(Strings.sqlQuote(value))+");");
 	}
 	
+	/**
+	 * Create a new attempt at a question within a test attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @param questionID question id.
+	 * @param attempt attempt number.
+	 * @throws SQLException
+	 */
 	public void insertQuestion(DatabaseAccess.Transaction dat,int ti,String questionID,int attempt)
 		throws SQLException
 	{
@@ -278,6 +453,16 @@ public abstract class OmQueries
 			"VALUES ("+ti+","+Strings.sqlQuote(questionID)+","+attempt+",0,DEFAULT,0,0);");
 	}
 	
+	/**
+	 * Add a new row to the testquestions table.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @param number sequence number of the question within the test.
+	 * @param questionID question id.
+	 * @param requiredVersion required major version of the question, from the test definition file.
+	 * @param sectionName Which section of the test the question belongs to.
+	 * @throws SQLException
+	 */
 	public void insertTestQuestion(DatabaseAccess.Transaction dat,int ti,int number,String questionID,
 		int requiredVersion,String sectionName)
 		throws SQLException
@@ -290,6 +475,18 @@ public abstract class OmQueries
 			");");
 	}
 	
+	/**
+	 * Create a new test attempt within the database.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param oucu the user's username.
+	 * @param testID the deploy file ID.
+	 * @param rseed the random seed the user was assigned.
+	 * @param attempt attempt number for this user of this quiz, starting at 1.
+	 * @param admin 1 if this is an admin attempt, otherwise 0.
+	 * @param pi the PI of the user.
+	 * @param fixedVariant for testing, fixes the variant of each question.
+	 * @throws SQLException
+	 */
 	public void insertTest(DatabaseAccess.Transaction dat,String oucu,String testID,
 		long rseed,int attempt,boolean admin,String pi,int fixedVariant)
 		throws SQLException
@@ -302,12 +499,27 @@ public abstract class OmQueries
 			","+	(fixedVariant==-1 ? "NULL" : fixedVariant+"")+	",0);");
 	}
 	
+	/**
+	 * Mark that an info page has been seen within a test attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @param index the index of the info page.
+	 * @throws SQLException
+	 */
 	public void insertInfoPage(DatabaseAccess.Transaction dat,int ti,int index)
 	  throws SQLException
 	{
 		dat.update("INSERT INTO " + getPrefix() + "infopages (ti,testposition) VALUES ("+ti+","+index+");");
 	}
 	
+	/**
+	 * Add a new session to the sessioninfo table.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @param ip the user's IP address.
+	 * @param agent the user's browser user agent.
+	 * @throws SQLException
+	 */
 	public void insertSessionInfo(DatabaseAccess.Transaction dat,int ti,String ip,String agent)
 	  throws SQLException
 	{
@@ -316,30 +528,65 @@ public abstract class OmQueries
 			Strings.sqlQuote(agent)+");");
 	}
 	
+	/**
+	 * Mark a question instance as finished.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param qi question instance id.
+	 * @param finished New status: 0 = not finished, 1 = results sent, 2 = question completed.
+	 * @throws SQLException
+	 */
 	public void updateQuestionFinished(DatabaseAccess.Transaction dat,int qi,int finished)
 		throws SQLException
 	{
 		dat.update("UPDATE " + getPrefix() + "questions SET finished="+finished+" WHERE qi="+qi+";");
 	}
 
+	/**
+	 * Mark at test attempt as finished.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @throws SQLException
+	 */
 	public void updateTestFinished(DatabaseAccess.Transaction dat,int ti)
 		throws SQLException
 	{
 		dat.update("UPDATE " + getPrefix() + "tests SET finished=1,finishedclock="+currentDateFunction()+" WHERE ti="+ti+";");
 	}
 	
+	/**
+	 * Update the test variant (used for testing).
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @param variant the new variant.
+	 * @throws SQLException
+	 */
 	public void updateTestVariant(DatabaseAccess.Transaction dat,int ti,int variant)
 	  throws SQLException
 	{
 		dat.update("UPDATE " + getPrefix() + "tests SET variant="+variant+" WHERE ti="+ti+";");
 	}
 	
+	/**
+	 * Update the testpostition in the tests table.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @param position the new testposition
+	 * @throws SQLException
+	 */
 	public void updateSetTestPosition(DatabaseAccess.Transaction dat,int ti, int position)
 	  throws SQLException
 	{
 		dat.update("UPDATE " + getPrefix() + "tests SET testposition="+position+" WHERE ti="+ti);
 	}
 	
+	/**
+	 * Update the majorversion and minorversion in the questions table.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param qi question instance id of the row to update.
+	 * @param major new majorversion.
+	 * @param minor new minorversion.
+	 * @throws SQLException
+	 */
 	public void updateSetQuestionVersion(DatabaseAccess.Transaction dat,int qi, int major,int minor)
 	  throws SQLException
 	{
@@ -360,8 +607,9 @@ public abstract class OmQueries
 	/** 
 	 * Checks that database tables are present. If not, initialises tables
 	 * using createdb.sql from the same package as the database class.
-	 * @param dat Transaction
+	 * @param dat the transaction within which the query should be executed.
 	 * @throws SQLException If there is an error in setting up tables
+	 * @throws IOException 
 	 */
 	public void checkTables(DatabaseAccess.Transaction dat) throws SQLException,IOException
 	{
