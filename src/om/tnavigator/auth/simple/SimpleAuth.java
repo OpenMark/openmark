@@ -189,7 +189,7 @@ public class SimpleAuth implements Authentication
     StringBuffer hex=new StringBuffer();
     for(int i=0;i<hash.length;i++)
     {
-    		int n=((int)hash[i])+128; // 0-255
+    		int n=hash[i]+128; // 0-255
     		if(n<16) hex.append("0");
   			hex.append(Integer.toHexString(n));
     }

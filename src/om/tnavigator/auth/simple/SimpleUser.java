@@ -21,12 +21,15 @@ import java.util.*;
 
 import om.tnavigator.auth.UserDetails;
 
+/**
+ * The implementation of UserDetails for a user authenticated by SimpleAuth.
+ */
 public class SimpleUser implements UserDetails
 {
 	final static SimpleUser NOTLOGGEDIN=new SimpleUser(null,null,null);
 	
 	private String cookie,username,email;
-	private Set groups=new HashSet();
+	private Set<String> groups=new HashSet<String>();
 	
 	SimpleUser(String cookie,String username,String email)
 	{

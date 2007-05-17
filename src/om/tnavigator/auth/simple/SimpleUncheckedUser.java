@@ -19,6 +19,9 @@ package om.tnavigator.auth.simple;
 
 import om.tnavigator.auth.UncheckedUserDetails;
 
+/**
+ * The implementation of UncheckedUserDetails for a user (not yet) authenticated by SimpleAuth.
+ */
 public class SimpleUncheckedUser implements UncheckedUserDetails
 {
 	private String cookie,username;
