@@ -35,6 +35,7 @@ public class SQLServer extends OmQueries
 		super(prefix);
 	}
 
+	@Override
 	public String getURL(String server,String database,String username,String password)
 		throws ClassNotFoundException
 	{
@@ -43,6 +44,7 @@ public class SQLServer extends OmQueries
 			";User="+username+";Password="+password;
 	}
 
+	@Override
 	public int getInsertedSequenceID(Transaction dat,String table,String column)
 		throws SQLException
 	{
@@ -51,6 +53,7 @@ public class SQLServer extends OmQueries
 		return rs.getInt(1);
 	}
 	
+	@Override
 	public ResultSet queryUnfinishedSessions(DatabaseAccess.Transaction dat,String oucu,String deploy) throws SQLException
 	{
 		return dat.query( 
@@ -60,17 +63,20 @@ public class SQLServer extends OmQueries
 			"ORDER BY attempt DESC;");
 	}
 	
+	@Override
 	protected String currentDateFunction()
 	{
 		return "GETDATE()";
 	}
 
+	@Override
 	public void checkDatabaseConnection(DatabaseAccess.Transaction dat)
 		throws SQLException
 	{
 		dat.query("SELECT @@version");
 	}
 	
+	@Override
 	protected String unicode(String quotedString)
 	{
 		return "N"+quotedString;

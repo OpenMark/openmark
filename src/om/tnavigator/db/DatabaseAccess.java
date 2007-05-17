@@ -38,10 +38,10 @@ public class DatabaseAccess
 	private final static int CONNECTIONCHECKDELAY=15*60*1000;
 	
 	/** Current available connections (List of ConnectionInfo) */
-	private LinkedList llAvailableConnections=new LinkedList(); 
+	private LinkedList<ConnectionInfo> llAvailableConnections=new LinkedList<ConnectionInfo>(); 
 	
 	/** Connections currently in-use */
-	private Set sInUseConnections=new HashSet(); 
+	private Set<ConnectionInfo> sInUseConnections=new HashSet<ConnectionInfo>(); 
 	
 	/** If access has been closed */
 	private boolean bClosed=false;
@@ -227,6 +227,7 @@ public class DatabaseAccess
 	/** Thread that gets rid of unused connections every now and then */
 	private class CheckThread extends Thread	
 	{
+		@Override
 		public void run()
 		{
 			synchronized(DatabaseAccess.this)
@@ -236,7 +237,7 @@ public class DatabaseAccess
 					if(!llAvailableConnections.isEmpty())
 					{
 						// If least-recently-used connection hasn't been used for an hour, chuck it
-						ConnectionInfo ci=(ConnectionInfo)llAvailableConnections.getLast();
+						ConnectionInfo ci=llAvailableConnections.getLast();
 						if(ci.lLastUsed + CONNECTIONEXPIRY < System.currentTimeMillis())
 						{
 							logDebug("Discarding unused DB connection " +
@@ -374,7 +375,7 @@ public class DatabaseAccess
 			// If a connection is available, use that
 			if(!llAvailableConnections.isEmpty())
 			{
-				ConnectionInfo ci=(ConnectionInfo)llAvailableConnections.removeFirst();
+				ConnectionInfo ci=llAvailableConnections.removeFirst();
 				sInUseConnections.add(ci);
 				return ci;			
 			}

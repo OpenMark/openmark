@@ -34,11 +34,13 @@ public class PostgreSQL extends OmQueries
 		super(prefix);
 	}
 
+	@Override
 	public void checkDatabaseConnection(Transaction dat) throws SQLException
 	{
 		dat.query("SELECT version()");
 	}
 
+	@Override
 	public int getInsertedSequenceID(Transaction dat,String table,String column) throws SQLException
 	{
 		ResultSet rs=dat.query("SELECT currval('"+getPrefix()+table+"_"+column+"_seq')");
@@ -46,6 +48,7 @@ public class PostgreSQL extends OmQueries
 		return rs.getInt(1);
 	}
 
+	@Override
 	public String getURL(String server,String database,String username,String password) throws ClassNotFoundException
 	{
 		Class.forName("org.postgresql.Driver");
