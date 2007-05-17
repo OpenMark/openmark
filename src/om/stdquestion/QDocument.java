@@ -18,7 +18,6 @@
 package om.stdquestion;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 import om.*;
@@ -42,7 +41,7 @@ public class QDocument
 	private QComponent qcRoot;
 	
 	/** Map to speed finding of components */
-	private Map mFoundIDs=new HashMap();
+	private Map<String,QComponent> mFoundIDs=new HashMap<String,QComponent>();
 	
 	/** CSS for question */
 	private String sCSS=null;
@@ -51,16 +50,17 @@ public class QDocument
 	private String sJS=null;
 
 	/** List of group names (String) */
-	private List lGroups=new LinkedList();
+	private List<String> lGroups=new LinkedList<String>();
 	
 	/** Map of sequence numbers associated with elements (Element -> Integer) */
-	private Map mSequences=new HashMap();
+	private Map<Element,Integer> mSequences=new HashMap<Element,Integer>();
 	
 	/** 
 	 * Constructs based on a given XML document.
 	 * @param sqOwner Owning question
 	 * @param d Document that this maps
 	 * @param qcm Manager with list of components
+	 * @throws OmException 
 	 */
 	public QDocument(StandardQuestion sqOwner,Document d,QComponentManager qcm) throws OmException
 	{		
@@ -83,8 +83,8 @@ public class QDocument
 		{
 			// Work out CSS and JS
 			StringBuffer sbCSS=new StringBuffer(),sbJS=new StringBuffer();
-			Set sClassesDone=new HashSet();
-			List lAll=new LinkedList();
+			Set<Class<?> > sClassesDone=new HashSet<Class<?> >();
+			List<QComponent> lAll=new LinkedList<QComponent>();
 			unrollTree(qcRoot,lAll);
 			for(Iterator i=lAll.iterator();i.hasNext();)
 			{
@@ -127,7 +127,7 @@ public class QDocument
 	 */
 	public int getSequence(Element e)
 	{
-		return ((Integer)mSequences.get(e)).intValue();
+		return mSequences.get(e);
 	}
 	
 	/**
@@ -136,7 +136,7 @@ public class QDocument
 	 * @param c Collection that will receive parent and all its children
 	 * @throws OmDeveloperException
 	 */
-	private void unrollTree(QComponent qcParent,Collection c) 
+	private void unrollTree(QComponent qcParent,Collection<QComponent> c) 
 		throws OmDeveloperException
 	{
 		c.add(qcParent);
@@ -229,7 +229,8 @@ public class QDocument
 
 	/**
 	 * Builds component for the given element (which should also build any children)
-	 * @param e Element
+	 * @param qcParent the parent component.
+	 * @param e Element the element in question.xml that corresponds to this component.
 	 * @param sTagName Must be null if the element belongs to the component
 	 *   being created; set it to override the component name if the
 	 *   component is implicit (has no parent element)
@@ -257,13 +258,14 @@ public class QDocument
 	 * This is efficient so call it lots if you want to; don't bother caching
 	 * the result.
 	 * @param sID Required ID
+	 * @return the component found
 	 * @throws OmDeveloperException If the component does not exist
 	 */
 	public QComponent find(String sID) throws OmDeveloperException
 	{
 		// If it's in the cache, just return it
 		if(mFoundIDs.containsKey(sID)) 
-			return (QComponent)mFoundIDs.get(sID);
+			return mFoundIDs.get(sID);
 		
 		// Look through tree for it
 		QComponent qcFound=qcRoot.findSubComponent(sID);
@@ -283,12 +285,11 @@ public class QDocument
 	 * @param c Class to look for
 	 * @return Array of components (zero-length if none)
 	 */
-	public QComponent[] find(Class c)
+	public QComponent[] find(Class<? extends QComponent> c)
 	{
-		List l=new LinkedList();
+		List<QComponent> l=new LinkedList<QComponent>();
 		qcRoot.listSubComponents(c,l);
-		return (QComponent[])l.toArray(
-			(Object[])Array.newInstance(c,l.size()));
+		return l.toArray(new QComponent[l.size()]);
 	}
 	
 	/**

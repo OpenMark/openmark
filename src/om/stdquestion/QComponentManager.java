@@ -17,10 +17,13 @@
  */
 package om.stdquestion;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
-import om.*;
+import om.OmDeveloperException;
+import om.OmUnexpectedException;
 import om.question.InitParams;
 import om.stdcomponent.ComponentRegistry;
 
@@ -28,7 +31,8 @@ import om.stdcomponent.ComponentRegistry;
 public class QComponentManager
 {
 	/** Map of String (tag name) -> Class (QComponent subclass) */
-	private Map mComponents=new HashMap();
+	private Map<String,Class<? extends QComponent> > mComponents=
+			new HashMap<String,Class<? extends QComponent> >();
 	
 	/**
 	 * Constructs with standard components plus anything from jar files specified
@@ -46,15 +50,16 @@ public class QComponentManager
 	/**
 	 * Registers a given class that provides QComponents for a tag name.
 	 * @param cComponent Java class to create objects from
+	 * @throws OmDeveloperException 
 	 * @throws IllegalArgumentException If the tag name is already in use
 	 */
-	public void register(Class cComponent) throws OmDeveloperException
+	public void register(Class<?> cComponent) throws OmDeveloperException
 	{
 		String sTagName;
 		try
 		{
 			Method m=cComponent.getMethod("getTagName",new Class[]{});
-			sTagName=(String)m.invoke(null,(Object[])null);			
+			sTagName=(String)m.invoke(null);			
 		}
 		catch(ClassCastException cce)
 		{
@@ -84,20 +89,20 @@ public class QComponentManager
 			throw new OmDeveloperException("Class "+cComponent+" cannot be " +
 				"registered as a component because it isn't a QComponent subclass");
 		
-		mComponents.put(sTagName,cComponent);		
+		mComponents.put(sTagName,cComponent.asSubclass(QComponent.class));		
 	}
 
 	/**
 	 * Creates an instance of the given component.
-	 * @param sTagName
-	 * @return
+	 * @param sTagName the xml tag.
+	 * @return the new QComponent instance
 	 * @throws OmDeveloperException If the tag name doesn't exist, or if the class
 	 *   exists but is not public.
 	 * @throws OmUnexpectedException
 	 */
 	QComponent create(String sTagName) throws OmDeveloperException,OmUnexpectedException
 	{
-		Class c=(Class)mComponents.get(sTagName);
+		Class c=mComponents.get(sTagName);
 		if(c==null) throw new OmDeveloperException(
 			"Attempt to create component <"+sTagName+"> which has not been registered");
 		try

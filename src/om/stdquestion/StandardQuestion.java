@@ -42,10 +42,10 @@ public abstract class StandardQuestion implements Question
 	private ActionRendering arCurrent=null;
 	
 	/** Map of all currently-set placeholders */
-	private Map mPlaceholders=new HashMap();
+	private Map<String,String> mPlaceholders=new HashMap<String,String>();
 
 	/** Set just to make sure that all callbacks are checked before they're called */
-	private Set sCheckedCallbacks=new HashSet();
+	private Set<String> sCheckedCallbacks=new HashSet<String>();
 	
 	/** Question results */
 	private Results rResults=new Results(); 
@@ -434,6 +434,7 @@ public abstract class StandardQuestion implements Question
 		 * @param iRange the bound on the number to be returned
 		 * @return the fixed number.
 		 */
+		@Override
 		public int nextInt(int iRange) 
 		{ 
 			if(iCount<FIXLIMIT)

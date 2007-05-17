@@ -50,13 +50,13 @@ public class QContent
 	 * Stack of Element; top item is current parent that new nodes should be
 	 * added to.
 	 */ 
-	private Stack sParents=new Stack();	
+	private Stack<Element> sParents=new Stack<Element>();	
 	
 	/** List of returned resources (QResource) */
-	private List lResources=new LinkedList();
+	private List<Resource> lResources=new LinkedList<Resource>();
 
 	/** Stack of text-mode StringBuffers, zero-length if not in text mode */
-	private Stack sTextMode=new Stack();
+	private Stack<StringBuffer> sTextMode=new Stack<StringBuffer>();
 	
 	/** MIME type for PNG images */
 	public final static String MIME_PNG="image/png";
@@ -102,7 +102,7 @@ public class QContent
 	/** @return List of added resources */
 	public Resource[] getResources()
 	{
-		return (Resource[])lResources.toArray(new Resource[0]);
+		return lResources.toArray(new Resource[0]);
 	}
 	
 	/**
@@ -123,12 +123,13 @@ public class QContent
 	 * @param n Root node of content, which should've been created with respect 
 	 *   to the getDocument(). Content will not be cloned, so be sure to create it
 	 *   afresh each time.
+	 * @throws OmDeveloperException 
 	 */
 	public void addInlineXHTML(Node n) throws OmDeveloperException
 	{
 		if(!sTextMode.empty()) return; // Ignore in text mode		
 		checkNode(n);
-		Element eParent=(Element)sParents.peek();
+		Element eParent=sParents.peek();
 		if(eParent==eInlineRoot && nFirstTopLevel!=null)
 		{
 			// Make sure it stays before the 'at end' stuff
@@ -168,6 +169,7 @@ public class QContent
 	 * @param n Root node of content, which should've been created with respect 
 	 *   to the getDocument(). Content will not be cloned, so be sure to create it
 	 *   afresh each time.
+	 * @throws OmDeveloperException 
 	 */
 	public void addTopLevelXHTML(Node n) throws OmDeveloperException
 	{
@@ -225,6 +227,7 @@ public class QContent
 	 * @param sq Question to load resource from  
 	 * @param sFilename Resource filename or path
 	 * @param sMimeType MIME type of resource (see QContent.MIME* constants)
+	 * @throws IOException 
 	 * @throws IllegalArgumentException If the filename isn't valid
 	 */
 	public void addResource(
@@ -245,6 +248,7 @@ public class QContent
 	 *   just want that behaviour. Expression may contain single, but not double,
 	 *   quotes (unless you escape double quotes).
 	 * @param bPlain True if in plain mode (causes nothing to happen)
+	 * @throws OmDeveloperException 
 	 */
 	public void informFocusableFullJS(String sID,String sJSObjectExpression,boolean bPlain) throws OmDeveloperException
 	{
@@ -266,6 +270,7 @@ public class QContent
 	 * @param sXHTMLID ID (within XHTML id attribute) of the element that should
 	 *   be focused
 	 * @param bPlain True if in plain mode (causes nothing to happen)
+	 * @throws OmDeveloperException 
 	 */
 	public void informFocusable(String sXHTMLID,boolean bPlain) throws OmDeveloperException
 	{
@@ -345,7 +350,7 @@ public class QContent
 		// Ignore empty strings
 		if(s.length()==0) return;
 		
-		StringBuffer sb=(StringBuffer)sTextMode.peek();
+		StringBuffer sb=sTextMode.peek();
 		
 		// Add string followed by space if it hasn't got one (so sbTextMode always
 		// ends with whitespace - we trim this later)
@@ -366,7 +371,7 @@ public class QContent
 	{
 		if(sTextMode.empty()) throw new OmDeveloperException("Not in text mode");
 		
-		StringBuffer sb=(StringBuffer)sTextMode.pop();
+		StringBuffer sb=sTextMode.pop();
 		return sb.toString().trim().replaceAll("\\s+"," ");
 	}
 	
