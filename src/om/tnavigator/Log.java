@@ -59,7 +59,7 @@ public class Log
 	private boolean bClosed=false;
 
 	/** List of recent errors/warnings */
-	private LinkedList llRecentProblems=new LinkedList();
+	private LinkedList<String> llRecentProblems=new LinkedList<String>();
 
 	/** Message for debugging purposes */
 	private final static String SEVERITY_DEBUG = "debug";
@@ -98,7 +98,7 @@ public class Log
 	private final static int RECENTENTRYCOUNT=10;
 	
 	/** List of recent log entries */
-	private LinkedList llRecentEntries=new LinkedList();
+	private LinkedList<String> llRecentEntries=new LinkedList<String>();
 
 
 	/**
@@ -300,7 +300,7 @@ public class Log
 	/**
 	 * Wrapper wround Exceptions.getString().
 	 * @param tException
-	 * @return 
+	 * @return The reformatted exception trace.
 	 */
 	public static String getOmExceptionString(Throwable tException)
 	{
@@ -461,6 +461,7 @@ public class Log
 
 	/**
 	 * @return XML document listing recent problems that were logged (errors/warnings)
+	 * @throws IOException 
 	 */
 	public synchronized Document getRecentProblems() throws IOException
 	{
@@ -478,6 +479,7 @@ public class Log
 
 	/**
 	 * @return XML document listing recent entries that were logged (anything logged)
+	 * @throws IOException 
 	 */
 	public synchronized Document getRecentEntries() throws IOException
 	{
@@ -494,7 +496,7 @@ public class Log
 	}
 
 	/** Logs shared between things, referenced by key */
-	private static Map mSharedLogs=new HashMap();
+	private static Map<String,Log> mSharedLogs=new HashMap<String,Log>();
 
 	// Request shutdown notification
 	static
@@ -505,7 +507,7 @@ public class Log
 	/** On shutdown, close all shared logs and remove references to them */
 	public static void shutdown()
 	{
-		Log[] al=(Log[])mSharedLogs.values().toArray(new Log[0]);
+		Log[] al=mSharedLogs.values().toArray(new Log[0]);
 		for(int i=0;i<al.length;i++)
 		{
 			al[i].close();
@@ -525,7 +527,7 @@ public class Log
 	public static Log getShared(String sKey,File fFolder,String sComponent,boolean bShowDebug)
 	  throws IOException
 	{
-		Log l=(Log)mSharedLogs.get(sKey);
+		Log l=mSharedLogs.get(sKey);
 		if(l==null)
 		{
 			l=new Log(fFolder,sComponent,bShowDebug);
@@ -549,7 +551,7 @@ public class Log
 	 */
 	public static LogFile[] listLogs(File fLogFolder,String sComponent,String sDate)
 	{
-		List l=new LinkedList();
+		List<LogFile> l=new LinkedList<LogFile>();
 		File[] afAllFiles=IO.listFiles(fLogFolder);
 	  for(int iFile=0;iFile<afAllFiles.length;iFile++)
 		{
@@ -563,7 +565,7 @@ public class Log
 					l.add(new LogFile(sLogComponent,sLogDate,afAllFiles[iFile]));
 			}
 		}
-	  return (LogFile[])l.toArray(new LogFile[0]);
+	  return l.toArray(new LogFile[0]);
 	}
 
 	/**
@@ -617,7 +619,11 @@ public class Log
 	}
 
 	// Useful utility methods for formatting output
-	/** Convert a string array to a string */
+	/**
+	 * Convert a string array to a string 
+	 * @param ao an array of objects.
+	 * @return a string of the form [object 1][object 2].
+	 */
 	public static String formatArray(Object[] ao) {
 	    StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < ao.length; ++i) {
@@ -625,7 +631,11 @@ public class Log
 		}
 		return sb.toString();
 	}
-	/** Convert an integer array to a string */
+	/**
+	 * Convert an integer array to a string 
+	 * @param ai an array of integers.
+	 * @return a string of the form [int 1][int 2].
+	 */
 	public static String formatArray(int[] ai) {
 	    StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < ai.length; ++i) {
@@ -633,7 +643,11 @@ public class Log
 		}
 		return sb.toString();
 	}
-	/** Convert a two-dimensional integer array to a string */
+	/**
+	 * Convert a two-dimensional integer array to a string
+	 * @param aai an array of array of integers. 
+	 * @return A string of the form {[1][2]}{[3][4]}.
+	 */
 	public static String formatArray(int[][] aai) {
 	    StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < aai.length; ++i) {
