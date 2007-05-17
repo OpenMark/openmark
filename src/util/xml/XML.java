@@ -51,7 +51,7 @@ public abstract class XML
 	static Object getTransformSynch() { return oTransformSynch; }
 
 	/** Cached parsers (because parsers aren't thread-safe) */
-	private static LinkedList lAvailableParsers=new LinkedList();
+	private static LinkedList<MyDOMParser> lAvailableParsers=new LinkedList<MyDOMParser>();
 
 	/** Maximum number of parsers to cache */
 	private final static int MAXCACHEDPARSERS=10;
@@ -61,10 +61,10 @@ public abstract class XML
 	private static DocumentBuilderFactory dbf=null;
 	
 	/** Cached DocumentImpl class (if using Xerces) */
-	private static Class cDocumentImpl=null;
+	private static Class<?> cDocumentImpl=null;
 	
 	/** Cached DOMParser class (if using Xerces) */
-	private static Class cDOMParser=null;
+	private static Class<?> cDOMParser=null;
 	
 	/** Cached setFeature method (if using Xerces) */
 	private static Method mSetFeature=null;
@@ -88,12 +88,9 @@ public abstract class XML
 		{
 			cDocumentImpl=Class.forName("org.apache.xerces.dom.DocumentImpl");
 			cDOMParser=Class.forName("org.apache.xerces.parsers.DOMParser");
-			mSetFeature=cDOMParser.getMethod(
-				"setFeature",new Class[]{String.class,boolean.class});
-			mParse=cDOMParser.getMethod(
-				"parse",new Class[]{InputSource.class});
-			mGetDocument=cDOMParser.getMethod(
-				"getDocument",new Class[]{});
+			mSetFeature=cDOMParser.getMethod("setFeature",String.class,boolean.class);
+			mParse=cDOMParser.getMethod("parse",InputSource.class);
+			mGetDocument=cDOMParser.getMethod("getDocument");
 			bUsingXerces=true;
 		}
 		catch(Exception e) // ClassNotFoundException, NoSuchMethodException
@@ -250,7 +247,7 @@ public abstract class XML
 		{
 			if(!lAvailableParsers.isEmpty())
 			{
-				return (MyDOMParser)lAvailableParsers.removeFirst();
+				return lAvailableParsers.removeFirst();
 			}
 			
 			initStatics();
@@ -383,7 +380,7 @@ public abstract class XML
 			InputSource isWithPath=new InputSource(is);
 			try
 			{
-				isWithPath.setSystemId(fRelative.toURL().toString());
+				isWithPath.setSystemId(fRelative.toURI().toString());
 			}
 			catch(SecurityException se)
 			{
@@ -434,7 +431,7 @@ public abstract class XML
 			InputSource isWithPath=new InputSource(r);
 			try
 			{
-				isWithPath.setSystemId(fRelative.toURL().toString());
+				isWithPath.setSystemId(fRelative.toURI().toString());
 			}
 			catch(SecurityException se)
 			{
@@ -520,7 +517,7 @@ public abstract class XML
 	 * Parses XML from a string and returns the document.
 	 * @param s String to parse
 	 * @return DOM document
-	 * @throws IOException Any parsing or I/O error
+	 * @throws XMLException Any parsing or I/O error
 	 */
 	public static Document parse(String s) throws XMLException
 	{
@@ -954,7 +951,7 @@ public abstract class XML
 	 */
 	public static Element[] getChildren(Node nParent,String sName)
 	{
-		List lElements=new LinkedList();
+		List<Element> lElements=new LinkedList<Element>();
 
 		for(Node n=nParent.getFirstChild();n!=null;n=n.getNextSibling())
 		{
@@ -965,7 +962,7 @@ public abstract class XML
 			}
 		}
 
-		return (Element[])(lElements.toArray(new Element[0]));
+		return lElements.toArray(new Element[0]);
 	}
 
 	/**
@@ -1000,11 +997,11 @@ public abstract class XML
 	 */
 	public static Element[] getNestedChildren(Node nParent,String sName)
 	{
-		List lElements=new LinkedList();
+		List<Element> lElements=new LinkedList<Element>();
 
 		getNestedChildren(lElements,nParent,sName);
 
-		return (Element[])(lElements.toArray(new Element[0]));
+		return lElements.toArray(new Element[0]);
 	}
 
 	/**
@@ -1013,7 +1010,7 @@ public abstract class XML
 	 * @param nParent Parent node
 	 * @param sName Tag name
 	 */
-	private static void getNestedChildren(List lElements,Node nParent,String sName)
+	private static void getNestedChildren(List<Element> lElements,Node nParent,String sName)
 	{
 		for(Node n=nParent.getFirstChild();n!=null;n=n.getNextSibling())
 		{
@@ -1069,17 +1066,17 @@ public abstract class XML
 	 */
 	public static Element[] getChildren(Node nParent)
 	{
-		List lElements=new LinkedList();
+		List<Element> lElements=new LinkedList<Element>();
 
 		for(Node n=nParent.getFirstChild();n!=null;n=n.getNextSibling())
 		{
 			if(n instanceof Element)
 			{
-				lElements.add(n);
+				lElements.add((Element)n);
 			}
 		}
 
-		return (Element[])(lElements.toArray(new Element[0]));
+		return lElements.toArray(new Element[0]);
 	}
 
 	/**
@@ -1318,7 +1315,7 @@ public abstract class XML
 	 */
 	public static String replaceToken(String sInput,String sBorder,String sToken,String sValue)
 	{
-		Map mReplace=new HashMap();
+		Map<String,String> mReplace=new HashMap<String,String>();
 		mReplace.put(sToken,sValue);
 		return replaceTokens(sInput,sBorder,mReplace);
 	}	
@@ -1409,7 +1406,7 @@ public abstract class XML
 	 * @param n Node to begin with
 	 * @param mReplace Map of token-ID to replacement text
 	 */
-	public static void replaceTokens(Node n, Map mReplace)
+	public static void replaceTokens(Node n, Map<String,? extends Object> mReplace)
 	{
 		replaceTokens(n,"%%",mReplace);
 	}
@@ -1425,20 +1422,20 @@ public abstract class XML
 	 * @param mReplace Map of token-ID to replacement text (String) or XML content
 	 *   (Node) 
 	 */
-	public static void replaceTokens(Node n, String sBorder,Map mReplace)
+	public static void replaceTokens(Node n, String sBorder,Map<String,? extends Object> mReplace)
 	{
 		// Separate map into two depending on type
-		Map mStrings=new HashMap(),mNodes=new HashMap();
-		for(Iterator i=mReplace.entrySet().iterator();i.hasNext();)
+		Map<String,String> mStrings=new HashMap<String,String>();
+		Map<String,Node> mNodes=new HashMap<String,Node>();
+		for(Map.Entry<String,? extends Object> me : mReplace.entrySet())
 		{
-			Map.Entry me=(Map.Entry)i.next();
 			if(me.getValue() instanceof String)
 			{
-				mStrings.put(me.getKey(),me.getValue());
+				mStrings.put(me.getKey(),(String)me.getValue());
 			}
 			else if(me.getValue() instanceof Node)
 			{
-				mNodes.put(me.getKey(),me.getValue());
+				mNodes.put(me.getKey(),(Node)me.getValue());
 			}
 			else
 			{
@@ -1573,9 +1570,9 @@ public abstract class XML
 	 */
 	public static Element[] findAll(Element eParent,String sAttribute,String sValue)
 	{
-		List lResult=new LinkedList();
+		List<Element> lResult=new LinkedList<Element>();
 		findAllInternal(eParent,sAttribute,sValue,lResult);
-		return (Element[])lResult.toArray(new Element[0]);
+		return lResult.toArray(new Element[0]);
 	}
 	
 	/**
@@ -1585,7 +1582,7 @@ public abstract class XML
 	 * @param sValue Desired attribute value
 	 * @param lResult List to which matching elements are added
 	 */
-	private static void findAllInternal(Element eParent,String sAttribute,String sValue,List lResult)
+	private static void findAllInternal(Element eParent,String sAttribute,String sValue,List<Element> lResult)
 	{
 		// If this matches, return it
 		if(sValue.equals(eParent.getAttribute(sAttribute)))
@@ -1670,7 +1667,7 @@ public abstract class XML
 	 */
 	public static Element[] getChildrenWithAttribute(Node nParent,String sTag,String sAttribute,String sValue)
 	{
-		List list = new LinkedList();
+		List<Element> list = new LinkedList<Element>();
 		// Try all children
 		for(Node n=nParent.getFirstChild();n!=null;n=n.getNextSibling())
 		{
@@ -1685,7 +1682,7 @@ public abstract class XML
 			}
 		}
 
-		return (Element[])list.toArray(new Element[0]);
+		return list.toArray(new Element[0]);
 	}
 
 
