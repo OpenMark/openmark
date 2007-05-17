@@ -40,6 +40,11 @@ public class LogProcessor implements ContentHandler
 	/** Handler that actually does stuff */
 	private LogProcessorHandler lph;
 	
+	/**
+	 * @param f
+	 * @param lph
+	 * @throws IOException
+	 */
 	public LogProcessor(File f,LogProcessorHandler lph) throws IOException
 	{
 		// Set up document
@@ -64,7 +69,7 @@ public class LogProcessor implements ContentHandler
 	// SAX ContentHandler implementation
 	
 	/** Stack for building up DOM elements via SAX parsing */
-	Stack s=new Stack();
+	Stack<Element> s=new Stack<Element>();
 
 	// Ignored methods
 
@@ -92,7 +97,7 @@ public class LogProcessor implements ContentHandler
 		// Check whether this needs to be added to the current tree
 		if(!s.empty())
 		{
-			Element eParent=(Element)s.peek();
+			Element eParent=s.peek();
 			eParent.appendChild(e);
 			s.push(e);
 		}
@@ -114,7 +119,7 @@ public class LogProcessor implements ContentHandler
 		String sText=new String(ch,start,length);
 
 		// Add to current element
-		Element eCurrent=(Element)s.peek();
+		Element eCurrent=s.peek();
 		eCurrent.appendChild(d.createTextNode(sText));
 	}
 
@@ -122,7 +127,7 @@ public class LogProcessor implements ContentHandler
 	{
 		if(s.empty()) return;
 
-		Element e=(Element)s.pop();
+		Element e=s.pop();
 		if(s.empty())
 		{
 			lph.entry(e);

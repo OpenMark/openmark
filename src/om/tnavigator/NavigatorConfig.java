@@ -55,13 +55,13 @@ public class NavigatorConfig
 	private String dbPrefix;
 
 	/** Set of InetAddress; Trusted IP addresses for question engines */
-	private Set trustedQEs=new HashSet();
+	private Set<InetAddress> trustedQEs=new HashSet<InetAddress>();
 	
 	/** Set of InetAddress; Trusted IP addresses for other test navigators */
-	private Set trustedTNs=new HashSet();
+	private Set<InetAddress> trustedTNs=new HashSet<InetAddress>();
 	
 	/** Debug flags */
-	private Set debugFlags=new HashSet();
+	private Set<String> debugFlags=new HashSet<String>();
 	
 	/** Sending server alerts */
 	private String[] alertMailTo,alertMailCC;
@@ -92,9 +92,9 @@ public class NavigatorConfig
 		return dbPrefix;
 	}
 
-	private static Map getParams(Element parent) throws IOException
+	private static Map<String,String> getParams(Element parent) throws IOException
 	{
-		Map m=new HashMap();
+		Map<String,String> m=new HashMap<String,String>();
 		Element[] params=XML.getChildren(parent,"param");
 		for(int i=0;i<params.length;i++)
 		{
@@ -186,7 +186,7 @@ public class NavigatorConfig
 		Element[] aeTN=XML.getChildren(eTN,"url");
 		if(aeTN.length==0) throw new IOException(
 			"navigator.xml: requires at least one <url> inside <testnavigators>");
-		List lNavigators=new LinkedList();		
+		List<String> lNavigators=new LinkedList<String>();		
 		boolean bGotThis=false;
 		for(int i=0;i<aeTN.length;i++)
 		{
@@ -204,7 +204,7 @@ public class NavigatorConfig
 		}
 		if(!bGotThis) throw new IOException(
 			"navigator.xml: requires one <url this='yes'> inside <testnavigators>");
-		otherNavigators=(String[])lNavigators.toArray(new String[lNavigators.size()]);
+		otherNavigators=lNavigators.toArray(new String[lNavigators.size()]);
 		
 		if(XML.hasChild(eRoot,"debugflags"))
 		{

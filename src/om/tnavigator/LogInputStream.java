@@ -48,7 +48,7 @@ public class LogInputStream extends InputStream
 		is=new BufferedInputStream(new FileInputStream(f));
 	}
 
-	/** Closes file */
+	@Override
 	public void close() throws IOException
 	{
 		is.close();
@@ -57,6 +57,7 @@ public class LogInputStream extends InputStream
 	/* (non-Javadoc)
 	 * @see java.io.InputStream#read()
 	 */
+	@Override
 	public int read() throws IOException
 	{
 		// If we already passed EOF, return the next append part or -1 if we ran

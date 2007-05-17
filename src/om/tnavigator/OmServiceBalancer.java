@@ -283,6 +283,10 @@ class OmServiceBalancer
   /** Interface for things that can be balanced using balanceThing() */
   private static interface Balanceable
   {
+  	/**
+  	 * @param iService
+  	 * @throws RemoteException
+  	 */
   	void run(int iService) throws RemoteException;  	
   }
   
@@ -325,6 +329,7 @@ class OmServiceBalancer
    * Checks whether a server is available, throws an exception if all servers
    * fail. 
    * @return Total time taken (ms)
+   * @throws RemoteException 
    */
   public int checkAvailable() throws RemoteException
   {

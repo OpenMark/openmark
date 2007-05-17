@@ -29,7 +29,7 @@ import util.xml.*;
 class TestGroup extends TestMarkedItem
 {
 	/** Items within this group */
-	private List lItems=new LinkedList();
+	private List<TestItem> lItems=new LinkedList<TestItem>();
 
 	/** Title of group, or null if none */
 	private String sTitle=null;
@@ -93,9 +93,9 @@ class TestGroup extends TestMarkedItem
 	 */
 	TestLeaf[] getLeafItems()
 	{
-		List l=new LinkedList();
+		List<TestLeaf> l=new LinkedList<TestLeaf>();
 		addLeafItems(this,l,null);
-		return (TestLeaf[])l.toArray(new TestLeaf[0]);
+		return l.toArray(new TestLeaf[0]);
 	}
 	
 	/**
@@ -104,7 +104,7 @@ class TestGroup extends TestMarkedItem
 	 * @param c Receives a list of all questions either with that ID or inside 
 	 *   groups that have that ID
 	 */
-	public void listQuestionsUnderID(String sMatchID,Collection c)
+	public void listQuestionsUnderID(String sMatchID,Collection<TestQuestion> c)
 	{
 		listQuestionsUnderID(sMatchID,c,false);
 	}
@@ -116,20 +116,19 @@ class TestGroup extends TestMarkedItem
 	 * @param cQuestions Collection to which TestQuestions will be added
 	 * @param bMatched True if the ID has already been matched
 	 */
-	private void listQuestionsUnderID(String sMatchID,Collection cQuestions,boolean bMatched)
+	private void listQuestionsUnderID(String sMatchID,Collection<TestQuestion> cQuestions,boolean bMatched)
 	{
 		if(sID!=null && sID.equals(sMatchID)) bMatched=true;
 		
-		for(Iterator iChildren=lItems.iterator();iChildren.hasNext();)
+		for(TestItem i : lItems)
 		{
-			TestItem i=(TestItem)iChildren.next();
 			if(i instanceof TestGroup)
 			{
 				((TestGroup)i).listQuestionsUnderID(sMatchID,cQuestions,bMatched);
 			}
 			else if(i instanceof TestQuestion)
 			{				 
-				if(bMatched || ((TestQuestion)i).getID().equals(sMatchID)) cQuestions.add(i);
+				if(bMatched || ((TestQuestion)i).getID().equals(sMatchID)) cQuestions.add((TestQuestion)i);
 			}
 		}
 	}
@@ -147,13 +146,12 @@ class TestGroup extends TestMarkedItem
 	 * @param c List to add to
 	 * @param sCurrentTitle Section title (null if none)
 	 */
-	private void addLeafItems(TestGroup tgRoot,Collection c,String sCurrentTitle)
+	private void addLeafItems(TestGroup tgRoot,Collection<TestLeaf> c,String sCurrentTitle)
 	{
 		if(sTitle!=null) sCurrentTitle=sTitle;
 		
-		for(Iterator iChildren=lItems.iterator();iChildren.hasNext();)
+		for(TestItem i : lItems)
 		{
-			TestItem i=(TestItem)iChildren.next();
 			if(i instanceof TestGroup)
 			{
 				((TestGroup)i).addLeafItems(tgRoot,c,sCurrentTitle);
@@ -163,7 +161,7 @@ class TestGroup extends TestMarkedItem
 				((TestLeaf)i).setSection(sCurrentTitle);
 				if(i instanceof TestQuestion)
 					((TestQuestion)i).resolveDepends(tgRoot);
-				c.add(i);
+				c.add((TestLeaf)i);
 			}
 		}
 	}
@@ -173,13 +171,13 @@ class TestGroup extends TestMarkedItem
 		return getFinalScore(null,false);
 	}
 	
+	@Override
 	PartialScore getFinalScore(String sOnly,boolean bMax) throws OmFormatException
 	{
 		// Build score from all children
 		PartialScore ps=new PartialScore();
-		for(Iterator iChildren=lItems.iterator();iChildren.hasNext();)
+		for(TestItem i : lItems)
 		{
-			TestItem i=(TestItem)iChildren.next();
 			if(!(i instanceof TestMarkedItem)) continue;
 			TestMarkedItem tmi=(TestMarkedItem)i;			
 			ps.add(tmi.getFinalScore(sOnly,bMax));

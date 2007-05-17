@@ -29,7 +29,7 @@ import om.OmFormatException;
 public class PartialScore
 {
 	/** Map from String (axis name/null for default) -> Double (score) */ 
-	private Map mAxes=new HashMap();
+	private Map<String,Axis> mAxes=new HashMap<String,Axis>();
 	
 	/** Score details on single axis */
 	private static class Axis
@@ -38,13 +38,13 @@ public class PartialScore
 		double dMax;
 	}
 	
+	@Override
 	protected Object clone()
 	{
 		PartialScore psNew=new PartialScore();
-		for(Iterator i=mAxes.entrySet().iterator();i.hasNext();)
+		for(Map.Entry<String,Axis> me : mAxes.entrySet())
 		{
-			Map.Entry me=(Map.Entry)i.next();
-			Axis aNew=new Axis(),aOld=(Axis)me.getValue();
+			Axis aNew=new Axis(),aOld=me.getValue();
 			aNew.d=aOld.d;
 			aNew.dMax=aOld.dMax;
 			psNew.mAxes.put(me.getKey(),aNew);
@@ -60,7 +60,7 @@ public class PartialScore
 	 */
 	double getScore(String sAxis) throws OmFormatException
 	{
-		Axis a=(Axis)mAxes.get(sAxis);
+		Axis a=mAxes.get(sAxis);
 		if(a==null) throw new OmFormatException("Axis not defined: "+sAxis);
 		
 		return a.d;
@@ -74,7 +74,7 @@ public class PartialScore
 	 */
 	double getMax(String sAxis) throws OmFormatException
 	{
-		Axis a=(Axis)mAxes.get(sAxis);
+		Axis a=mAxes.get(sAxis);
 		if(a==null) throw new OmFormatException("Axis not defined: "+sAxis);
 		
 		return a.dMax;
@@ -115,7 +115,7 @@ public class PartialScore
 			String sName=(String)me.getKey();
 			Axis a=(Axis)me.getValue();
 			
-			Axis aExisting=(Axis)mAxes.get(sName);
+			Axis aExisting=mAxes.get(sName);
 			if(aExisting==null)
 			{
 				aExisting=new Axis();
@@ -126,17 +126,17 @@ public class PartialScore
 		}
 	}
 	
+	@Override
 	public String toString()
 	{
 		StringBuffer sb=new StringBuffer();
 		sb.append("[");
 		boolean bFirst=true;
-		for(Iterator iAxis=mAxes.entrySet().iterator();iAxis.hasNext();)
+		for(Map.Entry<String,Axis> me : mAxes.entrySet())
 		{
-			Map.Entry me=(Map.Entry)iAxis.next();
-			String sName=(String)me.getKey();
+			String sName=me.getKey();
 			if(sName==null) sName="<default>";
-			Axis a=(Axis)me.getValue();
+			Axis a=me.getValue();
 			if(bFirst)
 				bFirst=false;
 			else 
@@ -150,21 +150,21 @@ public class PartialScore
 	/** @return List of all axis names (including null for default) */
 	String[] getAxes()
 	{
-		String[] asAxes=(String[])mAxes.keySet().toArray(new String[0]);
+		String[] asAxes=mAxes.keySet().toArray(new String[0]);
 		// Need to sort axes so they're in reliable order for result tables etc.
-		Arrays.sort(asAxes,new NullOKComparator()); // Null axis comes first,
+		Arrays.sort(asAxes,new NullOKComparator<String>()); // Null axis comes first,
 		return asAxes;
 	}
 	
-	private static class NullOKComparator implements Comparator
+	private static class NullOKComparator<T extends Comparable<T>> implements Comparator<T>
 	{
-		public int compare(Object o1,Object o2)
+		public int compare(T o1,T o2)
 		{
 			if(o1==null && o2==null) return 0;
 			if(o1==null) return -1;
 			if(o2==null) return 1;
 			
-			return ((Comparable)o1).compareTo(o2);
+			return o1.compareTo(o2);
 		}
 	}
 }

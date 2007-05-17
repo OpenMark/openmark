@@ -70,6 +70,6 @@ public class MovingAverage
 		}
 		if(i==0) return 0.0;
 		
-		return dTotal/(double)i;
+		return dTotal/i;
 	}
 }

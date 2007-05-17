@@ -177,7 +177,7 @@ class StatusPages
 		{
 			String sStart=IO.loadString(	new FileInputStream(
 				  ns.getServletContext().getRealPath("WEB-INF/templates/statuslog.xhtml.start")));
-			Map mReplace=new HashMap();
+			Map<String,String> mReplace=new HashMap<String,String>();
 			mReplace.put("DATE",sDate);
 			mReplace.put("ACCESS",ns.getAccessCSSAppend(request));
 			URL uThis=ns.getNavigatorConfig().getThisTN();
@@ -268,7 +268,7 @@ class StatusPages
 		Document d=XML.parse(	new FileInputStream(
 		  ns.getServletContext().getRealPath("WEB-INF/templates/statusstats.xhtml")));
 
-		Map mReplace=new HashMap();
+		Map<String,String> mReplace=new HashMap<String,String>();
 		mReplace.put("DATE",sDate);
 		mReplace.put("ACCESS",ns.getAccessCSSAppend(request));
 		URL uThis=ns.getNavigatorConfig().getThisTN();
@@ -282,6 +282,10 @@ class StatusPages
 		XHTML.output(d,request,response,"en");
 	}
 	
+	/**
+	 * main method for testing.
+	 * @param args
+	 */
 	public static void main(String[] args)
 	{
 //		System.out.println(StatsBuilder.REQUEST.matcher(
@@ -349,7 +353,7 @@ class StatusPages
 
 	static class StatsBuilder implements LogProcessorHandler
 	{
-		private Set sOUCUs=new TreeSet();
+		private Set<String> sOUCUs=new TreeSet<String>();
 		private int iRequests=0,iTestRequests=0;
 		private String sCurrentMinute="",sMaxMinuteR="",sMaxMinuteTR="";
 		private int iCMRequests,iCMTestRequests;
@@ -437,20 +441,20 @@ class StatusPages
 			stQE.finish();
 		}
 		
-		void fillMap(Map mReplace)
+		void fillMap(Map<String,String> mReplace)
 		{
 			mReplace.put("USERS",""+sOUCUs.size());
 			mReplace.put("REQUESTS",""+iRequests);
 			mReplace.put("TESTREQUESTS",""+iTestRequests);
 			StringBuffer sbOUCUs=new StringBuffer();
 			boolean bFirst=true;
-			for(Iterator i=sOUCUs.iterator();i.hasNext();)
+			for(String sOUCU : sOUCUs)
 			{
 				if(bFirst)
 					bFirst=false;
 				else
 					sbOUCUs.append(' ');
-				sbOUCUs.append(i.next().toString());
+				sbOUCUs.append(sOUCU);
 			}
 			mReplace.put("OUCUS",sbOUCUs.toString());
 			
@@ -481,7 +485,7 @@ class StatusPages
 	
 		// Basic status
 		
-		Map mReplace=new HashMap();
+		Map<String,Object> mReplace=new HashMap<String,Object>();
 		mReplace.put("ACCESS",ns.getAccessCSSAppend(request));		
 		ns.obtainPerformanceInfo(mReplace);
 		XML.replaceTokens(d,mReplace);
@@ -494,12 +498,12 @@ class StatusPages
 		Log l=ns.getLog();
 		Element eLogs=XML.find(d,"id","logs");
 		File[] afLogs=IO.listFiles(l.getLogFolder());
-		SortedSet ss=new TreeSet(new Comparator()
+		SortedSet<String> ss=new TreeSet<String>(new Comparator<String>()
 		{
-			public int compare(Object o1,Object o2)
+			public int compare(String o1,String o2)
 			{
 				// Reverse compare
-				return ((Comparable)o2).compareTo(o1);
+				return o2.compareTo(o1);
 			}
 		});
 		Pattern p=Pattern.compile("^navigator\\.([0-9]{4}-[0-9]{2}-[0-9]{2})\\.log$");
@@ -511,9 +515,8 @@ class StatusPages
 				ss.add(m.group(1));
 			}
 		}
-		for(Iterator i=ss.iterator();i.hasNext();)
+		for(String sDate : ss)
 		{
-			String sDate=(String)i.next();
 			Element eLI=XML.createChild(eLogs,"li");
 			Element eA=XML.createChild(eLI,"a");
 			eA.setAttribute("href","log-"+sDate);

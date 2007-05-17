@@ -202,11 +202,11 @@ class TestDefinition
 				throw new OmFormatException("<random> Invalid value for choose= (expected number): "+sChoose);
 			}
 			
-			List lPicks=new LinkedList(Arrays.asList(aeChildren));
+			List<Element> lPicks=new LinkedList<Element>(Arrays.asList(aeChildren));
 			for(int i=0;i<iChoose;i++)
 			{
 				g.add(getTestItem(r,					
-					(Element)lPicks.remove(r.nextInt(lPicks.size())),g));
+					lPicks.remove(r.nextInt(lPicks.size())),g));
 			}
 		}
 		else

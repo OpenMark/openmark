@@ -475,6 +475,7 @@ public class TestDeployment
 	
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
+	 * @throws OmFormatException 
 	 */
 	public String displayFeedbackDate() throws OmFormatException
 	{
@@ -490,6 +491,7 @@ public class TestDeployment
 	
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
+	 * @throws OmFormatException 
 	 */
 	public String displayCloseDate() throws OmFormatException
 	{
@@ -505,6 +507,7 @@ public class TestDeployment
 	}
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
+	 * @throws OmFormatException 
 	 */
 	public String displayForbidDate() throws OmFormatException
 	{
@@ -513,6 +516,7 @@ public class TestDeployment
 	}
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
+	 * @throws OmFormatException 
 	 */
 	public String displayOpenDate() throws OmFormatException
 	{

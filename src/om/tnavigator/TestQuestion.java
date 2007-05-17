@@ -131,7 +131,7 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	 */
 	void resolveDepends(TestGroup tgRoot)
 	{
-		List l=new LinkedList();
+		List<TestQuestion> l=new LinkedList<TestQuestion>();
 		TestItem ti=this;
 		while(ti!=null)
 		{
@@ -142,7 +142,7 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 			}
 			ti=ti.getParent();
 		}
-		atqDepends=(TestQuestion[])l.toArray(new TestQuestion[0]);
+		atqDepends=l.toArray(new TestQuestion[0]);
 	}
 	
 	/**
@@ -157,6 +157,7 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	/** @return True if a score has been set */
 	boolean hasActualScore() { return psActual!=null; }
 	
+	@Override
 	PartialScore getFinalScore(String sOnly,boolean bMax) throws OmFormatException
 	{
 		PartialScore psRescored=rescore(psActual);

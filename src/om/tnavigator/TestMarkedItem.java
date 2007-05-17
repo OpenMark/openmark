@@ -87,8 +87,8 @@ abstract class TestMarkedItem extends TestItem
 		{
 			// Score contribution from this tag
 			double dScore=
-				((double)iMarks * psBase.getScore(sFromAxis)) / 
-				(double)psBase.getMax(sFromAxis);
+				(iMarks * psBase.getScore(sFromAxis)) / 
+				psBase.getMax(sFromAxis);
 			
 			// Either set as new...
 			if(!psNew.hasScore(sAxis))

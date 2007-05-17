@@ -137,6 +137,7 @@ public class Log
 			start();
 		}
 
+		@Override
 		public void run()
 		{
 			// Keep thread running until we've been idle 60 seconds
@@ -296,6 +297,11 @@ public class Log
 		if(lt==null) lt=new LogThread();
 	}
 	
+	/**
+	 * Wrapper wround Exceptions.getString().
+	 * @param tException
+	 * @return 
+	 */
 	public static String getOmExceptionString(Throwable tException)
 	{
 		return Exceptions.getString(tException,new String[] {"om"});
