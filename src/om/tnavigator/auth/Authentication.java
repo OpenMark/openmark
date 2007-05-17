@@ -108,7 +108,7 @@ public interface Authentication
    * names should match tokens on the status page.
    * @param m Performance map
    */
-  public void obtainPerformanceInfo(Map m);
+  public void obtainPerformanceInfo(Map<String,Object> m);
   
   /**
    * Handle a user request inside the /!auth/ path. Should only be used to offer
