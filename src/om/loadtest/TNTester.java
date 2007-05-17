@@ -49,6 +49,10 @@ public class TNTester
 	/** If on, runs just a single iteration and displays more info */
 	private final static boolean DEBUG=false;
 	
+	/**
+	 * Run the test.
+	 * @param args not used.
+	 */
 	public static void main(String[] args)
 	{
 		try
@@ -63,7 +67,7 @@ public class TNTester
 	
 	
 	/** Map from String (oucu) -> List of StepStats */
-	private Map mStats=new HashMap();
+	private Map<String,List<StepStats> > mStats=new HashMap<String,List<StepStats> >();
 	
 	/** Statistics for one 'step' of the test process */
 	static class StepStats
@@ -74,15 +78,14 @@ public class TNTester
 		long lTime;
 		
 		/** List of MediaStats */
-		List lMedia=new LinkedList();
+		List<MediaStats> lMedia=new LinkedList<MediaStats>();
 		
 		/** Total time taken for media for this step */
 		long getMediaTime()
 		{
 			long lTotal=0;
-			for(Iterator i=lMedia.iterator();i.hasNext();)
+			for(MediaStats ms : lMedia)
 			{
-				MediaStats ms=(MediaStats)i.next();
 				lTotal+=ms.lTime;			
 			}
 			return lTotal;
@@ -133,7 +136,7 @@ public class TNTester
 		else
 			doSequence(null,USESERVER);
 		
-		mStats=new HashMap();
+		mStats=new HashMap<String,List<StepStats> >();
 		
 		if(DEBUG) return;
 		
@@ -172,8 +175,7 @@ public class TNTester
 			tsTotalXHTML=new TimeStatistics(),
 			tsTotalMedia=new TimeStatistics(),
 			tsTotalCombined=new TimeStatistics();
-		Map 
-		  mMediaTimes=new HashMap();
+		Map<String,TimeStatistics> mMediaTimes=new HashMap<String,TimeStatistics>();
 		
 		// Fill statistics
 		for(Iterator iUser=mStats.values().iterator();iUser.hasNext();)
@@ -199,7 +201,7 @@ public class TNTester
 				{
 					MediaStats ms=(MediaStats)iMedia.next();
 					String sPath=ms.sPath.replaceFirst("^.*/om-tn/","");
-					TimeStatistics tsThis=(TimeStatistics)mMediaTimes.get(sPath);
+					TimeStatistics tsThis=mMediaTimes.get(sPath);
 					if(tsThis==null)
 					{
 						tsThis=new TimeStatistics();
@@ -325,6 +327,7 @@ public class TNTester
 		{
 			start();
 		}
+		@Override
 		public void run()
 		{
 			Random r=new Random(System.currentTimeMillis() ^ this.hashCode());
@@ -350,7 +353,7 @@ public class TNTester
 	}
 	
 	/** Map of OUCU -> host used (String) */
-	private Map mHosts=new HashMap();
+	private Map<String,String> mHosts=new HashMap<String,String>();
 
 	/** 
 	 * Runs through the sequence with one user.
@@ -364,20 +367,20 @@ public class TNTester
 			// Random delay before starting (so all threads don't begin in synch)
 			if(r!=null) Thread.sleep(r.nextInt(DELAYMAX-DELAYMIN+1)+DELAYMIN);
 			
-			Map mTokens=new HashMap();
+			Map<String,String> mTokens=new HashMap<String,String>();
 			mTokens.put("AUTHCOOKIE","1ed6b71fed0260d1d9aa1730b77325a5430cba4a"+sOUCU+"%2E%2E00000000%2E%2E");
 			String sCookie=sendRequestGetCookie(iServer,mTokens,ahsi[0]);
 			mTokens.put("SESSIONCOOKIE",sCookie);
 			
 			if(DEBUG) System.err.println("* Got cookie: "+sCookie);
 			
-			List lSteps;
+			List<StepStats> lSteps;
 			synchronized(mStats)
 			{
-				lSteps=(List)mStats.get(sOUCU);
+				lSteps=mStats.get(sOUCU);
 				if(lSteps==null) 
 				{
-					lSteps=new LinkedList();
+					lSteps=new LinkedList<StepStats>();
 					mStats.put(sOUCU,lSteps);
 				}
 				else throw new Error("wtf?");
@@ -516,7 +519,7 @@ public class TNTester
 		
 		// OK now go through looking for *.gif, jpg, .css, .png
 		String sContent=new String(abData);
-		Set sDone=new HashSet();
+		Set<String> sDone=new HashSet<String>();
 		Matcher m=MEDIALINK.matcher(sContent);
 		while(m.find())
 		{

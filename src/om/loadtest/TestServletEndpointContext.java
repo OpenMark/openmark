@@ -24,9 +24,15 @@ import javax.servlet.http.HttpSession;
 import javax.xml.rpc.handler.MessageContext;
 import javax.xml.rpc.server.ServletEndpointContext;
 
+/**
+ * Implementation of ServletEndpointContext for testing.
+ */
 public class TestServletEndpointContext implements ServletEndpointContext
 {
 	private ServletContext sc;
+	/**
+	 * @param sc
+	 */
 	public TestServletEndpointContext(ServletContext sc)
 	{
 		this.sc=sc;

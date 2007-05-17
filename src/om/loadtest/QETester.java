@@ -24,6 +24,9 @@ import java.util.*;
 import om.axis.qengine.OmServiceServiceLocator;
 import util.misc.*;
 
+/**
+ * Class for load-testing a question engine.
+ */
 public class QETester
 {
 	// Test configuration parameters
@@ -58,8 +61,10 @@ public class QETester
 	 */
 	private final static boolean LEAVESESSIONS=false;
 	
-	
-	
+	/**
+	 * Run the test.
+	 * @param args Not used.
+	 */
 	public static void main(String[] args)
 	{
 		try
@@ -311,6 +316,7 @@ public class QETester
 		{
 			start();
 		}
+		@Override
 		public void run()
 		{
 			Random r=new Random(System.currentTimeMillis() ^ this.hashCode());
@@ -334,7 +340,7 @@ public class QETester
 
 	private void doIteration(Random r,QuestionSteps qsQuestion)
 	{
-		List lThings=new LinkedList();
+		List<String> lThings=new LinkedList<String>();
 		
 		lThings.add(qsQuestion.sID);
 		

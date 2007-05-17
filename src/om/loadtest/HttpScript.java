@@ -115,16 +115,17 @@ public class HttpScript
 		}
 	}
 	
+	/** Regexp for extracting HTTP status code. */
 	public final static Pattern STATUSCODE=Pattern.compile(
 		"HTTP/1.[01x] ([0-9]+) .*");
 	
 	/** List of items */
-	private List lItems=new LinkedList();
+	private List<HttpScript.Item> lItems=new LinkedList<HttpScript.Item>();
 	
 	/** @return List of all items in script */
 	public HttpScript.Item[] getItems()
 	{
-		return (HttpScript.Item[])lItems.toArray(new HttpScript.Item[lItems.size()]);
+		return lItems.toArray(new HttpScript.Item[lItems.size()]);
 	}
 	
 	/** 

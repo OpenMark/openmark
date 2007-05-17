@@ -77,10 +77,11 @@ public class TimeStatistics
 		{
 			dTotal+=aiTimes[i];
 		}
-		return dTotal/(double)iSize;
+		return dTotal/iSize;
 	}
 	
 	/** @return Tab-separated: mean followed by 20 medians */
+	@Override
 	public String toString()
 	{
 		StringBuffer sb=new StringBuffer();
