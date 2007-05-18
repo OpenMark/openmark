@@ -94,13 +94,13 @@ public abstract class QComponent
 	// Other data
 	
 	/** Children in tree. List of either QComponent or String */
-	private LinkedList llChildren=new LinkedList();
+	private LinkedList<Object> llChildren=new LinkedList<Object>();
 	
 	/** Properties (map of String -> Object) */
-	private Map mProperties=new TreeMap();
+	private Map<String,Object> mProperties=new TreeMap<String,Object>();
 	
 	/** Permitted/defined properties (map of String -> PropertyDefinition) */
-	private Map mDefinedProperties=new TreeMap();
+	private Map<String,PropertyDefinition> mDefinedProperties=new TreeMap<String,PropertyDefinition>();
 	
 	/** Owner document */
 	private QDocument qdOwner; 
@@ -130,16 +130,17 @@ public abstract class QComponent
 	 * <p>
 	 * If you override this, you <em>must</em> call superclass version first 
 	 * otherwise document won't get set and things will break. 
+	 * @param parent The parent component.
 	 * @param qd Document within which this QComponent resides
 	 * @param eThis Element that provides the contents of this component
 	 * @param bImplicit True if this component doesn't actually have its own 
 	 *   parent element and eThis belongs to some other component
 	 * @throws OmException If whatever error occurs
 	 */
-	public void init(QComponent qcParent,QDocument qd,Element eThis,boolean bImplicit) throws OmException
+	public void init(QComponent parent,QDocument qd,Element eThis,boolean bImplicit) throws OmException
 	{
 		qdOwner=qd;
-		this.qcParent=qcParent;
+		this.qcParent=parent;
 		
 		// Set up properties
 		defineProperties();
@@ -239,21 +240,21 @@ public abstract class QComponent
 	/** @return Array of ancestors. Array element 0 is parent, 1 is parent's parent, etc */
 	protected QComponent[] getAncestors()
 	{
-		List l=new LinkedList();
+		List<QComponent> l=new LinkedList<QComponent>();
 		QComponent qc=qcParent;
 		while(qc!=null)
 		{
 			l.add(qc);
 			qc=qc.qcParent;
 		}
-		return (QComponent[])l.toArray(new QComponent[l.size()]);		
+		return l.toArray(new QComponent[l.size()]);		
 	}
 	
 	/** 
 	 * @param cType Desired class of ancestor 
 	 * @return The nearest ancestor of that class, or null if none
 	 */ 
-	protected QComponent findAncestor(Class cType)
+	protected QComponent findAncestor(Class<? extends QComponent> cType)
 	{
 		if(qcParent==null) return null;
 		if(cType.isAssignableFrom(qcParent.getClass())) return qcParent;
@@ -692,7 +693,7 @@ public abstract class QComponent
 		{
 			Attr a=(Attr)nnm.item(i);
 			String sName=a.getName();
-			PropertyDefinition pd=(PropertyDefinition)mDefinedProperties.get(sName);
+			PropertyDefinition pd=mDefinedProperties.get(sName);
 			if(pd==null)
 				throw new OmFormatException(
 					"<"+eThis.getTagName()+">: property '"+a.getName()+"' not defined");
@@ -893,7 +894,7 @@ public abstract class QComponent
 	 */
 	private void checkProperty(String sName,Class c) throws OmDeveloperException
 	{
-		PropertyDefinition pd=(PropertyDefinition)mDefinedProperties.get(sName);
+		PropertyDefinition pd=mDefinedProperties.get(sName);
 		if(pd==null) throw new OmDeveloperException(
 			"Attempt to access undefined property: "+sName);
 		if(pd.cType!=c) throw new OmDeveloperException(
@@ -946,13 +947,18 @@ public abstract class QComponent
 	/**
 	 * Obtains a unique ID for component. If one wasn't specified, an automatically
 	 *   generated one based on the position within the xml document will be used.
-	 * @return Unique ID for component */
+	 * @return Unique ID for component 
+	 * @throws OmDeveloperException
+	 */
 	public String getID() throws OmDeveloperException
 	{
 		return getString(PROPERTY_ID);
 	}
 	
-	/** @return True if the user set an ID on this component */
+	/**
+	 * @return True if the user set an ID on this component
+	 * @throws OmDeveloperException 
+	 */
 	public boolean hasUserSetID() throws OmDeveloperException
 	{
 		return !bGeneratedID && isPropertySet(PROPERTY_ID);
@@ -1024,11 +1030,11 @@ public abstract class QComponent
 		try
 		{
 			if(!getBoolean(PROPERTY_ENABLED)) return false;
-			QComponent qcParent=getParent();
-			if(qcParent==null)
+			QComponent parent=getParent();
+			if(parent==null)
 				return true;
 			else
-				return qcParent.isEnabled();
+				return parent.isEnabled();
 		}
 		catch(OmDeveloperException e)
 		{
@@ -1073,12 +1079,11 @@ public abstract class QComponent
 	 * @param cClass Desired Java class
 	 * @param cList Array of matching components
 	 */
-	final void listSubComponents(Class cClass,Collection cList)
+	final void listSubComponents(Class<?> cClass,Collection<QComponent> cList)
 	{
 		if(getClass()==cClass) cList.add(this);
-		for(Iterator i=llChildren.iterator();i.hasNext();)
+		for(Object o : llChildren)
 		{
-			Object o=i.next();
 			if(o instanceof QComponent)
 			{
 				((QComponent)o).listSubComponents(cClass,cList);
@@ -1092,13 +1097,12 @@ public abstract class QComponent
 	 */ 
 	public QComponent[] getComponentChildren() 
 	{
-		List lResult=new LinkedList();
-		for(Iterator i=llChildren.iterator();i.hasNext();)
+		List<QComponent> lResult=new LinkedList<QComponent>();
+		for(Object o : llChildren)
 		{
-			Object o=i.next();
-			if(o instanceof QComponent) lResult.add(o);
+			if(o instanceof QComponent) lResult.add((QComponent)o);
 		}
-		return (QComponent[])lResult.toArray(new QComponent[0]);
+		return lResult.toArray(new QComponent[lResult.size()]);
 	}
 	
 	/**
@@ -1207,6 +1211,7 @@ public abstract class QComponent
 	 * Given a colour, returns the 3/6-digit HTML # version.
 	 * @param sColour Colour (either #rgb, #rrggbb, or colour constant)
 	 * @return #rgb or #rrggbb
+	 * @throws OmDeveloperException 
 	 */
 	public String convertHash(String sColour) throws OmDeveloperException
 	{
@@ -1265,6 +1270,7 @@ public abstract class QComponent
 	 * foreground and background colours as # version.
 	 * @param weight (=1 returns background, =0 returns foregound)
 	 * @return #rgb or #rrggbb
+	 * @throws OmDeveloperException 
 	 */
 	public String interColour(double weight) throws OmDeveloperException
 	{
