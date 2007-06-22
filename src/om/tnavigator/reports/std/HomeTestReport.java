@@ -35,7 +35,11 @@ public class HomeTestReport implements OmTestReport {
 	
 	private NavigatorServlet ns;
 	
-	HomeTestReport(NavigatorServlet ns)
+	/**
+	 * Create an instance of this report.
+	 * @param ns the navigator servlet we belong to.
+	 */
+	public HomeTestReport(NavigatorServlet ns)
 	{
 		this.ns = ns;
 	}

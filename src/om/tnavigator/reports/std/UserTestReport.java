@@ -27,7 +27,8 @@ public class UserTestReport implements OmTestReport {
 	NavigatorServlet ns;
 	
 	/**
-	 * @param ns
+	 * Create an instance of this report.
+	 * @param ns the navigator servlet we belong to.
 	 */
 	public UserTestReport(NavigatorServlet ns) {
 		this.ns = ns;

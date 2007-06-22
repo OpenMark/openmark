@@ -32,6 +32,7 @@ import om.tnavigator.reports.std.*;
  */
 public class ReportDispatcher
 {
+	private final static String REPORT_PACKAGE = "om.tnavigator.reports.";
 	private final Map<String,OmReport> systemReports = new HashMap<String,OmReport>();
 	private final Map<String,OmTestReport> testReports = new HashMap<String,OmTestReport>();
 	private static final Class<?>[] standardReports = new Class<?>[] {
@@ -56,11 +57,11 @@ public class ReportDispatcher
 		{
 			try
 			{
-				Class<?> reportClass = Class.forName("om.tnavigator.reports" + reportClassName);
+				Class<?> reportClass = Class.forName(REPORT_PACKAGE + reportClassName);
 				reportClasses.add(reportClass);
 			}
 			catch (ClassNotFoundException e) {
-				throw new OmException("Cannot find report class om.tnavigator.reports" + reportClassName, e);
+				throw new OmException("Cannot find report class " + REPORT_PACKAGE + reportClassName, e);
 			}
 		}
 		for (Class<?> reportClass : reportClasses)
@@ -69,25 +70,29 @@ public class ReportDispatcher
 			{
 				if (OmReport.class.isAssignableFrom(reportClass))
 				{
-					OmReport report = reportClass.asSubclass(OmReport.class).getConstructor(NavigatorServlet.class)
-							.newInstance(ns);
+					OmReport report = reportClass.asSubclass(OmReport.class)
+							.getConstructor(NavigatorServlet.class).newInstance(ns);
 					String urlName = report.getUrlReportName();
 					if (systemReports.containsKey(urlName))
 					{
 						throw new OmException("Report with URL " + urlName + " already registerd.");
 					}
 					systemReports.put(urlName, report);
+					ns.getLog().logDebug("ReportDispatcher", "Registering system report '" +
+							urlName + "' implemented by " + report.getClass().getName() + ".");
 				}
 				if (OmTestReport.class.isAssignableFrom(reportClass))
 				{
-					OmTestReport report = reportClass.asSubclass(OmTestReport.class).getConstructor(NavigatorServlet.class)
-							.newInstance(ns);
+					OmTestReport report = reportClass.asSubclass(OmTestReport.class)
+							.getConstructor(NavigatorServlet.class).newInstance(ns);
 					String urlName = report.getUrlTestReportName();
 					if (testReports.containsKey(urlName))
 					{
 						throw new OmException("Report with URL " + urlName + " already registerd.");
 					}
 					testReports.put(urlName, report);
+					ns.getLog().logDebug("ReportDispatcher", "Registering test report '" +
+							urlName + "' implemented by " + report.getClass().getName() + ".");
 				}
 			}
 			catch (Exception e)

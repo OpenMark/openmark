@@ -17,7 +17,8 @@ import om.tnavigator.reports.TabularReportWriter;
  */
 public class TestReport extends TabularReportBase {
 	/**
-	 * @param ns
+	 * Create an instance of this report.
+	 * @param ns the navigator servlet we belong to.
 	 */
 	public TestReport(NavigatorServlet ns) {
 		super(ns);
