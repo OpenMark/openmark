@@ -133,7 +133,7 @@ public class ReportDispatcher
 		}
 		else
 		{
-			throw new OmException("'" + suffix + "' is not a valid report name.");
+			throw new OmException("'" + reportName + "' is not a valid report name.");
 		}
 	}
 
@@ -147,7 +147,8 @@ public class ReportDispatcher
 	public void handleTestReport(UserSession us,String suffix,HttpServletRequest request,HttpServletResponse response)
 		throws Exception
 	{
-			
+		ns.getLog().logDebug("ReportDispatcher", "Handling report request for report " + suffix);
+		
 		// Require admin privileges AND within university (just for paranoia's sake)
 		// AND view report thing
 		if(!us.bAdmin || !us.bAllowReports)
@@ -171,13 +172,13 @@ public class ReportDispatcher
 		{
 			suffix = "";
 		}
-		if(systemReports.containsKey(reportName))
+		if(testReports.containsKey(reportName))
 		{
-			systemReports.get(reportName).handleReport(suffix, request, response);
+			testReports.get(reportName).handleTestReport(us, suffix, request, response);
 		}
 		else
 		{
-			throw new OmException("'" + suffix + "' is not a valid report name.");
+			throw new OmException("'" + reportName + "' is not a valid report name.");
 		}
 	}
 }
