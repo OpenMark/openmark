@@ -74,6 +74,9 @@ public class NavigatorConfig
 	/** Class of database plugin */
 	private String dbClass;
 	
+	/** Extra report plugins */
+	private String[] extraReports;
+	
 	/** Parameters for auth */
 	private Map authParams=null;
 	
@@ -138,6 +141,9 @@ public class NavigatorConfig
 	/** IP addresses that are trusted for server status */
 	private String[] trustedAddresses;
 	
+	/** IP addresses from which you can run system reports. */
+	private String[] secureAddresses;
+	
 	/**
 	 * Initialises config.
 	 * @param fConfig Config file
@@ -166,6 +172,14 @@ public class NavigatorConfig
 			if(!("."+trustedAddresses[i]).matches("(.(([0-9]+(-[0-9]+)?)|\\*)){4}"))
 				throw new IOException(
 					"navigator.xml: <trustedaddresses> <address> not in valid format: "+trustedAddresses[i]);
+		}
+		
+		secureAddresses=XML.getTextFromChildren(XML.getChild(eRoot,"secureaddresses"),"address");
+		for(int i=0;i<secureAddresses.length;i++)
+		{
+			if(!("."+secureAddresses[i]).matches("(.(([0-9]+(-[0-9]+)?)|\\*)){4}"))
+				throw new IOException(
+					"navigator.xml: <secureaddresses> <address> not in valid format: "+secureAddresses[i]);
 		}
 		
 		Mail.setSMTPHost(XML.getText(eRoot,"smtpserver"));
@@ -206,6 +220,15 @@ public class NavigatorConfig
 			"navigator.xml: requires one <url this='yes'> inside <testnavigators>");
 		otherNavigators=lNavigators.toArray(new String[lNavigators.size()]);
 		
+		if(XML.hasChild(eRoot,"extrareports"))
+		{
+			extraReports=XML.getTextFromChildren(XML.getChild(eRoot,"extrareports"),"report");
+		}
+		else
+		{
+			extraReports = new String[0];
+		}
+		
 		if(XML.hasChild(eRoot,"debugflags"))
 		{
 			Element[] aeFlags=XML.getChildren(XML.getChild(eRoot,"debugflags"));
@@ -234,12 +257,22 @@ public class NavigatorConfig
 		return oq.getURL(dbServer,dbName,dbUsername,dbPassword);
 	}
 	
-	/** @return Array of trusted IP addresses in the form 0.1.2.3 or 0.1.2.* or
+	/**
+	 * @return Array of trusted IP addresses in the form 0.1.2.3 or 0.1.2.* or
 	 *    0.1.26-49.*
 	 */
 	public String[] getTrustedAddresses() 
 	{
 		return trustedAddresses;
+	}
+	
+	/**
+	 * @return Array of trusted IP addresses in the form 0.1.2.3 or 0.1.2.* or
+	 *    0.1.26-49.*
+	 */
+	public String[] getSecureAddresses() 
+	{
+		return secureAddresses;
 	}
 	
 	/** @return URLs for all Om question engines */
@@ -254,6 +287,13 @@ public class NavigatorConfig
 		return otherNavigators;
 	}
 	
+	/**
+	 * @return the extraReports
+	 */
+	public String[] getExtraReports() {
+		return extraReports;
+	}
+
 	/**
 	 * @param sTagName Name of tag/flag looked for
 	 * @return True if it's present

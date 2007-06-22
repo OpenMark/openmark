@@ -20,14 +20,16 @@ package om.tnavigator;
 import java.io.*;
 import java.net.*;
 import java.rmi.RemoteException;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.*;
 import java.util.*;
-import java.util.Date;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.MessagingException;
-import javax.servlet.*;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.xml.rpc.ServiceException;
 
@@ -35,7 +37,9 @@ import om.*;
 import om.OmException;
 import om.axis.qengine.*;
 import om.tnavigator.auth.Authentication;
-import om.tnavigator.db.*;
+import om.tnavigator.db.DatabaseAccess;
+import om.tnavigator.db.OmQueries;
+import om.tnavigator.reports.ReportDispatcher;
 
 import org.apache.axis.AxisFault;
 import org.w3c.dom.*;
@@ -71,13 +75,13 @@ public class NavigatorServlet extends HttpServlet
 	private File questionBankFolder;
 
 	/** Map of cookie value (String) -> UserSession */
-	private Map sessions=new HashMap();
+	private Map<String,UserSession> sessions=new HashMap<String,UserSession>();
 
 	/** Map of OUCU-testID (String) -> UserSession */
-	private Map usernames=new HashMap();
+	private Map<String,UserSession> usernames=new HashMap<String,UserSession>();
 
 	/** Map of OUCU-testID (String) -> Long (date that prohibition expires) */
-	private Map tempForbid=new HashMap();
+	private Map<String,Long> tempForbid=new HashMap<String,Long>();
 
 	/** Log */
 	private Log l;
@@ -89,7 +93,7 @@ public class NavigatorServlet extends HttpServlet
 	int checkOmServiceAvailable() throws RemoteException { return osb.checkAvailable(); }
 
 	/** Reports-handling code */
-	private ReportPages reports=new ReportPages(this);
+	private ReportDispatcher reports;
 
 	/** Status page display code */
 	private StatusPages status=new StatusPages(this);
@@ -103,6 +107,7 @@ public class NavigatorServlet extends HttpServlet
 		return new File(getServletContext().getRealPath("WEB-INF/templates"));
 	}
 
+	@Override
 	public void init() throws ServletException
 	{
 		ServletContext sc=getServletContext();
@@ -203,6 +208,15 @@ public class NavigatorServlet extends HttpServlet
 		{
 			throw new ServletException("Failed to initialise XML templates",ioe);
 		}
+		
+		try
+		{
+			reports = new ReportDispatcher(this, Arrays.asList(nc.getExtraReports()));	
+		}
+		catch(Exception e)
+		{
+			throw new ServletException("Error creating report classes",e);
+		}
 
 		// Start expiry thread
 		sessionExpirer=new SessionExpirer();
@@ -224,6 +238,7 @@ public class NavigatorServlet extends HttpServlet
 		{
 			super(SESSIONCHECKDELAY);
 		}
+		@Override
 		protected void tick()
 		{
 			synchronized(sessions)
@@ -253,6 +268,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 	}
 
+	@Override
 	public void destroy()
 	{
 		// Kill expiry thread
@@ -273,12 +289,14 @@ public class NavigatorServlet extends HttpServlet
 		ShutdownManager.shutdown();
 	}
 
+	@Override
 	protected void doGet(HttpServletRequest request,HttpServletResponse response)
 		throws ServletException,IOException
 	{
 		handle(false,request,response);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request,HttpServletResponse response)
 		throws ServletException,IOException
 	{
@@ -304,12 +322,12 @@ public class NavigatorServlet extends HttpServlet
 	 * particular test. Before calling this, you must initialise the random
 	 * seed.
 	 * @param us User session
-	 * @param rt TODO
+	 * @param rt Used for storing performance information
 	 * @param sTestID Test ID
 	 * @param request HTTP request
 	 * @param response HTTP response (used if they don't have access)
-	 * @param bFinished TODO
-	 * @param bStarted TODO
+	 * @param bFinished Whether the students has finished this test.
+	 * @param bStarted Whether the students has already started this test.
 	 * @throws StopException If something was sent to user
 	 * @throws OmException Any error
 	 */
@@ -397,6 +415,7 @@ public class NavigatorServlet extends HttpServlet
 			start();
 		}
 
+		@Override
 		public void run()
 		{
 			String[] asURL=nc.getOtherNavigators();
@@ -463,7 +482,7 @@ public class NavigatorServlet extends HttpServlet
 	 * List of NewSession objects that are stored to check we don't start a new
 	 * session twice in a row to same address (= cookies off)
 	 */
-	private LinkedList cookiesOffCheck=new LinkedList();
+	private LinkedList<NewSession> cookiesOffCheck=new LinkedList<NewSession>();
 	private static class NewSession
 	{
 		long lTime;
@@ -612,6 +631,13 @@ public class NavigatorServlet extends HttpServlet
 				return;
 			}
 
+			// Handle system report requests
+			if(!bPost && sPath.startsWith("/!report/"))
+			{
+				reports.handleReport(sPath.substring("/!report/".length()),request,response);
+				return;
+			}
+
 			// Get test ID and determine type of request
 			Pattern pURL=Pattern.compile("^/([^/]+)/?(.*)$");
 			Matcher m=pURL.matcher(sPath);
@@ -654,7 +680,7 @@ public class NavigatorServlet extends HttpServlet
 			{
 				// Remove entries from cookies-off list after 1 second
 				while(!cookiesOffCheck.isEmpty() &&
-						rt.lStart - ((NewSession)cookiesOffCheck.getFirst()).lTime > 1000)
+						rt.lStart - (cookiesOffCheck.getFirst()).lTime > 1000)
 				{
 					cookiesOffCheck.removeFirst();
 				}
@@ -668,7 +694,7 @@ public class NavigatorServlet extends HttpServlet
 				else
 				{
 					// Get session
-					us=(UserSession)sessions.get(sCookie);
+					us=sessions.get(sCookie);
 
 					// Check cookies in case they changed
 					if(us.iAuthHash!=0 && us.iAuthHash!=iAuthHash)
@@ -737,7 +763,7 @@ public class NavigatorServlet extends HttpServlet
 					us.sCheckedOUCUKey=sOUCU+"-"+sTestID;
 
 					// Check the temp-forbid list
-					Long lTimeout=(Long)tempForbid.get(us.sCheckedOUCUKey);
+					Long lTimeout=tempForbid.get(us.sCheckedOUCUKey);
 					if(lTimeout!=null && lTimeout.longValue() > System.currentTimeMillis())
 					{
 						// Kill session from main list & mark it to send error message later
@@ -750,7 +776,7 @@ public class NavigatorServlet extends HttpServlet
 						if(lTimeout!=null) tempForbid.remove(us.sCheckedOUCUKey);
 
 						// Put this in the OUCU->session map
-						UserSession usOld=(UserSession)usernames.put(us.sCheckedOUCUKey,us);
+						UserSession usOld=usernames.put(us.sCheckedOUCUKey,us);
 						// If there was one already there, get rid of it
 						if(usOld!=null)
 						{
@@ -979,7 +1005,7 @@ public class NavigatorServlet extends HttpServlet
 				{
 					if(sCommand.startsWith("reports!"))
 					{
-						reports.handle(us,sCommand.substring("reports!".length()),request,response);
+						reports.handleTestReport(us,sCommand.substring("reports!".length()),request,response);
 						return;
 					}
 					// Redo command is posted
@@ -1269,7 +1295,7 @@ public class NavigatorServlet extends HttpServlet
 		throws Exception
 	{
 		Document d=XML.parse(new File(getServletContext().getRealPath("WEB-INF/templates/progresssummary.xhtml")));
-		Map mReplace=new HashMap();
+		Map<String,String> mReplace=new HashMap<String,String>();
 		mReplace.put("EXTRA",endOfURL(request));
 		XML.replaceTokens(d,mReplace);
 		Element eDiv=XML.find(d,"id","summarytable");
@@ -1675,9 +1701,13 @@ public class NavigatorServlet extends HttpServlet
 			"^(https?://[^/]+/[^/]+/).*$","$1");
 	}
 
-	static class QuestionVersion
+	/**
+	 * Class for storing a question version number.
+	 */
+	public static class QuestionVersion
 	{
 		int iMajor,iMinor;
+		@Override
 		public String toString()
 		{
 			return iMajor+"."+iMinor;
@@ -1689,8 +1719,9 @@ public class NavigatorServlet extends HttpServlet
 	 * @param sQuestionID Question ID
 	 * @param iRequiredVersion Desired version or TestQuestion.VERSION_UNSPECIFIEDD
 	 * @return Appropriate version
+	 * @throws OmException 
 	 */
-	QuestionVersion getLatestVersion(String sQuestionID,int iRequiredVersion)
+	public QuestionVersion getLatestVersion(String sQuestionID,int iRequiredVersion)
 		throws OmException
 	{
 		// This should use a proper question bank at some point
@@ -2100,7 +2131,7 @@ public class NavigatorServlet extends HttpServlet
 
 	private PartialScore getScore(RequestTimings rt,UserSession us,HttpServletRequest request) throws Exception
 	{
-		Map mScores=new HashMap();
+		Map<String,QuestionScoreDetails> mScores=new HashMap<String,QuestionScoreDetails>();
 		DatabaseAccess.Transaction dat=da.newTransaction();
 		try
 		{
@@ -2132,7 +2163,7 @@ public class NavigatorServlet extends HttpServlet
 
 				// Find question. If it's not there create it - all questions get
 				// an entry in the hashmap even if they have no results
-				QuestionScoreDetails qsd=(QuestionScoreDetails)mScores.get(sQuestion);
+				QuestionScoreDetails qsd=mScores.get(sQuestion);
 				if(qsd==null)
 				{
 					qsd=new QuestionScoreDetails();
@@ -2159,9 +2190,9 @@ public class NavigatorServlet extends HttpServlet
 				if(sAxis!=null)
 				{
 					if(sAxis.equals(""))
-						qsd.mAxes.put(null,new Integer(iScore));
+						qsd.mAxes.put(null,iScore);
 					else
-						qsd.mAxes.put(sAxis,new Integer(iScore));
+						qsd.mAxes.put(sAxis,iScore);
 				}
 			}
 		}
@@ -2185,7 +2216,7 @@ public class NavigatorServlet extends HttpServlet
 			PartialScore ps=new PartialScore();
 			for(int iAxis=0;iAxis<asMax.length;iAxis++)
 			{
-				Integer iThis=(Integer)qsd.mAxes.get(asMax[iAxis].getAxis());
+				Integer iThis=qsd.mAxes.get(asMax[iAxis].getAxis());
 				int iValue=iThis==null ? 0 : iThis.intValue();
 				ps.setScore(asMax[iAxis].getAxis(),iValue,asMax[iAxis].getMarks());
 			}
@@ -2216,7 +2247,16 @@ public class NavigatorServlet extends HttpServlet
 		return us.tg.getFinalScore();
 	}
 
-	Score[] getMaximumScores(RequestTimings rt,String sID,String sVersion,HttpServletRequest request)
+	/**
+	 * @param rt
+	 * @param sID
+	 * @param sVersion
+	 * @param request
+	 * @return something to do with scores.
+	 * @throws IOException
+	 * @throws RemoteException
+	 */
+	public Score[] getMaximumScores(RequestTimings rt,String sID,String sVersion,HttpServletRequest request)
 		throws IOException,RemoteException
 	{
 		Element eMetadata=getQuestionMetadata(rt,sID,sVersion,request);
@@ -2258,7 +2298,7 @@ public class NavigatorServlet extends HttpServlet
 	/** Just used in getScore */
 	private static class QuestionScoreDetails
 	{
-		Map mAxes=new HashMap();
+		Map<String,Integer> mAxes=new HashMap<String,Integer>();
 		QuestionVersion qv=new QuestionVersion();
 	}
 
@@ -2270,7 +2310,7 @@ public class NavigatorServlet extends HttpServlet
 	 * There is no need to refresh it, because questions are
 	 * guaranteed to change in version if their content changes.
 	 */
-	private Map questionMetadata=new HashMap();
+	private Map<String,Element> questionMetadata=new HashMap<String,Element>();
 
 	/**
 	 * Obtains metadata for a question, from the cache or by requesting it from
@@ -2291,7 +2331,7 @@ public class NavigatorServlet extends HttpServlet
 		Element e;
 		synchronized(questionMetadata)
 		{
-			e=(Element)questionMetadata.get(sKey);
+			e=questionMetadata.get(sKey);
 			if(e!=null) return e;
 		}
 
@@ -2823,7 +2863,7 @@ public class NavigatorServlet extends HttpServlet
 			{
 				String sEmail=IO.loadString(
 						new FileInputStream(getServletContext().getRealPath("WEB-INF/templates/submit.email.txt")));
-				Map mReplace=new HashMap();
+				Map<String,String> mReplace=new HashMap<String,String>();
 				mReplace.put("NAME", us.tdDefinition.getName());
 				mReplace.put("TIME",(new SimpleDateFormat("dd MMMM yyyy HH:mm")).format(new Date()));
 				sEmail=XML.replaceTokens(sEmail, "%%", mReplace);
@@ -2852,7 +2892,7 @@ public class NavigatorServlet extends HttpServlet
 		{
 			// The 'end, are you sure?' page
 			Document d=XML.parse(new File(getServletContext().getRealPath("WEB-INF/templates/endcheck.xhtml")));
-			Map mReplace=new HashMap();
+			Map<String,Object> mReplace=new HashMap<String,Object>();
 			mReplace.put("EXTRA",endOfURL(request));
 			mReplace.put("BUTTON",us.tdDefinition.getConfirmButtonLabel());
 			mReplace.put("CONFIRMPARAS",us.tdDefinition.getConfirmParagraphs());
@@ -2993,7 +3033,7 @@ public class NavigatorServlet extends HttpServlet
 		{
 			// The form
 			Document d=XML.parse(new File(getServletContext().getRealPath("WEB-INF/templates/accessform.xhtml")));
-			Map mReplace=new HashMap();
+			Map<String,String> mReplace=new HashMap<String,String>();
 			mReplace.put("EXTRA",endOfURL(request));
 			XML.replaceTokens(d,mReplace);
 
@@ -3340,7 +3380,7 @@ public class NavigatorServlet extends HttpServlet
 		Resource r;
 		synchronized(us)
 		{
-			r=(Resource)us.mResources.get(sResource);
+			r=us.mResources.get(sResource);
 		}
 		if(r==null)
 		{
@@ -3402,7 +3442,7 @@ public class NavigatorServlet extends HttpServlet
 				rs=oq.queryDoneQuestions(dat,us.iDBti);
 
 				// Get all those question IDs
-				Set sDone=new HashSet();
+				Set<String> sDone=new HashSet<String>();
 				while(rs.next()) sDone.add(rs.getString(1));
 
 				// Go through marking questions done
@@ -3510,14 +3550,14 @@ public class NavigatorServlet extends HttpServlet
 		synchronized(sessions)
 		{
 			// Ditch existing session
-			UserSession us=(UserSession)usernames.remove(sOucuTest);
+			UserSession us=usernames.remove(sOucuTest);
 			if(us!=null) sessions.remove(us.sCookie);
 
 			// Forbid that user for 1 minute [this is intended to prevent the
 			// possibility of timing issues allowing a user to get logged on to both
 			// servers at once; should that happen, chances are they'll instead be
 			// *dumped* from both servers at once (for 60 seconds).
-			tempForbid.put(sOucuTest,new Long(System.currentTimeMillis() + 60000));
+			tempForbid.put(sOucuTest,System.currentTimeMillis() + 60000L);
 
 			// Send response
 			response.setContentType("text/plain");
@@ -3541,11 +3581,12 @@ public class NavigatorServlet extends HttpServlet
 	/**
 	 * @param request HTTP request
 	 * @return True if originating IP is within OU network
+	 * @throws UnknownHostException 
 	 */
-	boolean checkLocalIP(HttpServletRequest request) throws UnknownHostException
+	public boolean checkLocalIP(HttpServletRequest request) throws UnknownHostException
 	{
 		// IP address must be in OU
-		if(!isOUIP(InetAddress.getByName(request.getRemoteAddr()))) return false;
+		if(!isIPInList(InetAddress.getByName(request.getRemoteAddr()), nc.getTrustedAddresses())) return false;
 
 		// Check originating address, if it went through the load balancer
 
@@ -3554,7 +3595,31 @@ public class NavigatorServlet extends HttpServlet
 		String sClientIP=request.getHeader("client_ip");
 		if(sClientIP==null) sClientIP=request.getHeader("Client-IP");
 		if(sClientIP!=null)
-			return isOUIP(InetAddress.getByName(sClientIP));
+			return isIPInList(InetAddress.getByName(sClientIP), nc.getTrustedAddresses());
+
+		// No load-balancer? OK.
+		return true;
+	}
+
+
+	/**
+	 * @param request HTTP request
+	 * @return True if originating IP is within OU network
+	 * @throws UnknownHostException 
+	 */
+	public boolean checkSecureIP(HttpServletRequest request) throws UnknownHostException
+	{
+		// IP address must be in OU
+		if(!isIPInList(InetAddress.getByName(request.getRemoteAddr()), nc.getSecureAddresses())) return false;
+
+		// Check originating address, if it went through the load balancer
+
+		// students.open.ac.uk actually provides the one with the underline,
+		// but I think the more standard header would be as below
+		String sClientIP=request.getHeader("client_ip");
+		if(sClientIP==null) sClientIP=request.getHeader("Client-IP");
+		if(sClientIP!=null)
+			return isIPInList(InetAddress.getByName(sClientIP), nc.getSecureAddresses());
 
 		// No load-balancer? OK.
 		return true;
@@ -3564,7 +3629,7 @@ public class NavigatorServlet extends HttpServlet
 	 * @param ia An address
 	 * @return True if that address is in an OU IP range
 	 */
-	private boolean isOUIP(InetAddress ia)
+	private boolean isIPInList(InetAddress ia, String[] addresses)
 	{
 		byte[] ab=ia.getAddress();
 		if(ab.length==16)
@@ -3582,7 +3647,6 @@ public class NavigatorServlet extends HttpServlet
 		else if(ab.length!=4) throw new Error(
 			"InetAddress that wasn't 4 or 16 bytes long?!");
 
-		String[] addresses=nc.getTrustedAddresses();
 		for(int i=0;i<addresses.length;i++)
 		{
 			String[] bytes=addresses[i].split("\\.");
@@ -3709,7 +3773,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 
 		// Do replace
-		Map mReplace=new HashMap();
+		Map<String,String> mReplace=new HashMap<String,String>();
 		if(sAccessBit==null) // No accessibility
 		{
 			mReplace.put("FG","black");
@@ -3828,7 +3892,7 @@ public class NavigatorServlet extends HttpServlet
 	 * Called from StatusPages to add key performance information into a map.
 	 * @param m Map to fill with info
 	 */
-	void obtainPerformanceInfo(Map m)
+	void obtainPerformanceInfo(Map<String,Object> m)
 	{
 		System.gc();
 		System.gc();
@@ -3861,8 +3925,8 @@ public class NavigatorServlet extends HttpServlet
 	 * @param us Session
 	 * @param sTitle Page main title
 	 * @param sAuxTitle Auxiliary title (use "" if not needed)
-	 * @param sTip TODO
 	 * @param sTip Text that appears as tooltip on main heading (null if none)
+	 * @param sProgressInfo Text that appears where question progress info is shown.
 	 * @param sXHTML XHTML content of main part of page
 	 * @param bIncludeNav If true, includes the question numbers etc.
 	 * @param request HTTP request
@@ -3870,7 +3934,7 @@ public class NavigatorServlet extends HttpServlet
 	 * @param bClearCSS True if CSS should be cleared before serving this page
 	 * @throws IOException Any error in serving page
 	 */
-	void serveTestContent(UserSession us,String sTitle,String sAuxTitle,
+	public void serveTestContent(UserSession us,String sTitle,String sAuxTitle,
 		String sTip,String sProgressInfo,
 		String sXHTML,boolean bIncludeNav, HttpServletRequest request, HttpServletResponse response, boolean bClearCSS)
 		throws IOException
@@ -3885,7 +3949,7 @@ public class NavigatorServlet extends HttpServlet
 			isSingle(us)
 			? ( bPlain ? singlesPlainTemplate : singlesTemplate )
 			: ( bPlain ? plainTemplate : template) );
-		Map mReplace=new HashMap();
+		Map<String,Object> mReplace=new HashMap<String,Object>();
 		if(isSingle(us) || sTitle.equals(us.tdDefinition.getName()))
 			mReplace.put("TITLEBAR",sTitle);
 		else
@@ -4124,7 +4188,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 
 		// Fix up the replacement variables
-		mReplace=new HashMap(getLabelReplaceMap(us));
+		mReplace=new HashMap<String,Object>(getLabelReplaceMap(us));
 		mReplace.put("RESOURCES","resources/"+us.iIndex);
 		mReplace.put("FORMTARGET","./"+endOfURL(bPlain));
 		Element eInput=d.createElement("input");
@@ -4142,7 +4206,7 @@ public class NavigatorServlet extends HttpServlet
 	}
 
 	/** Cache label replacement (Map of String (labelset id) -> Map ) */
-	private Map labelReplace=new HashMap();
+	private Map<String,Map<String,String> > labelReplace=new HashMap<String,Map<String,String> >();
 
 	/**
 	 * Returns the map of label replacements appropriate for the current session.
@@ -4150,7 +4214,7 @@ public class NavigatorServlet extends HttpServlet
 	 * @return Map of replacements (don't change this)
 	 * @throws IOException Any problems loading it
 	 */
-	private Map getLabelReplaceMap(UserSession us) throws IOException
+	private Map<String,String> getLabelReplaceMap(UserSession us) throws IOException
 	{
 		// Check labelset ID
 		String sKey;
@@ -4161,11 +4225,11 @@ public class NavigatorServlet extends HttpServlet
 			sKey=us.tdDefinition.getLabelSet();
 
 		// Get from cache
-		Map mLabels=(Map)labelReplace.get(sKey);
+		Map<String,String> mLabels=labelReplace.get(sKey);
 		if(mLabels!=null) return mLabels;
 
 		// Load from file
-		Map m=new HashMap();
+		Map<String,String> m=new HashMap<String,String>();
 		File f=new File(getServletContext().getRealPath("WEB-INF/labels/"+sKey+".xml"));
 		if(!f.exists())
 			throw new IOException("Unable to find requested label set: "+sKey);
@@ -4291,7 +4355,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 
 		boolean bRemovedBackto=false;
-		Map m=new HashMap();
+		Map<String,String> m=new HashMap<String,String>();
 		try
 		{
 			response.setStatus(iCode);
@@ -4540,6 +4604,7 @@ public class NavigatorServlet extends HttpServlet
 	{
 		AdminAlertLater()	{	start();}
 
+		@Override
 		public void run()
 		{
 			try

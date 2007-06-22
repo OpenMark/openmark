@@ -20,6 +20,7 @@ package om.tnavigator;
 import java.util.HashMap;
 import java.util.Map;
 
+import om.OmException;
 import om.axis.qengine.Resource;
 import om.tnavigator.auth.UserDetails;
 
@@ -75,10 +76,10 @@ public class UserSession
 	int iAuthHash=0;
 	
 	/** Whether they have admin access */
-	boolean bAdmin=false;
+	public boolean bAdmin=false;
 	
 	/** Whether they can also view reports */
-	boolean bAllowReports=false;
+	public boolean bAllowReports=false;
 	
 	/** Map of String (filename) -> Resource */
 	Map<String,Resource> mResources=new HashMap<String,Resource>();
@@ -124,4 +125,43 @@ public class UserSession
 	 * or not. 1=sent, -1=error
 	 */
 	int iEmailSent=0;
+	
+	/**
+	 * A place where any extra information can be stored in the session.
+	 */
+	private Map<String,Object> extraSessionInfo = new HashMap<String, Object>();
+	
+	/**
+	 * @param key
+	 * @param value
+	 */
+	public void store(String key, Object value)
+	{
+		extraSessionInfo.put(key,value);
+	}
+
+	/**
+	 * @param <T> 
+	 * @param key
+	 * @param dataType
+	 * @return the requested value, assuring that it is of type dataType.
+	 * @throws OmException 
+	 */
+	public <T> T retrive(String key, Class<T> dataType) throws OmException
+	{
+		Object value =  extraSessionInfo.get(key);
+		if (dataType.isAssignableFrom(value.getClass())) {
+			return dataType.cast(value);
+		}
+		throw new OmException("Could not retrieve '" + key + "' from the session");
+	}
+
+	/**
+	 * @param key
+	 * @param value
+	 */
+	public void remove(String key)
+	{
+		extraSessionInfo.remove(key);
+	}
 }
