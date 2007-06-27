@@ -42,6 +42,13 @@ public class UserTestReport implements OmTestReport {
 	}
 
 	/* (non-Javadoc)
+	 * @see om.tnavigator.reports.OmTestReport#getReadableReportName()
+	 */
+	public String getReadableReportName() {
+		return null;
+	}
+
+	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.OmTestReport#handleTestReport(om.tnavigator.UserSession, java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	public void handleTestReport(UserSession us, String sUser,

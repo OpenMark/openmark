@@ -46,5 +46,4 @@ public class TsvReportWriter extends TextReportWriter {
 		response.setHeader("Content-Disposition","attachment; filename=report-"+
 				batchid+".txt");
 	}
-
 }

@@ -41,7 +41,7 @@ public abstract class TabularReportWriter {
 		this.pw = pw;
 		this.columns = columns;
 	}
-	
+
 	/**
 	 * Send the HTTP headers for this report format.
 	 * @param response the response to set the headers on.
@@ -52,8 +52,10 @@ public abstract class TabularReportWriter {
 	/**
 	 * Write out any content that goes before the body of the report.
 	 * @param batchid TODO
+	 * @param report TODO
+	 * @param report The report that will be output.
 	 */
-	public abstract void printHead(String batchid);
+	public abstract void printHead(String batchid, TabularReportBase report);
 
 	/**
 	 * Write out a row of the report.

@@ -46,4 +46,10 @@ public interface OmTestReport {
 	 * @return The part of the URL that means the servlet should run this report.
 	 */
 	public String getUrlTestReportName();
+
+	/**
+	 * @return a human-readable name for this test report. Return null if you don't want
+	 * this report listed at the bottom of the HomeTestReport.
+	 */
+	public String getReadableReportName();
 }

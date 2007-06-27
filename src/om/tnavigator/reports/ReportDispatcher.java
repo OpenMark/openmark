@@ -103,6 +103,13 @@ public class ReportDispatcher
 	}
 
 	/**
+	 * @return all the registered test reports.
+	 */
+	public Collection<OmTestReport> getTestReports() {
+		return testReports.values();
+	}
+
+	/**
 	 * @param suffix
 	 * @param request
 	 * @param response

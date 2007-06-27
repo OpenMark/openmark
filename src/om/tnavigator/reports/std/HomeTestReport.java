@@ -11,6 +11,8 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sun.jmx.remote.util.OrderClassLoaders;
+
 import om.axis.qengine.Score;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.UserSession;
@@ -51,6 +53,13 @@ public class HomeTestReport implements OmTestReport {
 		return "";
 	}
 
+	/* (non-Javadoc)
+	 * @see om.tnavigator.reports.OmTestReport#getReadableReportName()
+	 */
+	public String getReadableReportName() {
+		return null;
+	}
+	
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.OmTestReport#handleTestReport(om.tnavigator.NavigatorServlet, om.tnavigator.UserSession, java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -198,10 +207,21 @@ public class HomeTestReport implements OmTestReport {
 		}
 		sb.append("</table>");
 		
-		if(us.tdDeployment.hasCMAData())
+		SortedMap<String, String> reportsToList = new TreeMap<String, String>();
+		for (OmTestReport report : ns.getReports().getTestReports())
 		{
-			sb.append("<h3>CMA tools</h3>"+
-					"<p><a href='reports!cma'>Extract CMA data</a></p>");
+			String reportName = report.getReadableReportName();
+			if (reportName != null)
+			{
+				reportsToList.put(reportName, report.getUrlTestReportName());
+			}
+		}
+		if(!reportsToList.isEmpty())
+		{
+			sb.append("<h3>Other reports on this test</h3>");
+			for (Map.Entry<String, String> entry : reportsToList.entrySet()) {
+				sb.append("<p><a href='reports!" + entry.getValue() + "'>" + entry.getKey() + "</a></p>");
+			}
 		}
 		
 		sb.append("<p style='margin-top:2em'><a href='./'>Return to test</a></p>");

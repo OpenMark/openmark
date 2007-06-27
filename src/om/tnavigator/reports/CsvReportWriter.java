@@ -46,5 +46,4 @@ public class CsvReportWriter extends TextReportWriter {
 		response.setHeader("Content-Disposition", "attachment; filename=report-"+
 				batchid+".csv");
 	}
-
 }

@@ -85,7 +85,7 @@ public abstract class TextReportWriter extends TabularReportWriter
 	 * @see om.tnavigator.reports.TabularReportWriter#sendHead()
 	 */
 	@Override
-	public void printHead(String batchid)
+	public void printHead(String batchid, TabularReportBase report)
 	{
 		for (TabularReportBase.ColumnDefinition column : columns)
 		{

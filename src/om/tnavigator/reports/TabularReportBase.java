@@ -44,18 +44,25 @@ public abstract class TabularReportBase implements OmReport {
 	
 	private static enum Format {
 		/** HTML output class */
-		html(HtmlReportWriter.class),
+		html(HtmlReportWriter.class, "HTML"),
 		/** CSV output class */
-		csv(CsvReportWriter.class),
+		csv(CsvReportWriter.class, "CSV"),
 		/** TSV output class */
-		tsv(TsvReportWriter.class),
+		tsv(TsvReportWriter.class, "Tab-separated text"),
 		/** Moodle XML output class */
-		xml(XmlReportWriter.class);
+		xml(XmlReportWriter.class, "XML");
 		
 		private final Class<? extends TabularReportWriter> writerClass;
-		Format(Class<? extends TabularReportWriter> writerClass)
-		{
+		private final String niceName;
+		Format(Class<? extends TabularReportWriter> writerClass, String niceName) {
 			this.writerClass = writerClass;
+			this.niceName = niceName;
+		}
+		/**
+		 * @return a human-readable name for this report.
+		 */
+		public String getNiceName() {
+			return niceName;
 		}
 		
 		/**
@@ -132,7 +139,7 @@ public abstract class TabularReportBase implements OmReport {
 		List<ColumnDefinition> columns = init(request);
 		TabularReportWriter reportWriter = setupWriter(request, response, columns);
 		reportWriter.sendHeaders(response, batchid);
-		reportWriter.printHead(batchid);
+		reportWriter.printHead(batchid, null);
 		generateReport(reportWriter);
 		reportWriter.printTail();
 	}
@@ -153,4 +160,28 @@ public abstract class TabularReportBase implements OmReport {
 	 * @param reportWriter the place to send output.
 	 */
 	public abstract void generateReport(TabularReportWriter reportWriter);
+	
+	/**
+	 * A change for the report to output some extra content, for example a settings form
+	 * before the HTML table.
+	 * @param pw the printWriter from the HttpServletResponse.
+	 */
+	public void extraHtmlContent(PrintWriter pw) {
+		pw.println("<form action='' method='get'>");
+		outputFormatSelector(pw);
+		pw.println("<input type='submit' value='Generate the report' />");
+		pw.println("</form>");
+	}
+
+	/**
+	 * Write out a HTML &lt;select&gt; element for choosing a format. 
+	 * @param pw place to write it.
+	 */
+	public static void outputFormatSelector(PrintWriter pw) {
+		pw.println("<select name='format'>");
+		for (Format format : Format.values()) {
+			pw.println("<option value='" + format.name() + "'>" + format.getNiceName() + "</option>");
+		}
+		pw.println("</select>");
+	}
 }

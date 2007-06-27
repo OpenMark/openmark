@@ -4635,5 +4635,12 @@ public class NavigatorServlet extends HttpServlet
 		return m.group(1) +" @ "+u.getHost().replaceAll("\\.open\\.ac\\.uk","");
 	}
 
+	/**
+	 * @return the reports
+	 */
+	public ReportDispatcher getReports() {
+		return reports;
+	}
+
 }
 
