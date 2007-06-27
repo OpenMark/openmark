@@ -11,11 +11,8 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.sun.jmx.remote.util.OrderClassLoaders;
-
 import om.axis.qengine.Score;
-import om.tnavigator.NavigatorServlet;
-import om.tnavigator.UserSession;
+import om.tnavigator.*;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.reports.OmTestReport;
 
@@ -58,6 +55,13 @@ public class HomeTestReport implements OmTestReport {
 	 */
 	public String getReadableReportName() {
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see om.tnavigator.reports.OmTestReport#isApplicable(om.tnavigator.TestDeployment)
+	 */
+	public boolean isApplicable(TestDeployment td) {
+		return true;
 	}
 	
 	/* (non-Javadoc)
@@ -211,7 +215,7 @@ public class HomeTestReport implements OmTestReport {
 		for (OmTestReport report : ns.getReports().getTestReports())
 		{
 			String reportName = report.getReadableReportName();
-			if (reportName != null)
+			if (reportName != null && report.isApplicable(us.tdDeployment))
 			{
 				reportsToList.put(reportName, report.getUrlTestReportName());
 			}

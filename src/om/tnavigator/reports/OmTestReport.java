@@ -20,6 +20,7 @@ package om.tnavigator.reports;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import om.tnavigator.TestDeployment;
 import om.tnavigator.UserSession;
 
 /**
@@ -52,4 +53,11 @@ public interface OmTestReport {
 	 * this report listed at the bottom of the HomeTestReport.
 	 */
 	public String getReadableReportName();
+
+	/**
+	 * @param td The test deployment.
+	 * @return whether this report is applicable to this test.
+	 * 
+	 */
+	public boolean isApplicable(TestDeployment td);
 }

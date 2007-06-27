@@ -12,8 +12,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.tnavigator.NavigatorServlet;
-import om.tnavigator.UserSession;
+import om.tnavigator.*;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.reports.OmTestReport;
 import util.xml.XHTML;
@@ -48,6 +47,13 @@ public class UserTestReport implements OmTestReport {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see om.tnavigator.reports.OmTestReport#isApplicable(om.tnavigator.TestDeployment)
+	 */
+	public boolean isApplicable(TestDeployment td) {
+		return true;
+	}
+	
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.OmTestReport#handleTestReport(om.tnavigator.UserSession, java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
