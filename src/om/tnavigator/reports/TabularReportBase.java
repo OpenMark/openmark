@@ -139,7 +139,7 @@ public abstract class TabularReportBase implements OmReport {
 		List<ColumnDefinition> columns = init(request);
 		TabularReportWriter reportWriter = setupWriter(request, response, columns);
 		reportWriter.sendHeaders(response, batchid);
-		reportWriter.printHead(batchid, null);
+		reportWriter.printHead(batchid, this);
 		generateReport(reportWriter);
 		reportWriter.printTail();
 	}
