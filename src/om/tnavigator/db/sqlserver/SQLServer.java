@@ -57,7 +57,7 @@ public class SQLServer extends OmQueries
 	public ResultSet queryUnfinishedSessions(DatabaseAccess.Transaction dat,String oucu,String deploy) throws SQLException
 	{
 		return dat.query( 
-			"SELECT TOP 1 ti,rseed,finished,variant,testposition " +
+			"SELECT TOP 1 ti,rseed,finished,variant,testposition,navigatorversion " +
 			"FROM " + getPrefix() + "tests " +
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(deploy)+" " +
 			"ORDER BY attempt DESC;");
@@ -90,8 +90,8 @@ public class SQLServer extends OmQueries
 	@Override
 	protected void upgradeDatabaseTo131(DatabaseAccess.Transaction dat) throws SQLException
 	{
-		dat.update("ALTER TABLE " + getPrefix() + "tests ADD COLUMN navigatorversion CHAR(16)");
-		dat.update("UPDATE snav_tests SET navigatorversion = '1.3.0'");
+		dat.update("ALTER TABLE " + getPrefix() + "tests ADD navigatorversion CHAR(16)");
+		dat.update("UPDATE " + getPrefix() + "tests SET navigatorversion = '1.3.0'");
 		dat.update("ALTER TABLE " + getPrefix() + "tests ALTER COLUMN navigatorversion CHAR(16) NOT NULL");
 	}
 }
