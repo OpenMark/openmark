@@ -46,6 +46,9 @@ public class Results
 	/** User got question wrong after all attempts */
 	public final static int ATTEMPTS_WRONG=-1;
 	
+	/** User got question partially correct after all attempts */
+	public final static int ATTEMPTS_PARTIALLYCORRECT=-2;
+	
 	/** If developer hasn't set the value */
 	public final static int ATTEMPTS_UNSET=-99;
 	

@@ -58,6 +58,15 @@ public class NavigatorServlet extends HttpServlet
 
 	private static final String SUMMARYTABLE_NOTANSWERED="Not completed";
 
+	/** User passed on question. Should match the defitition in om.question.Results. */
+	public final static int ATTEMPTS_PASS=0;
+	/** User got question wrong after all attempts. Should match the defitition in om.question.Results. */
+	public final static int ATTEMPTS_WRONG=-1;
+	/** User got question partially correct after all attempts. Should match the defitition in om.question.Results. */
+	public final static int ATTEMPTS_PARTIALLYCORRECT=-2;
+	/** If developer hasn't set the value. Should match the defitition in om.question.Results. */
+	public final static int ATTEMPTS_UNSET=-99;
+
 	/** Database access */
 	DatabaseAccess da;
 	/** @return the DatabaseAccess object used by this servlet. */
@@ -2705,8 +2714,9 @@ public class NavigatorServlet extends HttpServlet
 	{
 		switch(iAttempts)
 		{
-		case -1 : return "Incorrect";
-		case 0 : return "Passed";
+		case ATTEMPTS_PARTIALLYCORRECT : return "Partially correct";
+		case ATTEMPTS_WRONG : return "Incorrect";
+		case ATTEMPTS_PASS : return "Passed";
 		case 1 : return "Correct at 1st attempt";
 		case 2 : return "Correct at 2nd attempt";
 		case 3 : return "Correct at 3rd attempt";
