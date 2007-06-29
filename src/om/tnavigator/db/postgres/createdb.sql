@@ -16,7 +16,8 @@ CREATE TABLE prefix_tests (
   pi CHAR(8) NOT NULL,
   variant INTEGER,
   testposition SMALLINT NOT NULL,
-  finishedclock TIMESTAMP WITH TIME ZONE
+  finishedclock TIMESTAMP WITH TIME ZONE,
+  navigatorversion CHAR(16) NOT NULL
 ); 
 
 CREATE INDEX prefix_tests_deploy ON prefix_tests (deploy);

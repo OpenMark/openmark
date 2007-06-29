@@ -32,7 +32,7 @@ public abstract class OmVersion
 		}
 		catch(IOException ioe)
 		{
-			return "0000-00-00 00:00:00|Err";
+			return "Err|0000-00-00 00:00:00";
 		}
 	}
 	
@@ -46,5 +46,14 @@ public abstract class OmVersion
 	public static String getBuildDate()
 	{
 		return loadVersion().split("\\|")[1];
+	}
+	
+	/**
+	 * @param v1 The first version.
+	 * @param v2 The second version.
+	 * @return return -1 if v1 is before v2, 0 if they are equal, 1 if v1 is after v2.
+	 */
+	public static int compareVersions(String v1, String v2) {
+		return v1.compareTo(v2);
 	}
 }

@@ -67,6 +67,8 @@ public class NavigatorServlet extends HttpServlet
 	/** If developer hasn't set the value. Should match the defitition in om.question.Results. */
 	public final static int ATTEMPTS_UNSET=-99;
 
+	private static final int MAGIC_RANDOM_SEED_INCREMENT = 12637946;
+	
 	/** Database access */
 	DatabaseAccess da;
 	/** @return the DatabaseAccess object used by this servlet. */
@@ -363,7 +365,7 @@ public class NavigatorServlet extends HttpServlet
 		us.iIndex=0;
 		us.iFixedVariant=-1;
 		us.bFinished=bFinished;
-
+		us.navigatorVersion=OmVersion.getVersion();
 		// Check access
 		if(!us.tdDeployment.isWorldAccess() && !us.tdDeployment.hasAccess(us.ud))
 		{
@@ -1221,7 +1223,8 @@ public class NavigatorServlet extends HttpServlet
 				us.bAdmin,
 				// Use same PI as OUCU for non-logged-in guests
 				us.ud.isLoggedIn() ? us.ud.getPersonID() : us.sOUCU,
-				us.iFixedVariant);
+				us.iFixedVariant,
+				us.navigatorVersion);
 			us.iDBti=oq.getInsertedSequenceID(dat,"tests","ti");
 
 			for(int i=0;i<us.atl.length;i++)
@@ -1839,7 +1842,11 @@ public class NavigatorServlet extends HttpServlet
 
 		// Question parameters
 		NameValuePairs p=new NameValuePairs();
-		p.add("randomseed",(us.lRandomSeed+iAttempt)+"");
+		int seedIncrement = MAGIC_RANDOM_SEED_INCREMENT;
+		if (OmVersion.compareVersions(us.navigatorVersion, "1.3.0") <= 0) {
+			seedIncrement = 1;
+		}
+		p.add("randomseed",(us.lRandomSeed+iAttempt*seedIncrement)+"");
 		String sAccess=getAccessibilityCookie(request);
 		if(sAccess.indexOf("[plain]")!=-1)
 			p.add("plain","yes");
@@ -3421,6 +3428,7 @@ public class NavigatorServlet extends HttpServlet
 			boolean bFinished=false;
 			int iTestVariant=-1;
 			int iPosition=-1;
+			String navigatorversion = "";
 			if(rs.next())
 			{
 				iDBti=rs.getInt(1);
@@ -3429,6 +3437,7 @@ public class NavigatorServlet extends HttpServlet
 				iTestVariant=rs.getInt(4);
 				if(rs.wasNull()) iTestVariant=-1;
 				iPosition=rs.getInt(5);
+				navigatorversion=rs.getString(6);
 			}
 
 			// No match? OK, return false
@@ -3443,6 +3452,7 @@ public class NavigatorServlet extends HttpServlet
 			us.iFixedVariant=iTestVariant;
 			initTestSession(us,rt,sTestID,request, response, bFinished, true);
 			us.iIndex=iPosition;
+			us.navigatorVersion = navigatorversion;
 
 			// Find out which question they're on
 			if(!us.bFinished)

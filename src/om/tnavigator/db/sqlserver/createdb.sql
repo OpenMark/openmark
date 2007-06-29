@@ -16,7 +16,8 @@ CREATE TABLE dbo.prefix_tests (
   pi CHAR(8) NOT NULL,
   variant INT,
   testposition SMALLINT NOT NULL,
-  finishedclock DATETIME
+  finishedclock DATETIME,
+  navigatorversion CHAR(16) NOT NULL
 ); 
 
 CREATE NONCLUSTERED INDEX i1 ON prefix_tests (deploy);

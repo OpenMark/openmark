@@ -96,6 +96,9 @@ public class UserSession
 	/** True if they have finished the test */
 	boolean bFinished;
 	
+	/** The version of the test navigator software that started this attempt. */
+	String navigatorVersion;
+
 	/** 
 	 * Set true only for specific requests that are permitted after the forbid
 	 * date (up to the forbid-extension date)

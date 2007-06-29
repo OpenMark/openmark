@@ -80,7 +80,7 @@ public abstract class OmQueries
 	public ResultSet queryUnfinishedSessions(DatabaseAccess.Transaction dat,String oucu,String testID) throws SQLException
 	{
 		return dat.query( 
-			"SELECT ti,rseed,finished,variant,testposition " +
+			"SELECT ti,rseed,finished,variant,testposition,navigatorversion " +
 			"FROM " + getPrefix() + "tests " +
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(testID)+" " +
 			"ORDER BY attempt DESC LIMIT 1");
@@ -485,18 +485,20 @@ public abstract class OmQueries
 	 * @param admin 1 if this is an admin attempt, otherwise 0.
 	 * @param pi the PI of the user.
 	 * @param fixedVariant for testing, fixes the variant of each question.
+	 * @param navigatorVersion the version of the test navigator that started this attempt.
 	 * @throws SQLException
 	 */
 	public void insertTest(DatabaseAccess.Transaction dat,String oucu,String testID,
-		long rseed,int attempt,boolean admin,String pi,int fixedVariant)
+		long rseed,int attempt,boolean admin,String pi,int fixedVariant,String navigatorVersion)
 		throws SQLException
 	{
 		dat.update(
-			"INSERT INTO " + getPrefix() + "tests (oucu,deploy,rseed,attempt,finished,clock,admin,pi,variant,testposition) VALUES ("+
+			"INSERT INTO " + getPrefix() +
+			"tests (oucu,deploy,rseed,attempt,finished,clock,admin,pi,variant,testposition,navigatorversion) VALUES ("+
 			Strings.sqlQuote(oucu)+","+Strings.sqlQuote(testID)+","+
 			rseed+","+attempt+",0,DEFAULT,"+
 			(admin?"1":"0")+","+Strings.sqlQuote(pi)+
-			","+	(fixedVariant==-1 ? "NULL" : fixedVariant+"")+	",0);");
+			","+	(fixedVariant==-1 ? "NULL" : fixedVariant+"")+	",0,'"+navigatorVersion+"');");
 	}
 	
 	/**
@@ -599,9 +601,56 @@ public abstract class OmQueries
 	protected boolean tableExists(DatabaseAccess.Transaction dat,String table)
 	  throws SQLException
 	{
-		ResultSet rs=dat.query("SELECT COUNT(*) FROM information_schema.tables WHERE table_name="+Strings.sqlQuote(table));
+		ResultSet rs=dat.query("SELECT COUNT(*) FROM information_schema.tables WHERE table_name="+
+				Strings.sqlQuote(getPrefix()+table));
 		rs.next();
 		return rs.getInt(1)!=0;
+	}
+
+	protected boolean columnExistsInTable(DatabaseAccess.Transaction dat,String table,String column)
+			throws SQLException
+	{
+		ResultSet rs=dat.query("SELECT COUNT(*) FROM information_schema.columns WHERE table_name="+
+				Strings.sqlQuote(getPrefix()+table) + " AND column_name=" + Strings.sqlQuote(column));
+		rs.next();
+		return rs.getInt(1)!=0;
+	}
+
+	protected String currentDateFunction()
+	{
+		return "current_timestamp";
+	}
+	
+	/**
+	 * @param quotedString String surrounded in quotes and quoted as appropriate
+	 *   for normal SQL.
+	 * @return Same string also quoted with any necessary changes bearing in mind
+	 *   that this string may contain non-ASCII characters (for sane databases,
+	 *   this is the same as the input, but not all databases are sane)
+	 */
+	protected String unicode(String quotedString)
+	{
+		return quotedString;
+	}
+
+	/**
+	 * Immediately after an insert into a table that contains an auto-generated
+	 * sequence column, this method returns the value of the ID that was just
+	 * added.
+	 * @param dat Transaction (insert must be previous command)
+	 * @param table Table name, without the prefix.
+	 * @param column Column name
+	 * @return ID value
+	 * @throws SQLException If database throws a wobbly
+	 */
+	public abstract int getInsertedSequenceID(DatabaseAccess.Transaction dat,
+		String table,String column) throws SQLException;
+
+	/**
+	 * @return the prefix
+	 */
+	public String getPrefix() {
+		return prefix;
 	}
 	
 	/** 
@@ -613,9 +662,22 @@ public abstract class OmQueries
 	 */
 	public void checkTables(DatabaseAccess.Transaction dat) throws SQLException,IOException
 	{
-		// Check if we've already got them
-		if(tableExists(dat,getPrefix() + "tests")) return;
+		// If not tables exist yet, create them all.
+		if(!tableExists(dat,"tests"))
+		{
+			createDatabaseTables(dat);
+			return;
+		}
 
+		// Otherwise, look to see if the database needs upgrading is specific ways.
+		if (!columnExistsInTable(dat, "tests", "navigatorversion"))
+		{
+			upgradeDatabaseTo131(dat);
+		}
+	}
+	
+	private void createDatabaseTables(DatabaseAccess.Transaction dat) throws SQLException,IOException
+	{
 		// Get statements
 		String sStatements=
 			IO.loadString(getClass().getResourceAsStream("createdb.sql"));
@@ -645,42 +707,11 @@ public abstract class OmQueries
 			}
 		}		
 	}
-
-	protected String currentDateFunction()
-	{
-		return "current_timestamp";
-	}
 	
-	/**
-	 * @param quotedString String surrounded in quotes and quoted as appropriate
-	 *   for normal SQL.
-	 * @return Same string also quoted with any necessary changes bearing in mind
-	 *   that this string may contain non-ASCII characters (for sane databases,
-	 *   this is the same as the input, but not all databases are sane)
-	 */
-	protected String unicode(String quotedString)
+	protected void upgradeDatabaseTo131(DatabaseAccess.Transaction dat) throws SQLException
 	{
-		return quotedString;
-	}
-	
-
-	/**
-	 * Immediately after an insert into a table that contains an auto-generated
-	 * sequence column, this method returns the value of the ID that was just
-	 * added.
-	 * @param dat Transaction (insert must be previous command)
-	 * @param table Table name, without the prefix.
-	 * @param column Column name
-	 * @return ID value
-	 * @throws SQLException If database throws a wobbly
-	 */
-	public abstract int getInsertedSequenceID(DatabaseAccess.Transaction dat,
-		String table,String column) throws SQLException;
-
-	/**
-	 * @return the prefix
-	 */
-	public String getPrefix() {
-		return prefix;
+		dat.update("ALTER TABLE " + getPrefix() + "tests ADD COLUMN navigatorversion CHAR(16)");
+		dat.update("UPDATE " + getPrefix() + "tests SET navigatorversion = '1.3.0'");
+		dat.update("ALTER TABLE " + getPrefix() + "tests ALTER COLUMN navigatorversion SET NOT NULL");
 	}
 }
