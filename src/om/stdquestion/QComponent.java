@@ -995,6 +995,30 @@ public abstract class QComponent
 	}
 	
 	/**
+	 * Calls setDisplay on this component and all its children, and
+	 * their childred, and so on recursively.
+	 * 
+	 * @param bDisplay passed to setDisplay on each component.
+	 */
+	public void setDisplayRecursive(boolean bDisplay)
+	{
+		try
+		{
+			setBoolean(PROPERTY_DISPLAY,bDisplay);
+			Object[] children = getChildren();
+			for (int i = 0; i < children.length; i++) {
+				if (children[i] instanceof QComponent) {
+					((QComponent) children[i]).setDisplayRecursive(bDisplay);
+				}
+			}
+		}
+		catch(OmDeveloperException e)
+		{
+			throw new OmUnexpectedException(e);
+		}
+	}
+	
+	/**
 	 * @return True if display is on
 	 */
 	public boolean isDisplayed()
