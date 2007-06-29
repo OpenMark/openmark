@@ -21,6 +21,11 @@ package om.question;
 /** Single score */
 public class Score
 {
+	/**
+	 * Create a score
+	 * @param sAxis the axis.
+	 * @param iMarks the score on that axis.
+	 */
 	public Score(String sAxis,int iMarks)
 	{
 		this.sAxis=sAxis;

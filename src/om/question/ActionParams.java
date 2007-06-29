@@ -28,7 +28,7 @@ import om.OmDeveloperException;
 public class ActionParams
 {
 	/** Map of parameters (sorted so getParameterList works more nicely) */
-	private Map mParameters=new TreeMap();
+	private Map<String, String> mParameters=new TreeMap<String, String>();
 	
 	/**
 	 * Add parameter into map.
@@ -48,7 +48,7 @@ public class ActionParams
 	 */
 	public String getParameter(String sName) throws OmDeveloperException
 	{
-		String sValue=(String)mParameters.get(sName);
+		String sValue=mParameters.get(sName);
 		if(sValue==null) throw new OmDeveloperException(
 			"Parameter does not exist: "+sName+".");
 		return sValue;
@@ -68,6 +68,6 @@ public class ActionParams
 	 */
 	public String[] getParameterList()
 	{
-		return (String[])mParameters.keySet().toArray(new String[0]);
+		return mParameters.keySet().toArray(new String[0]);
 	}
 }

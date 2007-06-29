@@ -37,7 +37,7 @@ public class Rendering
   private String sProgressInfo=null;
   
 	/** List of returned resources (QResource) */
-	private List lResources=new LinkedList();
+	private List<Resource> lResources=new LinkedList<Resource>();
 	
 	/**
 	 * @param eXHTML Root element for question
@@ -82,7 +82,7 @@ public class Rendering
 	/** @return All resources added to question */
 	public Resource[] getResources() 
 	{ 
-		return (Resource[])lResources.toArray(new Resource[0]);
+		return lResources.toArray(new Resource[0]);
 	}
 	
 	/** 

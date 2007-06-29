@@ -50,10 +50,10 @@ public class Results
 	public final static int ATTEMPTS_UNSET=-99;
 	
 	/** Hashmap of all scores based on axis (String -> Score) */
-	private HashMap hmScores=new HashMap();
+	private HashMap<String, Score> hmScores=new HashMap<String, Score>();
 	
 	/** Hashmap of custom results (String [id] -> CustomResult) */
-	private HashMap hmCustomResults=new HashMap();
+	private HashMap<String, CustomResult> hmCustomResults=new HashMap<String, CustomResult>();
 
 	/** @return One-line summary of question (may be null) */
 	public String getQuestionLine() { return sQuestionLine; }
@@ -125,6 +125,7 @@ public class Results
 	 * Sets the question numerical result (on default score axis).
 	 * @param iMarks Marks obtained
 	 * @param iAttempts Attempts taken to get result, or an ATTEMPTS_xx constant
+	 * @throws OmDeveloperException 
 	 */
 	public void setScore(int iMarks,int iAttempts) throws OmDeveloperException 
 	{
@@ -185,7 +186,7 @@ public class Results
 	 */
 	public Score[] getScores() 
 	{
-		return (Score[]) hmScores.values().toArray(
+		return hmScores.values().toArray(
 			new Score[hmScores.values().size()]);
 	}
 	
@@ -194,7 +195,7 @@ public class Results
 	 */
 	public CustomResult[] getCustomResults()
 	{
-		return (CustomResult[]) hmCustomResults.values().toArray(
+		return hmCustomResults.values().toArray(
 			new CustomResult[hmCustomResults.values().size()]);		
 	}
 }

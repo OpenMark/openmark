@@ -44,9 +44,10 @@ public class ActionRendering extends Rendering
 	/** 
 	 * Call this once results are finalised; they'll be sent back to the 
 	 * server. (Don't call it twice for the same question!)
+	 * @param results the results to send.
 	 */
-	public void sendResults(Results r)
+	public void sendResults(Results results)
 	{
-		this.r=r;
+		this.r=results;
 	}
 }
