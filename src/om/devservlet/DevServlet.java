@@ -19,6 +19,7 @@ package om.devservlet;
 
 import java.awt.GraphicsEnvironment;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.*;
 
 import javax.servlet.ServletException;
@@ -40,6 +41,7 @@ import util.xml.*;
  */
 public class DevServlet extends HttpServlet
 {
+	private final static int NUM_EXTRA_PACKAGE_SLOTS = 3;
 	/** In-progress question (null if none) */
 	private Question qInProgress=null;
 	
@@ -167,6 +169,13 @@ public class DevServlet extends HttpServlet
 	{
 		if(bPost)
 		{
+			String extraPackages = "";
+			for (int i = 0; i<NUM_EXTRA_PACKAGE_SLOTS; ++i) {
+				String extraPackage = request.getParameter("extra" + i).trim();
+				if (extraPackage.length()>0) {
+					extraPackages += "  <includepackage>"+extraPackage+"</includepackage>\n";
+				}
+			}
 			File fNew=new File(
 				qdQuestions.getQuestionsFolder(),request.getParameter("package")+".xml");
 			Writer w=new OutputStreamWriter(new FileOutputStream(fNew),"UTF-8");
@@ -174,9 +183,7 @@ public class DevServlet extends HttpServlet
 				"<questiondefinition>\n" +
 				"  <sourcetree>"+request.getParameter("source")+"</sourcetree>\n" +
 				"  <package>"+request.getParameter("package")+"</package>\n" +
-				(request.getParameter("extra").trim().length()>0 
-					? "  <includepackage>"+request.getParameter("extra")+"</includepackage>"
-					: "")+
+				extraPackages +
 				"</questiondefinition>\n");
 			w.close();	
 			response.sendRedirect(".");
@@ -184,19 +191,27 @@ public class DevServlet extends HttpServlet
 		
 		QuestionDefinition[] aqd=qdQuestions.getQuestionDefinitions();
 
+		String extraPackagesHtml = "";
+		for (int i = 0; i<NUM_EXTRA_PACKAGE_SLOTS; ++i) {
+			extraPackagesHtml += "<input type='text' name='extra" + i + "' size='65' value='" +
+				((aqd.length>0 && aqd[aqd.length-1].getAdditionalPackageRoots().length>i) ? 
+					aqd[aqd.length-1].getAdditionalPackageRoots()[i] : "") + "'/><br />";
+		}
+
 		// Create basic template
 		Document d=XML.parse(
 			"<xhtml>" +
 			"<head>" +
 			"<title>OpenMark-S (Om) question development</title>"+
-			"<style type='text/css'>"+
-			"body { font: 12px Verdana, sans-serif; }" +
-			"h1 { font: bold 14px Verdana, sans-serif; }" +
-			"a { color: black; }" +
-			"h2 { font: 14px Verdana, sans-serif; }" +
-			"#create,#questionbox { margin-bottom:20px; border:1px solid #888; padding:10px; }"+
-			"#create span { clear:left; float:left; width:20em; }" +
-			"#crate div { margin-top:5px; }"+
+			"<style type='text/css'>\n"+
+			"body { font: 12px Verdana, sans-serif; }\n" +
+			"h1 { font: bold 14px Verdana, sans-serif; }\n" +
+			"a { color: black; }\n" +
+			"h2 { font: 14px Verdana, sans-serif; }\n" +
+			"#create,#questionbox { margin-bottom:20px; border:1px solid #888; padding:10px; }\n"+
+			"#create span { float:left; width:20em; margin-top: 5px }\n" +
+			"#create span.fields { width:auto; }\n" +
+			"#create div { clear:left; }\n"+
 			"</style>"+
 			"</head>"+
 			"<body>"+
@@ -210,23 +225,16 @@ public class DevServlet extends HttpServlet
 			"</div>" +
 			"<form id='create' method='post' action='.'>" +
 			"<h2>Create new question</h2>" +
-			"<div><span>Package</span><input type='text' name='package' value='"+
+			"<div><span>Package</span><span class='fields'><input type='text' name='package' size='65' value='"+
 				((aqd.length>0) ? aqd[aqd.length-1].getPackage().replaceAll("\\.[^.]$",".") : "")+
-				"'/></div>"+
-			"<div><span>Source tree</span><input type='text' name='source' size='65' value='" +
+				"'/></span></div>"+
+			"<div><span>Source tree</span><span class='fields'><input type='text' name='source' size='65' value='" +
 				((aqd.length>0) ? aqd[aqd.length-1].getSourceFolder().getAbsolutePath() : "")+ 
-				"'/></div>"+
-			"<div><span>Extra package (optional)</span><input type='text' name='extra' size='65' value='" +
-				((aqd.length>0 && aqd[aqd.length-1].getAdditionalPackageRoots().length>0) ? 
-					aqd[aqd.length-1].getAdditionalPackageRoots()[0] : "")+ 
-				"'/></div>"+
-			"<div><input type='submit' name='action' value='Create'/></div>"+
+				"'/></span></div>"+
+			"<div><span>Extra package (optional)</span><span class='fields'>" + extraPackagesHtml + "</span></div>"+
+			"<div><input type='submit' name='action' id='submit' value='Create'/></div>"+
 			"<p>This creates a new question definition file (.xml) in the questions " +
 			"folder of your Om webapp.</p>"+
-			"<p>If you want to remove questions from the list, manually delete the .xml " +
-			"(you can easily make it again) or move it somewhere. You also need to " +
-			"manually edit the xml if you want to include more than one extra package, " +
-			"sorry.</p>"+
 			"</form>"+
 			"</body>"+
 			"</xhtml>");
@@ -235,19 +243,25 @@ public class DevServlet extends HttpServlet
 		Element eParent=XML.find(d,"id","questions");
 		for(int iQuestion=0;iQuestion<aqd.length;iQuestion++)
 		{
+			String encodedName = URLEncoder.encode(aqd[iQuestion].getID(), "UTF-8");
 			Element 
 				eQ=XML.createChild(eParent,"li");
 			XML.createText(eQ," "+aqd[iQuestion].getID()+" ");
 			if(aqd[iQuestion].hasJar())
 			{
 				Element eRun=XML.createChild(eQ,"a");
-				eRun.setAttribute("href","run/"+aqd[iQuestion].getID()+"/");
+				eRun.setAttribute("href","run/"+encodedName+"/");
 				XML.createText(eRun,"(Run)");
 				XML.createText(eQ," ");
 			}
 			Element eBuild=XML.createChild(eQ,"a");
-			eBuild.setAttribute("href","build/"+aqd[iQuestion].getID()+"/");
+			eBuild.setAttribute("href","build/"+encodedName+"/");
 			XML.createText(eBuild,"(Build)");
+			XML.createText(eQ," ");
+
+			Element eRemove=XML.createChild(eQ,"a");
+			eRemove.setAttribute("href","remove/"+encodedName+"/");
+			XML.createText(eRemove,"(Remove)");
 		}
 
 		XHTML.output(d,request,response,"en");		
@@ -289,6 +303,39 @@ public class DevServlet extends HttpServlet
 		pw.close();
 	}
 	
+	private void handleRemove(String sRemainingPath,
+			HttpServletRequest request,HttpServletResponse response) throws Exception
+	{
+		String sQuestion=sRemainingPath.replaceAll("^([^/]*)/?.*$","$1");
+		String sAfter=sRemainingPath.replaceAll("^[^/]*/?(.*)$","$1");
+		
+		if(!sAfter.equals(""))
+		{
+			sendError(request,response,
+				HttpServletResponse.SC_NOT_FOUND,"Not found","Don't know how to handle request: "+sRemainingPath, null);
+			return;
+		}
+
+		PrintWriter pw = response.getWriter();
+		File toRemove=new File(
+				qdQuestions.getQuestionsFolder(),sQuestion+".xml");
+		if (toRemove.exists()) {
+			if (!toRemove.delete()) {
+				pw.println("Could not remove the XML file.");
+			}
+			File jarToRemove=new File(
+					qdQuestions.getQuestionsFolder(),sQuestion+".jar");
+			if (jarToRemove.exists()) {
+				if (!jarToRemove.delete()) {
+					pw.println("Could not remove the jar file.");
+				}
+			}
+		} else {
+			pw.println("Unknown question.");
+		}
+		response.sendRedirect("..");
+	}
+
 	private InitParams ipInProgress;
 	
 	private void handleRun(boolean bPost,String sRemainingPath,
@@ -510,6 +557,8 @@ public class DevServlet extends HttpServlet
 				handleBuild(sPath.substring("/build/".length()),request,response);
 			else if(sPath.startsWith("/run/"))
 				handleRun(bPost,sPath.substring("/run/".length()),request,response);
+			else if(sPath.startsWith("/remove/"))
+				handleRemove(sPath.substring("/remove/".length()),request,response);
 			else
 			{
 				sendError(request,response,HttpServletResponse.SC_NOT_FOUND,
