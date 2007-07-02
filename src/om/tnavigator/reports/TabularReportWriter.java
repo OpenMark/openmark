@@ -45,14 +45,13 @@ public abstract class TabularReportWriter {
 	/**
 	 * Send the HTTP headers for this report format.
 	 * @param response the response to set the headers on.
-	 * @param batchid TODO
+	 * @param batchid The Id of this batch.
 	 */
 	public abstract void sendHeaders(HttpServletResponse response, String batchid);
 
 	/**
 	 * Write out any content that goes before the body of the report.
-	 * @param batchid TODO
-	 * @param report TODO
+	 * @param batchid The Id of this batch.
 	 * @param report The report that will be output.
 	 */
 	public abstract void printHead(String batchid, TabularReportBase report);

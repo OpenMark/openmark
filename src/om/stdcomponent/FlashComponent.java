@@ -27,6 +27,7 @@ import org.w3c.dom.*;
 
 import util.misc.IO;
 import util.xml.XML;
+import util.xml.XMLException;
 
 /** 
 Represents a flash applet
@@ -77,18 +78,20 @@ public class FlashComponent extends QComponent
 	 * Keep track of resources we added to users so we can save SOAP time by
 	 * not transferring them again.
 	 */ 
-	private Set sAddedResources=new HashSet();
+	private Set<String> sAddedResources=new HashSet<String>();
 	
 	/** True if there was whitespace before or after the &lt;flash&gt; tag */
 	private boolean bSpaceBefore,bSpaceAfter;
 	
 	/** Specifies attributes required */
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[] {PROPERTY_ALT,PROPERTY_FILEPATH, PROPERTY_WIDTH,PROPERTY_HEIGHT};
 	}
 	
 	/** Specifies possible attributes */
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -99,6 +102,7 @@ public class FlashComponent extends QComponent
 	}
 	
 	/** parses internals of tag to create java component*/
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		Node nPrevious=eThis.getPreviousSibling();
@@ -137,6 +141,7 @@ public class FlashComponent extends QComponent
 		setString(PROPERTY_ALT,sAlt);
 	}
 
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		double dZoom=getQuestion().getZoom();
@@ -211,9 +216,16 @@ public class FlashComponent extends QComponent
 			// Put in placeholder that UFO will eat.
 			String movieId = getString(PROPERTY_ID)+"_movie";
 			Element placeholderSpan=XML.createChild(eEnsureSpaces,"span");
-			XML.createText(placeholderSpan, getString(PROPERTY_ALT) +
-					"[To do this question, you will need to <a href='http://www.adobe.com/go/getflashplayer' title='Get Flash Player'>install the latest Flash plug-in</a><img src='http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif' alt='Get Flash Player' border='0'></a>]");
-// TODO, DOM the above line.
+			try {
+				XML.importChildren(placeholderSpan, XML.parse(
+						"<span>[To do this question, you will need to " +
+						"<a href='http://www.adobe.com/go/getflashplayer' " +
+						"title='Get Flash Player'>install the latest Flash plug-in" +
+						"<img src='http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif' " +
+						"alt='Get Flash Player' border='0' /></a>]</span>").getDocumentElement());
+			} catch (XMLException e) {
+				throw new OmUnexpectedException(e);
+			}
 			placeholderSpan.setAttribute("id", movieId);
 
 			// Create JavaScrip
