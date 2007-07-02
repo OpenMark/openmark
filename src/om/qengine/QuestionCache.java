@@ -40,10 +40,10 @@ import util.xml.XML;
 public class QuestionCache
 {
 	/** Map of String (question key) -> QuestionStuff */
-	private Map mActiveQuestions1=new HashMap();
+	private Map<QuestionKey, QuestionStuff> mActiveQuestions1=new HashMap<QuestionKey, QuestionStuff>();
 	
 	/** Map of Question -> String (question key) */
-	private Map mActiveQuestions2=new HashMap();
+	private Map<Question, QuestionKey> mActiveQuestions2=new HashMap<Question, QuestionKey>();
 	
 	/** Folder where questions are cached */
 	private File fFolder;
@@ -60,7 +60,7 @@ public class QuestionCache
 		Class c=null;
 		ClosableClassLoader ccl;
 		Document dMeta;
-		List lActive=new LinkedList();
+		List<Question> lActive=new LinkedList<Question>();
 	}
 	
 	/**
@@ -82,10 +82,12 @@ public class QuestionCache
 		}
 
 		// Hashcode and equals so it can be used in maps 
+		@Override
 		public int hashCode()
 		{
 			return (sQuestionID+sVersion).hashCode();
 		}		
+		@Override
 		public boolean equals(Object obj)
 		{
 			if(!(obj instanceof QuestionKey)) return false;
@@ -94,15 +96,21 @@ public class QuestionCache
 		}
 
 		// For display in exceptions
+		@Override
 		public String toString()
 		{
 			return getURLPart();
 		}
-		// Obtaining filename for cache
+		/**
+		 * @return filename for cache
+		 */
 		public String getFileName()
 		{
 			return getURLPart()+".jar";
 		}
+		/**
+		 * @return url fragment for this question.
+		 */
 		public String getURLPart()
 		{
 			return sQuestionID+"."+sVersion;			
@@ -122,7 +130,7 @@ public class QuestionCache
 	{
 		checkNotShutdown();
 		// Find question ID in first map 
-		QuestionStuff qs=(QuestionStuff)mActiveQuestions1.get(qk);
+		QuestionStuff qs=mActiveQuestions1.get(qk);
 		if(qs==null) 
 		{
 			// TODO Make it so it can cache the metadata somehow
@@ -214,7 +222,7 @@ public class QuestionCache
 	{		
 		checkNotShutdown();
 		// Find question ID in first map 
-		QuestionStuff qs=(QuestionStuff)mActiveQuestions1.get(qk);
+		QuestionStuff qs=mActiveQuestions1.get(qk);
 		if(qs==null)
 		{
 			qs=new QuestionStuff();
@@ -348,10 +356,10 @@ public class QuestionCache
 	{
 		checkNotShutdown();
 		// Remove from both directional maps
-		QuestionKey qk=(QuestionKey)mActiveQuestions2.remove(q);
+		QuestionKey qk=mActiveQuestions2.remove(q);
 		if(qk==null) throw new OmException(
 			"Attempt to close question that wasn't currently open");
-		QuestionStuff qs=(QuestionStuff)mActiveQuestions1.get(qk);
+		QuestionStuff qs=mActiveQuestions1.get(qk);
 		if(qs==null)
 			throw new OmException("Question maps inconsistent (missing list)");
 		if(!qs.lActive.remove(q))

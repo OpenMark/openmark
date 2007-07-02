@@ -47,7 +47,7 @@ public class OmService implements ServiceLifecycle
 	private QuestionCache qc;
 	
 	/** All current question sessions (maps String -> QuestionSession) */
-	private Map mQuestionSessions=new HashMap();
+	private Map<String, QuestionSession> mQuestionSessions=new HashMap<String, QuestionSession>();
 	
 	/** ID to use for next session */
 	private int iNextSessionID=1;
@@ -330,7 +330,7 @@ public class OmService implements ServiceLifecycle
 		{
 			synchronized(this)
 			{
-				QuestionSession qs=(QuestionSession)mQuestionSessions.get(questionSession);
+				QuestionSession qs=mQuestionSessions.get(questionSession);
 				if(qs==null) throw new OmException("Unknown question session");			
 				if(qs.bInUse) throw new OmException("Question cannot be stopped mid-call");
 				
@@ -391,7 +391,7 @@ public class OmService implements ServiceLifecycle
 			QuestionSession qs;
 			synchronized(this)
 			{
-				qs=(QuestionSession)mQuestionSessions.get(questionSession);
+				qs=mQuestionSessions.get(questionSession);
 				if(qs==null) throw new OmException(
 					"Unknown question session");
 				qs.lLastUsedTime=System.currentTimeMillis(); // In sync just because it's a long
@@ -510,11 +510,11 @@ public class OmService implements ServiceLifecycle
 			synchronized(this)
 			{
 				// Copy list because we'll make changes to map while going through
-				LinkedList ll=new LinkedList(mQuestionSessions.entrySet());
-				for(Iterator i=ll.iterator();i.hasNext();)
+				LinkedList<Map.Entry<String, QuestionSession> > ll =
+						new LinkedList<Map.Entry<String, QuestionSession> >(mQuestionSessions.entrySet());
+				for (Map.Entry<String, QuestionSession> me : ll)
 				{
-					Map.Entry me=(Map.Entry)i.next();
-					QuestionSession qs=(QuestionSession)me.getValue();
+					QuestionSession qs=me.getValue();
 					if(qs.lLastUsedTime < lTimeout)
 					{
 						try
