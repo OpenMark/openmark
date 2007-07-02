@@ -105,6 +105,7 @@ public class Brackets extends Item
 		g2.draw(gp);
 	}
 	
+	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
 		if(getChildren().length==0)
@@ -125,6 +126,7 @@ public class Brackets extends Item
 		i.render(g2,iX+getSymbolSize(cLeftSymbol)+getSuitableGap(),iY);			
 	}
 	
+	@Override
 	protected void internalPrepare()
 	{		
 //		if(1==1) throw new Error("Do we even get here?!");
@@ -146,6 +148,7 @@ public class Brackets extends Item
 		iLeftMargin=iRightMargin=getZoomed(2);
 	}
 	
+	@Override
 	protected void internalInit(Element e) throws EquationFormatException
 	{
 		String SUPPORTEDSYMBOLS=".|[](){}";		
@@ -169,6 +172,9 @@ public class Brackets extends Item
 			"<int_brackets> symbol not supported: "+sRightSymbol);		
 	}	
 	
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("int_brackets",new ItemCreator()

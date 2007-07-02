@@ -22,6 +22,7 @@ import java.awt.*;
 /** Arranges two child Items one above the other with a line between, centred */
 public class Fraction extends Item
 {
+	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
 		Color cForeground=getForeground();
@@ -47,6 +48,7 @@ public class Fraction extends Item
 		}
 	}
 
+	@Override
 	protected void internalPrepare()
 	{		
 		// Init metrics	
@@ -89,11 +91,15 @@ public class Fraction extends Item
 		iLeftMargin=iRightMargin=getZoomed(2);
 	}
 	
+	@Override
 	public int getTextSize()
 	{
 		return decreaseTextSize(super.getTextSize());
 	}
 
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("frac",new ItemCreator()

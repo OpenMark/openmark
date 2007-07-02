@@ -28,6 +28,7 @@ public class Integral extends LimitsThing implements SuperSubHolder.EatsOwnSuper
 	private final static char INTEGRAL='\u222b';
 	private int iYOffset;
 	
+	@Override
 	protected void renderContents(Graphics2D g2,int iX,int iY,int iOffsetX)
 	{
 		g2.setColor(Color.black);
@@ -36,12 +37,16 @@ public class Integral extends LimitsThing implements SuperSubHolder.EatsOwnSuper
 		g2.drawString(INTEGRAL+"",iX+iOffsetX+Fonts.getLeftOverlap(f,INTEGRAL),iY+iYOffset+iBaseline);
 	}
 	
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("int",new ItemCreator()
 			{	public Item newItem()	 {	return new Integral();	}	});
 	}
 	
+	@Override
 	protected void internalPrepare()
 	{
 		// Cannot completely prepare because the super/sub aren't attached yet.
@@ -62,6 +67,7 @@ public class Integral extends LimitsThing implements SuperSubHolder.EatsOwnSuper
 		iLeftMargin=iRightMargin=getZoomed(2);
 	}
 
+	@Override
 	protected boolean isAlongside()
 	{
 		return true;

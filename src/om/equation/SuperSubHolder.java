@@ -37,7 +37,15 @@ public class SuperSubHolder extends Item
 	 */
 	public interface EatsOwnSuperSub
 	{
+		/**
+		 * @return whether this Item eats their own super and sub items.
+		 */
 		public boolean wantsSuperSub();
+		/**
+		 * Called when it is time to attache the super and subscript items.
+		 * @param iSuper
+		 * @param iSub
+		 */
 		public void attachSuperSub(Item iSuper,Item iSub);
 	}
 	
@@ -94,6 +102,7 @@ public class SuperSubHolder extends Item
 		}
 	}
 	
+	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
 		Item iMain=getMain2();
@@ -106,11 +115,13 @@ public class SuperSubHolder extends Item
 	
 	int iSubBaseline,iSupBaseline,iSubOffset,iSupOffset;
 	
+	@Override
 	public boolean useAdvanceAfter(Item iBefore)
 	{
 		return true;
 	}
 	
+	@Override
 	protected void internalPrepare()
 	{
 		// Get details of main item (or default)
@@ -198,8 +209,9 @@ public class SuperSubHolder extends Item
 	/** Extra space after the thing */
 	private final static int SPACEAFTER=1;
 	
-	
-	
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("int_supersub",new ItemCreator()

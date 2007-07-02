@@ -30,6 +30,7 @@ import util.xml.XML;
 /** Simple mathematical text item */
 public class Text extends Item
 {
+	/** Shared font render context */
 	public static FontRenderContext frc; 
 	static
 	{
@@ -38,7 +39,7 @@ public class Text extends Item
 	}
 
 	/** Runs of text w/ same font */
-	private LinkedList lRuns=new LinkedList();
+	private LinkedList<Run> lRuns=new LinkedList<Run>();
 	
 	/** Original text input */
 	private String sOriginalText;
@@ -61,6 +62,7 @@ public class Text extends Item
 		int iStyle;
 	}
 	
+	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
 		Font fPlain=getFont(Font.PLAIN),fItalic=getFont(Font.ITALIC);
@@ -116,7 +118,7 @@ public class Text extends Item
 				default:
 					if(f.getSize()<=26)
 					{
-					  float fFactor=(float)f.getSize() / 13.0f; 
+					  float fFactor=f.getSize() / 13.0f; 
 						g2.setStroke(new BasicStroke(0.6f*fFactor));
 						g2.drawLine(
 							Math.round(iX+(4*fFactor)),
@@ -261,6 +263,7 @@ public class Text extends Item
 		return sText;
 	}
 
+	@Override
 	protected void internalInit(Element e) throws EquationFormatException
 	{
 		String sText=XML.getText(e);
@@ -330,6 +333,7 @@ public class Text extends Item
 		}		
 	}
 	
+	@Override
 	protected void internalPrepare()
 	{
 		Font fPlain=getFont(Font.PLAIN),fItalic=getFont(Font.ITALIC);
@@ -388,7 +392,7 @@ public class Text extends Item
 		iWidth+=iChangeGap;
 
 		// Calculate final slope
-		Run rLast=(Run)lRuns.getLast();
+		Run rLast=lRuns.getLast();
 		if(rLast!=null && rLast.iStyle==Font.ITALIC)
 		{
 			fEndSlope=fItalic.getItalicAngle();
@@ -397,11 +401,12 @@ public class Text extends Item
 		}		
 	}
 
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("int_text",new ItemCreator()
 			{	public Item newItem()	 {	return new Text();	}	});
 	}
-	
-
 }

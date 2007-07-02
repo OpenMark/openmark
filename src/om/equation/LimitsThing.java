@@ -26,6 +26,7 @@ public abstract class LimitsThing extends Item implements SuperSubHolder.EatsOwn
 	
 	private int iSuperX=0,iSubX=0,iContentsX=0;
 	
+	@Override
 	public final void render(Graphics2D g2,int iX,int iY)
 	{
 		renderContents(g2,iX,iY,iContentsX);
@@ -54,23 +55,23 @@ public abstract class LimitsThing extends Item implements SuperSubHolder.EatsOwn
 	/** @return True if limits go alongside, false if they go above/below */
 	protected abstract boolean isAlongside();
 
-	public void attachSuperSub(Item iSuper,Item iSub)
+	public void attachSuperSub(Item superscript,Item subscript)
 	{
-		this.iSuper=iSuper; this.iSub=iSub;
+		this.iSuper=superscript; this.iSub=subscript;
 		
 		if(isAlongside())
 		{
 			// Calculate revised width and offset for where to draw sigma
 			int 
-				iSuperWidth=iSuper==null ? 0 : iSuper.getWidth(), 
-				iSubWidth=iSub==null ? 0 : iSub.getWidth();
+				iSuperWidth=superscript==null ? 0 : superscript.getWidth(), 
+				iSubWidth=subscript==null ? 0 : subscript.getWidth();
 			int iOldWidth=iWidth;
 			iWidth=Math.max(iOldWidth+getSuitableGap()+iSuperWidth,iOldWidth+getSuitableGap()+iSubWidth);
 			
 			iSuperX=iSubX=iOldWidth+getSuitableGap();
 			int 
-				iSuperHeight=iSuper==null ? 0 : iSuper.getHeight(),
-				iSubHeight=iSub==null ? 0 : iSub.getHeight();
+				iSuperHeight=superscript==null ? 0 : superscript.getHeight(),
+				iSubHeight=subscript==null ? 0 : subscript.getHeight();
 			
 			if(iSuperHeight+iSubHeight+getSuitableGap() > iHeight)
 			{
@@ -86,20 +87,20 @@ public abstract class LimitsThing extends Item implements SuperSubHolder.EatsOwn
 		{
 			// Calculate revised width and offset for where to draw sigma
 			int 
-				iSuperWidth=iSuper==null ? 0 : iSuper.getWidth(), 
-				iSubWidth=iSub==null ? 0 : iSub.getWidth();
+				iSuperWidth=superscript==null ? 0 : superscript.getWidth(), 
+				iSubWidth=subscript==null ? 0 : subscript.getWidth();
 			int iOldWidth=iWidth;
 			iWidth=Math.max(Math.max(iWidth,iSuperWidth),iSubWidth);
 			
 			// Calculate revised height and baseline for superscript...
-			if(iSuper!=null)
+			if(superscript!=null)
 			{
-				iBaseline+=iSuper.getHeight()+getSuitableGap();
-				iHeight+=iSuper.getHeight()+getSuitableGap();
+				iBaseline+=superscript.getHeight()+getSuitableGap();
+				iHeight+=superscript.getHeight()+getSuitableGap();
 			}
-			if(iSub!=null)
+			if(subscript!=null)
 			{
-				iHeight+=iSub.getHeight()+getSuitableGap();
+				iHeight+=subscript.getHeight()+getSuitableGap();
 			}		
 			
 			iContentsX=(iWidth-iOldWidth)/2;

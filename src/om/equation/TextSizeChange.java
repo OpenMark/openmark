@@ -39,6 +39,9 @@ public class TextSizeChange extends Item
 		return iSize;
 	}
 	
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("displaystyle",new ItemCreator()
@@ -51,6 +54,7 @@ public class TextSizeChange extends Item
 			{	public Item newItem()	 {	return new TextSizeChange(TEXTSIZE_SUBSUB);	}	});
 	}
 
+	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
 	}	

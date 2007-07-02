@@ -44,6 +44,7 @@ public class SquareRoot extends Item
 		1.0f,0.0f
 	};
 	
+	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
 		//showDebug(biTarget,iX,iY);
@@ -54,8 +55,8 @@ public class SquareRoot extends Item
 		for(int i=0;i<SHAPEPOINTS.length/2;i++)
 		{
 			float 
-				fX=(float)(SHAPEPOINTS[i*2]*iSymbolWidth)+iX,
-				fY=(float)(SHAPEPOINTS[i*2+1]*iSymbolWidth) + (iHeight-1)+iY;
+				fX=(SHAPEPOINTS[i*2]*iSymbolWidth)+iX,
+				fY=(SHAPEPOINTS[i*2+1]*iSymbolWidth) + (iHeight-1)+iY;
 			
 			if(i==0)
 				gp.moveTo(fX,fY);
@@ -73,6 +74,7 @@ public class SquareRoot extends Item
 		iChild.render(g2,iX+iSymbolWidth+iRightWidth+iLGap,iY+iGap+getZoomed(1));
 	}
 
+	@Override
 	protected void internalPrepare()
 	{				
 		// Init basic metrics	
@@ -97,6 +99,9 @@ public class SquareRoot extends Item
 		iRightMargin=getZoomed(2);
 	}
 	
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("sqrt",new ItemCreator()

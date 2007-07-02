@@ -25,12 +25,14 @@ public class Placeholder extends Item
 	/** Unique ID for placeholder */
 	private String sID;
 	
+	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
 		// Fix placeholder position in parent equation
 		((Equation)getRoot()).informPlaceholder(sID,iX,iY);
 	}
 	
+	@Override
 	protected void internalPrepare()
 	{		
 		sID=((Text)(getChildren()[0].getChildren()[0])).getOriginalText();
@@ -40,6 +42,9 @@ public class Placeholder extends Item
 		iHeight=getZoomed(Integer.parseInt(asWH[1]));
 	}
 	
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("placeholder",new ItemCreator()

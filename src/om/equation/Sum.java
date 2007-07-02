@@ -27,6 +27,7 @@ public class Sum extends LimitsThing implements SuperSubHolder.EatsOwnSuperSub
 {
 	private final static char SIGMA='\u2211';
 	
+	@Override
 	protected void renderContents(Graphics2D g2,int iX,int iY,int iOffsetX)
 	{
 		g2.setColor(Color.black);
@@ -35,12 +36,16 @@ public class Sum extends LimitsThing implements SuperSubHolder.EatsOwnSuperSub
 		g2.drawString(SIGMA+"",iX+iOffsetX+Fonts.getLeftOverlap(f,SIGMA),iY+iBaseline);
 	}
 	
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("sum",new ItemCreator()
 			{	public Item newItem()	 {	return new Sum();	}	});
 	}
 	
+	@Override
 	protected void internalPrepare()
 	{
 		// Cannot completely prepare because the super/sub aren't attached yet.
@@ -59,6 +64,7 @@ public class Sum extends LimitsThing implements SuperSubHolder.EatsOwnSuperSub
 		iLeftMargin=iRightMargin=getZoomed(2);
 	}
 
+	@Override
 	protected boolean isAlongside()
 	{
 		return getTextSize()!=TEXTSIZE_DISPLAY;

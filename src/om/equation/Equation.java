@@ -47,6 +47,7 @@ public class Equation extends Line
 			{	public Item newItem()	 {	return new Equation();	}	});
 	}
 	
+	@Override
 	public Color getForeground()
 	{
 		return cForeground;
@@ -56,17 +57,17 @@ public class Equation extends Line
 	///////////////////////////
 
 	/** Map of placeholder locations (String -> Point) */
-	private Map mPlaceholders=new HashMap();
+	private Map<String, Point> mPlaceholders=new HashMap<String, Point>();
 	
 	/**
-	 * @param cForeground Foreground colour
+	 * @param foreground Foreground colour
 	 * @param cBackground Background (used to clear bitmap with)
 	 * @param bAntiAlias True if text (& everything else) should be anti-aliased
 	 * @return BufferedImage of equation
 	 */
-	public BufferedImage render(Color cForeground,Color cBackground,boolean bAntiAlias)
+	public BufferedImage render(Color foreground,Color cBackground,boolean bAntiAlias)
 	{
-		this.cForeground=cForeground;
+		this.cForeground=foreground;
 		BufferedImage bi=new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
 		Graphics2D g=bi.createGraphics();
 		g.setColor(cBackground);
@@ -98,7 +99,7 @@ public class Equation extends Line
 	 */
 	public Point getPlaceholder(String sID) throws OmUnexpectedException
 	{
-		Point p=(Point)mPlaceholders.get(sID);
+		Point p=mPlaceholders.get(sID);
 		if(p==null) throw new OmUnexpectedException("<equation>: Missing placeholder");
 		return p;
 	}

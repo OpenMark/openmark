@@ -42,12 +42,14 @@ public class SuperSub extends Item
 		this.iType=iType;
 	}
 	
+	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
 		Item iChild=getChildren()[0];
 		iChild.render(g2,iX,iY);
 	}
 	
+	@Override
 	protected void internalPrepare()
 	{
 		Item iChild=getChildren()[0];
@@ -56,6 +58,7 @@ public class SuperSub extends Item
 		iBaseline=iChild.getBaseline();
 	}
 	
+	@Override
 	public int getTextSize()
 	{
 		switch(super.getTextSize())
@@ -69,6 +72,7 @@ public class SuperSub extends Item
 	
 	// Overriding this allows children size to not take the 'two-step' jump
 	// that getTextSize implies, i.e. if you have fractions inside superscript
+	@Override
 	public int getChildReferenceTextSize()
 	{
 		switch(super.getTextSize())
@@ -80,6 +84,9 @@ public class SuperSub extends Item
 		}
 	}
 	
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("int_sup",new ItemCreator()

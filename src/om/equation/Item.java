@@ -113,7 +113,12 @@ abstract class Item
 		return false;
 	}
 
-	/** @return Render onto image */
+	/**
+	 * Render onto image
+	 * @param g2 thing to render onto.
+	 * @param iX Position to start rendering at.
+	 * @param iY Position to start rendering at.
+	 */
 	public abstract void render(Graphics2D g2,int iX,int iY);
 	
 	/** Debug method to fill a background colour */
@@ -132,8 +137,11 @@ abstract class Item
 		return iParent;
 	}
 	
-	/** @return Ancestor or this item of given class or null if none */
-	public Item getAncestor(Class c)
+	/**
+	 * @param c A subclass of item.
+	 * @return Ancestor or this item of given class or null if none
+	 */
+	public Item getAncestor(Class<? extends Item> c)
 	{
 		if(c.isAssignableFrom(getClass())) return this;
 		if(iParent!=null) return iParent.getAncestor(c);
@@ -179,15 +187,15 @@ abstract class Item
 	 * Called by ItemFactory to construct this item and all children.
 	 * @param f Factory
 	 * @param e This XML element
-	 * @param iParent Parent item or null if none
-	 * @param fZoom New zoom factor (1.0 = normal)
+	 * @param parent Parent item or null if none
+	 * @param zoom New zoom factor (1.0 = normal)
 	 * @throws EquationFormatException If internalInit doesn't like the XML
 	 *   or if there is a problem in constructing any child item.
 	 */
-	void init(ItemFactory f,Element e,Item iParent,float fZoom) throws EquationFormatException
+	void init(ItemFactory f,Element e,Item parent,float zoom) throws EquationFormatException
 	{
-		this.iParent=iParent;
-		this.fZoom=fZoom;
+		this.iParent=parent;
+		this.fZoom=zoom;
 		
 		bWhitespaceBefore=("yes".equals(e.getAttribute("whitespacebefore")));
 		
@@ -196,7 +204,7 @@ abstract class Item
 		aiChildren=new Item[aeChildren.length];
 		for(int iChild=0;iChild<aeChildren.length;iChild++)
 		{
-			aiChildren[iChild]=f.newItem(aeChildren[iChild],this,fZoom);
+			aiChildren[iChild]=f.newItem(aeChildren[iChild],this,zoom);
 		}		
 		
 		internalInit(e);

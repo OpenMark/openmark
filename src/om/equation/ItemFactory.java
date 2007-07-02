@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
 class ItemFactory
 {
 	/** Map of String (tag name) -> ItemCreator */
-	private Map mClasses=new HashMap();
+	private Map<String, ItemCreator> mClasses=new HashMap<String, ItemCreator>();
 	
 	/**
 	 * Called by item register methods to add themselves as creatable.
@@ -48,7 +48,7 @@ class ItemFactory
 	 */
 	Item newItem(Element e,Item iParent,float fZoom) throws EquationFormatException
 	{
-		ItemCreator ic=(ItemCreator)mClasses.get(e.getTagName());
+		ItemCreator ic=mClasses.get(e.getTagName());
 		if(ic==null) throw new EquationFormatException(iParent,
 			"Child element not allowed in equations: <"+e.getTagName()+">");
 		

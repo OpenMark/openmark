@@ -23,5 +23,8 @@ package om.equation;
  */
 interface ItemCreator
 {
-  Item newItem();
+	/**
+	 * @return a new instance of this class. Must not throw exceptions.
+	 */
+	Item newItem();
 }

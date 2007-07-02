@@ -27,12 +27,14 @@ import java.awt.Graphics2D;
  */
 public class MBox extends Item
 {
+	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
 		Item iChild=getChildren()[0];
 		iChild.render(g2,iX,iY);
 	}
 	
+	@Override
 	protected void internalPrepare()
 	{
 		Item iChild=getChildren()[0];
@@ -41,6 +43,9 @@ public class MBox extends Item
 		iBaseline=iChild.getBaseline();
 	}
 	
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("mbox",new ItemCreator()

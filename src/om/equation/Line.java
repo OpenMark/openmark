@@ -43,11 +43,13 @@ public class Line extends Item
 	private final static int 
 		ALIGN_TOP=0,ALIGN_BOTTOM=1,ALIGN_MIDDLE=2,ALIGN_BASELINE=3;
 	
+	@Override
 	public int getBaseline()
 	{
 		return iBaseline;
 	}
 
+	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
 		int iXPos=0;
@@ -79,6 +81,7 @@ public class Line extends Item
 		}
 	}
 
+	@Override
 	protected void internalInit(Element e) throws EquationFormatException
 	{
 		// Init XML
@@ -94,6 +97,7 @@ public class Line extends Item
 		}
 	}
 	
+	@Override
 	protected void internalPrepare()
 	{		
 		// Init metrics	
@@ -139,6 +143,9 @@ public class Line extends Item
 		}
 	}
 
+	/**
+	 * @param f ItemFactory to register this class with.
+	 */
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("int_line",new ItemCreator()

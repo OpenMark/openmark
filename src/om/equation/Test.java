@@ -33,10 +33,14 @@ import util.misc.Fonts;
 import util.xml.XML;
 
 /**
+ * Class for testing the equation compontent.
  */
 public class Test extends JFrame
 {
 
+	/**
+	 * @param args not used.
+	 */
 	public static void main(String[] args)
 	{
 		try
@@ -50,6 +54,7 @@ public class Test extends JFrame
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private static void testTextEquation() throws Exception
 	{
 		String sEquation="d = 1.8\\mbox{ m}";
@@ -176,6 +181,7 @@ public class Test extends JFrame
 		setDefaultCloseOperation(EXIT_ON_CLOSE);		
 	}
 	
+	@SuppressWarnings("unused")
 	private void showOverlap(char c,Font f)
 	{
 		BufferedImage bi=new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB);
@@ -274,6 +280,7 @@ public class Test extends JFrame
 		getContentPane().add(l);
 	}
 	
+	@SuppressWarnings("unused")
 	private void showChar(Font f,Graphics2D g2,char c,int iX,int iY)
 	{
 		g2.setColor(Color.red);
