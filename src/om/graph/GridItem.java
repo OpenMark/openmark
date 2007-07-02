@@ -43,6 +43,10 @@ public class GridItem extends GraphItem
 
 	
 
+	/**
+	 * @param w coordinate system.
+	 * @throws GraphFormatException
+	 */
 	public GridItem(World w) throws GraphFormatException
 	{
 		super(w);
@@ -56,6 +60,7 @@ public class GridItem extends GraphItem
 	/** Colour */
 	private Color cLine=null;
 	
+	@Override
 	public void init() throws GraphFormatException
 	{
 		if(cLine==null) cLine=getWorld().convertColour("fg");
@@ -72,6 +77,7 @@ public class GridItem extends GraphItem
 			Math.min(255,(int)(256.0*mmOpacity.dMinor)));
 	}
 	
+	@Override
 	public void paint(Graphics2D g2)
 	{
 		g2.setStroke(DEFAULTSTROKE);

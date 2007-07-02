@@ -23,6 +23,10 @@ import java.awt.geom.AffineTransform;
 /** Draws text in the graph space. */
 public class TextItem extends GraphItem
 {
+	/**
+	 * @param w coordinate system.
+	 * @throws GraphFormatException
+	 */
 	public TextItem(World w) throws GraphFormatException
 	{
 		super(w);
@@ -46,18 +50,21 @@ public class TextItem extends GraphItem
 	/** Alignment */
 	private String sAlign=ALIGN_CENTRE;
 	
-	/** Alignment constants */
-	public final static String 
-	  ALIGN_LEFT="left",
-		ALIGN_RIGHT="right",
-		ALIGN_CENTRE="centre";
+	/** Alignment constant */
+	public final static String ALIGN_LEFT="left";
+	/** Alignment constant */
+	public final static String ALIGN_RIGHT="right";
+	/** Alignment constant */
+	public final static String ALIGN_CENTRE="centre";
 	
+	@Override
 	public void init() throws GraphFormatException
 	{
 		if(cText==null) cText=getWorld().convertColour("fg");
 		if(fText==null) fText=getWorld().getDefaultFont(false);
 	}
 
+	@Override
 	public void paint(Graphics2D g2)
 	{
 		g2.setFont(fText);
@@ -139,6 +146,7 @@ public class TextItem extends GraphItem
 	 * Sets text alignment.
 	 * @param s In code, use an ALIGN_x constant. In XML, valid options are 
 	 *   "left", "right", and "centre"
+	 * @throws GraphFormatException 
 	 */
 	public void setAlign(String s) throws GraphFormatException
 	{

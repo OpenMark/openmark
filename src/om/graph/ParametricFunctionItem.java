@@ -23,6 +23,10 @@ import java.awt.geom.GeneralPath;
 /** Draws (x,y)=f(t) functions in the graph space */
 public class ParametricFunctionItem extends GraphItem
 {
+	/**
+	 * @param w coordinate system.
+	 * @throws GraphFormatException
+	 */
 	public ParametricFunctionItem(World w) throws GraphFormatException
 	{
 		super(w);
@@ -55,6 +59,7 @@ public class ParametricFunctionItem extends GraphItem
 		public GraphPoint f(double t);
 	}
 	
+	@Override
 	public void init() throws GraphFormatException
 	{
 		if(cLine==null) cLine=getWorld().convertColour("fg");
@@ -69,6 +74,7 @@ public class ParametricFunctionItem extends GraphItem
 		this.f=f;
 	}
 	
+	@Override
 	public void paint(Graphics2D g2)
 	{
 		if(f==null) return;
@@ -107,6 +113,7 @@ public class ParametricFunctionItem extends GraphItem
 	/**
 	 * Sets line width in pixels. 
 	 * @param d Line width
+	 * @throws GraphFormatException 
 	 */
 	public void setLineWidth(double d) throws GraphFormatException
 	{

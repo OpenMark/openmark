@@ -24,6 +24,10 @@ import java.awt.geom.Ellipse2D;
 /** Draws simple ellipses in the graph space. */
 public class EllipseItem extends GraphItem
 {
+	/**
+	 * @param w coordinate system.
+	 * @throws GraphFormatException
+	 */
 	public EllipseItem(World w) throws GraphFormatException
 	{
 		super(w);
@@ -41,19 +45,21 @@ public class EllipseItem extends GraphItem
 	/** Outline thickness */
 	private int iLineWidth=-1;
 	
+	@Override
 	public void init() throws GraphFormatException
 	{
 		if(gpSize==null) gpSize=GraphPoint.ONE;
 	}
 	
+	@Override
 	public void paint(Graphics2D g2)
 	{
 		// Work out the corner points and convert to pixels
 		Point2D.Float 
-			p1=(Point2D.Float)gpCentre.offset(new GraphPoint(
+			p1=gpCentre.offset(new GraphPoint(
 				-gpSize.getX().getWorldPosition()/2,
 				-gpSize.getY().getWorldPosition()/2)).convertFloat(getWorld()),
-			p2=(Point2D.Float)gpCentre.offset(new GraphPoint(
+			p2=gpCentre.offset(new GraphPoint(
 				gpSize.getX().getWorldPosition()/2,
 				gpSize.getY().getWorldPosition()/2)).convertFloat(getWorld());
 		Ellipse2D.Float eWhole=new Ellipse2D.Float(
@@ -71,8 +77,8 @@ public class EllipseItem extends GraphItem
 		else
 		{
 			Ellipse2D ePartial=new Ellipse2D.Float(
-				eWhole.x+(float)iLineWidth,eWhole.y+(float)iLineWidth,
-				eWhole.width-(float)(iLineWidth*2),eWhole.height-(float)(iLineWidth*2)
+				eWhole.x+iLineWidth,eWhole.y+iLineWidth,
+				eWhole.width-(iLineWidth*2),eWhole.height-(iLineWidth*2)
 				);
 			Area aOuter=new Area(eWhole);
 			aOuter.subtract(new Area(ePartial));
@@ -109,6 +115,7 @@ public class EllipseItem extends GraphItem
 	 * Sets width (horizontal diameter) of ellipse. Height defaults to the
 	 * same value.
 	 * @param gsW Width
+	 * @throws GraphFormatException 
 	 */
 	public void setWidth(GraphScalar gsW) throws GraphFormatException
 	{
@@ -121,6 +128,7 @@ public class EllipseItem extends GraphItem
 	 * Sets height (vertical diameter) of ellipse. Width defaults to the
 	 * same value.
 	 * @param gsH Height
+	 * @throws GraphFormatException 
 	 */
 	public void setHeight(GraphScalar gsH) throws GraphFormatException
 	{

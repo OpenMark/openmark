@@ -22,6 +22,10 @@ import java.awt.*;
 /** Draws f(x) functions in the graph space */
 public class ColourFieldItem extends GraphItem
 {
+	/**
+	 * @param w coordinate system.
+	 * @throws GraphFormatException
+	 */
 	public ColourFieldItem(World w) throws GraphFormatException
 	{
 		super(w);
@@ -59,6 +63,7 @@ public class ColourFieldItem extends GraphItem
 		this.f=f;
 	}
 	
+	@Override
 	public void paint(Graphics2D g2)
 	{
 		if(f==null) return;

@@ -19,12 +19,15 @@ package om.graph;
 
 import java.awt.*;
 import java.lang.reflect.*;
-import java.util.*;
-import java.util.regex.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.w3c.dom.*;
 
-import util.xml.*;
+import util.xml.XML;
+import util.xml.XMLException;
 
 /** 
  * Represents a co-ordinate system for use in a graph.
@@ -41,7 +44,7 @@ public class World
 	private double dLeftX,dRightX,dTopY,dBottomY;
 	
 	/** List of contained items */
-	private LinkedList llItems=new LinkedList();
+	private LinkedList<GraphItem> llItems=new LinkedList<GraphItem>();
 	
 	/** Default font family from context */
 	private String sFontFamily;
@@ -179,6 +182,7 @@ public class World
 	 * (0 = first/bottom.)
 	 * @param gi Item to add
 	 * @param iPos New index in paint order
+	 * @throws GraphFormatException 
 	 */
 	public void add(GraphItem gi,int iPos) throws GraphFormatException
 	{
@@ -284,18 +288,17 @@ public class World
 	}
 
 	/**
-	 * @param sID Graph item ID
+	 * @param itemId Graph item ID
 	 * @return Item with that ID
 	 * @throws IllegalArgumentException If there isn't anything with that ID
 	 */
-	public GraphItem getItem(String sID) throws IllegalArgumentException
+	public GraphItem getItem(String itemId) throws IllegalArgumentException
 	{
-		for(Iterator i=llItems.iterator();i.hasNext();)
+		for(GraphItem gi : llItems)
 		{
-			GraphItem gi=(GraphItem)i.next();
-			if(sID.equals(gi.getID())) return gi;
+			if(itemId.equals(gi.getID())) return gi;
 		}
-		throw new IllegalArgumentException("<world>: Couldn't find item: "+sID);
+		throw new IllegalArgumentException("<world>: Couldn't find item: "+itemId);
 	}
 	
 	/**
@@ -382,12 +385,12 @@ public class World
 		String sTag=e.getTagName();
 		
 		// Find class
-		Class c;
+		Class<? extends GraphItem> c;
 		try
 		{
-			c=Class.forName("om.graph."+
+			c = Class.forName("om.graph."+
 				sTag.substring(0,1).toUpperCase()+sTag.substring(1)+
-				"Item");
+				"Item").asSubclass(GraphItem.class);
 		}
 		catch(ClassNotFoundException e1)
 		{
@@ -396,7 +399,7 @@ public class World
 		}
 		
 		// Get constructor
-		Constructor cConstructor;
+		Constructor<? extends GraphItem> cConstructor;
 		try
 		{
 			cConstructor=c.getConstructor(new Class[]{World.class});
@@ -411,7 +414,7 @@ public class World
 		GraphItem giNew;
 		try
 		{
-			giNew=(GraphItem)cConstructor.newInstance(new Object[]{this});
+			giNew=cConstructor.newInstance(new Object[]{this});
 		}
 		catch(Throwable t)
 		{
@@ -531,6 +534,12 @@ public class World
 			return fNormal;
 	}
 	
+	/**
+	 * @param bItalic
+	 * @param bBold
+	 * @param iSize
+	 * @return the default font, the specified size, boldness and italicity.
+	 */
 	public Font getDefaultFont(boolean bItalic,boolean bBold,int iSize)
 	{
 		return new Font(sFontFamily,

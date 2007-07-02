@@ -29,6 +29,10 @@ import util.xml.XML;
 /** Test code for graph routines */
 public class Test
 {
+	/**
+	 * Main method for testing the graph routines.
+	 * @param args Not used.
+	 */
 	public static void main(String[] args)
 	{
 		try

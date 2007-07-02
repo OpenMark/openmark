@@ -28,6 +28,10 @@ import util.misc.Fonts;
  */
 public class YAxisItem extends AxisItemBase
 {
+	/**
+	 * @param w coordinate system.
+	 * @throws GraphFormatException
+	 */
 	public YAxisItem(World w) throws GraphFormatException
 	{
 		super(w);
@@ -45,27 +49,31 @@ public class YAxisItem extends AxisItemBase
 	/** If label is rotated */
 	private boolean bRotateLabel=true;
 
+	@Override
 	protected GraphRange getRange()
 	{
 		return gr;
 	}
 
-	protected void paintLine(Graphics2D g2,GraphRange gr)
+	@Override
+	protected void paintLine(Graphics2D g2,GraphRange range)
 	{
 		float 
 			fX=getWorld().convertXFloat(dX),
-			fY1=getWorld().convertYFloat(gr.getMin()),		
-			fY2=getWorld().convertYFloat(gr.getMax());
+			fY1=getWorld().convertYFloat(range.getMin()),		
+			fY2=getWorld().convertYFloat(range.getMax());
 				
 		Line2D l=new Line2D.Float(fX,fY1,fX,fY2);
 		g2.draw(l);
 	}
 	
+	@Override
 	protected boolean isLabelRotated()
 	{
 		return bRotateLabel;
 	}
 	
+	@Override
 	protected int paintAxisText(Graphics2D g2,double dPoint,String sText,
 		boolean bRotate,boolean bFlip,boolean bNumbers,int iExtraOffset)
 	{
@@ -111,6 +119,7 @@ public class YAxisItem extends AxisItemBase
 		}
 	}
 
+	@Override
 	protected void paintTick(Graphics2D g2,double dPoint,int iSize,boolean bPos)
 	{
 		float 

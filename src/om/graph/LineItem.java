@@ -23,6 +23,10 @@ import java.awt.geom.*;
 /** Draws straight lines in the graph space. */
 public class LineItem extends GraphItem
 {
+	/**
+	 * @param w coordinate system.
+	 * @throws GraphFormatException
+	 */
 	public LineItem(World w) throws GraphFormatException
 	{
 		super(w);
@@ -37,11 +41,13 @@ public class LineItem extends GraphItem
 	/** Outline thickness */
 	private int iLineWidth=1;
 	
+	@Override
 	public void init() throws GraphFormatException
 	{
 		if(cLine==null) cLine=getWorld().convertColour("fg");
 	}		
 	
+	@Override
 	public void paint(Graphics2D g2)
 	{
 		// Work out the two points and convert to pixels

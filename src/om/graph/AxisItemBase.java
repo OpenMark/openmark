@@ -80,11 +80,12 @@ public abstract class AxisItemBase extends GraphItem
 	/** Margins */
 	private int iNumbersMargin=2,iLabelMargin=2;
 	
-	/** Constants for use with setTickSide */
-	public final static String
-	  AXISSIDE_POSITIVE="+",
-	  AXISSIDE_NEGATIVE="-",
-	  AXISSIDE_BOTH="both";
+	/** Constant for use with setTickSide */
+	public final static String AXISSIDE_POSITIVE="+";
+	/** Constant for use with setTickSide */
+	public final static String AXISSIDE_NEGATIVE="-";
+	/** Constant for use with setTickSide */
+	public final static String AXISSIDE_BOTH="both";
 	
 	/** Default stroke used for axis lines */
 	private final static BasicStroke DEFAULTSTROKE=new BasicStroke(1.0f);
@@ -98,6 +99,7 @@ public abstract class AxisItemBase extends GraphItem
 		this.sLabel=sLabel;
 	}
 	
+	@Override
 	public void init() throws GraphFormatException
 	{
 		if(cLine==null) cLine=getWorld().convertColour("fg");
@@ -107,6 +109,7 @@ public abstract class AxisItemBase extends GraphItem
 		if(fLabel==null) fLabel=getWorld().getDefaultFont(false);
 	}	
 	
+	@Override
 	public void paint(Graphics2D g2)
 	{
 		GraphRange grAxis=getRange();

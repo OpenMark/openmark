@@ -97,6 +97,7 @@ public abstract class GraphItem
 	/**
 	 * Init method, for overriding. Called after all attributes are set,
 	 * and before first paint.
+	 * @throws GraphFormatException 
 	 */
 	public void init() throws GraphFormatException
 	{

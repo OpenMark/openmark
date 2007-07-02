@@ -22,6 +22,10 @@ import java.awt.*;
 /** Draws simple rectangles in the graph space. */
 public class RectangleItem extends GraphItem
 {
+	/**
+	 * @param w coordinate system.
+	 * @throws GraphFormatException
+	 */
 	public RectangleItem(World w) throws GraphFormatException
 	{
 		super(w);
@@ -39,6 +43,7 @@ public class RectangleItem extends GraphItem
 	/** Outline thickness */
 	private int iLineWidth=-1;
 	
+	@Override
 	public void init() throws GraphFormatException
 	{
 		if(gpSize==null && gp2==null)
@@ -46,6 +51,7 @@ public class RectangleItem extends GraphItem
 				"<rectangle>: Must specify either x2/y2 or width/height");
 	}
 
+	@Override
 	public void paint(Graphics2D g2)
 	{
 		// Work out the two points and convert to pixels

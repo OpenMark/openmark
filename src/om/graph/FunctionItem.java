@@ -23,6 +23,10 @@ import java.awt.geom.GeneralPath;
 /** Draws f(x) functions in the graph space */
 public class FunctionItem extends GraphItem
 {
+	/**
+	 * @param w coordinate system.
+	 * @throws GraphFormatException
+	 */
 	public FunctionItem(World w) throws GraphFormatException
 	{
 		super(w);
@@ -54,6 +58,7 @@ public class FunctionItem extends GraphItem
 		public double f(double x);
 	}
 	
+	@Override
 	public void init() throws GraphFormatException
 	{
 		if(cLine==null) cLine=getWorld().convertColour("fg");
@@ -68,6 +73,7 @@ public class FunctionItem extends GraphItem
 		this.f=f;
 	}
 	
+	@Override
 	public void paint(Graphics2D g2)
 	{
 		if(f==null) return;
@@ -83,9 +89,9 @@ public class FunctionItem extends GraphItem
 			double dX=getWorld().convertXBack(iX);			
 			float fY=getWorld().convertYFloat(f.f(dX));
 			if(iX==iMinX)
-				gpPath.moveTo((float)iX,fY);
+				gpPath.moveTo(iX,fY);
 			else
-				gpPath.lineTo((float)iX,fY);
+				gpPath.lineTo(iX,fY);
 		}
 		
 		g2.setColor(cLine);
@@ -107,6 +113,7 @@ public class FunctionItem extends GraphItem
 	/**
 	 * Sets line width in pixels. 
 	 * @param d Line width
+	 * @throws GraphFormatException 
 	 */
 	public void setLineWidth(double d) throws GraphFormatException
 	{
