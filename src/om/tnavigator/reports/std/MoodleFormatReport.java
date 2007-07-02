@@ -68,7 +68,7 @@ public class MoodleFormatReport extends TabularReportBase implements OmTestRepor
 	 */
 	@Override
 	public void generateReport(TabularReportWriter reportWriter) {
-		// TODO Auto-generated method stub
+		// TODO Actually generate the report.
 		
 	}
 

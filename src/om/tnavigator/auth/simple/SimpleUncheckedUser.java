@@ -48,7 +48,6 @@ public class SimpleUncheckedUser implements UncheckedUserDetails
 
 	public String getUsername()
 	{
-		// TODO Auto-generated method stub
 		return username;
 	}
 
