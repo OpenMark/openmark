@@ -19,10 +19,12 @@ package om.stdquestion;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import om.*;
 import om.question.ActionParams;
@@ -996,7 +998,7 @@ public abstract class QComponent
 	
 	/**
 	 * Calls setDisplay on this component and all its children, and
-	 * their childred, and so on recursively.
+	 * their children, and so on recursively.
 	 * 
 	 * @param bDisplay passed to setDisplay on each component.
 	 */
@@ -1005,6 +1007,33 @@ public abstract class QComponent
 		try
 		{
 			setBoolean(PROPERTY_DISPLAY,bDisplay);
+			Object[] children = getChildren();
+			for (int i = 0; i < children.length; i++) {
+				if (children[i] instanceof QComponent) {
+					((QComponent) children[i]).setDisplayRecursive(bDisplay);
+				}
+			}
+		}
+		catch(OmDeveloperException e)
+		{
+			throw new OmUnexpectedException(e);
+		}
+	}
+	
+	/**
+	 * Calls setDisplay on this component and all its children of a particular type, and
+	 * their children, and so on recursively.
+	 * 
+	 * @param bDisplay passed to setDisplay on each component.
+	 * @param componentType the type of componet to hide. For example <code>TextComponent.class</code>.
+	 */
+	public void setDisplayRecursive(boolean bDisplay, Class<? extends QComponent> componentType)
+	{
+		try
+		{
+			if (componentType.isAssignableFrom(getClass())) {
+				setBoolean(PROPERTY_DISPLAY,bDisplay);
+			}
 			Object[] children = getChildren();
 			for (int i = 0; i < children.length; i++) {
 				if (children[i] instanceof QComponent) {
