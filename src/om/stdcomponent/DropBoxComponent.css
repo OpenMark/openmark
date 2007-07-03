@@ -1,23 +1,23 @@
-#om .dropbox
+.om .dropbox
 {
   position:absolute;
   visibility:hidden;
   border:1px solid pink;
 }
-#om .dropboximg,#om .dragboximg
+.om .dropboximg,#om .dragboximg
 {
   border:0;
   padding:0;
   margin:0;
 }
-#om .dropboxsidelabel
+.om .dropboxsidelabel
 {
   font-size:10px;
   vertical-align:4px;
   padding-left:2px;
 }
 
-#om .dragbox
+.om .dragbox
 {
   position:absolute;
   visibility:hidden;
@@ -27,11 +27,11 @@
   z-index:10;
   cursor:default;  
 }
-#om .dragbox.withsidelabel .dragboxinner
+.om .dragbox.withsidelabel .dragboxinner
 {
 	padding-right:%%SIZE:10px%%;
 }
-#om .dragboxsidelabel
+.om .dragboxsidelabel
 {
   font-size:%%SIZE:10px%%;
   position:absolute;
@@ -42,7 +42,7 @@
 
 @media screen /* For Firefox printing bug 252263 */
 {
-	#om .transparent
+	.om .transparent
 	{
 	  filter: alpha(opacity=50);
 	  -moz-opacity: 0.5;
