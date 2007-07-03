@@ -74,12 +74,7 @@ public class QuestionDefinition
 				throw new OmFormatException(
 					"Root must be <questiondefinition> in question definition: "+f);
 			
-			fSource=new File(
-				XML.getText(d.getDocumentElement(),"sourcetree"));
-			if(!fSource.exists())
-				throw new OmFormatException(
-					"Source folder '"+fSource+"' does not exist in question definition: "+f);
-			
+			fSource=new File(XML.getText(d.getDocumentElement(),"sourcetree"));
 			sPackage=XML.getText(d.getDocumentElement(),"package");
 			
 			asAdditionalPackageRoots=XML.getTextFromChildren(
@@ -132,12 +127,17 @@ public class QuestionDefinition
 		{
 			dBuildScript=XML.parse(getClass().getResourceAsStream(
 				"questionbuild.xml"));
+
+			File sourceFolder = getSourceFolder();
+			if(!sourceFolder.exists())
+				throw new OmException(
+					"Source folder '"+fSource+"' does not exist.");
 			
 			// Fill in standard properties
 			Map<String,String> mReplace=new HashMap<String,String>();
 			mReplace.put("WEBAPP",fWebapp.getAbsolutePath());
 			mReplace.put("JAR",fJar.getAbsolutePath());
-			mReplace.put("SOURCE",getSourceFolder().getAbsolutePath());
+			mReplace.put("SOURCE",sourceFolder.getAbsolutePath());
 			mReplace.put("QUESTIONPACKAGE",getPackage().replace('.','/'));
 			XML.replaceTokens(dBuildScript,mReplace);
 			
