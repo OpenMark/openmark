@@ -6,12 +6,12 @@ html,body
   font-family: Verdana, sans-serif;
 }
 
-body.progressleft
+body
 {
   width:770px;
 }
-html.zoom15 body.progressleft { width:1155px; }
-html.zoom20 body.progressleft { width:1540px; }
+html.zoom15 body { width:1155px; }
+html.zoom20 body { width:1540px; }
 
 body.progressbottom
 {
@@ -56,14 +56,19 @@ body.progressbottom #oulink
   display:block;
   margin-bottom:4px;
 }
-body.progressleft #oulink
+body.progressleft #oulink,
+body.progresswide #oulink
 {
   float:left;
   width:132px;
   padding-top:7px;
   margin-right:38px;
 }
-* html body.progressleft #oulink { padding-top:4px;	}
+* html body.progressleft #oulink,
+* html body.progresswide #oulink
+{
+  padding-top:4px;
+}
 
 /* Titles section (middle of topbar) */
 #titles
@@ -147,11 +152,13 @@ html.zoom20 #buttons .button  { font-size:20px; line-height: 48px;}
   padding-top:8px;
   padding-bottom:7px;
 }
-body.progressbottom #main
+body.progressbottom #main,
+body.progresswide #main
 {
   padding-bottom:4px;
 }
-* html body.progressbottom #main { padding-bottom:7px; }
+* html body.progressbottom #main,
+* html body.progresswide #main { padding-bottom:7px; }
 
 #questionouter
 {
@@ -272,24 +279,32 @@ body.progressleft #progress .sectiontag
 }
 
 /* Progress on bottom */
-body.progressbottom #progress
+body.progressbottom #progress,
+body.progresswide #progress
 {
   clear:left;
   padding-top:7px;
 }
-body.progressbottom #progress .section
+body.progressbottom #progress .section,
+body.progresswide #progress .section
 {
   margin-top:2px;
 }
-* html body.progressbottom #progress .section { margin-top:5px; }
+* html body.progressbottom #progress .section,
+* html body.progresswide #progress .section
+{
+  margin-top:5px;
+}
 
-body.progressbottom #progress .sectiontag
+body.progressbottom #progress .sectiontag,
+body.progresswide #progress .sectiontag
 {
   display:inline;
   margin-right:3px;
 }
 
-body.progressbottom #progress .sectiontagafter
+body.progressbottom #progress .sectiontagafter,
+body.progresswide #progress .sectiontagafter
 {
   display:inline;
 }

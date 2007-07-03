@@ -41,7 +41,7 @@ class TestDefinition
 	private Element eConfirmParagraphs;
 	private String sConfirmButton,sConfirmTitle;
 	
-	static final int NAVLOCATION_BOTTOM=0,NAVLOCATION_LEFT=1;
+	static final int NAVLOCATION_BOTTOM=0,NAVLOCATION_LEFT=1,NAVLOCATION_WIDE=2;
 	
 	
 	/**
@@ -110,8 +110,11 @@ class TestDefinition
 			bQuestionNames="yes".equals(eOptions.getAttribute("questionnames"));
 			bEndSummary=!"no".equals(eOptions.getAttribute("endsummary"));
 			bSummaryQuestions=!"no".equals(eOptions.getAttribute("summaryquestions"));
-			if(eOptions.getAttribute("navlocation").equals("left"))
+			String navLocation = eOptions.getAttribute("navlocation");
+			if(navLocation.equals("left"))
 				iNavLocation=NAVLOCATION_LEFT;
+			else if(navLocation.equals("wide"))
+				iNavLocation=NAVLOCATION_WIDE;
 			else
 				iNavLocation=NAVLOCATION_BOTTOM;
 			

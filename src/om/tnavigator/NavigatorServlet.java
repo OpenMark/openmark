@@ -2653,6 +2653,7 @@ public class NavigatorServlet extends HttpServlet
 
 	private void serveQuestionPage(RequestTimings rt,UserSession us,TestQuestion tq,String sXHTML,boolean bClearCSS,HttpServletRequest request, HttpServletResponse response) throws IOException,OmException
 	{
+		// TODO Wrap question in form.
 		if(isSingle(us))
 		{
 			Element eMetadata=getQuestionMetadata(rt,tq.getID(),
@@ -4061,7 +4062,11 @@ public class NavigatorServlet extends HttpServlet
 				XML.remove(XML.find(d,"id","progressLeft"));
 				eProgress=XML.find(d,"id","progressBottom");
 				eProgress.setAttribute("id","progress");
-				addAccessibilityClasses(d,request,"progressbottom");
+				if (us.tdDefinition.getNavLocation()==TestDefinition.NAVLOCATION_WIDE) {
+					addAccessibilityClasses(d,request,"progresswide");
+				} else {
+					addAccessibilityClasses(d,request,"progressbottom");
+				}
 			}
 
 			Element eCurrentSection=null;
