@@ -45,6 +45,7 @@ public class TextComponent extends QComponent
 		return "t";
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		getQDocument().buildInsideWithText(this,eThis);

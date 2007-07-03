@@ -46,7 +46,9 @@ A top-level box that goes within the root &lt;question&gt; tag (after the
 */
 public class BoxComponent extends QComponent
 {
+	/** Colour to use for the background. */
 	public final static String PROPERTY_BACKGROUND="background";
+	/** If true, never show this box in plain mode. */
 	public final static String PROPERTY_PLAINHIDE="plainhide";
 	
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
@@ -55,6 +57,7 @@ public class BoxComponent extends QComponent
 		return "box";
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -76,16 +79,19 @@ public class BoxComponent extends QComponent
 //		setString("type","other");
 	}
 	
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[] { "gridx","gridy" };
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
 	
+	@Override
 	protected Color getChildBackground(QComponent qcChild)
 	{
 		try
@@ -98,6 +104,7 @@ public class BoxComponent extends QComponent
 		}
 	}
 	
+	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain)
 	  throws OmException
 	{

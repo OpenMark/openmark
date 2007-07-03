@@ -62,8 +62,11 @@ public class EditFieldComponent extends QComponent implements Labelable
 		return "editfield";
 	}
 
+	/** Number of columns (approx) to allow space for */
 	public static final String PROPERTY_COLS="cols";
+	/** Number of rows (approx) to allow space for */
 	public static final String PROPERTY_ROWS="rows";
+	/** Label for accessibility purposes */
 	public static final String PROPERTY_LABEL="label";
 	/** Property name for value of editfield */
 	public final static String PROPERTY_VALUE="value";
@@ -73,6 +76,7 @@ public class EditFieldComponent extends QComponent implements Labelable
 	/** If true, none of parents do anything particular - needed for some IE-specific stylin'. */
 	private boolean bNonScaryParents;
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -91,11 +95,13 @@ public class EditFieldComponent extends QComponent implements Labelable
 		setInteger(PROPERTY_ROWS,1);
 	}
 	
+	@Override
 	public Dimension getApproximatePixelSize() throws OmDeveloperException
 	{
 		return new Dimension(6*getInteger(PROPERTY_COLS)+26,11*getInteger(PROPERTY_ROWS)+11);
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null) throw new OmFormatException(
@@ -117,6 +123,7 @@ public class EditFieldComponent extends QComponent implements Labelable
 		}
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		int iRows = getInteger(PROPERTY_ROWS);
@@ -190,6 +197,7 @@ public class EditFieldComponent extends QComponent implements Labelable
 	/** Maximum length of single line */
 	private final static int MAXCHARS_SINGLELINE=100;
 	
+	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
 		sValue=sValue.replaceAll("\r\n","\n");

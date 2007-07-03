@@ -45,22 +45,26 @@ public class LinkComponent extends QComponent
 		return "link";
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}	
 	
 	/** Specifies attributes required */
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[]	{"url"};
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
 		defineString("url");
 	}
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eLink = qc.createElement("a");

@@ -160,10 +160,10 @@ public class CanvasComponent extends QComponent implements World.Context
 	private BufferedImage biBackground=null;
 	
 	/** List of graph worlds, in paint order */
-	private List lWorlds=new LinkedList();
+	private List<World> lWorlds=new LinkedList<World>();
 	
 	/** List of markers */
-	private List lMarkers=new LinkedList();
+	private List<Marker> lMarkers=new LinkedList<Marker>();
 	
 	/** Information stored on each marker */
 	private static class Marker
@@ -179,7 +179,7 @@ public class CanvasComponent extends QComponent implements World.Context
 	}
 	
 	/** List of lines */
-	private List lLines=new LinkedList();
+	private List<MarkerLine> lLines=new LinkedList<MarkerLine>();
 	
 	/** Information stored for line between markers */
 	private static class MarkerLine
@@ -194,6 +194,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		String sWorld;
 	}
 	
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[]
@@ -203,6 +204,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		};
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -225,6 +227,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		setString(PROPERTY_MARKERHOTSPOT,"8,8|11,11|15,15");
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		clear();
@@ -408,8 +411,8 @@ public class CanvasComponent extends QComponent implements World.Context
 				try
 				{
 					byte[] abData=getQuestion().loadResource(getString(PROPERTY_FILEPATH));
-					BufferedImage bi=ImageIO.read(new ByteArrayInputStream(abData));
-					getGraphics().drawImage(bi,0,0,null);
+					BufferedImage loadedImage=ImageIO.read(new ByteArrayInputStream(abData));
+					getGraphics().drawImage(loadedImage,0,0,null);
 				}
 				catch(IOException ioe)
 				{
@@ -472,7 +475,7 @@ public class CanvasComponent extends QComponent implements World.Context
 	{
 		if(iMarker >= lMarkers.size() || iMarker<0)
 			throw new OmDeveloperException("<canvas>: No marker "+iMarker);
-		Marker m=(Marker)lMarkers.get(iMarker);
+		Marker m=lMarkers.get(iMarker);
 		
 		return new Point(m.iX,m.iY);
 	}
@@ -560,6 +563,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		bChanged=true;
 	}
 	
+	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain)
 		throws OmException
 	{
@@ -750,6 +754,7 @@ public class CanvasComponent extends QComponent implements World.Context
 			((w.convertX(1.0)-w.convertX(0.0))*dZoom)+","+((w.convertY(1.0)-w.convertY(0.0))*dZoom));
 	}
 
+	@Override
 	protected void formAllValuesSet(ActionParams ap) throws OmException
 	{
 		if(!isEnabled()) return;
@@ -778,7 +783,7 @@ public class CanvasComponent extends QComponent implements World.Context
 	}
 	
 	/** Map from colour constant (String) to #colour (String) */
-  private static final Map mColourConstants=new HashMap();
+  private static final Map<String, String> mColourConstants=new HashMap<String, String>();
   static
   {
   	String[] COLOURDEFAULTS=
@@ -815,7 +820,7 @@ public class CanvasComponent extends QComponent implements World.Context
 					return getBackground();
 				else
 				{
-					String s=(String)mColourConstants.get(sConstant);
+					String s=mColourConstants.get(sConstant);
 					if(s==null) return null;					
 					return convertRGBOnly(s);
 				}				
@@ -843,6 +848,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		return 13;
 	}
 	
+	@Override
 	public String setString(String sName,String sValue) throws OmDeveloperException
 	{
 		if(sName.equals(PROPERTY_FILEPATH)) biBackground=null;

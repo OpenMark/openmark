@@ -67,6 +67,7 @@ public class DropBoxComponent extends QComponent
 		return "dropbox";
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -79,6 +80,7 @@ public class DropBoxComponent extends QComponent
 		setBoolean(PROPERTY_FORCEBORDER,false);
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null)
@@ -91,7 +93,7 @@ public class DropBoxComponent extends QComponent
 	private Map getPlainAnswers() throws OmException
 	{
 		// Build map from plain answers -> ID
-		Map m=new HashMap();
+		Map<String, String> m=new HashMap<String, String>();
 		m.put(NOANSWEROPTION,"");
 		
 		// Find all applicable dragboxes			
@@ -111,6 +113,7 @@ public class DropBoxComponent extends QComponent
 		return m;
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		// Plain version is a standard dropdown list of text alternates
@@ -204,6 +207,7 @@ public class DropBoxComponent extends QComponent
 
 	}
 	
+	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
 		if(ap.hasParameter("plain"))

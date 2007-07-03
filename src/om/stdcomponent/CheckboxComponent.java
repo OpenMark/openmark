@@ -64,6 +64,7 @@ public class CheckboxComponent extends QComponent
 		return "checkbox";
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -73,6 +74,7 @@ public class CheckboxComponent extends QComponent
 		setBoolean(PROPERTY_CHECKED,false);
 	}
 	
+	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eOuterBox=qc.createElement("div");
@@ -207,6 +209,7 @@ public class CheckboxComponent extends QComponent
 		}
 	}
 	
+	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
 		if(!isEnabled()) return;
@@ -215,6 +218,7 @@ public class CheckboxComponent extends QComponent
 		bReceivedSet=true;
 	}
 	
+	@Override
 	protected void formAllValuesSet(ActionParams ap) throws OmException
 	{
 		if(!isEnabled()) return;		
@@ -222,6 +226,7 @@ public class CheckboxComponent extends QComponent
 		bReceivedSet=false;
 	}
 	
+	@Override
 	protected Color getChildBackground(QComponent qcChild)
 	{
 		try

@@ -59,7 +59,7 @@ public class DropdownComponent extends QComponent
 	}
 	
 	/** List of Option */ 
-	private List lOptions=new LinkedList(); 
+	private List<Option> lOptions=new LinkedList<Option>(); 
 	
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
@@ -67,12 +67,14 @@ public class DropdownComponent extends QComponent
 		return "dropdown";
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
 		defineString(PROPERTY_SELECTED);
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		Element[] aeOptions=XML.getChildren(eThis);
@@ -91,6 +93,7 @@ public class DropdownComponent extends QComponent
 	 * Adds an option to the dropdown.
 	 * @param sValue Value for option
 	 * @param sDisplay Display text of option
+	 * @throws OmException 
 	 */
 	public void addOption(String sValue,String sDisplay) throws OmException
 	{
@@ -103,6 +106,7 @@ public class DropdownComponent extends QComponent
 			setString(PROPERTY_SELECTED,o.sValue);
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		// Create select
@@ -138,6 +142,7 @@ public class DropdownComponent extends QComponent
 		qc.addTextEquivalent("["+sSelectedValue+"]");
 	}
 	
+	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
 		for(Iterator i=lOptions.iterator();i.hasNext();)
@@ -179,6 +184,7 @@ public class DropdownComponent extends QComponent
 		}
 	}
 	
+	@Override
 	public String setString(String sName,String sValue) throws OmDeveloperException
 	{
 		if(sName.equals(PROPERTY_SELECTED))

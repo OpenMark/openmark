@@ -39,7 +39,9 @@ A standard XHTML button.
 */
 public class ButtonComponent extends QComponent
 {
+	/** Name of method in question class that is called if user clicks button. */
 	public static final String PROPERTY_ACTION="action";
+	/** Text of button label */
 	public static final String PROPERTY_LABEL="label";
 	
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
@@ -48,6 +50,7 @@ public class ButtonComponent extends QComponent
 		return "button";
 	}
 	
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[]
@@ -57,6 +60,7 @@ public class ButtonComponent extends QComponent
 		};		
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -64,17 +68,20 @@ public class ButtonComponent extends QComponent
 		defineString(PROPERTY_ACTION);
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null) throw new OmFormatException(
 			"<button> may not contain other content");
 	}
 	
+	@Override
 	protected void initSpecific(Element eThis) throws OmException
 	{
 		getQuestion().checkCallback(getString(PROPERTY_ACTION));
 	}
 	
+	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eInput=qc.getOutputDocument().createElement("input");
@@ -96,6 +103,7 @@ public class ButtonComponent extends QComponent
 		qc.addTextEquivalent("[Button: "+getString(PROPERTY_LABEL)+"]");
 	}
 	
+	@Override
 	protected void formCallAction(String sValue,ActionParams ap) throws OmException
 	{
 		getQuestion().callback(getString(PROPERTY_ACTION));

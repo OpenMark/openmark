@@ -69,6 +69,7 @@ public class RadioBoxComponent extends QComponent
 		return "radiobox";
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -81,6 +82,7 @@ public class RadioBoxComponent extends QComponent
 		setString(PROPERTY_GROUP,"_rg");
 	}
 	
+	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eOuterBox=qc.createElement("div");
@@ -211,11 +213,13 @@ public class RadioBoxComponent extends QComponent
 		}
 	}
 	
+	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
 		if(!isEnabled()) return;
 	}
 	
+	@Override
 	protected void formAllValuesSet(ActionParams ap) throws OmException
 	{
 		if(!isEnabled()) return;
@@ -229,6 +233,7 @@ public class RadioBoxComponent extends QComponent
 		}
 	}
 	
+	@Override
 	protected Color getChildBackground(QComponent qcChild)
 	{
 		try

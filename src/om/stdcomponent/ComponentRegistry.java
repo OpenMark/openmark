@@ -58,6 +58,11 @@ public class ComponentRegistry
 		// Do not include root component as it can't be created from a tag
 	};	
 	
+	/**
+	 * Register all known components with a QComponentManager.
+	 * @param qcm the QComponentManager to register components with.
+	 * @throws OmDeveloperException
+	 */
 	public static void fill(QComponentManager qcm) throws OmDeveloperException
 	{
 		for(int i=0;i<COMPONENTCLASSES.length;i++)

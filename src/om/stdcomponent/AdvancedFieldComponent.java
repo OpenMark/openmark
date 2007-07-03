@@ -70,12 +70,14 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 	public final static String PROPERTY_VALUE="value";
 	/** Number of columns */
 	public static final String PROPERTY_COLS="cols";
+	/** Label text */
 	public static final String PROPERTY_LABEL="label";
 	/** Type of editfield (affects JS) */
 	public final static String PROPERTY_TYPE="type";
 	
 	private boolean bGotLabel=false;	
 	
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[]
@@ -84,6 +86,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 		};
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -96,12 +99,14 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 		setInteger(PROPERTY_COLS,20);
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null) throw new OmFormatException(
 			"<editfield> may not contain other content"); 
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{		
 		if(bInit)
@@ -270,6 +275,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 		}
 	}
 		
+	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
 		// In plain mode they enter {} and []. We try hard to make it into valid xhtml

@@ -44,12 +44,14 @@ public class BreakComponent extends QComponent
 		return "break";
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null) throw new OmFormatException(
 			"<break> may not contain other content"); 
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		qc.addInlineXHTML(qc.createElement("br"));

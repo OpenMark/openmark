@@ -39,6 +39,7 @@ be used in conjunction with editfields or advancedfields.
 */
 public class LabelComponent extends QComponent
 {
+	/** Om component ID of thing being labelled */
 	public final static String PROPERTY_FOR="for";
 	
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
@@ -47,22 +48,32 @@ public class LabelComponent extends QComponent
 		return "label";
 	}
 	
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[] { PROPERTY_FOR };
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
 		defineString(PROPERTY_FOR,PROPERTYRESTRICTION_ID);
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
 	
+	/**
+	 * @param qd The question definition.
+	 * @param bPlain True if in plain mode.
+	 * @param sID the component that we label.
+	 * @return The XHTML id of the thing that should be labelled.
+	 * @throws OmException
+	 */
 	public static String getLabel(QDocument qd,boolean bPlain,String sID) throws OmException
 	{
 		QComponent qcTarget=qd.find(sID);
@@ -77,6 +88,7 @@ public class LabelComponent extends QComponent
 		}
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eLabel=qc.getOutputDocument().createElement("label");

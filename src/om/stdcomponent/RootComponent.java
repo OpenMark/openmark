@@ -37,6 +37,7 @@ public class RootComponent extends QComponent
 	/** Layout grid size */
 	int[] aiRows,aiColumns;
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		// Overridden to exclude 'layout' tag (which we just processed),
@@ -46,6 +47,7 @@ public class RootComponent extends QComponent
 			"layout","scoring","define-component","title"});		
 	}
 	
+	@Override
 	protected void initSpecific(Element eThis) throws OmException
 	{
 		// Process layout tag
@@ -79,6 +81,7 @@ public class RootComponent extends QComponent
 			throw new OmFormatException("<layout> must include at least one row and column");		
 	}	
 	
+	@Override
 	public void produceOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Document d=qc.getOutputDocument();
@@ -89,6 +92,7 @@ public class RootComponent extends QComponent
 			qc.addResource("clear.gif","image/gif",getClassResource("clear.gif"));
 		}
 		
+		// TODO, don't create the form tag here, just use a div, and create the form in the test navigator.
 		Element eForm=d.createElement("form");
 		eForm.setAttribute("autocomplete","off");
 		
@@ -111,7 +115,7 @@ public class RootComponent extends QComponent
 		}
 		
 		// See if there's a component that wants to go there
-		Set sBoxes=new HashSet();
+		Set<BoxThingy> sBoxes=new HashSet<BoxThingy>();
 		QComponent[] acChildren=getComponentChildren();
 		boolean[][] aabGridOccupancy=new boolean[aiColumns.length][aiRows.length];
 		for(int iChild=0;iChild<acChildren.length;iChild++)
@@ -165,12 +169,12 @@ public class RootComponent extends QComponent
 		XML.createChild(eForm,"div").setAttribute("class","endform");
 	}
 	
-	private void subdivideGrid(Set sBoxes,int iMinX,int iMinY,int iWidth, int iHeight, QContent qc, boolean bPlain, boolean bInit)
+	private void subdivideGrid(Set<BoxThingy> sBoxes,int iMinX,int iMinY,int iWidth, int iHeight, QContent qc, boolean bPlain, boolean bInit)
 		throws OmException
 	{
 		if(sBoxes.size()==1) 
 		{
-			handleSingleBox((BoxThingy)sBoxes.iterator().next(),qc, bPlain, bInit);
+			handleSingleBox(sBoxes.iterator().next(),qc, bPlain, bInit);
 			return;
 		}
 		
@@ -189,7 +193,7 @@ public class RootComponent extends QComponent
 		if(iCrossover < iHeight)
 		{
 			// OK now strip out everything above this crossover and send it to new method
-			Set sNew=new HashSet();
+			Set<BoxThingy> sNew=new HashSet<BoxThingy>();
 			for(Iterator iBox=sBoxes.iterator();iBox.hasNext();)
 			{
 				BoxThingy bt=(BoxThingy)iBox.next();
@@ -236,9 +240,8 @@ public class RootComponent extends QComponent
 		
 		crossoverloop: for(iCrossover=iMinX+1;iCrossover<iWidth;iCrossover++)
 		{
-			for(Iterator iBox=sBoxes.iterator();iBox.hasNext();)
+			for(BoxThingy bt : sBoxes)
 			{
-				BoxThingy bt=(BoxThingy)iBox.next();
 				if(bt.iX<iCrossover && bt.iX+bt.iW>iCrossover)
 					continue crossoverloop;
 			}
@@ -248,10 +251,10 @@ public class RootComponent extends QComponent
 		if(iCrossover<iWidth)
 		{
 			// OK now strip out everything before this crossover and send it to new method
-			Set sNew=new HashSet();
-			for(Iterator iBox=sBoxes.iterator();iBox.hasNext();)
+			Set<BoxThingy> sNew=new HashSet<BoxThingy>();
+			for(Iterator<BoxThingy> iBox=sBoxes.iterator();iBox.hasNext();)
 			{
-				BoxThingy bt=(BoxThingy)iBox.next();
+				BoxThingy bt=iBox.next();
 				if(bt.iX+bt.iW<=iCrossover)
 				{
 					sNew.add(bt);

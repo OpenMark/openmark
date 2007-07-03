@@ -66,6 +66,7 @@ public class TableComponent extends QComponent
 	
 	
 	/** @return array of required attributes for tag */
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[]
@@ -75,6 +76,7 @@ public class TableComponent extends QComponent
 	}
 	
 	/** Defines possible attributes */
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -86,7 +88,11 @@ public class TableComponent extends QComponent
 		defineInteger("right");
 	}
 	
-	/** Question author callable funtion sets dimensions of table */
+	/**
+	 * Question author callable funtion sets dimensions of table 
+	 * @param iNewRows number of rows in the table.
+	 * @param iNewCols number of columns in the table.
+	 */
 	public void setSize(int iNewRows, int iNewCols)
 	{
 		iRows = iNewRows;
@@ -100,11 +106,11 @@ public class TableComponent extends QComponent
 	private int iLeft;  // number of label columns on left
 	private int iRight; // number of label columns on right
 	
-	private ArrayList tableElements; // array of table elements (columns etc) 
+	private ArrayList<TableRow> tableElements; // array of table elements (columns etc) 
 	private QComponent qcTitle; // title of table
 	
 	/** inner class which represents a table row */
-	class tableRow
+	class TableRow
 	{
 		QComponent[] aqcCells;
 	}
@@ -115,6 +121,7 @@ public class TableComponent extends QComponent
 		else return iDefault;
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		iRows = getInteger("rows");
@@ -125,7 +132,7 @@ public class TableComponent extends QComponent
 		iLeft = getIntegerIfDefined("left",0);
 		iRight = getIntegerIfDefined("right",0);
 
-		tableElements = new ArrayList(10);
+		tableElements = new ArrayList<TableRow>(10);
 		for(Node nChild=eThis.getFirstChild();nChild!=null;nChild=nChild.getNextSibling())
 		{
 			if(nChild instanceof Element)
@@ -133,7 +140,7 @@ public class TableComponent extends QComponent
 				Element e=(Element)nChild;
 				if(e.getTagName().equals("row"))
 				{
-					tableRow tr = new tableRow();
+					TableRow tr = new TableRow();
 					buildRow(tr,e);
 					tableElements.add(tr);
 				}
@@ -147,9 +154,9 @@ public class TableComponent extends QComponent
 		}
 	}
 	
-	protected void buildRow(tableRow tr, Element eRow) throws OmException
+	protected void buildRow(TableRow tr, Element eRow) throws OmException
 	{
-		LinkedList lCells = new LinkedList();
+		LinkedList<QComponent> lCells = new LinkedList<QComponent>();
 
 		for(Node n=eRow.getFirstChild();n!=null;n=n.getNextSibling()) // loop through cells
 		{
@@ -161,11 +168,12 @@ public class TableComponent extends QComponent
 				addChild(qcCell);// Also store in standard child array so it can be found etc.
 			}
 		}
-		tr.aqcCells = (QComponent[]) lCells.toArray(new QComponent[0]);
+		tr.aqcCells = lCells.toArray(new QComponent[0]);
 		// throw new OmException("size of row =" + lCells.size());
 	}
 	
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eTable=qc.createElement("table");
@@ -185,7 +193,7 @@ public class TableComponent extends QComponent
 		Element eTBody=XML.createChild(eTable,"tbody");
 		for (int iRow = 0; iRow < iRows; iRow++)
 		{ // create rows
-			tableRow tr = (tableRow) tableElements.get(iTableElement++);
+			TableRow tr = tableElements.get(iTableElement++);
 
 			Element eRow = XML.createChild(eTBody,"tr");
 			Element eCell;
@@ -220,6 +228,7 @@ public class TableComponent extends QComponent
 		}
 	}
 	
+	@Override
 	protected Color getChildBackground(QComponent qcChild)
 	{
 		try
@@ -228,7 +237,7 @@ public class TableComponent extends QComponent
 			int iTableElement = 0;
 			for (int iRow = 0; iRow < iRows; iRow++)
 			{ // rows
-				tableRow tr = (tableRow) tableElements.get(iTableElement++);
+				TableRow tr = tableElements.get(iTableElement++);
 				for(int iCell = 0; iCell < iCols; iCell++)
 				{ // cells
 					if (iCell < tr.aqcCells.length && tr.aqcCells[iCell]==qcChild)

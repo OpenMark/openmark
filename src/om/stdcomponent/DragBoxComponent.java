@@ -48,7 +48,9 @@ There is no way to control their size other than by changing their contents.</p>
 */
 public class DragBoxComponent extends QComponent
 {
+	/** If true, user can drag from this same box more than once */
 	public final static String PROPERTY_INFINITE="infinite";
+	/** Optional label that appears in small text inside the box at the right. If included, must be a single character */
 	public final static String PROPERTYREGEXP_SIDELABEL=".";
 	
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
@@ -57,6 +59,7 @@ public class DragBoxComponent extends QComponent
 		return "dragbox";
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -68,6 +71,7 @@ public class DragBoxComponent extends QComponent
 		setBoolean(PROPERTY_INFINITE,false);
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		getQDocument().buildInsideWithText(this,eThis);
@@ -93,6 +97,7 @@ public class DragBoxComponent extends QComponent
 		return qc.endTextMode();		
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		// In plain mode we don't do anything at all since dragbox content appears
@@ -161,6 +166,7 @@ public class DragBoxComponent extends QComponent
 	}
 	
 	/** Return correct background colour */
+	@Override
 	protected Color getChildBackground(QComponent qcChild)
 	{
 		try

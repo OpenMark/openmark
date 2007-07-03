@@ -64,6 +64,7 @@ public class LayoutGridComponent extends QComponent
 	/** Order of components */
 	private int[] aiShuffleMap;
 	
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[]
@@ -72,6 +73,7 @@ public class LayoutGridComponent extends QComponent
 		};
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -82,6 +84,7 @@ public class LayoutGridComponent extends QComponent
 	}
 	
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eOuter=qc.createElement("div");
@@ -220,6 +223,7 @@ public class LayoutGridComponent extends QComponent
 		}
 	}
 	
+	@Override
 	protected boolean wantsFilledChildren()
 	{
 		return true;

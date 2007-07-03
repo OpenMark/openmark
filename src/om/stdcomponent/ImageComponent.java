@@ -64,6 +64,7 @@ public class ImageComponent extends QComponent
 		return "image";
 	}
 	
+	/** Alternative text for those who can't use the actual image */
 	public final static String PROPERTY_ALT="alt";
 	
 	/** path to image file */
@@ -72,13 +73,13 @@ public class ImageComponent extends QComponent
 	private int iHeight = 30;
 	private byte[] imageData;
 	private String sMimeType;
-	private ArrayList alIPlaces;
+	private ArrayList<IPlace> alIPlaces;
 	
 	/** 
 	 * Keep track of resources we added to users so we can save SOAP time by
 	 * not transferring them again.
 	 */ 
-	private Set sAddedResources=new HashSet();
+	private Set<String> sAddedResources=new HashSet<String>();
 	
 	/** Represents one &lt;iplace&gt; item -- a pixel location for adding objects*/
 	private static class IPlace
@@ -93,12 +94,14 @@ public class ImageComponent extends QComponent
 	private boolean bSpaceBefore,bSpaceAfter;
 	
 	/** Specifies attributes required */
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[]	{PROPERTY_ALT,PROPERTY_FILEPATH};
 	}
 	
 	/** Specifies possible attributes */
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -109,6 +112,7 @@ public class ImageComponent extends QComponent
 	}
 	
 	/** parses internals of tag to create java component*/
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		Node nPrevious=eThis.getPreviousSibling();
@@ -134,7 +138,7 @@ public class ImageComponent extends QComponent
 				Element e=(Element)n;
 				if(e.getTagName().equals("iplace"))
 				{	//handle iplace
-					if (alIPlaces == null) alIPlaces = new ArrayList(10);
+					if (alIPlaces == null) alIPlaces = new ArrayList<IPlace>(10);
 					IPlace p =new IPlace();
 					try
 					{
@@ -173,7 +177,8 @@ public class ImageComponent extends QComponent
 		}
 	}
 	
-	/** @return FilePath of Image */
+	/** @return FilePath of Image 
+	 * @throws OmDeveloperException */
 	public String getFilePath() throws OmDeveloperException
 	{ 
 		return getString(PROPERTY_FILEPATH); 
@@ -221,6 +226,7 @@ public class ImageComponent extends QComponent
 	}
 	
 	/** creates web page output from java component */
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		double dZoom=getQuestion().getZoom();
@@ -236,7 +242,7 @@ public class ImageComponent extends QComponent
 			if (alIPlaces != null)
 				for (int i=0; i < alIPlaces.size(); i++)
 				{
-					IPlace ip = (IPlace) alIPlaces.get(i);
+					IPlace ip = alIPlaces.get(i);
 
 					// Check content is not hidden
 					if(!ip.qcPlaceContent.isChildDisplayed()) continue;					
@@ -322,7 +328,7 @@ public class ImageComponent extends QComponent
 			{
 				for (int i=0; i < alIPlaces.size(); i++)
 				{
-					IPlace ip = (IPlace) alIPlaces.get(i);
+					IPlace ip = alIPlaces.get(i);
 					
 					// Must get the label even though not using it, just to indicate that
 					// it's been provided 

@@ -125,6 +125,7 @@ public class EquationComponent extends QComponent
 	/** True if there was whitespace before or after the &lt;equation&gt; tag */
 	private boolean bSpaceBefore,bSpaceAfter;
 	
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[]
@@ -133,6 +134,7 @@ public class EquationComponent extends QComponent
 		};
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -141,6 +143,7 @@ public class EquationComponent extends QComponent
 		setBoolean(PROPERTY_TEXTFONT,false);
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		Node nPrevious=eThis.getPreviousSibling();
@@ -158,23 +161,23 @@ public class EquationComponent extends QComponent
 				bSpaceAfter=true;
 		}
 		
-		List lPlaces=new LinkedList();
+		List<Place> lPlaces=new LinkedList<Place>();
 		int iPlace=0;
 		StringBuffer sbText=new StringBuffer();
 		for(Node n=eThis.getFirstChild();n!=null;n=n.getNextSibling())
 		{
 			if(n instanceof Element)
 			{
-				Element e=(Element)n;
-				if(!e.getTagName().equals("eplace"))
+				Element eplace=(Element)n;
+				if(!eplace.getTagName().equals("eplace"))
 					throw new OmFormatException(
 						"<equation> may only contain text and <eplace> tags");
-				Element[] aeChildren=XML.getChildren(e);
+				Element[] aeChildren=XML.getChildren(eplace);
 				QComponent qcChild;
 				boolean bImplicit=false;
 				if(aeChildren.length!=1) // Treats more than one child as inside <t>
 				{
-					qcChild=getQDocument().build(this,e,"t");
+					qcChild=getQDocument().build(this,eplace,"t");
 					bImplicit=true;
 				}
 				else // Treats single child as specific component (auto-sizing works) 
@@ -184,12 +187,12 @@ public class EquationComponent extends QComponent
 				
 				// See if width/height is specified
 				int iWidth,iHeight;
-				if(e.hasAttribute("width") && e.hasAttribute("height"))
+				if(eplace.hasAttribute("width") && eplace.hasAttribute("height"))
 				{
 					try
 					{
-						iWidth=Integer.parseInt(e.getAttribute("width"));
-						iHeight=Integer.parseInt(e.getAttribute("height"));
+						iWidth=Integer.parseInt(eplace.getAttribute("width"));
+						iHeight=Integer.parseInt(eplace.getAttribute("height"));
 					}
 					catch(NumberFormatException nfe)
 					{
@@ -214,15 +217,15 @@ public class EquationComponent extends QComponent
 				p.iWidth=iWidth;
 				p.iHeight=iHeight;
 				p.bImplicit=bImplicit;
-				if(!e.hasAttribute("label"))
+				if(!eplace.hasAttribute("label"))
 					throw new OmFormatException(
 						"<equation> <eplace>: Must include label=");
-				if(e.hasAttribute("label"))
-					p.sLabel=e.getAttribute("label");
+				if(eplace.hasAttribute("label"))
+					p.sLabel=eplace.getAttribute("label");
 				else
 					p.sLabel=null;
-				if(e.hasAttribute("for"))
-					p.sLabelFor=e.getAttribute("for");
+				if(eplace.hasAttribute("for"))
+					p.sLabelFor=eplace.getAttribute("for");
 				else if(qcChild instanceof Labelable)
 					p.sLabelFor=qcChild.getID();
 				lPlaces.add(p);
@@ -236,7 +239,7 @@ public class EquationComponent extends QComponent
 			}			
 		}
 		sEquation=sbText.toString();
-		apPlaces=(Place[])lPlaces.toArray(new Place[0]);
+		apPlaces=lPlaces.toArray(new Place[0]);
 	}
 	
 	/** @return Text of equation */
@@ -268,6 +271,7 @@ public class EquationComponent extends QComponent
 	
 	private Equation e=null;
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		// Get actual current value of string

@@ -43,11 +43,13 @@ public class CentreComponent extends QComponent
 		return "centre";
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eDiv=qc.getOutputDocument().createElement("div");

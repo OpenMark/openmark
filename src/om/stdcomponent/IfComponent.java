@@ -39,6 +39,7 @@ Conditionally displays content depending on settings.
 */
 public class IfComponent extends QComponent
 {
+	/** If set, requires plain mode to be either on (yes) or off (no), otherwise contents will not be shown */
 	public static String PROPERTY_PLAIN="plain";
 	
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
@@ -47,17 +48,20 @@ public class IfComponent extends QComponent
 		return "if";
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
 		defineBoolean(PROPERTY_PLAIN);
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		if(isPropertySet(PROPERTY_PLAIN) && bPlain!=getBoolean(PROPERTY_PLAIN)) return;

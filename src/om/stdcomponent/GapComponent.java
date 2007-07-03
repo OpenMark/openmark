@@ -45,12 +45,14 @@ public class GapComponent extends QComponent
 		return "gap";
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null) throw new OmFormatException(
 			"<gap> may not contain other content"); 
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{		
 		if(bPlain)		

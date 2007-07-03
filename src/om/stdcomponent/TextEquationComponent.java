@@ -69,6 +69,7 @@ public class TextEquationComponent extends QComponent
 	/** Actual content of required equation */
 	private String sEquation;
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -81,6 +82,7 @@ public class TextEquationComponent extends QComponent
 		defineString(PROPERTY_ALT);
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		StringBuffer sbText=new StringBuffer();
@@ -111,6 +113,7 @@ public class TextEquationComponent extends QComponent
 		this.sEquation=sEquation;
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		// Get actual current value of string

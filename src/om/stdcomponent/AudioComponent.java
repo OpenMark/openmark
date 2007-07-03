@@ -52,11 +52,13 @@ public class AudioComponent extends QComponent
 		return "audio";
 	}
 	
+	/** Path of mp3 file relative to question class. */
 	public final static String PROPERTY_FILEPATH="filePath";
 	
 	/** Audio file that was last sent to user */
 	private String sSentAudio=null;
 	
+	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[]
@@ -65,12 +67,14 @@ public class AudioComponent extends QComponent
 		};
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
 		defineString(PROPERTY_FILEPATH);
 	}
 
+	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain)
 		throws OmException
 	{		

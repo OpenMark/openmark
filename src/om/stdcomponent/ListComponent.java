@@ -58,6 +58,7 @@ public class ListComponent extends QComponent
 	
 	
 	/** Defines possible attributes */
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -67,9 +68,10 @@ public class ListComponent extends QComponent
 	
 	private QComponent[] aListItems;
 
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
-		LinkedList llItems = new LinkedList();
+		LinkedList<QComponent> llItems = new LinkedList<QComponent>();
 		for(Node nChild=eThis.getFirstChild();nChild!=null;nChild=nChild.getNextSibling())
 		{
 			if(nChild instanceof Element)
@@ -81,9 +83,10 @@ public class ListComponent extends QComponent
 			}	
 		}
 		
-		aListItems = (QComponent[]) llItems.toArray(new QComponent[0]);
+		aListItems = llItems.toArray(new QComponent[0]);
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eList;

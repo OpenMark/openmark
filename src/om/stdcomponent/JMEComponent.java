@@ -59,7 +59,9 @@ noncommercial use). <a href="http://www.molinspiration.com/jme/">JME website</a>
 */
 public class JMEComponent extends QComponent
 {
+	/** Name of method in question class that is called after user clicks OK */
 	public static final String PROPERTY_ACTION="action";
+	/** Label for button. */
 	public static final String PROPERTY_LABEL="label";
 
 	/** Current (most recently set) value */
@@ -74,6 +76,7 @@ public class JMEComponent extends QComponent
 		return "jme";
 	}
 	
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
@@ -82,17 +85,20 @@ public class JMEComponent extends QComponent
 		setString(PROPERTY_LABEL,"Draw molecule");
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(XML.getChildren(eThis).length!=0)
 			throw new OmFormatException("<jme>: Cannot contain child components");
 	}
 	
+	@Override
 	protected void initSpecific(Element eThis) throws OmException
 	{
 		getQuestion().checkCallback(getString(PROPERTY_ACTION));
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{		
 		Element eScript=qc.createElement("script");
@@ -155,12 +161,14 @@ public class JMEComponent extends QComponent
 		return sValue;
 	}
 	
-	protected void formSetValue(String sValue,ActionParams ap) throws OmException
+	@Override
+	protected void formSetValue(String newValue,ActionParams ap) throws OmException
 	{
-		this.sValue=sValue;
+		this.sValue=newValue;
 	}
 	
-	protected void formCallAction(String sValue,ActionParams ap) throws OmException
+	@Override
+	protected void formCallAction(String newValue,ActionParams ap) throws OmException
 	{
 		getQuestion().callback(getString(PROPERTY_ACTION));
 	}

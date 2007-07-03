@@ -46,11 +46,13 @@ public class EmphasisComponent extends QComponent
 		return "emphasis";
 	}
 	
+	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
 	
+	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eEm=qc.getOutputDocument().createElement("em");
@@ -62,7 +64,9 @@ public class EmphasisComponent extends QComponent
 		
 		qc.unsetParent();		
 	}
+	/** Specifies style of emphasis */
 	public final static String PROPERTY_TYPE="type";
+	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
