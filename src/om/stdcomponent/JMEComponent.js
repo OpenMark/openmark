@@ -1,8 +1,8 @@
-function jmeSet(id,smiles)
+function jmeSet(id,idPrefix,smiles)
 {
-  var input=document.getElementById("omval_"+id);
+  var input=document.getElementById(idPrefix+"omval_"+id);
   input.value=smiles;
-  var action=document.getElementById("omact_"+id);
+  var action=document.getElementById(idPrefix+"omact_"+id);
   if(action)
   {
     action.disabled=false;
@@ -18,14 +18,14 @@ function jmeInit(token)
 
 var jmePopup=null;
 
-function jmeClick(resourcesPath,id)
+function jmeClick(resourcesPath,id,idPrefix)
 {
   if(jmePopup!=null)
   {
     jmePopup.focus();
     return;
   }
-  jmePopup=window.open("","jme"+id,"width="+
+  jmePopup=window.open("",idPrefix+"jme"+id,"width="+
     (isIE ? "284" : "288") +
     ",height="+
     (isIE ? "347" : "350")+
@@ -42,7 +42,7 @@ function jmeClick(resourcesPath,id)
     "<div style='position:relative;'>"+
 	"<div style='color:#999; font: 10px Verdana, sans-serif; padding: 6px 0 0 4px; position:absolute; width:150px; left:0px;'><a href='http://www.molinspiration.com/jme/index.html' target='_blank' style='color:#999'>JME Editor</a> courtesy of Peter Ertl, Novartis</div>"+    
     "<div style='text-align:right;padding-right:8px;padding-top:8px;'>"+
-    "<input type='button' id='enter' value='    OK    ' onclick='window.opener.jmeSet(\""+id+"\",document.JME.smiles());'/>"+
+    "<input type='button' id='enter' value='    OK    ' onclick='window.opener.jmeSet(\""+id+"\",\""+idprefix+"\",document.JME.smiles());'/>"+
     "</div></div>"+
     "<script type='text/javascript'>"+
     "function check() "+

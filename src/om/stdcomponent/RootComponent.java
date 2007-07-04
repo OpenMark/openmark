@@ -85,33 +85,27 @@ public class RootComponent extends QComponent
 	public void produceOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Document d=qc.getOutputDocument();
-		
+
 		// Add the clear gif (shared between other components)
 		if(bInit && !bPlain)
 		{
 			qc.addResource("clear.gif","image/gif",getClassResource("clear.gif"));
 		}
 		
-		// TODO, don't create the form tag here, just use a div, and create the form in the test navigator.
-		Element eForm=d.createElement("form");
-		eForm.setAttribute("autocomplete","off");
-		
+		Element rootDiv=d.createElement("div");
 		if(!bPlain)
 		{
-			eForm.setAttribute("class","om");
-			eForm.setAttribute("onkeypress","return checkEnter(event);");
+			rootDiv.setAttribute("class","om");
+			rootDiv.setAttribute("onkeypress","return checkEnter(event);");
 		}
 		
-		qc.addInlineXHTML(eForm);
-		eForm.setAttribute("method","post");
-		eForm.setAttribute("action","%%FORMTARGET%%");
-		XML.createText(eForm,"%%FORMFIELD%%");
+		qc.addInlineXHTML(rootDiv);
 		
 		if(!bPlain)
 		{
-			Element eScript=XML.createChild(eForm,"script");
-			eScript.setAttribute("type","text/javascript");
-			eScript.setAttribute("src","%%RESOURCES%%/script.js");		
+			Element script=XML.createChild(rootDiv,"script");
+			script.setAttribute("type","text/javascript");
+			script.setAttribute("src","%%RESOURCES%%/script.js");		
 		}
 		
 		// See if there's a component that wants to go there
@@ -162,11 +156,11 @@ public class RootComponent extends QComponent
 			}
 		}
 		
-		qc.setParent(eForm);
+		qc.setParent(rootDiv);
 		subdivideGrid(sBoxes,0,0,aiColumns.length,aiRows.length,qc, bPlain, bInit);
 		qc.unsetParent();
 		
-		XML.createChild(eForm,"div").setAttribute("class","endform");
+		XML.createChild(rootDiv,"div").setAttribute("class","endform");
 	}
 	
 	private void subdivideGrid(Set<BoxThingy> sBoxes,int iMinX,int iMinY,int iWidth, int iHeight, QContent qc, boolean bPlain, boolean bInit)

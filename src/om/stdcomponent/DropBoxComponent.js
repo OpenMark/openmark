@@ -1,45 +1,46 @@
 // Array of all dragboxes
 var dragboxArray=new Array();
-function dragboxInform(id,enabled,group,infinite)
+function dragboxInform(id,idPrefix,enabled,group,infinite)
 {
-  var dragbox=document.getElementById(id);
+  var dragbox=document.getElementById(idPrefix+id);
   dragbox.isEnabled=enabled;
   dragbox.isInfinite=infinite;
   dragbox.atHome=true;
-  dragbox.inGroup=group;
+  dragbox.inGroup=idPrefix+group;
+  dragbox.valueId=valueId;
   
-  dragboxArray.push(id);
+  dragboxArray.push(idPrefix+id);
 }
 
 // Array of all dropboxes
 var dropboxArray=new Array();
 
-function dropboxFix(id,enabled,group,bgcolour)
+function dropboxFix(id,idPrefix,enabled,group,bgcolour)
 {
   // Check maximum size of all dragboxes
   var maxWidth=0,maxHeight=0;
   for(var i=0;i<dragboxArray.length;i++)
   {
     var db=document.getElementById(dragboxArray[i]);
-    if(db.inGroup!=group) continue;
+    if(db.inGroup!=idPrefix+group) continue;
     if(db.offsetWidth>maxWidth) maxWidth=db.offsetWidth;
     if(db.offsetHeight>maxHeight) maxHeight=db.offsetHeight;
   }
   
   // Init size of dropbox
-  var img=document.getElementById(id+"img");
-  var box=document.getElementById(id+"box");
+  var img=document.getElementById(idPrefix+id+"img");
+  var box=document.getElementById(idPrefix+id+"box");
   img.width=maxWidth;
   img.height=maxHeight+2; 
   box.style.width=(maxWidth-2)+"px";
   box.style.height=(maxHeight-2)+"px";
-  box.inGroup=group;
+  box.inGroup=idPrefix+group;
   
   // Init all dragboxes not already inited
   for(var i=0;i<dragboxArray.length;i++)
   {
     var db=document.getElementById(dragboxArray[i]);
-    if(!db.isInited && db.inGroup==group)
+    if(!db.isInited && db.inGroup==idPrefix+group)
     {
       var img2=document.getElementById(dragboxArray[i]+"img");
       img2.width=maxWidth;
@@ -55,12 +56,12 @@ function dropboxFix(id,enabled,group,bgcolour)
     }
   }
   
-  box.valueField=document.getElementById("omval_"+id);
+  box.valueField=document.getElementById(idPrefix+"omval_"+id);
   if(enabled) dropboxArray.push(box);
-  addPostLoad( function() { dropboxFix2(id); } );
+  addPostLoad( function() { dropboxFix2(id,idPrefix); } );
   
   // Add keydown
-  box.onkeydown=function(e) { return dropboxKeyDown(id,fixEvent(e)); };
+  box.onkeydown=function(e) { return dropboxKeyDown(id,idPrefix,fixEvent(e)); };
   box.onfocus=function(e) { box.style.border="1px dotted black"; }
   box.onblur=function(e) { 
     if(box.filledBorder) 
@@ -71,9 +72,9 @@ function dropboxFix(id,enabled,group,bgcolour)
 }
 
 // Keyboard support for dropbox
-function dropboxKeyDown(id,e)
+function dropboxKeyDown(id,idPrefix,e)
 {
-  var dropbox=document.getElementById(id+"box");
+  var dropbox=document.getElementById(idPrefix+id+"box");
   var newDragbox;
   
   if(e.mKey==27) // Escape
@@ -218,7 +219,7 @@ function moveMatch(move,ref,xOffset,yOffset)
   move.style.top=(c.top+yOffset-moveZero.top)+"px";
 }
 
-function dropboxFix2(id)
+function dropboxFix2(id,idPrefix)
 {
   // Show all dragboxes not already shown
   for(var i=0;i<dragboxArray.length;i++)
@@ -236,15 +237,15 @@ function dropboxFix2(id)
     }
   }
   
-  var img=document.getElementById(id+"img");
-  var box=document.getElementById(id+"box");
+  var img=document.getElementById(idPrefix+id+"img");
+  var box=document.getElementById(idPrefix+id+"box");
   moveMatch(box,img,0,2);
   box.style.visibility="visible";
   resolvePageXY(box);
   
   if(box.valueField.value!='')
   {
-    var db=document.getElementById(box.valueField.value);
+    var db=document.getElementById(idPrefix+box.valueField.value);
     resolvePageXY(db);
     dragboxPlace(db,box);
   }
@@ -475,7 +476,7 @@ function dragboxPlace(dragbox,dropbox)
   dragbox.atHome=false;
     
   dropbox.draggedItem=dragbox;
-  dropbox.valueField.value=dragbox.id;
+  dropbox.valueField.value=dragbox.valueId;
 }
 
 function dragboxUnplace(dragbox,resetPosition)

@@ -89,9 +89,9 @@ function formatChem(win)
   	}
 }
 
-function advancedfieldKeyFilter(fieldName,e)
+function advancedfieldKeyFilter(fieldName,idPrefix,e)
 {
-    var myframe=document.getElementById("om_"+fieldName+"_iframe");
+    var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
   	var mydoc=myframe.contentWindow.document;
 	var doSuppress=true;
 	var reFocus = true;
@@ -102,19 +102,19 @@ function advancedfieldKeyFilter(fieldName,e)
   	if (k==9)
   	{
   	  	reFocus=false;
- 		if (isIE) focusFromList(fieldName,1); // cludge to clear Iframe focus in IE
+ 		if (isIE) focusFromList(idPrefix+fieldName,1); // cludge to clear Iframe focus in IE
   	  	
-  	  	if(e.shiftKey) focusFromList(fieldName,-1);
+  	  	if(e.shiftKey) focusFromList(idPrefix+fieldName,-1);
   	  	else 
   	  	{
-  	  		if (mysubtype[fieldName]=="chem") focusFromList(fieldName,1);
+  	  		if (mysubtype[fieldName]=="chem") focusFromList(idPrefix+fieldName,1);
   	  		else // has sup or sub boxes
   	  		{
- 				var sup=document.getElementById("om_"+fieldName+"_sup");
+ 				var sup=document.getElementById(idPrefix+"om_"+fieldName+"_sup");
   	  			if (sup) delayedFocus(sup);
   	  			else
   	  			{
-  	  				var sub=document.getElementById("om_"+fieldName+"_sub");
+  	  				var sub=document.getElementById(idPrefix+"om_"+fieldName+"_sub");
   	  			 	if (sub) delayedFocus(sub);
   	  			}
   	  		}
@@ -150,13 +150,13 @@ function advancedfieldKeyFilter(fieldName,e)
   	return true;
 }
 
-function advancedfieldUpdateState(fieldName)
+function advancedfieldUpdateState(fieldName,idPrefix)
 { 
-  var myframe=document.getElementById("om_"+fieldName+"_iframe");
+  var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
   var mydoc=myframe.contentWindow.document;
 
-  var sup=document.getElementById("om_"+fieldName+"_sup");
-  var sub=document.getElementById("om_"+fieldName+"_sub");
+  var sup=document.getElementById(idPrefix+"om_"+fieldName+"_sup");
+  var sub=document.getElementById(idPrefix+"om_"+fieldName+"_sub");
 
   if(sup) sup.checked = mydoc.queryCommandState("superscript") ? true : false;
   if(sub) sub.checked = mydoc.queryCommandState("subscript") ? true : false;
@@ -229,14 +229,14 @@ function setCursor(myWin)
   	}
 }
 
-function advancedfieldFix(fieldName,enabled,type,dZoom, sfg,sbg)
+function advancedfieldFix(fieldName,idPrefix,enabled,type,dZoom, sfg,sbg)
 {
-  var myframe=document.getElementById("om_"+fieldName+"_iframe");
+  var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
   var mydoc=myframe.contentWindow.document;
 
   mysubtype[fieldName]=type;
   
-  var sContent = document.getElementById("omval_"+fieldName).value;
+  var sContent = document.getElementById(idPrefix+"omval_"+fieldName).value;
   if (type=="chem") sContent=toChemHtml(sContent);
   
   mydoc.open();
@@ -258,17 +258,17 @@ function advancedfieldFix(fieldName,enabled,type,dZoom, sfg,sbg)
   if(enabled) 
   {
   	mydoc.designMode="on";
-  	setTimeout(function() { advancedfieldInit(fieldName) },0); // IE needs this.
+  	setTimeout(function() { advancedfieldInit(fieldName,idPrefix) },0); // IE needs this.
   	// setTimeout(function() { setCursor(myframe.contentWindow);},200);
   }
 }
 
-function advancedfieldInit(fieldName)
+function advancedfieldInit(fieldName,idPrefix)
 {
-  var myframe=document.getElementById("om_"+fieldName+"_iframe");
+  var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
   var mydoc=myframe.contentWindow.document;
   
-  mydoc.onkeyup=function(e) {advancedfieldUpdateState(fieldName); delayedFocus(myframe.contentWindow);return false;};
+  mydoc.onkeyup=function(e) {advancedfieldUpdateState(fieldName,idPrefix); delayedFocus(myframe.contentWindow);return false;};
 
   if (isIE) {
   	mydoc.onkeydown=function(e) { return advancedfieldKeyFilter(fieldName,e); };
@@ -276,42 +276,42 @@ function advancedfieldInit(fieldName)
   else if(isGecko)
   {
     mydoc.addEventListener('keyup',mydoc.onkeyup,false);
-	mydoc.onkeypress=function(e) { return advancedfieldKeyFilter(fieldName,e); };
+	mydoc.onkeypress=function(e) { return advancedfieldKeyFilter(fieldName,idPrefix,e); };
     mydoc.addEventListener('keypress',mydoc.onkeypress,false);
   }
-  addPreSubmit(document.getElementById("omval_"+fieldName).form,
-         function() { advancedfieldPreSubmit(fieldName); });
+  addPreSubmit(document.getElementById(idPrefix+"omval_"+fieldName).form,
+         function() { advancedfieldPreSubmit(fieldName,idPrefix); });
          
 
 }
 
-function advancedfieldSub(fieldName)
+function advancedfieldSub(fieldName,idPrefix)
 {
-  var myframe=document.getElementById("om_"+fieldName+"_iframe");
+  var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
   myframe.contentWindow.focus();
   // delayedFocus(myframe.contentWindow);
 
   var mydoc=myframe.contentWindow.document;
-  var sub=document.getElementById("om_"+fieldName+"_sub");
+  var sub=document.getElementById(idPrefix+"om_"+fieldName+"_sub");
 
   if (mydoc.queryCommandState("superscript"))
      mydoc.execCommand("superscript",false,null);
   if (mydoc.queryCommandState("subscript") != sub.checked)
      mydoc.execCommand("subscript",false,null);
 
-  var sup=document.getElementById("om_"+fieldName+"_sup");  
+  var sup=document.getElementById(idPrefix+"om_"+fieldName+"_sup");  
   if (sup) sup.checked=false;
 }
 
  
-function advancedfieldSup(fieldName)
+function advancedfieldSup(fieldName,idPrefix)
 {
-  var myframe=document.getElementById("om_"+fieldName+"_iframe");
+  var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
   myframe.contentWindow.focus();
   // delayedFocus(myframe.contentWindow);
 
   var mydoc=myframe.contentWindow.document;
-  var sup=document.getElementById("om_"+fieldName+"_sup");
+  var sup=document.getElementById(idPrefix+"om_"+fieldName+"_sup");
     
   if (mydoc.queryCommandState("subscript"))
      mydoc.execCommand("subscript",false,null);
@@ -319,14 +319,14 @@ function advancedfieldSup(fieldName)
   if (mydoc.queryCommandState("superscript") != sup.checked)
      mydoc.execCommand("superscript",false,null);
 
-  var sub=document.getElementById("om_"+fieldName+"_sub");
+  var sub=document.getElementById(idPrefix+"om_"+fieldName+"_sub");
   if (sub) sub.checked=false;
 }
 
 
 
-function advancedfieldPreSubmit(fieldName)
+function advancedfieldPreSubmit(fieldName,idPrefix)
 {
-  var myframe=document.getElementById("om_"+fieldName+"_iframe");
-  document.getElementById("omval_"+fieldName).value=myframe.contentWindow.document.body.innerHTML;
+  var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
+  document.getElementById(idPrefix+"omval_"+fieldName).value=myframe.contentWindow.document.body.innerHTML;
 }

@@ -1,12 +1,12 @@
-function checkboxOnClick(checkboxID)
+function checkboxOnClick(checkboxID,idPrefix)
 {
-  var checkbox=document.getElementById("omval_"+checkboxID);
+  var checkbox=document.getElementById(idPrefix+"omval_"+checkboxID);
   if (!checkbox.disabled) checkbox.checked = !checkbox.checked;
 }
 
-function checkboxFix(checkboxID)
+function checkboxFix(checkboxID,idPrefix)
 {
-  var container=document.getElementById(checkboxID);
+  var container=document.getElementById(idPrefix+checkboxID);
   
   // Find ancestor row
   var row=container;

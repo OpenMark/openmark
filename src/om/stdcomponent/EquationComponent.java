@@ -351,7 +351,7 @@ public class EquationComponent extends QComponent
 			if(bSpaceBefore)
 				XML.createText(eEnsureSpaces," ");			
 			
-			String sImageID=getID()+"_img";
+			String sImageID=QDocument.ID_PREFIX+getID()+"_img";
 			Element eImg=XML.createChild(eEnsureSpaces,"img");			
 			eImg.setAttribute("id",sImageID);
 			eImg.setAttribute("onmousedown","return false;"); // Prevent Firefox drag/drop
@@ -379,7 +379,7 @@ public class EquationComponent extends QComponent
 					iEffectiveWidth=(int)Math.round(dZoom*p.iWidth),
 					iEffectiveHeight=(int)Math.round(dZoom*p.iHeight);
 				
-				String sPlaceholderID=getID()+"_"+p.sID;
+				String sPlaceholderID=QDocument.ID_PREFIX+getID()+"_"+p.sID;
 				Element ePlace=XML.createChild(eEnsureSpaces,"div");
 				ePlace.setAttribute("class","placeholder");
 				ePlace.setAttribute("id",sPlaceholderID);																							

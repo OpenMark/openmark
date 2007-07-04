@@ -214,7 +214,7 @@ public class FlashComponent extends QComponent
 				XML.createText(eEnsureSpaces," ");
 			
 			// Put in placeholder that UFO will eat.
-			String movieId = getString(PROPERTY_ID)+"_movie";
+			String movieId = QDocument.ID_PREFIX+getID()+"_movie";
 			Element placeholderSpan=XML.createChild(eEnsureSpaces,"span");
 			try {
 				XML.importChildren(placeholderSpan, XML.parse(

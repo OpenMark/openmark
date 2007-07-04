@@ -108,7 +108,7 @@ public class JMEComponent extends QComponent
 		
 		Element eInput=qc.createElement("input");
 		eInput.setAttribute("type","hidden");
-		String sInputID=QDocument.VALUE_PREFIX+getID();
+		String sInputID=QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID();
 		eInput.setAttribute("name",sInputID);
 		eInput.setAttribute("id",sInputID);
 		qc.addInlineXHTML(eInput);
@@ -117,7 +117,7 @@ public class JMEComponent extends QComponent
 		{
 			eInput=qc.createElement("input");
 			eInput.setAttribute("type","hidden");
-			String sActionID=QDocument.ACTION_PREFIX+getID();
+			String sActionID=QDocument.ID_PREFIX+QDocument.ACTION_PREFIX+getID();
 			eInput.setAttribute("name",sActionID);
 			eInput.setAttribute("id",sActionID);
 			eInput.setAttribute("value","submit");
@@ -126,12 +126,12 @@ public class JMEComponent extends QComponent
 		}
 		
 		eInput=qc.createElement("input");
-		String sButtonID=getID()+"_button";
+		String sButtonID=QDocument.ID_PREFIX+getID()+"_button";
 		eInput.setAttribute("id",sButtonID);
 		eInput.setAttribute("type","button");
 		eInput.setAttribute("value",getString(PROPERTY_LABEL));
 		if(!isEnabled()) eInput.setAttribute("disabled","disabled");
-		eInput.setAttribute("onclick","jmeClick('%%RESOURCES%%','"+getID()+"')");		
+		eInput.setAttribute("onclick","jmeClick('%%RESOURCES%%','"+getID()+"','"+QDocument.ID_PREFIX+"')");		
 		qc.addInlineXHTML(eInput);		
 		if(isEnabled())	qc.informFocusable(sButtonID,bPlain);
 		

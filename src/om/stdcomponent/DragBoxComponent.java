@@ -108,7 +108,7 @@ public class DragBoxComponent extends QComponent
 		Element eImg=qc.createElement("img");
 		eImg.setAttribute("class","dragboximg");
 		eImg.setAttribute("src","%%RESOURCES%%/clear.gif");
-		eImg.setAttribute("id",getID()+"img");
+		eImg.setAttribute("id",QDocument.ID_PREFIX+getID()+"img");
 		qc.addInlineXHTML(eImg);
 		
 
@@ -120,7 +120,7 @@ public class DragBoxComponent extends QComponent
 		eContainer.setAttribute("class","dragbox" + 
 			(isEnabled() ? "" : " transparent")+
 			(isPropertySet(DropBoxComponent.PROPERTY_SIDELABEL) ? " withsidelabel": ""));
-		eContainer.setAttribute("id",getID());
+		eContainer.setAttribute("id",QDocument.ID_PREFIX+getID());
 		eContainer.setAttribute("style",
 			"background:"+convertHash(getGroupColour())+";");
 		//qc.addInlineXHTML(eContainer);
@@ -128,7 +128,7 @@ public class DragBoxComponent extends QComponent
 		
 		Element eInner=XML.createChild(eContainer,"div");
 		eInner.setAttribute("class","dragboxinner");
-		eInner.setAttribute("id",getID()+"inner");
+		eInner.setAttribute("id",QDocument.ID_PREFIX+getID()+"inner");
 
 		// Create drag pane
 //		Element ePane=XML.createChild(eContainer,"div");
@@ -153,7 +153,7 @@ public class DragBoxComponent extends QComponent
 		String sGroup=getString(DropBoxComponent.PROPERTY_GROUP);
 		Element eScript=qc.createElement("script");
 		eScript.setAttribute("type","text/javascript");
-		XML.createText(eScript,"dragboxInform('"+getID()+"',"+
+		XML.createText(eScript,"dragboxInform('"+getID()+"','"+QDocument.ID_PREFIX+"',"+
 			(isEnabled() ? "true" : "false") + ",'"+sGroup+"'," +
 			(getBoolean(PROPERTY_INFINITE) ? "true" : "false")+");");
 		qc.addTopLevelXHTML(eScript);

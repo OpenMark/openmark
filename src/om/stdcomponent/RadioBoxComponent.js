@@ -1,12 +1,12 @@
-function radioBoxOnClick(radioboxID)
+function radioBoxOnClick(radioboxID,idPrefix)
 {
-  var radiobox=document.getElementById(radioboxID);
+  var radiobox=document.getElementById(idPrefix+radioboxID);
   if (!radiobox.disabled) radiobox.checked = true; 
 }
 
-function radioBoxFix(radioboxID)
+function radioBoxFix(radioboxID,idPrefix)
 {
-  var container=document.getElementById(radioboxID);
+  var container=document.getElementById(idPrefix+radioboxID);
   
   // Find ancestor row
   var row=container;

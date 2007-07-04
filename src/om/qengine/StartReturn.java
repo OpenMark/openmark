@@ -72,12 +72,8 @@ public class StartReturn
 	 *   terminating /.<br>Example: If a resource has the name myfile.png,  
 	 *   then &lt;img src="%%RESOURCES%%/myfile.png"/&gt; should work to include 
 	 *   that image.</td></tr>
-	 * <tr><td>%%FORMTARGET%%</td><td>Full path [relative or absolute] to which 
-	 * form submissions should be sent.<br>
-	 * Example: The form &lt;form action="%%FORMTARGET%%" method="post"&gt; should work</td></tr>
-	 * <tr><td>%%FORMFIELDS%%</td><td>Question must include this after the 
-	 * opening &lt;form&gt; tag, providing an option for the test navigator to 
-	 * insert additional hidden fields if necessary.</td></tr>
+	 * <tr><td>%%IDPREFIX%%</td><td>must be put at the start of all id and name attributes 
+	 * in the XHTML (and references to them in Javascript.</td></tr>
 	 * </table>
 	 * @return XHTML content as string.  
 	 */

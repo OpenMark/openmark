@@ -128,7 +128,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			{
 				Element eLabel=qc.createElement("label");
 				qc.addInlineXHTML(eLabel);
-				eLabel.setAttribute("for",QDocument.VALUE_PREFIX+getID());
+				eLabel.setAttribute("for",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 				XML.createText(eLabel,getString(PROPERTY_LABEL));
 			}
 			
@@ -154,8 +154,8 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			Element eInput=XML.createChild(eDiv,"input");
 			eInput.setAttribute("type","text");
 			eInput.setAttribute("size",""+getInteger(PROPERTY_COLS));
-			eInput.setAttribute("name",QDocument.VALUE_PREFIX+getID());
-			eInput.setAttribute("id",QDocument.VALUE_PREFIX+getID());
+			eInput.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
+			eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 			
 			String sValue=getString(PROPERTY_VALUE);
 			sValue=sValue.replaceAll("<sup>","{");
@@ -174,7 +174,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			double dZoom=getQuestion().getZoom();
 			Element eIframe=qc.createElement("iframe");
 			eDiv.appendChild(eIframe);
-			eIframe.setAttribute("id",QDocument.OM_PREFIX+getID()+"_iframe");
+			eIframe.setAttribute("id",QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_iframe");
 			eIframe.setAttribute("src","%%RESOURCES%%/blank.html");
 			eIframe.setAttribute("scrolling","no");
 			eIframe.setAttribute("width",""+(int)(10*dZoom*getInteger(PROPERTY_COLS)));
@@ -193,8 +193,8 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			Element eHidden=qc.createElement("input");
 			eDiv.appendChild(eHidden);
 			eHidden.setAttribute("type","hidden");
-			eHidden.setAttribute("name",QDocument.VALUE_PREFIX+getID());
-			eHidden.setAttribute("id",QDocument.VALUE_PREFIX+getID());
+			eHidden.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
+			eHidden.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 			eHidden.setAttribute("value",getString(PROPERTY_VALUE));
 			
 			eDiv.appendChild(qc.createElement("br"));
@@ -206,15 +206,15 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 				Element eCheckbox=qc.createElement("input");
 				eDiv.appendChild(eCheckbox);
 				eCheckbox.setAttribute("type","checkbox");
-				eCheckbox.setAttribute("id",QDocument.OM_PREFIX+getID()+"_sup");
+				eCheckbox.setAttribute("id",QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_sup");
 				//was onclick below
 				eCheckbox.setAttribute("onclick",
-					"advancedfieldSup('"+getID()+"');");
+					"advancedfieldSup('"+getID()+"','"+QDocument.ID_PREFIX+"');");
 				if(!isEnabled()) 
 					eCheckbox.setAttribute("disabled","yes");
 				Element eLabel=qc.createElement("label");
 				eDiv.appendChild(eLabel);
-				eLabel.setAttribute("for",QDocument.OM_PREFIX+getID()+"_sup");
+				eLabel.setAttribute("for",QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_sup");
 				eLabel.setAttribute("title","Click checkbox or type up arrow to enable superscript"); 
 				XML.createText(eLabel,"Superscript (\u2191) ");
 
@@ -225,13 +225,13 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 				Element eCheckbox=qc.createElement("input");
 				eDiv.appendChild(eCheckbox);
 				eCheckbox.setAttribute("type","checkbox");
-				eCheckbox.setAttribute("id",QDocument.OM_PREFIX+getID()+"_sub");
+				eCheckbox.setAttribute("id",QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_sub");
 				eCheckbox.setAttribute("onclick",
-					"advancedfieldSub('"+getID()+"');");
+					"advancedfieldSub('"+getID()+"','"+QDocument.ID_PREFIX+"');");
 				if(!isEnabled()) eCheckbox.setAttribute("disabled","yes");
 				Element eLabel=qc.createElement("label");
 				eDiv.appendChild(eLabel);
-				eLabel.setAttribute("for",QDocument.OM_PREFIX+getID()+"_sub");
+				eLabel.setAttribute("for",QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_sub");
 				eLabel.setAttribute("title","Click checkbox or type down arrow to enable subscript"); 
 				XML.createText(eLabel,"Subscript (\u2193)");
 			}
@@ -247,12 +247,12 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 				if (isEnabled()) sfg="#000000";
 				else sfg="#999999";
 				}
-			XML.createText(eScript,"addOnLoad( function() { advancedfieldFix('"+getID()+"',"+
+			XML.createText(eScript,"addOnLoad( function() { advancedfieldFix('"+getID()+"','"+QDocument.ID_PREFIX+"',"+
 				(isEnabled()?"true":"false")+ ",'" +sType+ "'," + dZoom+ ",'"+sfg+"','"+sbg+"'); } );");
 			
 			// Can be focused (hopefully)
-			if(isEnabled()) qc.informFocusableFullJS(getID(),"document.getElementById('"+
-				QDocument.OM_PREFIX+getID()+"_iframe').contentWindow",bPlain);
+			if(isEnabled()) qc.informFocusableFullJS(QDocument.ID_PREFIX+getID(),"document.getElementById('"+
+					QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_iframe').contentWindow",bPlain);
 		}
 	}
 	
@@ -378,9 +378,9 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 		{
 			bGotLabel=true;
 			if(bPlain)
-				return QDocument.VALUE_PREFIX+getID();
+				return QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID();
 			else
-				return QDocument.OM_PREFIX+getID()+"_iframe";
+				return QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_iframe";
 		}
 	}	
 }

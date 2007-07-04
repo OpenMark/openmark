@@ -4039,8 +4039,20 @@ public class NavigatorServlet extends HttpServlet
 
 		// Get question top-level element and clone it into new document
 		Element eQuestion=(Element)d.importNode(XML.parse(sXHTML).getDocumentElement(),true);
-		Element eDiv=XML.find(d,"id","question");
-		eDiv.appendChild(eQuestion);
+		Element questionDiv=XML.find(d,"id","question");
+
+		Element form=XML.createChild(questionDiv,"form");
+		form.setAttribute("method","post");
+		form.setAttribute("action","./"+endOfURL(bPlain));
+		form.setAttribute("autocomplete","off");
+
+		Element eInput=XML.createChild(form,"input");
+		eInput.setAttribute("type","hidden");
+		eInput.setAttribute("name",SEQUENCEFIELD);
+		us.sSequence=Math.random()+"";
+		eInput.setAttribute("value",us.sSequence);
+
+		form.appendChild(eQuestion);
 
 		if(!isSingle(us))
 		{
@@ -4215,13 +4227,7 @@ public class NavigatorServlet extends HttpServlet
 		// Fix up the replacement variables
 		mReplace=new HashMap<String,Object>(getLabelReplaceMap(us));
 		mReplace.put("RESOURCES","resources/"+us.iIndex);
-		mReplace.put("FORMTARGET","./"+endOfURL(bPlain));
-		Element eInput=d.createElement("input");
-		eInput.setAttribute("type","hidden");
-		eInput.setAttribute("name",SEQUENCEFIELD);
-		us.sSequence=Math.random()+"";
-		eInput.setAttribute("value",us.sSequence);
-		mReplace.put("FORMFIELD",eInput);
+		mReplace.put("IDPREFIX","");
 
 		XML.replaceTokens(eQuestion,mReplace);
 

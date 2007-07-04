@@ -147,8 +147,8 @@ public class EditFieldComponent extends QComponent implements Labelable
 			throw new OmFormatException(
 			"<editfield> rows must be in the range 1 to 30"); 
 
-		eInput.setAttribute("name",QDocument.VALUE_PREFIX+getID());		
-		eInput.setAttribute("id",QDocument.VALUE_PREFIX+getID());
+		eInput.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());		
+		eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 
 		if(!isEnabled()) eInput.setAttribute("readonly","yes");
 		
@@ -163,7 +163,7 @@ public class EditFieldComponent extends QComponent implements Labelable
 			{
 				Element eLabel=qc.createElement("label");
 				qc.addInlineXHTML(eLabel);
-				eLabel.setAttribute("for",QDocument.VALUE_PREFIX+getID());
+				eLabel.setAttribute("for",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 				XML.createText(eLabel,getString(PROPERTY_LABEL));
 			}
 		}
@@ -241,7 +241,7 @@ public class EditFieldComponent extends QComponent implements Labelable
 		else
 		{
 			bGotLabel=true;
-			return QDocument.VALUE_PREFIX+getID();
+			return QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID();
 		}
 	}
 }

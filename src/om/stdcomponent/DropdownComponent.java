@@ -112,8 +112,8 @@ public class DropdownComponent extends QComponent
 		// Create select
 		Element eSelect=qc.createElement("select");
 		qc.addInlineXHTML(eSelect);
-		eSelect.setAttribute("name",QDocument.VALUE_PREFIX+getID());
-		eSelect.setAttribute("id",QDocument.VALUE_PREFIX+getID());
+		eSelect.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
+		eSelect.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 		
 		// Create all options
 		String sSelectedValue=null;
@@ -132,7 +132,7 @@ public class DropdownComponent extends QComponent
 		
 		if(isEnabled()) 
 		{
-			qc.informFocusable(QDocument.VALUE_PREFIX+getID(),bPlain);
+			qc.informFocusable(QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID(),bPlain);
 		}
 		else
 		{

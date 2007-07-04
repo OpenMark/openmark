@@ -31,6 +31,31 @@ import util.xml.XML;
 /** Tree of QComponents used for a question */
 public class QDocument
 {
+	/**
+	 * Prefix used for items that aren't values nor actions.
+	 */
+	public final static String OM_PREFIX="om_"; 
+	
+	/** 
+	 * Prefix used on item form names for items that represent values that 
+	 * should be updated in components. (Most forms return many values.)
+	 * Items using this prefix are automatically passed to the component with
+	 * ID that follows; if a single item uses multiple values it should use
+	 * a different prefix (e.g. plain old OM_PREFIX). 
+	 */
+	public final static String VALUE_PREFIX="omval_";
+	
+	/** 
+	 * Prefix used on item form names for items that represent actions that
+	 * should be taken. (Most forms return only one action.)
+	 */
+	public final static String ACTION_PREFIX="omact_";
+
+	/**
+	 * Token to be placed before all XHTML IDs.
+	 */
+	public final static String ID_PREFIX = "%%IDPREFIX%%";
+	
 	/** Component manager */
 	private QComponentManager qcm;
 	
@@ -331,26 +356,6 @@ public class QDocument
 		}
 	}
 	
-	/**
-	 * Prefix used for items that aren't values nor actions.
-	 */
-	public final static String OM_PREFIX="om_";
-	
-	/** 
-	 * Prefix used on item form names for items that represent values that 
-	 * should be updated in components. (Most forms return many values.)
-	 * Items using this prefix are automatically passed to the component with
-	 * ID that follows; if a single item uses multiple values it should use
-	 * a different prefix (e.g. plain old OM_PREFIX). 
-	 */
-	public final static String VALUE_PREFIX="omval_";
-	
-	/** 
-	 * Prefix used on item form names for items that represent actions that
-	 * should be taken. (Most forms return only one action.)
-	 */
-	public final static String ACTION_PREFIX="omact_";
-
 	/**
 	 * Handles a received action, calling into the given question if specified.
 	 * @param ap Parameters of received action 

@@ -2,7 +2,7 @@ var canvasList=new Array();
 
 
 
-function canvasInit(canvasId,enabled,imageOffsetX,imageOffsetY,keyStep,fg,bg,labelSize)
+function canvasInit(canvasId,idPrefix,enabled,imageOffsetX,imageOffsetY,keyStep,fg,bg,labelSize)
 {
   canvas=new Object()
   canvas.enabled=enabled;
@@ -12,32 +12,32 @@ function canvasInit(canvasId,enabled,imageOffsetX,imageOffsetY,keyStep,fg,bg,lab
   canvas.fg=fg;
   canvas.bg=bg;
   canvas.labelSize=labelSize;
-  canvas.img=document.getElementById(canvasId+'_img');
+  canvas.img=document.getElementById(idPrefix+canvasId+'_img');
   canvas.markers=new Array();
   canvas.lines=new Array();
-  canvas.dynamic=document.getElementById(canvasId+'_dynamic');
+  canvas.dynamic=document.getElementById(idPrefix+canvasId+'_dynamic');
   
-  canvasList.push(canvasId,canvas);
+  canvasList.push(idPrefix+canvasId,canvas);
 }
 
-function getCanvas(canvasId)
+function getCanvas(canvasId,idPrefix)
 {
   for(var index=0;index<canvasList.length;index+=2)
   {
-    if(canvasList[index]==canvasId) return canvasList[index+1];
+    if(canvasList[index]==idPrefix+canvasId) return canvasList[index+1];
   }
 }
 
-function canvasMarkerInit(canvasId,labelJS,originX,originY,factorX,factorY)
+function canvasMarkerInit(canvasId,idPrefix,labelJS,originX,originY,factorX,factorY)
 {
   // Get marker, canvas, and x/y fields and init marker object
-  var canvas=getCanvas(canvasId);
+  var canvas=getCanvas(canvasId,idPrefix);
   var markerNum=canvas.markers.length;
-  var marker=document.getElementById(canvasId+'_marker'+markerNum);  
+  var marker=document.getElementById(idPrefix+canvasId+'_marker'+markerNum);  
   marker.mCanvas=canvas;
   marker.mCanvas.markers.push(marker);
-  marker.mX=document.getElementById("canvasmarker_"+canvasId+"_"+markerNum+"x");
-  marker.mY=document.getElementById("canvasmarker_"+canvasId+"_"+markerNum+"y");
+  marker.mX=document.getElementById(idPrefix+"canvasmarker_"+canvasId+"_"+markerNum+"x");
+  marker.mY=document.getElementById(idPrefix+"canvasmarker_"+canvasId+"_"+markerNum+"y");
   marker.mLines=new Array();  
   marker.e=document.createElement("div");
   canvas.dynamic.appendChild(marker.e);
@@ -211,10 +211,10 @@ function canvasSetPos(marker,canvasX,canvasY)
   }
 }
 
-function canvasLineInit(canvasId,from,to,labelJS,originX,originY,factorX,factorY)
+function canvasLineInit(canvasId,idPrefix,from,to,labelJS,originX,originY,factorX,factorY)
 {
   var line=new Object();
-  line.canvas=getCanvas(canvasId);
+  line.canvas=getCanvas(canvasId,idPrefix);
   line.canvas.lines.push(line);
   line.from=line.canvas.markers[from];
   line.to=line.canvas.markers[to];

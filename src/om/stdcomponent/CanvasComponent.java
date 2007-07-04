@@ -598,7 +598,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		qc.addInlineXHTML(eEnsureSpaces);
 		XML.createText(eEnsureSpaces," ");
 		
-		String sImageID=getID()+"_img";
+		String sImageID=QDocument.ID_PREFIX+getID()+"_img";
 		Element eImg=XML.createChild(eEnsureSpaces,"img");			
 		eImg.setAttribute("id",sImageID);
 		eImg.setAttribute("onmousedown","return false;"); // Prevent Firefox drag/drop
@@ -667,7 +667,7 @@ public class CanvasComponent extends QComponent implements World.Context
 			Element eScript=XML.createChild(eEnsureSpaces,"script");
 			eScript.setAttribute("type","text/javascript");
 			XML.createText(eScript,
-				"addOnLoad(function() { canvasInit('"+getID()+"',"+
+				"addOnLoad(function() { canvasInit('"+getID()+"','"+QDocument.ID_PREFIX+"',"+
 				isEnabled()+","+hotspotPositions[0]+","+hotspotPositions[1]+","+
 				((int)(dZoom * 4.0)) + ",'"+
 				(getQuestion().isFixedColour() ? getQuestion().getFixedColourFG() : "black")+
@@ -677,7 +677,7 @@ public class CanvasComponent extends QComponent implements World.Context
 				"'," + (int)(dZoom * 10.0)+
 				"); });");			
 			Element eDynamic=XML.createChild(eEnsureSpaces,"div");
-			eDynamic.setAttribute("id",getID()+"_dynamic");
+			eDynamic.setAttribute("id",QDocument.ID_PREFIX+getID()+"_dynamic");
 		}
 		
 		int iIndex=0;
@@ -685,7 +685,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		{			
 			Marker m=(Marker)i.next();
 			Element eMarker=XML.createChild(eEnsureSpaces,"img");
-			eMarker.setAttribute("id",getID()+"_marker"+iIndex);
+			eMarker.setAttribute("id",QDocument.ID_PREFIX+getID()+"_marker"+iIndex);
 			eMarker.setAttribute("src","%%RESOURCES%%/"+sMarkerPrefix+
 				(isEnabled() ? "" : "d") + ".gif");
 			eMarker.setAttribute("class","canvasmarker");
@@ -694,21 +694,21 @@ public class CanvasComponent extends QComponent implements World.Context
 			eScript.setAttribute("type","text/javascript");
 			World w=m.sWorld==null ? null : getWorld(m.sWorld);
 			XML.createText(eScript,
-				"addOnLoad(function() { canvasMarkerInit('"+getID()+"','"+
+				"addOnLoad(function() { canvasMarkerInit('"+getID()+"','"+QDocument.ID_PREFIX+"','"+
 				m.sLabelJS.replaceAll("'","\\\\'")+"',"+
 				getWorldFactors(w,dZoom)+"); });");
 			Element eInputX=XML.createChild(eEnsureSpaces,"input");
 			eInputX.setAttribute("type","hidden");
 			eInputX.setAttribute("value",""+(int)(m.iX*dZoom));
-			eInputX.setAttribute("name","canvasmarker_"+getID()+"_"+iIndex+"x");
+			eInputX.setAttribute("name",QDocument.ID_PREFIX+"canvasmarker_"+getID()+"_"+iIndex+"x");
 			eInputX.setAttribute("id",eInputX.getAttribute("name"));
 			Element eInputY=XML.createChild(eEnsureSpaces,"input");
 			eInputY.setAttribute("type","hidden");
 			eInputY.setAttribute("value",""+(int)(m.iY*dZoom));
-			eInputY.setAttribute("name","canvasmarker_"+getID()+"_"+iIndex+"y");
+			eInputY.setAttribute("name",QDocument.ID_PREFIX+"canvasmarker_"+getID()+"_"+iIndex+"y");
 			eInputY.setAttribute("id",eInputY.getAttribute("name"));
 			
-			if(isEnabled()) qc.informFocusable(getID()+"_marker"+iIndex,bPlain);
+			if(isEnabled()) qc.informFocusable(QDocument.ID_PREFIX+getID()+"_marker"+iIndex,bPlain);
 		}
 		for(Iterator i=lLines.iterator();i.hasNext();)
 		{
@@ -718,7 +718,7 @@ public class CanvasComponent extends QComponent implements World.Context
 			Element eScript=XML.createChild(eEnsureSpaces,"script");
 			eScript.setAttribute("type","text/javascript");
 			XML.createText(eScript,
-				"addOnLoad(function() { canvasLineInit('"+getID()+"',"+
+				"addOnLoad(function() { canvasLineInit('"+getID()+"','"+QDocument.ID_PREFIX+"',"+
 				ml.iFrom+","+ml.iTo+",'"+ml.sLabelJS.replaceAll("'","\\\\'")+"'," +
 				getWorldFactors(w,dZoom)+
 				"); });");

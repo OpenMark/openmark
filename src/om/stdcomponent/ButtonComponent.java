@@ -89,16 +89,16 @@ public class ButtonComponent extends QComponent
 		String sLabel=getString(PROPERTY_LABEL);
 		if(sLabel.length()<4) sLabel=" "+sLabel+" ";
 		eInput.setAttribute("value",sLabel);
-		eInput.setAttribute("name",QDocument.ACTION_PREFIX+getID());
+		eInput.setAttribute("name",QDocument.ID_PREFIX+QDocument.ACTION_PREFIX+getID());
 		if(!bPlain)
 		{
-			eInput.setAttribute("id",QDocument.ACTION_PREFIX+getID());
+			eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.ACTION_PREFIX+getID());
 			eInput.setAttribute("onclick","if(this.hasSubmitted) { return false; } this.hasSubmitted=true; preSubmit(this.form); return true;");
 		}
 		if(!isEnabled()) eInput.setAttribute("disabled","yes");
 				
 		qc.addInlineXHTML(eInput);
-		if(isEnabled())	qc.informFocusable(QDocument.ACTION_PREFIX+getID(),bPlain);
+		if(isEnabled())	qc.informFocusable(QDocument.ID_PREFIX+QDocument.ACTION_PREFIX+getID(),bPlain);
 		
 		qc.addTextEquivalent("[Button: "+getString(PROPERTY_LABEL)+"]");
 	}

@@ -309,7 +309,7 @@ public class ImageComponent extends QComponent
 			
 			// Create image tag
 			Element eImg=XML.createChild(eEnsureSpaces,"img");			
-			eImg.setAttribute("id",getID());
+			eImg.setAttribute("id",QDocument.ID_PREFIX+getID());
 			eImg.setAttribute("onmousedown","return false;"); // Prevent Firefox drag/drop
 			eImg.setAttribute("ondragstart","return false;"); // Prevent IE drag/drop
 			eImg.setAttribute("src","%%RESOURCES%%/"+sFilePath);
@@ -321,7 +321,7 @@ public class ImageComponent extends QComponent
 			if(bSpaceAfter)
 				XML.createText(eEnsureSpaces," ");
 			
-			String sJavascript="addOnLoad(function() { inlinePositionFix('"+getID()+"'";
+			String sJavascript="addOnLoad(function() { inlinePositionFix('"+QDocument.ID_PREFIX+getID()+"'";
 			
 			/** if required, add span tags and insert content from alIplaces[] */
 			if (alIPlaces != null && alIPlaces.size()>0)
@@ -342,7 +342,7 @@ public class ImageComponent extends QComponent
 					// Should be div w/ display:inline not span as otherwise it won't 
 					// technically be valid if we put divs in it 
 					Element ePlace = XML.createChild(eEnsureSpaces,"div");
-					String sPlaceholderID=getID()+"_"+i;
+					String sPlaceholderID=QDocument.ID_PREFIX+getID()+"_"+i;
 					ePlace.setAttribute("class","placeholder");
 					ePlace.setAttribute("id",sPlaceholderID);
 					

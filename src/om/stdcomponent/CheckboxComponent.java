@@ -80,12 +80,12 @@ public class CheckboxComponent extends QComponent
 		Element eOuterBox=qc.createElement("div");
 		qc.addInlineXHTML(eOuterBox);
 		
-		eOuterBox.setAttribute("id",getID());
+		eOuterBox.setAttribute("id",QDocument.ID_PREFIX+getID());
 		
 		if(!bPlain)
 		{
 			eOuterBox.setAttribute("class","checkbox");
-			eOuterBox.setAttribute("onclick","checkboxOnClick('"+getID()+"');");
+			eOuterBox.setAttribute("onclick","checkboxOnClick('"+getID()+"','"+QDocument.ID_PREFIX+"');");
 			
 			if(isHighlight())
 			{
@@ -103,13 +103,13 @@ public class CheckboxComponent extends QComponent
 		
 		Element eInput=XML.createChild(eOuterBox,"input");
 		eInput.setAttribute("type","checkbox");
-		eInput.setAttribute("name",QDocument.VALUE_PREFIX+getID());
+		eInput.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 		
 		if(!bPlain)
 		{
-			eInput.setAttribute("id",QDocument.VALUE_PREFIX+getID());
+			eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 			eInput.setAttribute("class","checkboxcheck");
-			eInput.setAttribute("onclick","checkboxOnClick('"+getID()+"');");
+			eInput.setAttribute("onclick","checkboxOnClick('"+getID()+"','"+QDocument.ID_PREFIX+"');");
 		}
 		
 		if(isChecked()) eInput.setAttribute("checked","yes");
@@ -139,7 +139,7 @@ public class CheckboxComponent extends QComponent
 		{
 			Element eScript=XML.createChild(eOuterBox,"script");
 			eScript.setAttribute("type","text/javascript");
-			XML.createText(eScript,"addOnLoad(function() { checkboxFix('"+getID()+"');});");
+			XML.createText(eScript,"addOnLoad(function() { checkboxFix('"+getID()+"','"+QDocument.ID_PREFIX+"');});");
 		}
 
 		if(isEnabled()) qc.informFocusable(eInput.getAttribute("id"),bPlain);		

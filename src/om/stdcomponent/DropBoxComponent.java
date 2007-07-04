@@ -122,7 +122,7 @@ public class DropBoxComponent extends QComponent
 			// Create select
 			Element eSelect=qc.createElement("select");
 			qc.addInlineXHTML(eSelect);
-			eSelect.setAttribute("name",QDocument.VALUE_PREFIX+getID());
+			eSelect.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 			
 			Element eFirst=XML.createChild(eSelect,"option");
 			XML.createText(eFirst,NOANSWEROPTION);
@@ -151,7 +151,7 @@ public class DropBoxComponent extends QComponent
 			Element eImg=qc.createElement("img");
 			eImg.setAttribute("class","dropboximg");
 			eImg.setAttribute("src","%%RESOURCES%%/clear.gif");
-			eImg.setAttribute("id",getID()+"img");
+			eImg.setAttribute("id",QDocument.ID_PREFIX+getID()+"img");
 			qc.addInlineXHTML(eImg);
 			// Needed for IE (no it's not! now it screws it in IE! argh)
 			//qc.addInlineXHTML(qc.getOutputDocument().createTextNode(" "));
@@ -170,21 +170,21 @@ public class DropBoxComponent extends QComponent
 			
 			eBox.setAttribute("style",
 				"background:"+sColour+"; border-color: "+sBorderColour+";");
-			eBox.setAttribute("id",getID()+"box");
+			eBox.setAttribute("id",QDocument.ID_PREFIX+getID()+"box");
 			if(isEnabled())
 				eBox.setAttribute("tabindex","0");
 			qc.addInlineXHTML(eBox);
 			
 			Element eInput=qc.createElement("input");
 			eInput.setAttribute("type","hidden");
-			eInput.setAttribute("name",QDocument.VALUE_PREFIX+getID());
-			eInput.setAttribute("id",QDocument.VALUE_PREFIX+getID());
+			eInput.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
+			eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 			eInput.setAttribute("value",getValue());
 			qc.addInlineXHTML(eInput);
 			
 			Element eScript=qc.createElement("script");
 			eScript.setAttribute("type","text/javascript");
-			XML.createText(eScript,"addOnLoad(function() { dropboxFix('"+getID()+"',"+
+			XML.createText(eScript,"addOnLoad(function() { dropboxFix('"+getID()+"','"+QDocument.ID_PREFIX+"',"+
 				(isEnabled() ? "true" : "false") + ",'"+sGroup+"','"+sBorderColour+"'); });");
 			qc.addInlineXHTML(eScript);
 			

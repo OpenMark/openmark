@@ -91,8 +91,8 @@ public class RadioBoxComponent extends QComponent
 		if(!bPlain)
 		{
 			eOuterBox.setAttribute("class","radiobox");
-			eOuterBox.setAttribute("id",getID());
-			eOuterBox.setAttribute("onclick","radioBoxOnClick('rb_"+getID()+"');");
+			eOuterBox.setAttribute("id",QDocument.ID_PREFIX+getID());
+			eOuterBox.setAttribute("onclick","radioBoxOnClick('rb_"+getID()+"','"+QDocument.ID_PREFIX+"');");
 			
 			if(isHighlight())
 			{
@@ -110,12 +110,12 @@ public class RadioBoxComponent extends QComponent
 		
 		Element eInput=XML.createChild(eOuterBox,"input");
 		eInput.setAttribute("type","radio");
-		eInput.setAttribute("value",getID());
+		eInput.setAttribute("value",QDocument.ID_PREFIX+getID());
 		eInput.setAttribute("name",getString("group"));
 		if(!bPlain)
 		{
 			eInput.setAttribute("class","radioboxcheck");
-			eInput.setAttribute("id","rb_"+getID());
+			eInput.setAttribute("id",QDocument.ID_PREFIX+"rb_"+getID());
 			// eInput.setAttribute("onclick","radioBoxOnClick('rb_"+getID()+"');");
 		}
 		if(isChecked()) eInput.setAttribute("checked","yes");
@@ -144,7 +144,7 @@ public class RadioBoxComponent extends QComponent
 		{
 			Element eScript=XML.createChild(eOuterBox,"script");
 			eScript.setAttribute("type","text/javascript");
-			XML.createText(eScript,"addOnLoad(function() { radioBoxFix('"+getID()+"');});");
+			XML.createText(eScript,"addOnLoad(function() { radioBoxFix('"+getID()+"','"+QDocument.ID_PREFIX+"');});");
 		}
 		if(isEnabled()) qc.informFocusable(eInput.getAttribute("id"),bPlain);		
 	}

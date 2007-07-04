@@ -604,7 +604,7 @@ public class DevServlet extends HttpServlet
 			  "[<a href='../../build/"+sQuestion+"/'>Rebuild</a>] " +
 			  "[<a href='../../'>List</a>] <small>[<a href='./?save'>Save</a>]</small>" +
 			"</h1>"+
-			"<div id='question'/>"+
+			"<form method='post' action='./' id='question' autocomplete='off' class='om'/>"+
 			"<pre id='results' style='clear:both'/>"+
 			"<pre id='log'/>"+
 			((new File("c:/hack.js")).exists() 
@@ -658,8 +658,7 @@ public class DevServlet extends HttpServlet
 		// Fix up the replacement variables
 		Map<String,String> mReplace=new HashMap<String,String>(getLabelReplaceMap());
 		mReplace.put("RESOURCES","resources");
-		mReplace.put("FORMTARGET","./");
-		mReplace.put("FORMFIELD","");
+		mReplace.put("IDPREFIX","");
 		XML.replaceTokens(eQuestion,mReplace);
 	
 		// Update document root
