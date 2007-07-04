@@ -7,7 +7,7 @@ function dragboxInform(id,idPrefix,enabled,group,infinite)
   dragbox.isInfinite=infinite;
   dragbox.atHome=true;
   dragbox.inGroup=idPrefix+group;
-  dragbox.valueId=valueId;
+  dragbox.valueId=id;
   
   dragboxArray.push(idPrefix+id);
 }
