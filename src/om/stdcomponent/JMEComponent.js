@@ -1,8 +1,8 @@
-function jmeSet(id,idPrefix,smiles)
+function jmeSet(id,idprefix,smiles)
 {
-  var input=document.getElementById(idPrefix+"omval_"+id);
+  var input=document.getElementById(idprefix+"omval_"+id);
   input.value=smiles;
-  var action=document.getElementById(idPrefix+"omact_"+id);
+  var action=document.getElementById(idprefix+"omact_"+id);
   if(action)
   {
     action.disabled=false;
@@ -18,14 +18,14 @@ function jmeInit(token)
 
 var jmePopup=null;
 
-function jmeClick(resourcesPath,id,idPrefix)
+function jmeClick(resourcesPath,id,idprefix)
 {
   if(jmePopup!=null)
   {
     jmePopup.focus();
     return;
   }
-  jmePopup=window.open("",idPrefix+"jme"+id,"width="+
+  jmePopup=window.open("",idprefix+"jme"+id,"width="+
     (isIE ? "284" : "288") +
     ",height="+
     (isIE ? "347" : "350")+
