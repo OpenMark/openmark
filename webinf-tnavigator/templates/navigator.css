@@ -187,16 +187,13 @@ body.progresswide #main
 #progress
 {
   font:0px Verdana,sans-serif;
-  line-height:18px;	
   margin-left:-2px;
 }
-html.zoom15 #progress { line-height:27px; }
-html.zoom20 #progress { line-height:36px; }
 
 #progress .question,#progress .text,#progress .sectiontag
 {
   font-size:10px;
-  line-height:1.8;
+  pc:2;
 }
 html.zoom15 #progress .question,html.zoom15 #progress .text,html.zoom15 #progress .sectiontag { font-size:15px; }
 html.zoom20 #progress .question,html.zoom20 #progress .text,html.zoom20 #progress .sectiontag { font-size:20px; }
