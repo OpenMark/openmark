@@ -107,7 +107,7 @@ function advancedfieldKeyFilter(fieldName,idPrefix,e)
   	  	if(e.shiftKey) focusFromList(idPrefix+fieldName,-1);
   	  	else 
   	  	{
-  	  		if (mysubtype[fieldName]=="chem") focusFromList(idPrefix+fieldName,1);
+  	  		if (mysubtype[idPrefix+fieldName]=="chem") focusFromList(idPrefix+fieldName,1);
   	  		else // has sup or sub boxes
   	  		{
  				var sup=document.getElementById(idPrefix+"om_"+fieldName+"_sup");
@@ -127,7 +127,7 @@ function advancedfieldKeyFilter(fieldName,idPrefix,e)
   	{
   		if (mydoc.queryCommandState("subscript")) 
  	 		mydoc.execCommand("subscript",false,null);
- 	 	else if( (mysubtype[fieldName]=="superscript" || mysubtype[fieldName]=="both")
+ 	 	else if( (mysubtype[idPrefix+fieldName]=="superscript" || mysubtype[idPrefix+fieldName]=="both")
  	 		      && (!mydoc.queryCommandState("superscript")) ) 
   	    	mydoc.execCommand("superscript",false,null);
   	}
@@ -135,7 +135,7 @@ function advancedfieldKeyFilter(fieldName,idPrefix,e)
   	{
   		if (mydoc.queryCommandState("superscript")) 
   			mydoc.execCommand("superscript",false,null);
-  		else if( (mysubtype[fieldName]=="subscript" || mysubtype[fieldName]=="both")
+  		else if( (mysubtype[idPrefix+fieldName]=="subscript" || mysubtype[idPrefix+fieldName]=="both")
   				  && (!mydoc.queryCommandState("subscript")) )
   			mydoc.execCommand("subscript",false,null);
   	}
@@ -160,7 +160,7 @@ function advancedfieldUpdateState(fieldName,idPrefix)
 
   if(sup) sup.checked = mydoc.queryCommandState("superscript") ? true : false;
   if(sub) sub.checked = mydoc.queryCommandState("subscript") ? true : false;
-  if(mysubtype[fieldName]=="chem") formatChem(myframe.contentWindow);
+  if(mysubtype[idPrefix+fieldName]=="chem") formatChem(myframe.contentWindow);
   return false;
 }
 
@@ -234,7 +234,7 @@ function advancedfieldFix(fieldName,idPrefix,enabled,type,dZoom, sfg,sbg)
   var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
   var mydoc=myframe.contentWindow.document;
 
-  mysubtype[fieldName]=type;
+  mysubtype[idPrefix+fieldName]=type;
   
   var sContent = document.getElementById(idPrefix+"omval_"+fieldName).value;
   if (type=="chem") sContent=toChemHtml(sContent);
@@ -271,7 +271,7 @@ function advancedfieldInit(fieldName,idPrefix)
   mydoc.onkeyup=function(e) {advancedfieldUpdateState(fieldName,idPrefix); delayedFocus(myframe.contentWindow);return false;};
 
   if (isIE) {
-  	mydoc.onkeydown=function(e) { return advancedfieldKeyFilter(fieldName,e); };
+  	mydoc.onkeydown=function(e) { return advancedfieldKeyFilter(fieldName,idPrefix,e); };
   }
   else if(isGecko)
   {
