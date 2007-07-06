@@ -193,7 +193,7 @@ body.progresswide #main
 #progress .question,#progress .text,#progress .sectiontag
 {
   font-size:10px;
-  pc:2;
+  line-height:2;
 }
 html.zoom15 #progress .question,html.zoom15 #progress .text,html.zoom15 #progress .sectiontag { font-size:15px; }
 html.zoom20 #progress .question,html.zoom20 #progress .text,html.zoom20 #progress .sectiontag { font-size:20px; }
