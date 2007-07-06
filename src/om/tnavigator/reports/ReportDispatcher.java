@@ -122,7 +122,7 @@ public class ReportDispatcher
 		if(!ns.checkSecureIP(request))
 		{
 			ns.sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
-				false,null,"Forbidden", "System reports may only be accessed from particular computers.", null);
+				false,false,null, "Forbidden", "System reports may only be accessed from particular computers.", null);
 		}
 
 		String[] bits = suffix.split("!", 2);
@@ -162,12 +162,12 @@ public class ReportDispatcher
 		if(!us.bAdmin || !us.bAllowReports)
 		{
 			ns.sendError(us,request,response,
-				HttpServletResponse.SC_FORBIDDEN,false,null, "Forbidden", "You do not have permission to view reports.", null);
+				HttpServletResponse.SC_FORBIDDEN,false,false, null, "Forbidden", "You do not have permission to view reports.", null);
 		}
 		if(!ns.checkLocalIP(request))
 		{
 			ns.sendError(us,request,response,HttpServletResponse.SC_FORBIDDEN,
-				false,null,"Forbidden", "Reports may only be accessed within the local network.", null);
+				false,false,null, "Forbidden", "Reports may only be accessed within the local network.", null);
 		}
 
 		String[] bits = suffix.split("!", 2);

@@ -47,7 +47,7 @@ class StatusPages
 		if(!ns.checkLocalIP(request))
 		{
 			ns.sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
-				false,null,"Forbidden", "This page may only be accessed within the internal network.", null);
+				false,false,null, "Forbidden", "This page may only be accessed within the internal network.", null);
 		}
 		
 	  if(sSuffix.equals("")) 
@@ -60,7 +60,7 @@ class StatusPages
 	  		handleStatusCheck(request,response);
 	  else 
 		  	ns.sendError(null,request,response,HttpServletResponse.SC_NOT_FOUND,
-		  		false,null,"Not found", "The requested URL does not correspond to a status page.", null);
+		  		false,false,null, "Not found", "The requested URL does not correspond to a status page.", null);
 	}
 	
 	private final static int MB=1024*1024;

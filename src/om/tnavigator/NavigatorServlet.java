@@ -370,7 +370,7 @@ public class NavigatorServlet extends HttpServlet
 		if(!us.tdDeployment.isWorldAccess() && !us.tdDeployment.hasAccess(us.ud))
 		{
 			sendError(us,request,response,
-				HttpServletResponse.SC_FORBIDDEN,false,null, "Access denied", "You do not have access to this test.", null);
+				HttpServletResponse.SC_FORBIDDEN,false,false, null, "Access denied", "You do not have access to this test.", null);
 		}
 		us.bAdmin=us.tdDeployment.isAdmin(us.ud);
 		us.bAllowReports=us.tdDeployment.allowReports(us.ud);
@@ -378,7 +378,7 @@ public class NavigatorServlet extends HttpServlet
 		if(!us.bAdmin && !us.tdDeployment.isAfterOpen())
 		{
 			sendError(us,request,response,
-				HttpServletResponse.SC_FORBIDDEN,false,null, "Test not yet available", "This test is not yet available.", null);
+				HttpServletResponse.SC_FORBIDDEN,false,false, null, "Test not yet available", "This test is not yet available.", null);
 		}
 		// If the test is finished, we allow them through even after the forbid date
 		// so they can see their results.
@@ -387,7 +387,7 @@ public class NavigatorServlet extends HttpServlet
 			if(us.tdDeployment.isAfterForbidExtension() || !bStarted)
 			{
 				sendError(us,request,response,
-					HttpServletResponse.SC_FORBIDDEN,false,null, "Test no longer available", "This test is no longer available to students.", null);
+					HttpServletResponse.SC_FORBIDDEN,false,false, null, "Test no longer available", "This test is no longer available to students.", null);
 			}
 			else
 			{
@@ -655,7 +655,7 @@ public class NavigatorServlet extends HttpServlet
 			if(!m.matches())
 			{
 				sendError(us,request,response,
-					HttpServletResponse.SC_NOT_FOUND,false, null, "Not found", "The URL you requested is not provided by this server.", null);
+					HttpServletResponse.SC_NOT_FOUND,false, false, null, "Not found", "The URL you requested is not provided by this server.", null);
 			}
 			String sTestID=m.group(1),sCommand=m.group(2);
 
@@ -729,7 +729,7 @@ public class NavigatorServlet extends HttpServlet
 						{
 							sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
 									false,
-									null,"Unable to create session cookie", "In order to use this website you must enable cookies in your browser settings.", null);
+									false,null, "Unable to create session cookie", "In order to use this website you must enable cookies in your browser settings.", null);
 						}
 					}
 
@@ -804,8 +804,8 @@ public class NavigatorServlet extends HttpServlet
 			{
 				sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
 					false,
-					null,
-					"Simultaneous sessions forbidden", "The system thinks you have tried to log on using two different " +
+					false,
+					null, "Simultaneous sessions forbidden", "The system thinks you have tried to log on using two different " +
 					"browsers at the same time, which isn't permitted. If this message "+
 					"has appeared in error, please wait 60 seconds then try again.", null);
 			}
@@ -845,7 +845,7 @@ public class NavigatorServlet extends HttpServlet
 							if(oe.getCause()!=null && oe.getCause() instanceof FileNotFoundException)
 							{
 								sendError(us,request,response,HttpServletResponse.SC_NOT_FOUND,
-									false,null,"No such test", "There is currently no test with the ID "+sTestID+".", null);
+									false,false,null, "No such test", "There is currently no test with the ID "+sTestID+".", null);
 							}
 							else
 								throw oe;
@@ -956,7 +956,7 @@ public class NavigatorServlet extends HttpServlet
 					if(us.sTestID==null || !sTestID.equals(us.sTestID))
 					{
 						sendError(us,request,response,
-							HttpServletResponse.SC_INTERNAL_SERVER_ERROR,true,null, "Unexpected request", "The action you just took doesn't seem to " +
+							HttpServletResponse.SC_INTERNAL_SERVER_ERROR,true,false, null, "Unexpected request", "The action you just took doesn't seem to " +
 							"match the test you are currently on.", null);
 					}
 
@@ -994,8 +994,8 @@ public class NavigatorServlet extends HttpServlet
 				if(us.sTestID==null)
 				{
 					sendError(us,request,response,
-							HttpServletResponse.SC_FORBIDDEN,false,sTestID,
-							"Not logged in", "You are not currently logged into the test on this server. Please "+
+							HttpServletResponse.SC_FORBIDDEN,false,false,
+							sTestID, "Not logged in", "You are not currently logged into the test on this server. Please "+
 							"re-enter the test before continuing.", null);
 				}
 
@@ -1024,7 +1024,7 @@ public class NavigatorServlet extends HttpServlet
 					{
 						if(!us.tdDefinition.isRedoQuestionAllowed() && !us.bAdmin)
 							sendError(us,request,response,
-								HttpServletResponse.SC_FORBIDDEN,true,null, "Forbidden", "This test does not permit questions to be redone.", null);
+								HttpServletResponse.SC_FORBIDDEN,true,false, null, "Forbidden", "This test does not permit questions to be redone.", null);
 						else
 							handleRedo(rt,us,request, response);
 						return;
@@ -1034,7 +1034,7 @@ public class NavigatorServlet extends HttpServlet
 					{
 						if(!us.tdDefinition.isRedoTestAllowed() && !us.bAdmin)
 							sendError(us,request,response,
-								HttpServletResponse.SC_FORBIDDEN,true,null, "Forbidden", "This test does not permit restarting it.", null);
+								HttpServletResponse.SC_FORBIDDEN,true,false, null, "Forbidden", "This test does not permit restarting it.", null);
 						else
 							handleRestart(rt,us,request, response);
 						return;
@@ -1056,13 +1056,13 @@ public class NavigatorServlet extends HttpServlet
 					if(bPost)
 					{
 						sendError(us,request,response,
-							HttpServletResponse.SC_METHOD_NOT_ALLOWED,true, null, "Method not allowed", "You cannot post data to the specified URL.", null);
+							HttpServletResponse.SC_METHOD_NOT_ALLOWED,true, false, null, "Method not allowed", "You cannot post data to the specified URL.", null);
 					}
 					// Check they're on current test, otherwise redirect to start
 					if(us.sTestID==null || !sTestID.equals(us.sTestID))
 					{
 						sendError(us,request,response,
-							HttpServletResponse.SC_FORBIDDEN, true, null, "Forbidden", "Cannot access resources for non-current test.", null);
+							HttpServletResponse.SC_FORBIDDEN, true, false, null, "Forbidden", "Cannot access resources for non-current test.", null);
 					}
 					if(sCommand.startsWith("?jump="))
 					{
@@ -1073,7 +1073,7 @@ public class NavigatorServlet extends HttpServlet
 						catch(NumberFormatException nfe)
 						{
 							sendError(us,request,response,
-								HttpServletResponse.SC_NOT_FOUND,true, null, "Not found", "Can only jump to numbered index.", null);
+								HttpServletResponse.SC_NOT_FOUND,true, false, null, "Not found", "Can only jump to numbered index.", null);
 						}
 						return;
 					}
@@ -1087,7 +1087,7 @@ public class NavigatorServlet extends HttpServlet
 					{
 						if(!us.tdDefinition.isSummaryAllowed())
 							sendError(us,request,response,
-								HttpServletResponse.SC_FORBIDDEN,true,null, "Forbidden", "This test does not permit summary display.", null);
+								HttpServletResponse.SC_FORBIDDEN,true,false, null, "Forbidden", "This test does not permit summary display.", null);
 						else
 							handleSummary(rt,us,request, response);
 						return;
@@ -1110,7 +1110,7 @@ public class NavigatorServlet extends HttpServlet
 			}
 
 			sendError(us,request,response,
-				HttpServletResponse.SC_NOT_FOUND,false, null, "Not found", "The URL you requested is not provided by this server.", null);
+				HttpServletResponse.SC_NOT_FOUND,false, true, null, "Not found", "The URL you requested is not provided by this server.", null);
 		}
 		catch(StopException se)
 		{
@@ -1121,7 +1121,7 @@ public class NavigatorServlet extends HttpServlet
 			try
 			{
 				sendError(us,request,
-					response,HttpServletResponse.SC_INTERNAL_SERVER_ERROR,true, null, "Error handling request", "An error occurred while processing your request.", t);
+					response,HttpServletResponse.SC_INTERNAL_SERVER_ERROR,true, false, null, "Error handling request", "An error occurred while processing your request.", t);
 			}
 			catch(StopException se)
 			{
@@ -1289,12 +1289,12 @@ public class NavigatorServlet extends HttpServlet
 		if(iIndex<0 || iIndex>=us.atl.length)
 		{
 			sendError(us,request,response,
-				HttpServletResponse.SC_FORBIDDEN,true,null, "Question out of range", "There is no question with that index.", null);
+				HttpServletResponse.SC_FORBIDDEN,true,false, null, "Question out of range", "There is no question with that index.", null);
 		}
 		if(!us.atl[iIndex].isAvailable())
 		{
 			sendError(us,request,response,
-				HttpServletResponse.SC_FORBIDDEN,true,null, "Unavailable question", "That question is not currently available.", null);
+				HttpServletResponse.SC_FORBIDDEN,true,false, null, "Unavailable question", "That question is not currently available.", null);
 		}
 		setIndex(rt,us,iIndex);
 
@@ -2947,7 +2947,7 @@ public class NavigatorServlet extends HttpServlet
 		if(!us.bAdmin)
 		{
 			sendError(us,request,response,HttpServletResponse.SC_FORBIDDEN,
-				false,null,"Access denied", "You do not have access to this feature.", null);
+				false,false,null, "Access denied", "You do not have access to this feature.", null);
 		}
 
 		// Check not mid-test
@@ -2967,7 +2967,7 @@ public class NavigatorServlet extends HttpServlet
 		if(iCount>0 || us.iIndex!=0)
 		{
 			sendError(us,request,response,HttpServletResponse.SC_FORBIDDEN,
-				false,null,"Cannot change variant mid-test", "You cannot change variant in the " +
+				false,false,null, "Cannot change variant mid-test", "You cannot change variant in the " +
 				"middle of a test. End the test first, then change variant while on " +
 				"the initial page.", null);
 		}
@@ -2983,7 +2983,7 @@ public class NavigatorServlet extends HttpServlet
 		catch(NumberFormatException nfe)
 		{
 			sendError(us,request,response,HttpServletResponse.SC_NOT_FOUND,
-				false,null,"Invalid variant", "Variant must be a number.", null);
+				false,false,null, "Invalid variant", "Variant must be a number.", null);
 		}
 
 		// Set in database
@@ -3124,7 +3124,7 @@ public class NavigatorServlet extends HttpServlet
 					sendError(us,request,response,
 						HttpServletResponse.SC_FORBIDDEN,
 						false,
-						null, ACCESSOUTOFSEQUENCE, "You have entered data outside the normal sequence. This can occur " +
+						false, null, ACCESSOUTOFSEQUENCE, "You have entered data outside the normal sequence. This can occur " +
 						"if you use your browser's Back or Forward buttons; please don't use " +
 						"these during the test. It can also happen if you click on something " +
 						"while a page is loading.", null);
@@ -3135,7 +3135,7 @@ public class NavigatorServlet extends HttpServlet
 				sendError(us,request,response,
 					HttpServletResponse.SC_FORBIDDEN,
 					false,
-					null,INPUTTOOLONG, "You have entered more data than we allow. Please don't enter more " +
+					false,null, INPUTTOOLONG, "You have entered more data than we allow. Please don't enter more " +
 					"data than is reasonable.", null);
 			}
 			else
@@ -3402,8 +3402,9 @@ public class NavigatorServlet extends HttpServlet
 		}
 		if(r==null)
 		{
-			sendError(null,request,
-				response,HttpServletResponse.SC_NOT_FOUND,true, null, "Not found", "Requested resource '"+sResource+"' not found.", null);
+			sendError(null, request, response, HttpServletResponse.SC_NOT_FOUND,
+					true, false, null, "Not found",
+					"Requested resource '" + sResource + "' not found.", null);
 		}
 		response.setContentType(r.getMimeType());
 		response.setContentLength(r.getContent().length);
@@ -3537,7 +3538,7 @@ public class NavigatorServlet extends HttpServlet
 		if(!nc.isTrustedQE(InetAddress.getByName(request.getRemoteAddr())))
 		{
 			sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
-				false,null,"Forbidden", "You are not authorised to access this URL.", null);
+				false,false,null, "Forbidden", "You are not authorised to access this URL.", null);
 		}
 
 		// Get question jar file
@@ -3547,7 +3548,7 @@ public class NavigatorServlet extends HttpServlet
 		if(!f.exists())
 		{
 			sendError(null,request,response,
-				HttpServletResponse.SC_NOT_FOUND,false,null, "Not found", "The requested question is not present on this server.", null);
+				HttpServletResponse.SC_NOT_FOUND,false,false, null, "Not found", "The requested question is not present on this server.", null);
 		}
 
 		// Send jar to requester
@@ -3565,7 +3566,7 @@ public class NavigatorServlet extends HttpServlet
 		if(!nc.isTrustedTN(InetAddress.getByName(request.getRemoteAddr())))
 		{
 			sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
-				false,null,"Forbidden", "You are not authorised to access this URL.", null);
+				false,false,null, "Forbidden", "You are not authorised to access this URL.", null);
 		}
 
 		synchronized(sessions)
@@ -3730,7 +3731,7 @@ public class NavigatorServlet extends HttpServlet
 		if(fActual==null)
 		{
 			sendError(null,request,response,
-				HttpServletResponse.SC_NOT_FOUND,true,null, "Not found", "The requested resource is not present.", null);
+				HttpServletResponse.SC_NOT_FOUND,true,false, null, "Not found", "The requested resource is not present.", null);
 		}
 
 		// Handle If-Modified-Since
@@ -4284,33 +4285,37 @@ public class NavigatorServlet extends HttpServlet
 	 * @param us Session to be killed (null if we should keep it)
 	 * @param request HTTP request
 	 * @param response HTTP response
-	 * @param iCode Desired HTTP status code; HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+	 * @param code Desired HTTP status code; HttpServletResponse.SC_INTERNAL_SERVER_ERROR
 	 *	 is treated differently in that these are logged as errors, not warnings
-	 * @param bIsBug Set true if this is a bug and should be logged as such,
+	 * @param isBug Set true if this is a bug and should be logged as such,
 	 *	 complete with the option for users to re-enter test. Generally I have
 	 *	 erred on the side of setting this true...
-	 * @param sBackToTest If set to test ID (not null), this forces the back-to-test
+	 * @param keepSession normally, this should be false, and OM will throw away the user's 
+	 *   session in case it was corrupted in a way that caused the error. Then on the next request
+	 *   it will silently give them a new session. But very occasionally we don't want this behaviour
+	 *   in which case this parameter can be set to true.
+	 * @param backToTest If set to test ID (not null), this forces the back-to-test
 	 *	 option to appear.
-	 * @param sTitle Title of message
-	 * @param sMessage Actual message
-	 * @param tException Any exception that should be reported (null if none)
+	 * @param title Title of message
+	 * @param message Actual message
+	 * @param exception Any exception that should be reported (null if none)
 	 * @throws StopException Always, to abort processing
 	 */
-	public void sendError(UserSession us,HttpServletRequest request,
-		HttpServletResponse response,
-		int iCode,
-		boolean bIsBug, String sBackToTest, String sTitle, String sMessage, Throwable tException) throws StopException
+	public void sendError(UserSession us, HttpServletRequest request, HttpServletResponse response,
+			int code, boolean isBug, boolean keepSession,
+			String backToTest, String title, String message, Throwable exception)
+			throws StopException
 	{
 		// Get rid of user session
-		String sTestID=sBackToTest;
+		String sTestID=backToTest;
 		boolean bClearedPosition=false;
-		if(us!=null && sTitle!=ACCESSOUTOFSEQUENCE)
+		if(us!=null && title!=ACCESSOUTOFSEQUENCE)
 		{
 			// If they just came in and it crashed, and they're on a question page,
 			// let's forget the position too. Conditions:
 			// * Error is caused by a bug, not permission failure etc
 			// * The test allows navigation (otherwise we shouldn't change their position)
-			if(bIsBug && us.iDBti>0 && us.tdDefinition!=null && us.tdDefinition.isNavigationAllowed() &&
+			if(isBug && us.iDBti>0 && us.tdDefinition!=null && us.tdDefinition.isNavigationAllowed() &&
 				((System.currentTimeMillis() - us.lSessionStart) < 5000))
 			{
 				DatabaseAccess.Transaction dat=null;
@@ -4330,54 +4335,57 @@ public class NavigatorServlet extends HttpServlet
 				}
 			}
 
-			synchronized(sessions)
-			{
-				sessions.values().remove(us);
+			if (!keepSession) {
+				l.logDebug("Throwing away session.");
+				synchronized(sessions)
+				{
+					sessions.values().remove(us);
+				}
 			}
 			if(sTestID==null) sTestID=us.sTestID;
 		}
 
 		// Detect particular errors that we want to make more friendly
-		if(tException!=null && tException.getMessage()!=null)
+		if(exception!=null && exception.getMessage()!=null)
 		{
 			String TEMPPROBLEM="(This error indicates a temporary problem with our " +
 						"systems; wait a minute then try again.)";
 
-			if(tException instanceof SQLException)
+			if(exception instanceof SQLException)
 			{
-				if(tException.getMessage().indexOf("Connection reset")!=-1)
+				if(exception.getMessage().indexOf("Connection reset")!=-1)
 				{
-					sTitle="Database connection lost";
-					sMessage="A required database connection has been lost. (Normally " +
+					title="Database connection lost";
+					message="A required database connection has been lost. (Normally " +
 							"this error goes away after a reload. If it persists, it may " +
 							"indicate a problem with our systems; try " +
 							"again later.)";
-					tException=null;
+					exception=null;
 				}
-				else if(tException.getMessage().indexOf("Error establishing socket")!=-1)
+				else if(exception.getMessage().indexOf("Error establishing socket")!=-1)
 				{
-					sTitle="Database connection fault";
-					sMessage="Could not connect to a required database. " +
+					title="Database connection fault";
+					message="Could not connect to a required database. " +
 						TEMPPROBLEM;
-					tException=null;
+					exception=null;
 
 				}
 			}
-			else if(tException instanceof AxisFault)
+			else if(exception instanceof AxisFault)
 			{
-				if(tException.getMessage().indexOf("java.net.SocketTimeoutException")!=-1
-						|| tException.getMessage().indexOf("This application is not currently available")!=-1
-						|| tException.getMessage().indexOf("java.net.ConnectException")!=-1)
+				if(exception.getMessage().indexOf("java.net.SocketTimeoutException")!=-1
+						|| exception.getMessage().indexOf("This application is not currently available")!=-1
+						|| exception.getMessage().indexOf("java.net.ConnectException")!=-1)
 				{
-					sTitle="Question engine connection fault";
-					sMessage="The system could not connect to a required component. " +
+					title="Question engine connection fault";
+					message="The system could not connect to a required component. " +
 							TEMPPROBLEM;
-					tException=null;
+					exception=null;
 				}
 				else
 				{
-					sTitle="Question engine fault";
-					sMessage="An error occurred in the question or a required system " +
+					title="Question engine fault";
+					message="An error occurred in the question or a required system " +
 							"component.";
 					// Leave exception to display; this could be a question developer
 					// error.
@@ -4389,12 +4397,12 @@ public class NavigatorServlet extends HttpServlet
 		Map<String,String> m=new HashMap<String,String>();
 		try
 		{
-			response.setStatus(iCode);
+			response.setStatus(code);
 
 			Document d=XML.parse(new File(getServletContext().getRealPath("WEB-INF/templates/errortemplate.xhtml")));
-			m.put("TITLE",sTitle);
-			m.put("MESSAGE",sMessage);
-			m.put("STATUSCODE",iCode+"");
+			m.put("TITLE",title);
+			m.put("MESSAGE",message);
+			m.put("STATUSCODE",code+"");
 			String sOUCU=auth.getUncheckedUserDetails(request).getUsername();
 			m.put("OUCU",sOUCU==null ? "[not logged in]" : sOUCU);
 			m.put("REQUEST",request.getPathInfo()+
@@ -4402,7 +4410,7 @@ public class NavigatorServlet extends HttpServlet
 			m.put("TIME",Log.DATETIMEFORMAT.format(new Date()));
 			m.put("ACCESSCSS",getAccessCSSAppend(request));
 
-			if(sTitle!=ACCESSOUTOFSEQUENCE)
+			if(title!=ACCESSOUTOFSEQUENCE)
 			{
 				XML.remove(XML.find(d,"id","accessoutofsequence"));
 			}
@@ -4444,18 +4452,18 @@ public class NavigatorServlet extends HttpServlet
 				m.put("ACCESS",sAccess);
 			}
 
-			if(tException==null)
+			if(exception==null)
 			{
 				XML.remove(XML.find(d,"id","exception"));
 			}
 			else
 			{
-				m.put("EXCEPTION",Log.getOmExceptionString(tException));
+				m.put("EXCEPTION",Log.getOmExceptionString(exception));
 			}
 
 			m.put("TESTURL",getServletURL(request)+sTestID+"/"+endOfURL(request));
 
-			if(sBackToTest==null && (sTestID==null || sTitle==ACCESSOUTOFSEQUENCE))
+			if(backToTest==null && (sTestID==null || title==ACCESSOUTOFSEQUENCE))
 			{
 				XML.remove(XML.find(d,"id","backtotest"));
 				bRemovedBackto=true;
@@ -4471,7 +4479,7 @@ public class NavigatorServlet extends HttpServlet
 					XML.remove(XML.find(d,"id","clearedposition"));
 				}
 
-				if(iCode==HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+				if(code==HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
 				{
 					String[] asOther=nc.getOtherNavigators();
 					if(asOther.length==0)
@@ -4496,13 +4504,13 @@ public class NavigatorServlet extends HttpServlet
 					XML.remove(XML.find(d,"id","otherservers"));
 				}
 			}
-			if(bIsBug)
+			if(isBug)
 			{
 				XML.remove(XML.find(d,"id","notbug"));
 			}
 			else
 			{
-				if(!bRemovedBackto && sBackToTest==null) XML.remove(XML.find(d,"id","backtotest"));
+				if(!bRemovedBackto && backToTest==null) XML.remove(XML.find(d,"id","backtotest"));
 			}
 			XML.replaceTokens(d,m);
 			XHTML.output(d,request,response,"en");
@@ -4533,16 +4541,16 @@ public class NavigatorServlet extends HttpServlet
 		}
 		sMessageSummary=XML.replaceTokens(sMessageSummary,"%%",m);
 
-		if(bIsBug)
+		if(isBug)
 		{
-			l.logError("Displayed error",sMessageSummary,tException);
+			l.logError("Displayed error",sMessageSummary,exception);
 
 			// Optionally send email - output is already sent to user so no need
 			// to worry if it takes a while
-			sendAdminAlert(sMessageSummary,tException);
+			sendAdminAlert(sMessageSummary,exception);
 		}
 		else
-			l.logWarning("Displayed error",sMessageSummary,tException);
+			l.logWarning("Displayed error",sMessageSummary,exception);
 
 		throw new StopException();
 	}
