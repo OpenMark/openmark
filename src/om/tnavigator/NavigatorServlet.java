@@ -2653,7 +2653,12 @@ public class NavigatorServlet extends HttpServlet
 
 	private void serveQuestionPage(RequestTimings rt,UserSession us,TestQuestion tq,String sXHTML,boolean bClearCSS,HttpServletRequest request, HttpServletResponse response) throws IOException,OmException
 	{
-		// TODO Wrap question in form.
+		us.sSequence=Math.random()+"";
+		sXHTML = "<form method='post' action='./' autocomplete='off'>" +
+				"<input type='hidden' name='" + SEQUENCEFIELD + "' value = '" + us.sSequence + "' />" +
+				sXHTML +
+				"</form>"; 
+
 		if(isSingle(us))
 		{
 			Element eMetadata=getQuestionMetadata(rt,tq.getID(),
@@ -4041,19 +4046,7 @@ public class NavigatorServlet extends HttpServlet
 		// Get question top-level element and clone it into new document
 		Element eQuestion=(Element)d.importNode(XML.parse(sXHTML).getDocumentElement(),true);
 		Element questionDiv=XML.find(d,"id","question");
-
-		Element form=XML.createChild(questionDiv,"form");
-		form.setAttribute("method","post");
-		form.setAttribute("action","./"+endOfURL(bPlain));
-		form.setAttribute("autocomplete","off");
-
-		Element eInput=XML.createChild(form,"input");
-		eInput.setAttribute("type","hidden");
-		eInput.setAttribute("name",SEQUENCEFIELD);
-		us.sSequence=Math.random()+"";
-		eInput.setAttribute("value",us.sSequence);
-
-		form.appendChild(eQuestion);
+		questionDiv.appendChild(eQuestion);
 
 		if(!isSingle(us))
 		{
