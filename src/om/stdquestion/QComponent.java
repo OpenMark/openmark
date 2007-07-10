@@ -1037,7 +1037,7 @@ public abstract class QComponent
 			Object[] children = getChildren();
 			for (int i = 0; i < children.length; i++) {
 				if (children[i] instanceof QComponent) {
-					((QComponent) children[i]).setDisplayRecursive(bDisplay);
+					((QComponent) children[i]).setDisplayRecursive(bDisplay, componentType);
 				}
 			}
 		}
