@@ -17,6 +17,7 @@
  */
 package om.tnavigator;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +28,8 @@ import om.tnavigator.auth.UserDetails;
 /** Data stored about particular user */
 public class UserSession
 {
+	private NavigatorServlet ns;
+	
 	/** Cookie (key of map too, but duplicated here) */
 	String sCookie;
 	
@@ -45,8 +48,8 @@ public class UserSession
 	/** Time of last action in session */
 	long lLastAction=System.currentTimeMillis();
 	
-	/** ID of in-progress test deployment */
-	public String sTestID=null;
+	// ID of in-progress test deployment.
+	private String sTestID = null;
 	
 	/** Test version for this user (null for single question) */
 	TestGroup tg;
@@ -57,11 +60,14 @@ public class UserSession
 	/** Index within test items */
 	int iIndex;
 	
+	// Current test deployment.
+	private TestDeployment tdDeployment = null;
+	
 	/** Current test definition (null for single question) */
 	TestDefinition tdDefinition=null;
 	
-	/** Current test deployment */
-	public TestDeployment tdDeployment=null;
+	/** If not -1, this indicates a fixed variant has been selected */
+	int iFixedVariant=-1;
 	
 	/** User login details */
 	UserDetails ud=null;
@@ -117,9 +123,6 @@ public class UserSession
 	 */
 	String sCheckedOUCUKey;
 	
-	/** If not -1, this indicates a fixed variant has been selected */
-	int iFixedVariant=-1;
-	
 	/** Index increments whenever there is a new CSS version */
 	int iCSSIndex=0;
 	
@@ -132,6 +135,61 @@ public class UserSession
 	// A place where any extra information can be stored in the session.
 	private Map<String,Object> extraSessionInfo = new HashMap<String, Object>();
 	
+	/**
+	 * @param owner
+	 */
+	UserSession(NavigatorServlet owner) {
+		this.ns = owner;
+	}
+
+	/**
+	 * Set the test deployment id. Note that this should only been done
+	 * once it has been confirmed that the user is allowed to be 
+	 * accessing this test.
+	 * @param sTestID the sTestID to set
+	 */
+	void setTestId(String sTestID) {
+		this.sTestID = sTestID;
+	}
+
+	/**
+	 * @return the sTestID
+	 */
+	public String getTestId() {
+		return sTestID;
+	}
+
+	/**
+	 * @return is this a session on a real test, or in single question mode.
+	 */
+	public boolean isSingle()
+	{
+		return getTestDeployment().isSingleQuestion();
+	}
+	
+	/**
+	 * Load a test deployment file into this session.
+	 * @param testId thid id of the test deployment to load.
+	 * @throws OmException
+	 */
+	public void loadTestDeployment(String testId) throws OmException {
+		// Load test deploy, if necessary.
+		if(tdDeployment==null)
+		{
+			File deployFile = ns.resolveRelativePath("testbank/" + testId + ".deploy.xml");
+			tdDeployment = new TestDeployment(deployFile);
+		}
+	}
+
+	/**
+	 * @return the tdDeployment
+	 * @throws OmException if the deployment has not already been
+	 * loaded, and there is an error doing so.
+	 */
+	public TestDeployment getTestDeployment() {
+		return tdDeployment;
+	}
+
 	/**
 	 * Store a miscellaneous piece of information in the user session.
 	 * @param key the key identifying this piece of information.

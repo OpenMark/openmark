@@ -347,45 +347,45 @@ public class NavigatorServlet extends HttpServlet
 		String sTestID,HttpServletRequest request, HttpServletResponse response, boolean bFinished, boolean bStarted) throws Exception
 	{
 		// Initialise test settings
-		if(us.tdDeployment.isSingleQuestion())
+		if(us.getTestDeployment().isSingleQuestion())
 		{
 			us.tdDefinition=null;
 			us.tg=null;
 			us.atl=new TestLeaf[1];
 			Element e=XML.createDocument().createElement("question");
-			e.setAttribute("id",us.tdDeployment.getQuestion());
+			e.setAttribute("id",us.getTestDeployment().getQuestion());
 			us.atl[0]=new TestQuestion(null,e);
 		}
 		else
 		{
-			us.tdDefinition=getTestDefinition(us.tdDeployment);
+			us.tdDefinition=getTestDefinition(us.getTestDeployment());
 			us.tg=us.tdDefinition.getResolvedContent(us.lRandomSeed);
 			us.atl=us.tg.getLeafItems();
 		}
-		us.sTestID=sTestID;
+		us.setTestId(sTestID);
 		us.iIndex=0;
 		us.iFixedVariant=-1;
 		us.bFinished=bFinished;
 		us.navigatorVersion=OmVersion.getVersion();
 		// Check access
-		if(!us.tdDeployment.isWorldAccess() && !us.tdDeployment.hasAccess(us.ud))
+		if(!us.getTestDeployment().isWorldAccess() && !us.getTestDeployment().hasAccess(us.ud))
 		{
 			sendError(us,request,response,
 				HttpServletResponse.SC_FORBIDDEN,false,false, null, "Access denied", "You do not have access to this test.", null);
 		}
-		us.bAdmin=us.tdDeployment.isAdmin(us.ud);
-		us.bAllowReports=us.tdDeployment.allowReports(us.ud);
+		us.bAdmin=us.getTestDeployment().isAdmin(us.ud);
+		us.bAllowReports=us.getTestDeployment().allowReports(us.ud);
 
-		if(!us.bAdmin && !us.tdDeployment.isAfterOpen())
+		if(!us.bAdmin && !us.getTestDeployment().isAfterOpen())
 		{
 			sendError(us,request,response,
 				HttpServletResponse.SC_FORBIDDEN,false,false, null, "Test not yet available", "This test is not yet available.", null);
 		}
 		// If the test is finished, we allow them through even after the forbid date
 		// so they can see their results.
-		if(!us.bAdmin && us.tdDeployment.isAfterForbid() && !us.bFinished && !us.bAllowAfterForbid)
+		if(!us.bAdmin && us.getTestDeployment().isAfterForbid() && !us.bFinished && !us.bAllowAfterForbid)
 		{
-			if(us.tdDeployment.isAfterForbidExtension() || !bStarted)
+			if(us.getTestDeployment().isAfterForbidExtension() || !bStarted)
 			{
 				sendError(us,request,response,
 					HttpServletResponse.SC_FORBIDDEN,false,false, null, "Test no longer available", "This test is no longer available to students.", null);
@@ -748,7 +748,7 @@ public class NavigatorServlet extends HttpServlet
 					}
 					while(sessions.containsKey(sCookie)); // And what are the chances of that?
 
-					us=new UserSession();
+					us=new UserSession(this);
 					us.lSessionStart=System.currentTimeMillis();
 					us.sCookie=sCookie;
 					sessions.put(sCookie,us);
@@ -834,26 +834,22 @@ public class NavigatorServlet extends HttpServlet
 				// Get auth if needed
 				if(us.ud==null)
 				{
-					// Init basic test details
-					if(us.tdDeployment==null)
+					try
 					{
-						try
-						{
-							us.tdDeployment=getTestDeployment(sTestID);
-						}
-						catch(OmException oe)
-						{
-							if(oe.getCause()!=null && oe.getCause() instanceof FileNotFoundException)
-							{
-								sendError(us,request,response,HttpServletResponse.SC_NOT_FOUND,
-									false,false,null, "No such test", "There is currently no test with the ID "+sTestID+".", null);
-							}
-							else
-								throw oe;
-						}
+						us.loadTestDeployment(sTestID);
 					}
-
-					us.ud=auth.getUserDetails(request,response,!us.tdDeployment.isWorldAccess());
+					catch(OmException oe)
+					{
+						if(oe.getCause()!=null && oe.getCause() instanceof FileNotFoundException)
+						{
+							sendError(us,request,response,HttpServletResponse.SC_NOT_FOUND,
+								false,false,null, "No such test", "There is currently no test with the ID "+sTestID+".", null);
+						}
+						else
+							throw oe;
+					}
+					
+					us.ud=auth.getUserDetails(request,response,!us.getTestDeployment().isWorldAccess());
 					if(us.ud==null)
 					{
 						// They've been redirected to SAMS. Chuck their session as soon
@@ -917,14 +913,14 @@ public class NavigatorServlet extends HttpServlet
 					;
 
 				// Check test hasn't timed out
-				if(us.sTestID!=null && us.tdDeployment.isAfterForbid()
+				if(us.getTestId()!=null && us.getTestDeployment().isAfterForbid()
 						// Only exceptions we allow are:
 						// * admin
 						&& !us.bAdmin
 						// * 'finished test' requests to show results pages
 						&& !us.bFinished
 						// * Things that are allowed after forbid
-						&& !(us.bAllowAfterForbid && !us.tdDeployment.isAfterForbidExtension())
+						&& !(us.bAllowAfterForbid && !us.getTestDeployment().isAfterForbidExtension())
 						)
 				{
 					// It is forbidden. Drop session.
@@ -939,22 +935,22 @@ public class NavigatorServlet extends HttpServlet
 				if(sCommand.equals(""))
 				{
 					// Have they possibly lost an existing session? If so, go find it
-					if(us.sTestID==null)
+					if(us.getTestId()==null)
 					{
-						if(!isSingle(us) && checkRestartSession(rt,sTestID,us,request,response))
+						if(!us.isSingle() && checkRestartSession(rt,sTestID,us,request,response))
 							return;
 					}
 
 					// If it's a GET and either they have no test or they aren't on this one...
 					// (the latter should not be possible since cookies are test-specific)
-					if(!bPost && (us.sTestID==null || !sTestID.equals(us.sTestID)))
+					if(!bPost && (us.getTestId()==null || !sTestID.equals(us.getTestId())))
 					{
 						// Start this test
 						handleStart(rt,sTestID,us,request, response);
 						return;
 					}
 					// Otherwise check they're on current test (if not, wtf?)
-					if(us.sTestID==null || !sTestID.equals(us.sTestID))
+					if(us.getTestId()==null || !sTestID.equals(us.getTestId()))
 					{
 						sendError(us,request,response,
 							HttpServletResponse.SC_INTERNAL_SERVER_ERROR,true,false, null, "Unexpected request", "The action you just took doesn't seem to " +
@@ -975,7 +971,7 @@ public class NavigatorServlet extends HttpServlet
 				}
 
 				// Single mode reset flag
-				if(isSingle(us))
+				if(us.isSingle())
 				{
 					if(sCommand.equals("?restart"))
 					{
@@ -992,7 +988,7 @@ public class NavigatorServlet extends HttpServlet
 				}
 
 				// Beyond here, we must be logged into a test to continue
-				if(us.sTestID==null)
+				if(us.getTestId()==null)
 				{
 					sendError(us,request,response,
 							HttpServletResponse.SC_FORBIDDEN,false,false,
@@ -1013,7 +1009,7 @@ public class NavigatorServlet extends HttpServlet
 					return;
 				}
 
-				if(!isSingle(us))
+				if(!us.isSingle())
 				{
 					if(sCommand.startsWith("reports!"))
 					{
@@ -1060,7 +1056,7 @@ public class NavigatorServlet extends HttpServlet
 							HttpServletResponse.SC_METHOD_NOT_ALLOWED,true, false, null, "Method not allowed", "You cannot post data to the specified URL.", null);
 					}
 					// Check they're on current test, otherwise redirect to start
-					if(us.sTestID==null || !sTestID.equals(us.sTestID))
+					if(us.getTestId()==null || !sTestID.equals(us.getTestId()))
 					{
 						sendError(us,request,response,
 							HttpServletResponse.SC_FORBIDDEN, true, false, null, "Forbidden", "Cannot access resources for non-current test.", null);
@@ -1160,21 +1156,6 @@ public class NavigatorServlet extends HttpServlet
 		}
 	}
 
-	private boolean isSingle(UserSession us)
-	{
-		return us.tdDeployment.isSingleQuestion();
-	}
-
-	private TestDeployment getTestDeployment(String sDeployID) throws OmException
-	{
-		// Could make it cache these, but it doesn't seem to be necessary
-
-		// Load test deploy
-		File fDeploy=new File(
-			getServletContext().getRealPath("testbank/"+sDeployID+".deploy.xml"));
-		return new TestDeployment(fDeploy);
-	}
-
 	private TestDefinition getTestDefinition(TestDeployment tdDeploy) throws OmException
 	{
 		// Could make it cache these, but it doesn't seem to be necessary
@@ -1210,7 +1191,7 @@ public class NavigatorServlet extends HttpServlet
 		initTestSession(us,rt,sTestID,request, response, false, false);
 
 		// Don't store anything in database for singles version
-		if(isSingle(us)) return;
+		if(us.isSingle()) return;
 
 		// Store details in database
 		DatabaseAccess.Transaction dat=da.newTransaction();
@@ -1694,7 +1675,7 @@ public class NavigatorServlet extends HttpServlet
 		UserSession us,HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
 		// Start new attempt at question
-		initTestAttempt(rt,us.sTestID,us,request,response);
+		initTestAttempt(rt,us.getTestId(),us,request,response);
 
 		// Redirect back to question page
 		response.sendRedirect(
@@ -1819,7 +1800,7 @@ public class NavigatorServlet extends HttpServlet
 			// or second, the database has become somehow corrupted before we have actually
 			// set up the question versions in nav_questions (they default to 0).
 			qv=getLatestVersion(tq.getID(),tq.getVersion());
-			if(!isSingle(us))
+			if(!us.isSingle())
 			{
 				if(us.iDBqi==0 || qv.iMajor==0) throw new OmUnexpectedException(
 						"Unexpected data setting question versions ("+us.iDBqi+"): "+qv.iMajor);
@@ -1935,7 +1916,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 
 		// See if user's allowed to see results yet
-		boolean bAfterFeedback=us.tdDeployment.isAfterFeedback();
+		boolean bAfterFeedback=us.getTestDeployment().isAfterFeedback();
 		if(us.bAdmin || bAfterFeedback)
 		{
 			if(!bAfterFeedback)
@@ -1946,7 +1927,7 @@ public class NavigatorServlet extends HttpServlet
 					"Results are not yet visible to students. Students will currently see " +
 					"only a message telling them that results are unavailable at present " +
 					"and the date on which they will be able to see results, which is " +
-					us.tdDeployment.displayFeedbackDate()+".");
+					us.getTestDeployment().displayFeedbackDate()+".");
 			}
 
 			// OK, work out the student's score
@@ -1960,11 +1941,11 @@ public class NavigatorServlet extends HttpServlet
 			XML.createText(eMain,"p","Thank you for completing this test.");
 			XML.createText(eMain,"p","Feedback on your results is not available " +
 				"immediately. You will be able to see information about your results " +
-				"if you return here after "+us.tdDeployment.displayFeedbackDate()+".");
+				"if you return here after "+us.getTestDeployment().displayFeedbackDate()+".");
 		}
 
 		// Show restart button, if enabled
-		if((us.tdDefinition.isRedoTestAllowed()&&!us.tdDeployment.isAfterForbid()) || us.bAdmin)
+		if((us.tdDefinition.isRedoTestAllowed()&&!us.getTestDeployment().isAfterForbid()) || us.bAdmin)
 		{
 			if(!us.tdDefinition.isRedoTestAllowed())
 			{
@@ -2388,10 +2369,10 @@ public class NavigatorServlet extends HttpServlet
 					null,"<div class='basicpage'>"+
 					"<p>This question cannot be attempted in plain mode, as it uses " +
 					"some features which can't be converted to text. " +
-					(isSingle(us) ? "</p>" : (
+					(us.isSingle() ? "</p>" : (
 					"If you need to use "+
 					"plain mode, skip this question and continue to the next.</p>"+
-					(us.tdDeployment.getType()==TestDeployment.TYPE_NOTASSESSED ? "" :
+					(us.getTestDeployment().getType()==TestDeployment.TYPE_NOTASSESSED ? "" :
 					"<p>Be certain to <em>inform " +
 					"the course team</em> (via your tutor) that you needed to use plain mode, " +
 					"and for that reason could not complete all questions. They can make " +
@@ -2405,7 +2386,7 @@ public class NavigatorServlet extends HttpServlet
 				// Look for existing instance of question in database to see if we
 				// should shove through some process actions
 				String sXHTML=null;
-				if(!isSingle(us))
+				if(!us.isSingle())
 				{
 					DatabaseAccess.Transaction dat=da.newTransaction();
 					try
@@ -2515,17 +2496,17 @@ public class NavigatorServlet extends HttpServlet
 			{
 				if(!ti.isDone()) bNav=false;
 				String sMessage=ti.getXHTMLString();
-				if(us.tdDeployment.isAfterClose())
+				if(us.getTestDeployment().isAfterClose())
 				{
 					// Show message only if it's not after forbid - if it's after forbid
 					// students can't see it anyway and the message confuses admin.
-					if(!us.tdDeployment.isAfterForbid())
+					if(!us.getTestDeployment().isAfterForbid())
 					{
 						sMessage+=
 							"<p><em class='warning'>This test closed on "+
-							us.tdDeployment.displayCloseDate()+"</em>. You can still take " +
+							us.getTestDeployment().displayCloseDate()+"</em>. You can still take " +
 							"the test and get immediate feedback on your performance. ";
-						switch(us.tdDeployment.getType())
+						switch(us.getTestDeployment().getType())
 						{
 						case TestDeployment.TYPE_NOTASSESSED :
 							break;
@@ -2536,12 +2517,12 @@ public class NavigatorServlet extends HttpServlet
 						sMessage+="</p>";
 					}
 				}
-				else if(us.tdDeployment.hasCloseDate())
+				else if(us.getTestDeployment().hasCloseDate())
 				{
 					sMessage+=
 						"<p>This test will remain available until <strong>"+
-						us.tdDeployment.displayCloseDate()+"</strong>. ";
-					switch(us.tdDeployment.getType())
+						us.getTestDeployment().displayCloseDate()+"</strong>. ";
+					switch(us.getTestDeployment().getType())
 					{
 					case TestDeployment.TYPE_NOTASSESSED :
 						sMessage+="Please ensure that you complete and submit the test by " +
@@ -2584,17 +2565,17 @@ public class NavigatorServlet extends HttpServlet
 						"end it if you want to see what happens; you can restart it " +
 						"afterwards).</p>";
 
-					if(!us.tdDeployment.isAfterOpen())
+					if(!us.getTestDeployment().isAfterOpen())
 						sMessage+=
 							"<p>This test is not yet open to students. It opens on " +
-							us.tdDeployment.displayOpenDate()+". Students will receive " +
+							us.getTestDeployment().displayOpenDate()+". Students will receive " +
 							"an error if they try to access it before then.</p>";
 
-					if(us.tdDeployment.isAfterForbid())
+					if(us.getTestDeployment().isAfterForbid())
 						sMessage+=
 							"<p>This test is no longer available to students. Access was " +
 							"forbidden to students after " +
-							us.tdDeployment.displayForbidDate()+". If students try to access " +
+							us.getTestDeployment().displayForbidDate()+". If students try to access " +
 							"it now, they will receive an error.</p>";
 
 					if(us.bAllowReports)
@@ -2648,7 +2629,7 @@ public class NavigatorServlet extends HttpServlet
 				sXHTML +
 				"</form>"; 
 
-		if(isSingle(us))
+		if(us.isSingle())
 		{
 			Element eMetadata=getQuestionMetadata(rt,tq.getID(),
 				getLatestVersion(tq.getID(),tq.getVersion()).toString(),request);
@@ -2684,7 +2665,7 @@ public class NavigatorServlet extends HttpServlet
 	 */
 	private int initQuestionAttempt(RequestTimings rt,UserSession us) throws SQLException
 	{
-		if(isSingle(us)) return 1;
+		if(us.isSingle()) return 1;
 
 		int iAttempt;
 		TestQuestion tq=(TestQuestion)us.atl[us.iIndex];
@@ -2871,7 +2852,7 @@ public class NavigatorServlet extends HttpServlet
 			}
 
 			// Send an email if desired - to non-admins and only people who look like students
-			if(us.tdDeployment.requiresSubmitEmail() && !us.bAdmin && us.ud.shouldReceiveTestMail())
+			if(us.getTestDeployment().requiresSubmitEmail() && !us.bAdmin && us.ud.shouldReceiveTestMail())
 			{
 				String sEmail=IO.loadString(
 						new FileInputStream(getServletContext().getRealPath("WEB-INF/templates/submit.email.txt")));
@@ -2885,13 +2866,13 @@ public class NavigatorServlet extends HttpServlet
 					String token=auth.sendMail(us.sOUCU,us.ud.getPersonID(),sEmail,
 						Authentication.EMAIL_CONFIRMSUBMIT);
 					getLog().logNormal("Sent submit confirm email to "+us.sOUCU+" for "+
-						us.sTestID+" (message despatch ID "+token+")");
+						us.getTestId()+" (message despatch ID "+token+")");
 					us.iEmailSent=1;
 				}
 				catch(Exception e)
 				{
 					getLog().logError("Error sending submit confirm email to "+us.sOUCU+
-							" for "+us.sTestID,e);
+							" for "+us.getTestId(),e);
 					us.iEmailSent=-1;
 				}
 			}
@@ -3154,7 +3135,7 @@ public class NavigatorServlet extends HttpServlet
 
 		// Store details in database
 		TestQuestion tq=((TestQuestion)us.atl[us.iIndex]);
-		if(!isSingle(us))
+		if(!us.isSingle())
 		{
 			DatabaseAccess.Transaction dat=da.newTransaction();
 			try
@@ -3225,7 +3206,7 @@ public class NavigatorServlet extends HttpServlet
 			us.oss=null;
 			us.mResources.clear();
 
-			if(isSingle(us)) // Restart question
+			if(us.isSingle()) // Restart question
 			{
 				servePage(rt,us,false,request, response);
 			}
@@ -3507,13 +3488,13 @@ public class NavigatorServlet extends HttpServlet
 	 * @param request HTTP request
 	 * @param response HTTP response
 	 * @throws IOException Any error
-	 * @throws StopException If the redirect is actually done
+	 * @throws StopException 
 	 */
 	private void doSystemCheck(UserSession us,HttpServletRequest request,HttpServletResponse response)
 		throws IOException,StopException
 	{
 		// Initial request gets redirected to the system-check Javascript page
-		if(!us.bCheckedBrowser && !us.tdDeployment.isSingleQuestion()) // Don't do that for single question
+		if(!us.bCheckedBrowser && !us.getTestDeployment().isSingleQuestion()) // Don't do that for single question
 		{
 			us.bCheckedBrowser=true;
 			response.sendRedirect(
@@ -3962,11 +3943,11 @@ public class NavigatorServlet extends HttpServlet
 
 		// Create basic template
 		Document d=XML.clone(
-			isSingle(us)
+			us.isSingle()
 			? ( bPlain ? singlesPlainTemplate : singlesTemplate )
 			: ( bPlain ? plainTemplate : template) );
 		Map<String,Object> mReplace=new HashMap<String,Object>();
-		if(isSingle(us) || sTitle.equals(us.tdDefinition.getName()))
+		if(us.isSingle() || sTitle.equals(us.tdDefinition.getName()))
 			mReplace.put("TITLEBAR",sTitle);
 		else
 			mReplace.put("TITLEBAR",us.tdDefinition.getName()+" - "+sTitle);
@@ -3987,7 +3968,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 		mReplace.put("ACCESS",getAccessCSSAppend(request));
 
-		if(!isSingle(us))
+		if(!us.isSingle())
 		{
 			// Tooltip stuff is only there for non-plain, non-single mode
 			if(!bPlain)
@@ -4037,7 +4018,7 @@ public class NavigatorServlet extends HttpServlet
 		Element questionDiv=XML.find(d,"id","question");
 		questionDiv.appendChild(eQuestion);
 
-		if(!isSingle(us))
+		if(!us.isSingle())
 		{
 			// Build progress indicator
 			Element eProgress;
@@ -4324,7 +4305,7 @@ public class NavigatorServlet extends HttpServlet
 					sessions.values().remove(us);
 				}
 			}
-			if(sTestID==null) sTestID=us.sTestID;
+			if(sTestID==null) sTestID=us.getTestId();
 		}
 
 		// Detect particular errors that we want to make more friendly
@@ -4398,7 +4379,7 @@ public class NavigatorServlet extends HttpServlet
 			}
 			else
 			{
-				sTestID=us.sTestID;
+				sTestID=us.getTestId();
 			}
 
 			if(us!=null && us.oss!=null)
@@ -4663,5 +4644,12 @@ public class NavigatorServlet extends HttpServlet
 		return reports;
 	}
 
-}
+	/**
+	 * @param relativePath a path relative to servlet folder.
+	 * @return the corresponding canonical path.
+	 */
+	public File resolveRelativePath(String relativePath) {
+		return new File(getServletContext().getRealPath(relativePath));
+	}
 
+}
