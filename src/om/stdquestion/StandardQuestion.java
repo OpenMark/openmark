@@ -603,6 +603,7 @@ public abstract class StandardQuestion implements Question
 			throw new OmDeveloperException("Component is not a <dropdown>: "+sID);
 		}
 	} 
+	
 	/**
 	 * @param sID ID of component
 	 * @return Component object
@@ -617,6 +618,23 @@ public abstract class StandardQuestion implements Question
 		catch(ClassCastException cce)
 		{
 			throw new OmDeveloperException("Component is not an <image>: "+sID);
+		}
+	} 
+	
+	/**
+	 * @param sID ID of component
+	 * @return Component object
+	 * @throws OmDeveloperException If it doesn't exist or isn't correct type
+	 */
+	protected FlashComponent getFlash(String sID) throws OmDeveloperException
+	{
+		try
+		{
+			return (FlashComponent) getComponent(sID);
+		}
+		catch (ClassCastException cce)
+		{
+			throw new OmDeveloperException("Component is not an <flash>: " + sID);
 		}
 	} 
 	

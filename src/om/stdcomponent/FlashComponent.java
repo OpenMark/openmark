@@ -135,10 +135,10 @@ public class FlashComponent extends QComponent
 	 * @param sAlt New value for screenreader alternative 
 	 * @throws OmDeveloperException -- when?
 	 */
-	public void setImage(String sFilePath,String sAlt) throws OmDeveloperException
+	public void setApplet(String sFilePath, String sAlt) throws OmDeveloperException
 	{ 
-		setString(PROPERTY_FILEPATH,sFilePath);
-		setString(PROPERTY_ALT,sAlt);
+		setString(PROPERTY_FILEPATH, sFilePath);
+		setString(PROPERTY_ALT, sAlt);
 	}
 
 	@Override
