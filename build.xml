@@ -35,6 +35,11 @@
 			-->
 	<property name="servletapi" value=""/>
 	
+	<!--
+		Set location for the xerces jars.
+		-->
+	<property name="xerceshome" value=""/>
+	
 
 	<!-- 
 		2. Other locations
@@ -296,6 +301,9 @@
 			</fileset>
 			<fileset dir="${javamailhome}">
 				<include name="mail.jar"/>
+			</fileset>
+			<fileset dir="${xerceshome}">
+				<include name="*.jar"/>
 			</fileset>
 		</copy>
 		<jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn"/>
