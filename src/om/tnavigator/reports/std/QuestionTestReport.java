@@ -65,7 +65,7 @@ public class QuestionTestReport implements OmTestReport {
 		DatabaseAccess.Transaction dat=ns.getDatabaseAccess().newTransaction();		
 		try
 		{
-		  ResultSet rs=ns.getOmQueries().queryQuestionReport(dat,us.sTestID,sQuestion);		  
+		  ResultSet rs=ns.getOmQueries().queryQuestionReport(dat,us.getTestId(),sQuestion);		  
 		  String sCurrentPI=null;
 		  int iCurrentAttempt=0;
 		  boolean bInPI=false,bInAttempt=false;

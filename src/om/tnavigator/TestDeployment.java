@@ -31,6 +31,9 @@ import util.xml.*;
 /** Represents information from the .deploy.xml file */
 public class TestDeployment
 {
+	// The folder the deploy file came from.
+	private File testBank;
+	
 	private String sDefinition,sQuestion;
 	private Document dDeploy;
 	private Element eDates,eAccess;
@@ -75,6 +78,8 @@ public class TestDeployment
 		{
 			throw new OmException("Error loading/parsing "+sErrorIdentifier,ioe);
 		}
+		
+		testBank = f.getParentFile();
 		
 		try
 		{
@@ -535,7 +540,17 @@ public class TestDeployment
 	{
 		return bSubmitEmail;
 	}
-	
+
+	/**
+	 * @return the definition of the test this deployment file points to.
+	 * @throws OmException
+	 */
+	TestDefinition getTestDefinition() throws OmException
+	{
+		File fDefinition=new File(testBank, getDefinition()+".test.xml");
+		return new TestDefinition(fDefinition);
+	}
+
 	// Information required to support legacy OU systems
 	
 	/** @return CMA batch code */

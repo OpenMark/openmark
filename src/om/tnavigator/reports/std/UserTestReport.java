@@ -71,7 +71,7 @@ public class UserTestReport implements OmTestReport {
 		{
 			// Get session info
 			Map<Integer, String> mSessionInfo=new HashMap<Integer, String>();
-			ResultSet rs=ns.getOmQueries().queryUserReportSessions(dat,us.sTestID,sUser);
+			ResultSet rs=ns.getOmQueries().queryUserReportSessions(dat,us.getTestId(),sUser);
 			while(rs.next()) 
 			{
 				int iTAttempt=rs.getInt(1);
@@ -92,7 +92,7 @@ public class UserTestReport implements OmTestReport {
 				mSessionInfo.put(iTAttempt,sOutput);
 			}
 			
-			rs=ns.getOmQueries().queryUserReportTest(dat,us.sTestID,sUser);
+			rs=ns.getOmQueries().queryUserReportTest(dat,us.getTestId(),sUser);
 			
 			int iCurrentTAttempt=0;
 			String sCurrentQuestion=null;

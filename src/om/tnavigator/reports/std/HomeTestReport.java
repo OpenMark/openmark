@@ -92,7 +92,7 @@ public class HomeTestReport implements OmTestReport {
 			// I achieve this by setting the sort order and dropping all but the first
 			// result for each PI.
 			Set<String> sPIsDone=new HashSet<String>();
-			ResultSet rs=ns.getOmQueries().queryTestAttempters(dat,us.sTestID);
+			ResultSet rs=ns.getOmQueries().queryTestAttempters(dat,us.getTestId());
 			while(rs.next())
 			{				
 				DbInfoPerson dip=new DbInfoPerson();
@@ -125,7 +125,7 @@ public class HomeTestReport implements OmTestReport {
 			}
 			
 			// Get list of questions in test
-			rs=ns.getOmQueries().queryQuestionList(dat,us.sTestID);				
+			rs=ns.getOmQueries().queryQuestionList(dat,us.getTestId());				
 			while(rs.next())
 			{
 				DbInfoQuestion diq=new DbInfoQuestion();
@@ -215,7 +215,7 @@ public class HomeTestReport implements OmTestReport {
 		for (OmTestReport report : ns.getReports().getTestReports())
 		{
 			String reportName = report.getReadableReportName();
-			if (reportName != null && report.isApplicable(us.tdDeployment))
+			if (reportName != null && report.isApplicable(us.getTestDeployment()))
 			{
 				reportsToList.put(reportName, report.getUrlTestReportName());
 			}

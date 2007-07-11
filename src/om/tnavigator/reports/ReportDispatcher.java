@@ -170,7 +170,7 @@ public class ReportDispatcher
 				false,false,null, "Forbidden", "Reports may only be accessed within the local network.", null);
 		}
 
-		String[] bits = suffix.split("!", 2);
+		String[] bits = suffix.split("[!?]", 2);
 		String reportName = bits[0];
 		if (bits.length > 1)
 		{

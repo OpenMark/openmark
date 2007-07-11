@@ -343,30 +343,10 @@ public class NavigatorServlet extends HttpServlet
 	 * @throws StopException If something was sent to user
 	 * @throws OmException Any error
 	 */
-	private void initTestSession(UserSession us,RequestTimings rt,
-		String sTestID,HttpServletRequest request, HttpServletResponse response, boolean bFinished, boolean bStarted) throws Exception
+	private void initTestSession(UserSession us, RequestTimings rt,
+			String sTestID, HttpServletRequest request, HttpServletResponse response,
+			boolean bFinished, boolean bStarted, long randomSeed, int fixedVariant) throws Exception
 	{
-		// Initialise test settings
-		if(us.getTestDeployment().isSingleQuestion())
-		{
-			us.tdDefinition=null;
-			us.tg=null;
-			us.atl=new TestLeaf[1];
-			Element e=XML.createDocument().createElement("question");
-			e.setAttribute("id",us.getTestDeployment().getQuestion());
-			us.atl[0]=new TestQuestion(null,e);
-		}
-		else
-		{
-			us.tdDefinition=getTestDefinition(us.getTestDeployment());
-			us.tg=us.tdDefinition.getResolvedContent(us.lRandomSeed);
-			us.atl=us.tg.getLeafItems();
-		}
-		us.setTestId(sTestID);
-		us.iIndex=0;
-		us.iFixedVariant=-1;
-		us.bFinished=bFinished;
-		us.navigatorVersion=OmVersion.getVersion();
 		// Check access
 		if(!us.getTestDeployment().isWorldAccess() && !us.getTestDeployment().hasAccess(us.ud))
 		{
@@ -383,7 +363,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 		// If the test is finished, we allow them through even after the forbid date
 		// so they can see their results.
-		if(!us.bAdmin && us.getTestDeployment().isAfterForbid() && !us.bFinished && !us.bAllowAfterForbid)
+		if(!us.bAdmin && us.getTestDeployment().isAfterForbid() && !us.isFinished() && !us.bAllowAfterForbid)
 		{
 			if(us.getTestDeployment().isAfterForbidExtension() || !bStarted)
 			{
@@ -397,6 +377,10 @@ public class NavigatorServlet extends HttpServlet
 				throw new StopException();
 			}
 		}
+
+		// Realise the test for this student.
+		// Initialise test settings
+		us.realiseTest(sTestID, bFinished, randomSeed, fixedVariant);
 	}
 
 	private static class StopException extends OmException
@@ -918,7 +902,7 @@ public class NavigatorServlet extends HttpServlet
 						// * admin
 						&& !us.bAdmin
 						// * 'finished test' requests to show results pages
-						&& !us.bFinished
+						&& !us.isFinished()
 						// * Things that are allowed after forbid
 						&& !(us.bAllowAfterForbid && !us.getTestDeployment().isAfterForbidExtension())
 						)
@@ -975,13 +959,13 @@ public class NavigatorServlet extends HttpServlet
 				{
 					if(sCommand.equals("?restart"))
 					{
-						us.iFixedVariant=-1;
+						us.setFixedVariant(-1);
 						handleStart(rt,sTestID,us,request, response);
 						return;
 					}
 					if(sCommand.matches("\\?variant=[0-9]+"))
 					{
-						us.iFixedVariant=Integer.parseInt(sCommand.substring(9));
+						us.setFixedVariant(Integer.parseInt(sCommand.substring(9)));
 						handleStart(rt,sTestID,us,request, response);
 						return;
 					}
@@ -1019,7 +1003,7 @@ public class NavigatorServlet extends HttpServlet
 					// Redo command is posted
 					if(sCommand.equals("?redo") && bPost)
 					{
-						if(!us.tdDefinition.isRedoQuestionAllowed() && !us.bAdmin)
+						if(!us.testDefinition.isRedoQuestionAllowed() && !us.bAdmin)
 							sendError(us,request,response,
 								HttpServletResponse.SC_FORBIDDEN,true,false, null, "Forbidden", "This test does not permit questions to be redone.", null);
 						else
@@ -1029,7 +1013,7 @@ public class NavigatorServlet extends HttpServlet
 					// So is restart command
 					if(sCommand.equals("?restart") && bPost)
 					{
-						if(!us.tdDefinition.isRedoTestAllowed() && !us.bAdmin)
+						if(!us.testDefinition.isRedoTestAllowed() && !us.bAdmin)
 							sendError(us,request,response,
 								HttpServletResponse.SC_FORBIDDEN,true,false, null, "Forbidden", "This test does not permit restarting it.", null);
 						else
@@ -1082,7 +1066,7 @@ public class NavigatorServlet extends HttpServlet
 					}
 					if(sCommand.equals("?summary"))
 					{
-						if(!us.tdDefinition.isSummaryAllowed())
+						if(!us.testDefinition.isSummaryAllowed())
 							sendError(us,request,response,
 								HttpServletResponse.SC_FORBIDDEN,true,false, null, "Forbidden", "This test does not permit summary display.", null);
 						else
@@ -1094,7 +1078,7 @@ public class NavigatorServlet extends HttpServlet
 
 			// Resources occur un-synchronized so that they can download more than one
 			// at a time
-			String sResourcesPrefix="resources/"+us.iIndex+"/";
+			String sResourcesPrefix="resources/"+us.getTestPosition()+"/";
 			if(sCommand.equals(sResourcesPrefix+"style-"+us.iCSSIndex+".css"))
 			{
 				handleCSS(us,request,response);
@@ -1143,7 +1127,7 @@ public class NavigatorServlet extends HttpServlet
 				{
 					sOUCU=us.sOUCU;
 				}
-				sPlace="ind="+us.iIndex+",seq="+us.iDBseq;
+				sPlace="ind="+us.getTestPosition()+",seq="+us.iDBseq;
 			}
 
 			long lTotal=System.currentTimeMillis()-rt.lStart;
@@ -1154,16 +1138,6 @@ public class NavigatorServlet extends HttpServlet
 				",["+sPlace+"]"+
 				","+sPath+(request.getQueryString()==null ? "" : "?"+request.getQueryString()));
 		}
-	}
-
-	private TestDefinition getTestDefinition(TestDeployment tdDeploy) throws OmException
-	{
-		// Could make it cache these, but it doesn't seem to be necessary
-
-		// Load definition
-		File fDefinition=new File(
-			getServletContext().getRealPath("testbank/"+tdDeploy.getDefinition()+".test.xml"));
-		return new TestDefinition(fDefinition);
 	}
 
 	private void handleStart(RequestTimings rt,String sTestID,UserSession us,HttpServletRequest request, HttpServletResponse response)
@@ -1186,9 +1160,8 @@ public class NavigatorServlet extends HttpServlet
 
 		// Random seed is normally time in milliseconds. For system testing we fix
 		// it to always be the same value.
-		us.lRandomSeed=
-			us.ud.isSysTest() ? 1124965882611L : System.currentTimeMillis();
-		initTestSession(us,rt,sTestID,request, response, false, false);
+		initTestSession(us,rt,sTestID,request, response, false, false,
+				us.ud.isSysTest() ? 1124965882611L : System.currentTimeMillis(), -1);
 
 		// Don't store anything in database for singles version
 		if(us.isSingle()) return;
@@ -1201,19 +1174,19 @@ public class NavigatorServlet extends HttpServlet
 			int iMaxAttempt=0;
 			if(rs.next() && rs.getMetaData().getColumnCount()>0) iMaxAttempt=rs.getInt(1);
 
-			oq.insertTest(dat,us.sOUCU,sTestID,us.lRandomSeed,iMaxAttempt+1,
+			oq.insertTest(dat,us.sOUCU,sTestID,us.getRandomSeed(),iMaxAttempt+1,
 				us.bAdmin,
 				// Use same PI as OUCU for non-logged-in guests
 				us.ud.isLoggedIn() ? us.ud.getPersonID() : us.sOUCU,
-				us.iFixedVariant,
+				us.getFixedVariant(),
 				us.navigatorVersion);
 			us.iDBti=oq.getInsertedSequenceID(dat,"tests","ti");
 
-			for(int i=0;i<us.atl.length;i++)
+			for(int i=0;i<us.getTestLeavesInOrder().length;i++)
 			{
-				if(us.atl[i] instanceof TestQuestion)
+				if(us.getTestLeavesInOrder()[i] instanceof TestQuestion)
 				{
-					TestQuestion tq=(TestQuestion)us.atl[i];
+					TestQuestion tq=(TestQuestion)us.getTestLeavesInOrder()[i];
 					oq.insertTestQuestion(dat,us.iDBti,tq.getNumber(),tq.getID(),
 						tq.getVersion(),tq.getSection());
 				}
@@ -1268,12 +1241,12 @@ public class NavigatorServlet extends HttpServlet
 		stopQuestionSession(rt, us);
 
 		// Check & set index
-		if(iIndex<0 || iIndex>=us.atl.length)
+		if(iIndex<0 || iIndex>=us.getTestLeavesInOrder().length)
 		{
 			sendError(us,request,response,
 				HttpServletResponse.SC_FORBIDDEN,true,false, null, "Question out of range", "There is no question with that index.", null);
 		}
-		if(!us.atl[iIndex].isAvailable())
+		if(!us.getTestLeavesInOrder()[iIndex].isAvailable())
 		{
 			sendError(us,request,response,
 				HttpServletResponse.SC_FORBIDDEN,true,false, null, "Unavailable question", "That question is not currently available.", null);
@@ -1294,15 +1267,15 @@ public class NavigatorServlet extends HttpServlet
 		XML.replaceTokens(d,mReplace);
 		Element eDiv=XML.find(d,"id","summarytable");
 
-		boolean bScores=us.tdDefinition.doesSummaryIncludeScores();
+		boolean bScores=us.testDefinition.doesSummaryIncludeScores();
 		if(bScores)
 		{
 			// Build the scores list from database
 			getScore(rt,us,request);
 		}
 		addSummaryTable(rt,us,eDiv,inPlainMode(request),
-			us.tdDefinition.doesSummaryIncludeQuestions(),
-			us.tdDefinition.doesSummaryIncludeAttempts(),
+			us.testDefinition.doesSummaryIncludeQuestions(),
+			us.testDefinition.doesSummaryIncludeAttempts(),
 			bScores);
 
 		serveTestContent(us,"Your answers so far","",null,null,XML.saveString(d),false, request, response, true);
@@ -1365,7 +1338,7 @@ public class NavigatorServlet extends HttpServlet
 		String[] asAxes=null;
 		if(bIncludeScore)
 		{
-			CombinedScore ps=us.tg.getFinalScore();
+			CombinedScore ps=us.getRootTestGroup().getFinalScore();
 			asAxes=ps.getAxesOrdered();
 			for(int iAxis=0;iAxis<asAxes.length;iAxis++)
 			{
@@ -1483,7 +1456,7 @@ public class NavigatorServlet extends HttpServlet
 
 			if(bIncludeScore)
 			{
-				CombinedScore ps=us.tg.getFinalScore();
+				CombinedScore ps=us.getRootTestGroup().getFinalScore();
 				eTR=XML.createChild(eTable,"tr");
 				eTR.setAttribute("class","totals");
 				Element eTD=XML.createChild(eTR,"td");
@@ -1577,18 +1550,18 @@ public class NavigatorServlet extends HttpServlet
 	{
 		// Find question
 		TestQuestion tq=null;
-		for(int i=0;i<us.atl.length;i++)
+		for(int i=0;i<us.getTestLeavesInOrder().length;i++)
 		{
-			if(us.atl[i] instanceof TestQuestion &&
-				((TestQuestion)us.atl[i]).getID().equals(sQuestion))
+			if(us.getTestLeavesInOrder()[i] instanceof TestQuestion &&
+				((TestQuestion)us.getTestLeavesInOrder()[i]).getID().equals(sQuestion))
 			{
-				tq=(TestQuestion)us.atl[i];
+				tq=(TestQuestion)us.getTestLeavesInOrder()[i];
 				break;
 			}
 		}
 
 		// Get score (scaled)
-		CombinedScore ps=tq.getScoreContribution(us.tg);
+		CombinedScore ps=tq.getScoreContribution(us.getRootTestGroup());
 		String[] asAxes=ps.getAxesOrdered();
 		for(int iAxis=0;iAxis<asAxes.length;iAxis++)
 		{
@@ -1630,7 +1603,7 @@ public class NavigatorServlet extends HttpServlet
 		stopQuestionSession(rt, us);
 
 		// Get next question that's permitted
-		if(!findNextQuestion(rt,us,false,!us.tdDefinition.isRedoQuestionAllowed(),!us.tdDefinition.isRedoQuestionAllowed()))
+		if(!findNextQuestion(rt,us,false,!us.testDefinition.isRedoQuestionAllowed(),!us.testDefinition.isRedoQuestionAllowed()))
 			// If there are none left, go to end page
 			redirectToEnd(request,response);
 		else
@@ -1828,7 +1801,7 @@ public class NavigatorServlet extends HttpServlet
 		if (OmVersion.compareVersions(us.navigatorVersion, "1.3.0") <= 0) {
 			seedIncrement = 1;
 		}
-		p.add("randomseed",(us.lRandomSeed+iAttempt*seedIncrement)+"");
+		p.add("randomseed",(us.getRandomSeed()+iAttempt*seedIncrement)+"");
 		String sAccess=getAccessibilityCookie(request);
 		if(sAccess.indexOf("[plain]")!=-1)
 			p.add("plain","yes");
@@ -1850,8 +1823,8 @@ public class NavigatorServlet extends HttpServlet
 				p.add("fixedbg","#"+sColours.substring(6,12));
 			}
 		}
-		if(us.iFixedVariant>-1)
-			p.add("fixedvariant",us.iFixedVariant+"");
+		if(us.getFixedVariant()>-1)
+			p.add("fixedvariant",us.getFixedVariant()+"");
 
 		// Start question
 		us.oss=osb.start(rt,
@@ -1934,7 +1907,7 @@ public class NavigatorServlet extends HttpServlet
 			CombinedScore ps=getScore(rt,us,request);
 
 			// Now process each element from the final part of the definition
-			processFinalTags(rt,us,us.tdDefinition.getFinalPage(),eMain, ps,request);
+			processFinalTags(rt,us,us.testDefinition.getFinalPage(),eMain, ps,request);
 		}
 		else
 		{
@@ -1945,9 +1918,9 @@ public class NavigatorServlet extends HttpServlet
 		}
 
 		// Show restart button, if enabled
-		if((us.tdDefinition.isRedoTestAllowed()&&!us.getTestDeployment().isAfterForbid()) || us.bAdmin)
+		if((us.testDefinition.isRedoTestAllowed()&&!us.getTestDeployment().isAfterForbid()) || us.bAdmin)
 		{
-			if(!us.tdDefinition.isRedoTestAllowed())
+			if(!us.testDefinition.isRedoTestAllowed())
 			{
 				Element eMsg=XML.createChild(eMain,"div");
 				eMsg.setAttribute("class","adminmsg");
@@ -2215,10 +2188,10 @@ public class NavigatorServlet extends HttpServlet
 					getMaximumScores(rt, sQuestion, qv.toString(), request));
 
 			// Attatch it to the appropriate TestQuestion.
-			for (int iQuestion=0;iQuestion<us.atl.length;iQuestion++)
+			for (int iQuestion=0;iQuestion<us.getTestLeavesInOrder().length;iQuestion++)
 			{
-				if (!(us.atl[iQuestion] instanceof TestQuestion)) continue;
-				TestQuestion tq = (TestQuestion)us.atl[iQuestion];
+				if (!(us.getTestLeavesInOrder()[iQuestion] instanceof TestQuestion)) continue;
+				TestQuestion tq = (TestQuestion)us.getTestLeavesInOrder()[iQuestion];
 				if (tq.getID().equals(sQuestion))
 				{
 					tq.setActualScore(score);
@@ -2228,16 +2201,16 @@ public class NavigatorServlet extends HttpServlet
 		}
 
 		// Sanity check: make sure all the questions have a score
-		for(int iQuestion=0;iQuestion<us.atl.length;iQuestion++)
+		for(int iQuestion=0;iQuestion<us.getTestLeavesInOrder().length;iQuestion++)
 		{
-			if(!(us.atl[iQuestion] instanceof TestQuestion)) continue;
-			TestQuestion tq=(TestQuestion)us.atl[iQuestion];
+			if(!(us.getTestLeavesInOrder()[iQuestion] instanceof TestQuestion)) continue;
+			TestQuestion tq=(TestQuestion)us.getTestLeavesInOrder()[iQuestion];
 			if(!tq.hasActualScore())
 				throw new OmException("Couldn't find score for question: "+tq.getID());
 		}
 
 		// Now calculate the total score
-		return us.tg.getFinalScore();
+		return us.getRootTestGroup().getFinalScore();
 	}
 
 	/**
@@ -2346,14 +2319,14 @@ public class NavigatorServlet extends HttpServlet
 	{
 		stopQuestionSession(rt, us);
 
-		if(us.bFinished)
+		if(us.isFinished())
 		{
 			serveFinalPage(rt,us,request, response);
 			return;
 		}
 
 		// OK, let's see where they are
-		TestLeaf tl=us.atl[us.iIndex];
+		TestLeaf tl=us.getTestLeavesInOrder()[us.getTestPosition()];
 
 		if(tl instanceof TestQuestion)
 		{
@@ -2409,7 +2382,7 @@ public class NavigatorServlet extends HttpServlet
 							{
 								int iQI=rs.getInt(1);
 
-								if(us.tdDefinition.isAutomaticRedoQuestionAllowed())
+								if(us.testDefinition.isAutomaticRedoQuestionAllowed())
 								{
 									handleRedo(rt,us,request,response);
 									throw new StopException();
@@ -2492,7 +2465,7 @@ public class NavigatorServlet extends HttpServlet
 		{
 			TestInfo ti=(TestInfo)tl;
 			boolean bNav=true;
-			if(us.iIndex==0)
+			if(us.getTestPosition()==0)
 			{
 				if(!ti.isDone()) bNav=false;
 				String sMessage=ti.getXHTMLString();
@@ -2611,7 +2584,7 @@ public class NavigatorServlet extends HttpServlet
 				DatabaseAccess.Transaction dat=da.newTransaction();
 				try
 				{
-					oq.insertInfoPage(dat,us.iDBti,us.iIndex);
+					oq.insertInfoPage(dat,us.iDBti,us.getTestPosition());
 				}
 				finally
 				{
@@ -2638,7 +2611,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 		else
 		{
-			if(us.tdDefinition!=null && us.tdDefinition.areQuestionsNamed())
+			if(us.testDefinition!=null && us.testDefinition.areQuestionsNamed())
 			{
 				Element eMetadata=getQuestionMetadata(rt,tq.getID(),
 					getLatestVersion(tq.getID(),tq.getVersion()).toString(),request);
@@ -2668,7 +2641,7 @@ public class NavigatorServlet extends HttpServlet
 		if(us.isSingle()) return 1;
 
 		int iAttempt;
-		TestQuestion tq=(TestQuestion)us.atl[us.iIndex];
+		TestQuestion tq=(TestQuestion)us.getTestLeavesInOrder()[us.getTestPosition()];
 		DatabaseAccess.Transaction dat=da.newTransaction();
 		try
 		{
@@ -2721,9 +2694,9 @@ public class NavigatorServlet extends HttpServlet
 		String sXHTML=
 			"<div class='basicpage'>";
 
-		if(us.tdDefinition.isSummaryAllowed())
+		if(us.testDefinition.isSummaryAllowed())
 		{
-			if(us.tdDefinition.doesSummaryIncludeScores())
+			if(us.testDefinition.doesSummaryIncludeScores())
 			{
 				// Update score data, we'll need it later
 				getScore(rt,us,request);
@@ -2739,16 +2712,16 @@ public class NavigatorServlet extends HttpServlet
 					sXHTML+=
 						"<p>You have already answered this question.</p>" +
 						"<table class='leftheaders'>";
-					if(us.tdDefinition.doesSummaryIncludeQuestions()) sXHTML+=
+					if(us.testDefinition.doesSummaryIncludeQuestions()) sXHTML+=
 						"<tr><th scope='row'>Question</th><td>"+XHTML.escape(rs.getString(1),XHTML.ESCAPE_TEXT)+"</td></tr>" +
 						"<tr><th scope='row'>Your answer</th><td>"+XHTML.escape(rs.getString(2),XHTML.ESCAPE_TEXT)+"</td></tr>";
-					if(us.tdDefinition.doesSummaryIncludeAttempts()) sXHTML+=
+					if(us.testDefinition.doesSummaryIncludeAttempts()) sXHTML+=
 						"<tr><th scope='row'>Result</th><td>"+XHTML.escape(getAttemptsString(rs.getInt(3)),XHTML.ESCAPE_TEXT)+"</td></tr>";
-					if(us.tdDefinition.doesSummaryIncludeScores())
+					if(us.testDefinition.doesSummaryIncludeScores())
 					{
 						// Get score (scaled)
-						TestQuestion tq=(TestQuestion)us.atl[us.iIndex];
-						CombinedScore ps=tq.getScoreContribution(us.tg);
+						TestQuestion tq=(TestQuestion)us.getTestLeavesInOrder()[us.getTestPosition()];
+						CombinedScore ps=tq.getScoreContribution(us.getRootTestGroup());
 						String[] asAxes=ps.getAxesOrdered();
 						for(int iAxis=0;iAxis<asAxes.length;iAxis++)
 						{
@@ -2786,9 +2759,9 @@ public class NavigatorServlet extends HttpServlet
 				"<p>You have already answered this question.</p>";
 		}
 
-		if(us.tdDefinition.isRedoQuestionAllowed() || us.bAdmin)
+		if(us.testDefinition.isRedoQuestionAllowed() || us.bAdmin)
 		{
-			if(!us.tdDefinition.isRedoQuestionAllowed())
+			if(!us.testDefinition.isRedoQuestionAllowed())
 			{
 				sXHTML+="<div class='adminmsg'>You are only permitted to redo the " +
 					"question because you have admin privileges. Students will not see " +
@@ -2837,14 +2810,14 @@ public class NavigatorServlet extends HttpServlet
 
 		// If they can't navigate then this really is the end, mark it finished
 		// and we're gone. Also if we are currently actually posting.
-		if(!us.tdDefinition.isNavigationAllowed() || bPost)
+		if(!us.testDefinition.isNavigationAllowed() || bPost)
 		{
 			// Set in database
 			DatabaseAccess.Transaction dat=da.newTransaction();
 			try
 			{
 				oq.updateTestFinished(dat,us.iDBti);
-				us.bFinished=true;
+				us.setFinished(true);
 			}
 			finally
 			{
@@ -2857,7 +2830,7 @@ public class NavigatorServlet extends HttpServlet
 				String sEmail=IO.loadString(
 						new FileInputStream(getServletContext().getRealPath("WEB-INF/templates/submit.email.txt")));
 				Map<String,String> mReplace=new HashMap<String,String>();
-				mReplace.put("NAME", us.tdDefinition.getName());
+				mReplace.put("NAME", us.testDefinition.getName());
 				mReplace.put("TIME",(new SimpleDateFormat("dd MMMM yyyy HH:mm")).format(new Date()));
 				sEmail=XML.replaceTokens(sEmail, "%%", mReplace);
 
@@ -2887,31 +2860,31 @@ public class NavigatorServlet extends HttpServlet
 			Document d=XML.parse(new File(getServletContext().getRealPath("WEB-INF/templates/endcheck.xhtml")));
 			Map<String,Object> mReplace=new HashMap<String,Object>();
 			mReplace.put("EXTRA",endOfURL(request));
-			mReplace.put("BUTTON",us.tdDefinition.getConfirmButtonLabel());
-			mReplace.put("CONFIRMPARAS",us.tdDefinition.getConfirmParagraphs());
+			mReplace.put("BUTTON",us.testDefinition.getConfirmButtonLabel());
+			mReplace.put("CONFIRMPARAS",us.testDefinition.getConfirmParagraphs());
 			if(bTimeOver)
 				XML.remove(XML.find(d,"id","return"));
 			else
 				XML.remove(XML.find(d,"id","timeover"));
 
 			XML.replaceTokens(d,mReplace);
-			if(us.tdDefinition.isSummaryIncludedAtEndCheck())
+			if(us.testDefinition.isSummaryIncludedAtEndCheck())
 			{
 				Element eDiv=XML.find(d,"id","summarytable");
 //				XML.createText(eDiv,"h3","Your answers");
-				boolean bScores=us.tdDefinition.doesSummaryIncludeScores();
+				boolean bScores=us.testDefinition.doesSummaryIncludeScores();
 				if(bScores)
 				{
 					// Build the scores list from database
 					getScore(rt,us,request);
 				}
 				addSummaryTable(rt,us,eDiv,inPlainMode(request),
-					us.tdDefinition.doesSummaryIncludeQuestions(),
-					us.tdDefinition.doesSummaryIncludeAttempts(),
+					us.testDefinition.doesSummaryIncludeQuestions(),
+					us.testDefinition.doesSummaryIncludeAttempts(),
 					bScores);
 			}
 
-			serveTestContent(us,us.tdDefinition.getConfirmTitle(),"",null,null,XML.saveString(d),false, request, response, true);
+			serveTestContent(us,us.testDefinition.getConfirmTitle(),"",null,null,XML.saveString(d),false, request, response, true);
 		}
 	}
 
@@ -2939,7 +2912,7 @@ public class NavigatorServlet extends HttpServlet
 			rt.lDatabaseElapsed+=dat.finish();
 		}
 
-		if(iCount>0 || us.iIndex!=0)
+		if(iCount>0 || us.getTestPosition()!=0)
 		{
 			sendError(us,request,response,HttpServletResponse.SC_FORBIDDEN,
 				false,false,null, "Cannot change variant mid-test", "You cannot change variant in the " +
@@ -2953,7 +2926,7 @@ public class NavigatorServlet extends HttpServlet
 		// Set variant
 		try
 		{
-			us.iFixedVariant=Integer.parseInt(sVariant);
+			us.setFixedVariant(Integer.parseInt(sVariant));
 		}
 		catch(NumberFormatException nfe)
 		{
@@ -2965,7 +2938,7 @@ public class NavigatorServlet extends HttpServlet
 		dat=da.newTransaction();
 		try
 		{
-			oq.updateTestVariant(dat,us.iDBti,us.iFixedVariant);
+			oq.updateTestVariant(dat,us.iDBti,us.getFixedVariant());
 		}
 		finally
 		{
@@ -3134,7 +3107,7 @@ public class NavigatorServlet extends HttpServlet
 		ProcessReturn pr=us.oss.process(rt,p.getNames(),p.getValues());
 
 		// Store details in database
-		TestQuestion tq=((TestQuestion)us.atl[us.iIndex]);
+		TestQuestion tq=((TestQuestion)us.getTestLeavesInOrder()[us.getTestPosition()]);
 		if(!us.isSingle())
 		{
 			DatabaseAccess.Transaction dat=da.newTransaction();
@@ -3213,7 +3186,7 @@ public class NavigatorServlet extends HttpServlet
 			else
 			{
 				// Go onto next un-done question that's available
-				if(!findNextQuestion(rt,us,false,!us.tdDefinition.isRedoQuestionAllowed(),!us.tdDefinition.isRedoQuestionAllowed()))
+				if(!findNextQuestion(rt,us,false,!us.testDefinition.isRedoQuestionAllowed(),!us.testDefinition.isRedoQuestionAllowed()))
 				{
 					// No more? Jump to end
 					redirectToEnd(request,response);
@@ -3236,11 +3209,11 @@ public class NavigatorServlet extends HttpServlet
 
 	private static int getQuestionMax(UserSession us) throws OmException
 	{
-		for(int i=us.atl.length-1;i>=0;i--)
+		for(int i=us.getTestLeavesInOrder().length-1;i>=0;i--)
 		{
-			if(us.atl[i] instanceof TestQuestion)
+			if(us.getTestLeavesInOrder()[i] instanceof TestQuestion)
 			{
-				return ((TestQuestion)us.atl[i]).getNumber();
+				return ((TestQuestion)us.getTestLeavesInOrder()[i]).getNumber();
 			}
 		}
 		throw new OmException("No questions??");
@@ -3265,9 +3238,9 @@ public class NavigatorServlet extends HttpServlet
 		if(bSkipDone)
 		{
 			boolean bAllQuestionsDone=true;
-			for(int i=0;i<us.atl.length;i++)
+			for(int i=0;i<us.getTestLeavesInOrder().length;i++)
 			{
-				if(!us.atl[i].isDone() && (us.atl[i] instanceof TestQuestion))
+				if(!us.getTestLeavesInOrder()[i].isDone() && (us.getTestLeavesInOrder()[i] instanceof TestQuestion))
 				{
 					bAllQuestionsDone=false;
 					break;
@@ -3277,7 +3250,7 @@ public class NavigatorServlet extends HttpServlet
 				return false; // Make it skip to end, not to an info page
 		}
 
-		int iNewIndex=us.iIndex,iBeforeIndex=us.iIndex;
+		int iNewIndex=us.getTestPosition(),iBeforeIndex=us.getTestPosition();
 		if(bFromBeginning)
 		{
 			iNewIndex=-1;
@@ -3287,7 +3260,7 @@ public class NavigatorServlet extends HttpServlet
 		{
 			// Next question (wrap around)
 			iNewIndex++;
-			if(iNewIndex>=us.atl.length)
+			if(iNewIndex>=us.getTestLeavesInOrder().length)
 			{
 				if(bWrap)
 					iNewIndex=0;
@@ -3314,7 +3287,7 @@ public class NavigatorServlet extends HttpServlet
 			}
 
 			// See if question is available and not done
-			if((!bSkipDone || !us.atl[iNewIndex].isDone()) && us.atl[iNewIndex].isAvailable())
+			if((!bSkipDone || !us.getTestLeavesInOrder()[iNewIndex].isDone()) && us.getTestLeavesInOrder()[iNewIndex].isAvailable())
 				break;
 		}
 
@@ -3332,13 +3305,13 @@ public class NavigatorServlet extends HttpServlet
 	 */
 	private void setIndex(RequestTimings rt,UserSession us,int iNewIndex) throws SQLException
 	{
-		if(us.iIndex==iNewIndex) return;
+		if(us.getTestPosition()==iNewIndex) return;
 
 		DatabaseAccess.Transaction dat=da.newTransaction();
 		try
 		{
 			oq.updateSetTestPosition(dat,us.iDBti,iNewIndex);
-			us.iIndex=iNewIndex;
+			us.setTestPosition(iNewIndex);
 		}
 		finally
 		{
@@ -3424,15 +3397,13 @@ public class NavigatorServlet extends HttpServlet
 			storeSessionInfo(request,dat,iDBti);
 
 			// Set up basic data
-			us.lRandomSeed=lRandomSeed;
 			us.iDBti=iDBti;
-			us.iFixedVariant=iTestVariant;
-			initTestSession(us,rt,sTestID,request, response, bFinished, true);
-			us.iIndex=iPosition;
+			initTestSession(us,rt,sTestID,request, response, bFinished, true, lRandomSeed, iTestVariant);
+			us.setTestPosition(iPosition);
 			us.navigatorVersion = navigatorversion;
 
 			// Find out which question they're on
-			if(!us.bFinished)
+			if(!us.isFinished())
 			{
 				// Find out which questions they've done (counting either 'getting
 				// results' or 'question end')
@@ -3443,11 +3414,11 @@ public class NavigatorServlet extends HttpServlet
 				while(rs.next()) sDone.add(rs.getString(1));
 
 				// Go through marking questions done
-				for(int i=0;i<us.atl.length;i++)
+				for(int i=0;i<us.getTestLeavesInOrder().length;i++)
 				{
-					if(us.atl[i] instanceof TestQuestion)
+					if(us.getTestLeavesInOrder()[i] instanceof TestQuestion)
 					{
-						TestQuestion tq=(TestQuestion)us.atl[i];
+						TestQuestion tq=(TestQuestion)us.getTestLeavesInOrder()[i];
 						if(sDone.contains(tq.getID()))
 							tq.setDone(true);
 					}
@@ -3458,7 +3429,7 @@ public class NavigatorServlet extends HttpServlet
 				while(rs.next())
 				{
 					int iIndex=rs.getInt(1);
-					TestInfo ti=(TestInfo)us.atl[iIndex];
+					TestInfo ti=(TestInfo)us.getTestLeavesInOrder()[iIndex];
 					ti.setDone(true);
 				}
 			}
@@ -3689,7 +3660,6 @@ public class NavigatorServlet extends HttpServlet
 		if(i>=0) return i;
 		return 256+i;
 	}
-
 
 	private void handleShared(String sFile,HttpServletRequest request,HttpServletResponse response)
 		throws Exception
@@ -3939,7 +3909,7 @@ public class NavigatorServlet extends HttpServlet
 		String sAccessibility=getAccessibilityCookie(request);
 		boolean bPlain=sAccessibility.indexOf("[plain]")!=-1;
 
-		if(us.iFixedVariant>=0) sAuxTitle+=" [variant "+us.iFixedVariant+"]";
+		if(us.getFixedVariant()>=0) sAuxTitle+=" [variant "+us.getFixedVariant()+"]";
 
 		// Create basic template
 		Document d=XML.clone(
@@ -3947,11 +3917,11 @@ public class NavigatorServlet extends HttpServlet
 			? ( bPlain ? singlesPlainTemplate : singlesTemplate )
 			: ( bPlain ? plainTemplate : template) );
 		Map<String,Object> mReplace=new HashMap<String,Object>();
-		if(us.isSingle() || sTitle.equals(us.tdDefinition.getName()))
+		if(us.isSingle() || sTitle.equals(us.testDefinition.getName()))
 			mReplace.put("TITLEBAR",sTitle);
 		else
-			mReplace.put("TITLEBAR",us.tdDefinition.getName()+" - "+sTitle);
-		mReplace.put("RESOURCES","resources/"+us.iIndex);
+			mReplace.put("TITLEBAR",us.testDefinition.getName()+" - "+sTitle);
+		mReplace.put("RESOURCES","resources/"+us.getTestPosition());
 		if(!bPlain)
 		{
 			if(bClearCSS)
@@ -3979,7 +3949,7 @@ public class NavigatorServlet extends HttpServlet
 					XML.find(d,"title","%%TOOLTIP%%").removeAttribute("title");
 			}
 
-			mReplace.put("TESTTITLE",us.tdDefinition.getName());
+			mReplace.put("TESTTITLE",us.testDefinition.getName());
 			mReplace.put("TITLE",sTitle);
 			mReplace.put("AUXTITLE",sAuxTitle);
 			if( (sProgressInfo==null || sProgressInfo.equals("") ))
@@ -4026,7 +3996,7 @@ public class NavigatorServlet extends HttpServlet
 			{
 				eProgress=XML.find(d,"id","progressPlain");
 			}
-			else if(us.tdDefinition.getNavLocation()==TestDefinition.NAVLOCATION_LEFT)
+			else if(us.testDefinition.getNavLocation()==TestDefinition.NAVLOCATION_LEFT)
 			{
 				XML.remove(XML.find(d,"id","progressBottom"));
 				eProgress=XML.find(d,"id","progressLeft");
@@ -4038,7 +4008,7 @@ public class NavigatorServlet extends HttpServlet
 				XML.remove(XML.find(d,"id","progressLeft"));
 				eProgress=XML.find(d,"id","progressBottom");
 				eProgress.setAttribute("id","progress");
-				if (us.tdDefinition.getNavLocation()==TestDefinition.NAVLOCATION_WIDE) {
+				if (us.testDefinition.getNavLocation()==TestDefinition.NAVLOCATION_WIDE) {
 					addAccessibilityClasses(d,request,"progresswide");
 				} else {
 					addAccessibilityClasses(d,request,"progressbottom");
@@ -4065,12 +4035,12 @@ public class NavigatorServlet extends HttpServlet
 				Element eNumbers=XML.createChild(eProgress,bPlain ? "ul" : "div");
 				if(!bPlain) eNumbers.setAttribute("class","numbers");
 
-				boolean bAllowNavigation=us.bAdmin || us.tdDefinition.isNavigationAllowed();
+				boolean bAllowNavigation=us.bAdmin || us.testDefinition.isNavigationAllowed();
 
 				boolean bFirstInSection=true;
-				for(int i=0;i<us.atl.length;i++)
+				for(int i=0;i<us.getTestLeavesInOrder().length;i++)
 				{
-					TestLeaf tl=us.atl[i];
+					TestLeaf tl=us.getTestLeavesInOrder()[i];
 
 					// Check if new section
 					if( (tl.getSection()!=null && !tl.getSection().equals(sCurrentSection))
@@ -4114,11 +4084,11 @@ public class NavigatorServlet extends HttpServlet
 
 					boolean
 						bText=(tl instanceof TestInfo),
-						bCurrent=(i==us.iIndex),
+						bCurrent=(i==us.getTestPosition()),
 						bDone=tl.isDone(),
 						bAvailable=tl.isAvailable();
 					if(!bDone)bAllDone=false;
-					boolean bLink=(!bCurrent || us.tdDefinition.isRedoQuestionAllowed())
+					boolean bLink=(!bCurrent || us.testDefinition.isRedoQuestionAllowed())
 						&& bAllowNavigation && bAvailable;
 
 					// Make child directly in progress or in current section if there is one
@@ -4161,8 +4131,8 @@ public class NavigatorServlet extends HttpServlet
 				}
 
 				// Do the summary
-				boolean bStopButton=(us.tdDefinition.isStopAllowed() || bAllDone);
-				if(us.tdDefinition.isSummaryAllowed())
+				boolean bStopButton=(us.testDefinition.isStopAllowed() || bAllDone);
+				if(us.testDefinition.isSummaryAllowed())
 				{
 					Element eSummary=XML.createChild(eButtons,"div");
 					if(!bPlain) eSummary.setAttribute("class","button");
@@ -4190,7 +4160,7 @@ public class NavigatorServlet extends HttpServlet
 
 		// Fix up the replacement variables
 		mReplace=new HashMap<String,Object>(getLabelReplaceMap(us));
-		mReplace.put("RESOURCES","resources/"+us.iIndex);
+		mReplace.put("RESOURCES","resources/"+us.getTestPosition());
 		mReplace.put("IDPREFIX","");
 
 		XML.replaceTokens(eQuestion,mReplace);
@@ -4213,11 +4183,11 @@ public class NavigatorServlet extends HttpServlet
 	{
 		// Check labelset ID
 		String sKey;
-		if(us.tdDefinition==null || us.tdDefinition.getLabelSet()==null ||
-				us.tdDefinition.getLabelSet().equals(""))
+		if(us.testDefinition==null || us.testDefinition.getLabelSet()==null ||
+				us.testDefinition.getLabelSet().equals(""))
 			sKey="!default";
 		else
-			sKey=us.tdDefinition.getLabelSet();
+			sKey=us.testDefinition.getLabelSet();
 
 		// Get from cache
 		Map<String,String> mLabels=labelReplace.get(sKey);
@@ -4278,7 +4248,7 @@ public class NavigatorServlet extends HttpServlet
 			// let's forget the position too. Conditions:
 			// * Error is caused by a bug, not permission failure etc
 			// * The test allows navigation (otherwise we shouldn't change their position)
-			if(isBug && us.iDBti>0 && us.tdDefinition!=null && us.tdDefinition.isNavigationAllowed() &&
+			if(isBug && us.iDBti>0 && us.testDefinition!=null && us.testDefinition.isNavigationAllowed() &&
 				((System.currentTimeMillis() - us.lSessionStart) < 5000))
 			{
 				DatabaseAccess.Transaction dat=null;
@@ -4394,7 +4364,7 @@ public class NavigatorServlet extends HttpServlet
 
 			if(us!=null)
 			{
-				m.put("TINDEX",""+us.iIndex);
+				m.put("TINDEX",""+us.getTestPosition());
 				m.put("TSEQ",""+us.iDBseq);
 			}
 			else
@@ -4651,5 +4621,4 @@ public class NavigatorServlet extends HttpServlet
 	public File resolveRelativePath(String relativePath) {
 		return new File(getServletContext().getRealPath(relativePath));
 	}
-
 }

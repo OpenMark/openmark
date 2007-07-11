@@ -1,15 +1,13 @@
 /**
  * 
  */
-package om.tnavigator.reports.std;
+package om.tnavigator.reports;
 
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
 import om.tnavigator.NavigatorServlet;
-import om.tnavigator.reports.TabularReportBase;
-import om.tnavigator.reports.TabularReportWriter;
 
 /**
  * @author tjh238

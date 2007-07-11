@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import om.OmException;
+import om.OmVersion;
 import om.axis.qengine.Resource;
 import om.tnavigator.auth.UserDetails;
 
@@ -39,35 +40,25 @@ public class UserSession
 	/** Sequence used to check you don't do things out of order */
 	String sSequence;
 	
-	/** Random seed for session */
-	long lRandomSeed;
-	
 	/** Time of session start */
 	long lSessionStart=System.currentTimeMillis();
 	
 	/** Time of last action in session */
 	long lLastAction=System.currentTimeMillis();
 	
-	// ID of in-progress test deployment.
-	private String sTestID = null;
-	
-	/** Test version for this user (null for single question) */
-	TestGroup tg;
-	
-	/** Test items, linearised */
-	TestLeaf[] atl;
-	
-	/** Index within test items */
-	int iIndex;
-	
 	// Current test deployment.
 	private TestDeployment tdDeployment = null;
 	
 	/** Current test definition (null for single question) */
-	TestDefinition tdDefinition=null;
+	TestDefinition testDefinition = null;
 	
-	/** If not -1, this indicates a fixed variant has been selected */
-	int iFixedVariant=-1;
+	// The test realisation, that is, exactly what sections
+	// and questions make up the test for this user, given
+	// the random choices.
+	private TestRealisation testRealisation = null;
+	
+	/** Index within test items */
+	private int testPosition;
 	
 	/** User login details */
 	UserDetails ud=null;
@@ -100,7 +91,7 @@ public class UserSession
 	int iDBti,iDBqi,iDBseq;
 	
 	/** True if they have finished the test */
-	boolean bFinished;
+	private boolean bFinished;
 	
 	/** The version of the test navigator software that started this attempt. */
 	String navigatorVersion;
@@ -143,20 +134,13 @@ public class UserSession
 	}
 
 	/**
-	 * Set the test deployment id. Note that this should only been done
-	 * once it has been confirmed that the user is allowed to be 
-	 * accessing this test.
-	 * @param sTestID the sTestID to set
-	 */
-	void setTestId(String sTestID) {
-		this.sTestID = sTestID;
-	}
-
-	/**
 	 * @return the sTestID
 	 */
 	public String getTestId() {
-		return sTestID;
+		if (testRealisation != null)
+			return testRealisation.getTestId();
+		else
+			return null;
 	}
 
 	/**
@@ -188,6 +172,69 @@ public class UserSession
 	 */
 	public TestDeployment getTestDeployment() {
 		return tdDeployment;
+	}
+
+	/**
+	 * @return the lRandomSeed
+	 */
+	long getRandomSeed() {
+		return testRealisation.getFixedVariant();
+	}
+
+	/**
+	 * @param fixedVariant the iFixedVariant to set.
+	 */
+	void setFixedVariant(int fixedVariant) {
+		testRealisation.setFixedVariant(fixedVariant);
+	}
+
+	/**
+	 * @return the iFixedVariant
+	 */
+	int getFixedVariant() {
+		return testRealisation.getFixedVariant();
+	}
+
+	/**
+	 * @return the tg
+	 */
+	TestGroup getRootTestGroup() {
+		return testRealisation.getRootTestGroup();
+	}
+
+	/**
+	 * @return the atl
+	 */
+	TestLeaf[] getTestLeavesInOrder() {
+		return testRealisation.getTestLeavesInOrder();
+	}
+
+	/**
+	 * @param iIndex the iIndex to set
+	 */
+	void setTestPosition(int iIndex) {
+		this.testPosition = iIndex;
+	}
+
+	/**
+	 * @param bFinished the bFinished to set
+	 */
+	void setFinished(boolean bFinished) {
+		this.bFinished = bFinished;
+	}
+
+	/**
+	 * @return the bFinished
+	 */
+	boolean isFinished() {
+		return bFinished;
+	}
+
+	/**
+	 * @return the iIndex
+	 */
+	int getTestPosition() {
+		return testPosition;
 	}
 
 	/**
@@ -224,5 +271,28 @@ public class UserSession
 	public void remove(String key)
 	{
 		extraSessionInfo.remove(key);
+	}
+
+	/**
+	 * @param testID the deploy file id.
+	 * @param finished whether the student had finished their attempt.
+	 * @param randomSeed the random seed to use for this attempt.
+	 * @param fixedVariant the fixed variant to use, or -1 for none.
+	 * @throws OmException 
+	 */
+	public void realiseTest(String testID, boolean finished, long randomSeed, int fixedVariant) throws OmException {
+		if(isSingle())
+		{
+			testDefinition = null;
+			testRealisation = TestRealisation.realiseSingleQuestion(tdDeployment.getQuestion(), randomSeed, -1, testID);
+		}
+		else
+		{
+			testDefinition = tdDeployment.getTestDefinition();
+			testRealisation = TestRealisation.realiseTest(testDefinition, randomSeed, -1, testID);
+		}
+		testPosition = 0;
+		bFinished = finished;
+		navigatorVersion = OmVersion.getVersion();
 	}
 }
