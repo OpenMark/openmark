@@ -129,14 +129,13 @@ public class UserSession
 	 */
 	int iEmailSent=0;
 	
-	/**
-	 * A place where any extra information can be stored in the session.
-	 */
+	// A place where any extra information can be stored in the session.
 	private Map<String,Object> extraSessionInfo = new HashMap<String, Object>();
 	
 	/**
-	 * @param key
-	 * @param value
+	 * Store a miscellaneous piece of information in the user session.
+	 * @param key the key identifying this piece of information.
+	 * @param value the value to store.
 	 */
 	public void store(String key, Object value)
 	{
@@ -144,9 +143,10 @@ public class UserSession
 	}
 
 	/**
-	 * @param <T> 
-	 * @param key
-	 * @param dataType
+	 * Retrieve a miscellaneous piece of information from the user session.
+	 * @param <T> the type of thing we expect to retrieve.
+	 * @param key the key identifying this piece of information
+	 * @param dataType the class of the expected type. Used to determine T.
 	 * @return the requested value, assuring that it is of type dataType.
 	 * @throws OmException 
 	 */
@@ -160,8 +160,8 @@ public class UserSession
 	}
 
 	/**
-	 * @param key
-	 * @param value
+	 * Remove a miscellaneous piece of information from the user session.
+	 * @param key the key identifying this piece of information
 	 */
 	public void remove(String key)
 	{
