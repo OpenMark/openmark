@@ -20,6 +20,7 @@ package om.tnavigator;
 import java.util.*;
 
 import om.OmFormatException;
+import om.tnavigator.scores.CombinedScore;
 
 import org.w3c.dom.Element;
 
@@ -36,7 +37,7 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	private String sSection;
 	private int iNumber;
 	private boolean bDone=false;
-	PartialScore psActual=null;
+	CombinedScore psActual=null;
 	
 	TestQuestion(TestItem iParent,Element eQuestion) throws OmFormatException
 	{
@@ -113,7 +114,7 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	}
 	
 	/** Array of questions on which this depends */
-	private TestQuestion[] atqDepends=null;
+	private TestQuestion[] atqDepends = null;
 	
 	public boolean isAvailable()
 	{
@@ -149,61 +150,45 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	 * Call to fill in user's actual score on this question.
 	 * @param ps Score (use null to clear)
 	 */
-	void setActualScore(PartialScore ps)
+	void setActualScore(CombinedScore ps)
 	{
-		this.psActual=ps;
+		this.psActual = ps;
 	}
 	
-	/** @return True if a score has been set */
-	boolean hasActualScore() { return psActual!=null; }
+	/**
+	 * @return True if a score has been set
+	 */
+	boolean hasActualScore()
+	{
+		return psActual!=null;
+	}
 	
 	@Override
-	PartialScore getFinalScore(String sOnly,boolean bMax) throws OmFormatException
+	CombinedScore getFinalScore(String sOnly,boolean bMax) throws OmFormatException
 	{
-		PartialScore psRescored=rescore(psActual);
+		CombinedScore psRescored=rescore(psActual);
 		
 		if(sOnly!=null && !sOnly.equals(sID))
 		{
-			// When calculating 'only' score and this isn't the item, zero its points
-			// contriubution
-			String[] asAxes=psRescored.getAxes();
-			for(int iAxis=0;iAxis<asAxes.length;iAxis++)
-			{
-				String sAxis=asAxes[iAxis];
-				psRescored.setScore(sAxis,0.0,psRescored.getMax(sAxis));
-			}
+			psRescored = CombinedScore.zeroScore(psRescored);
 		}
 		else if(bMax)
 		{
-			// Maxing out scores
-			String[] asAxes=psRescored.getAxes();
-			for(int iAxis=0;iAxis<asAxes.length;iAxis++)
-			{
-				String sAxis=asAxes[iAxis];
-				psRescored.setScore(sAxis,psRescored.getMax(sAxis),psRescored.getMax(sAxis));
-			}
+			psRescored = CombinedScore.maxScore(psRescored);
 		}
 		
 		return psRescored;
 	}
 	
-	/** @return Contribution toward final marks after all scaling */
-	PartialScore getScoreContribution(TestGroup tgRoot) throws OmFormatException
+	/** 
+	 * @return Contribution toward final marks after all scaling
+	 */
+	CombinedScore getScoreContribution(TestGroup tgRoot) throws OmFormatException
 	{
 		// Work out contributions this question only has to final results if (a)
 		// they score what they actually scored, and (b) they score the max possible
-		PartialScore 
-			psContrib=tgRoot.getFinalScore(getID(),false),
-			psMax=tgRoot.getFinalScore(getID(),true);
-		
-		// Create new partial score with the right bits in score and max
-		PartialScore psResult=new PartialScore();
-		String[] asAxes=psContrib.getAxes();
-		for(int iAxis=0;iAxis<asAxes.length;iAxis++)
-		{
-			String sAxis=asAxes[iAxis];
-			psResult.setScore(sAxis,psContrib.getScore(sAxis),psMax.getScore(sAxis));
-		}
-		return psResult;
+		CombinedScore contribution = tgRoot.getFinalScore(getID(),false);
+		CombinedScore max = tgRoot.getFinalScore(getID(),true);
+		return CombinedScore.scoreOutOfMax(contribution, max);
 	}
 }

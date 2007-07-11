@@ -20,6 +20,7 @@ package om.tnavigator;
 import java.util.*;
 
 import om.*;
+import om.tnavigator.scores.CombinedScore;
 
 import org.w3c.dom.Element;
 
@@ -166,21 +167,23 @@ class TestGroup extends TestMarkedItem
 		}
 	}
 	
-	PartialScore getFinalScore() throws OmFormatException
+	CombinedScore getFinalScore() throws OmFormatException
 	{
 		return getFinalScore(null,false);
 	}
 	
 	@Override
-	PartialScore getFinalScore(String sOnly,boolean bMax) throws OmFormatException
+	CombinedScore getFinalScore(String sOnly,boolean bMax) throws OmFormatException
 	{
 		// Build score from all children
-		PartialScore ps=new PartialScore();
-		for(TestItem i : lItems)
+		CombinedScore ps = new CombinedScore();
+		for(TestItem item : lItems)
 		{
-			if(!(i instanceof TestMarkedItem)) continue;
-			TestMarkedItem tmi=(TestMarkedItem)i;			
-			ps.add(tmi.getFinalScore(sOnly,bMax));
+			if((item instanceof TestMarkedItem))
+			{
+				TestMarkedItem tmi = (TestMarkedItem) item;			
+				ps.add(tmi.getFinalScore(sOnly, bMax));
+			}
 		}
 		
 		return rescore(ps);

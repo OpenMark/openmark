@@ -17,7 +17,12 @@
  */
 package om.tnavigator;
 
-/** Either questions or text pages */
+/**
+ * This is the interface used by the navigation panel to get the
+ * information it needs to display each actual thing in the test
+ * (questions or text pages) in the appropriate state, and with a 
+ * section heading before each section.
+ */
 public interface TestLeaf
 {
 	/**
@@ -25,12 +30,18 @@ public interface TestLeaf
 	 */
 	void setSection(String s);
 	
-	/** @return Section name of question (null if not in a section) */
+	/**
+	 * @return Section name of question (null if not in a section)
+	 */
 	String getSection();
 	
-	/** @return True if user has finished the item */
+	/**
+	 * @return True if user has finished the item
+	 */
 	boolean isDone();
 	
-	/** @return True if item is available for display */
+	/**
+	 * @return True if item is available for display
+	 */
 	boolean isAvailable();
 }

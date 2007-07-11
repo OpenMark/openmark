@@ -20,21 +20,24 @@ package om.tnavigator;
 import org.w3c.dom.Element;
 
 
-/** Something that goes in a test */
+/**
+ * Something that goes in a test group. That is, an info page, a question, or a subgroup.
+ */
 class TestItem
 {
-	private TestItem iParent;
+	// The enclosing item. Surely, this will always be a TestGroup?
+	private TestItem parent;
 	
 	private String sDepends=null;
 	
 	TestItem(TestItem iParent,Element eThis) 
 	{ 
-		this.iParent=iParent;
+		this.parent=iParent;
 		
 		sDepends=eThis.getAttribute("depends");
 		if(sDepends!=null && sDepends.equals("")) sDepends=null;
 	}
 	
-	TestItem getParent() { return iParent; }
+	TestItem getParent() { return parent; }
 	String getDepends() { return sDepends; }
 }

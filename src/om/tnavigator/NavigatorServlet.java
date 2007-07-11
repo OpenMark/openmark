@@ -40,6 +40,7 @@ import om.tnavigator.auth.Authentication;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.reports.ReportDispatcher;
+import om.tnavigator.scores.CombinedScore;
 
 import org.apache.axis.AxisFault;
 import org.w3c.dom.*;
@@ -1383,8 +1384,8 @@ public class NavigatorServlet extends HttpServlet
 		String[] asAxes=null;
 		if(bIncludeScore)
 		{
-			PartialScore ps=us.tg.getFinalScore();
-			asAxes=ps.getAxes();
+			CombinedScore ps=us.tg.getFinalScore();
+			asAxes=ps.getAxesOrdered();
 			for(int iAxis=0;iAxis<asAxes.length;iAxis++)
 			{
 				String sAxis=asAxes[iAxis];
@@ -1501,7 +1502,7 @@ public class NavigatorServlet extends HttpServlet
 
 			if(bIncludeScore)
 			{
-				PartialScore ps=us.tg.getFinalScore();
+				CombinedScore ps=us.tg.getFinalScore();
 				eTR=XML.createChild(eTable,"tr");
 				eTR.setAttribute("class","totals");
 				Element eTD=XML.createChild(eTR,"td");
@@ -1606,8 +1607,8 @@ public class NavigatorServlet extends HttpServlet
 		}
 
 		// Get score (scaled)
-		PartialScore ps=tq.getScoreContribution(us.tg);
-		String[] asAxes=ps.getAxes();
+		CombinedScore ps=tq.getScoreContribution(us.tg);
+		String[] asAxes=ps.getAxesOrdered();
 		for(int iAxis=0;iAxis<asAxes.length;iAxis++)
 		{
 			String sAxis=asAxes[iAxis];
@@ -1949,7 +1950,7 @@ public class NavigatorServlet extends HttpServlet
 			}
 
 			// OK, work out the student's score
-			PartialScore ps=getScore(rt,us,request);
+			CombinedScore ps=getScore(rt,us,request);
 
 			// Now process each element from the final part of the definition
 			processFinalTags(rt,us,us.tdDefinition.getFinalPage(),eMain, ps,request);
@@ -1999,7 +2000,7 @@ public class NavigatorServlet extends HttpServlet
 		response.setHeader("Expires","Thu, 01 Jan 1970 00:00:00 GMT");
 	}
 
-	private void processFinalTags(RequestTimings rt,UserSession us,Element eParent,Element eTarget, PartialScore ps,
+	private void processFinalTags(RequestTimings rt,UserSession us,Element eParent,Element eTarget, CombinedScore ps,
 		HttpServletRequest request)
 		throws Exception
 	{
@@ -2023,7 +2024,7 @@ public class NavigatorServlet extends HttpServlet
 				Element[] aeLabels=XML.getChildren(e,"axislabel");
 
 				// Loop through each score axis
-				String[] asAxes=ps.getAxes();
+				String[] asAxes=ps.getAxesOrdered();
 				axisloop: for(int iAxis=0;iAxis<asAxes.length;iAxis++)
 				{
 					String sAxis=asAxes[iAxis];
@@ -2145,9 +2146,13 @@ public class NavigatorServlet extends HttpServlet
 		}
 	}
 
-	private PartialScore getScore(RequestTimings rt,UserSession us,HttpServletRequest request) throws Exception
+	private CombinedScore getScore(RequestTimings rt,UserSession us,HttpServletRequest request) throws Exception
 	{
-		Map<String,QuestionScoreDetails> mScores=new HashMap<String,QuestionScoreDetails>();
+		// These two maps should always have the say set of keys.
+		Map<String, Map<String, Double> > questionScores =
+				new HashMap<String, Map<String, Double>>();
+		Map<String, QuestionVersion> questionVersions =
+				new HashMap<String, QuestionVersion>();
 		DatabaseAccess.Transaction dat=da.newTransaction();
 		try
 		{
@@ -2179,26 +2184,28 @@ public class NavigatorServlet extends HttpServlet
 
 				// Find question. If it's not there create it - all questions get
 				// an entry in the hashmap even if they have no results
-				QuestionScoreDetails qsd=mScores.get(sQuestion);
-				if(qsd==null)
+				Map<String, Double> scores = questionScores.get(sQuestion);
+				if (scores == null)
 				{
-					qsd=new QuestionScoreDetails();
-					mScores.put(sQuestion,qsd);
-
-					if(bGotVersion)
+					QuestionVersion qv = new QuestionVersion();
+					if (bGotVersion)
 					{
 						// If they actually took the question, we use the version they took
 						// (this version info is used for getting max score)
-						qsd.qv.iMajor=iMajor;
-						qsd.qv.iMinor=iMinor;
+						qv.iMajor = iMajor;
+						qv.iMinor = iMinor;
 					}
 					else
 					{
 						// If they didn't take the question then either use the latest version
 						// overall or the latest specified major version
-						qsd.qv=getLatestVersion(sQuestion,
+						qv = getLatestVersion(sQuestion,
 								iRequiredMajor==0 ? TestQuestion.VERSION_UNSPECIFIED : iRequiredMajor);
 					}
+					questionVersions.put(sQuestion, qv);
+					
+					scores = new HashMap<String, Double>();
+					questionScores.put(sQuestion, scores);
 				}
 
 				// In this case null axis => SQL null => no results for this question.
@@ -2206,45 +2213,34 @@ public class NavigatorServlet extends HttpServlet
 				if(sAxis!=null)
 				{
 					if(sAxis.equals(""))
-						qsd.mAxes.put(null,iScore);
+						scores.put(null,(double)iScore);
 					else
-						qsd.mAxes.put(sAxis,iScore);
+						scores.put(sAxis,(double)iScore);
 				}
 			}
 		}
 		finally
 		{
-			rt.lDatabaseElapsed+=dat.finish();
+			rt.lDatabaseElapsed += dat.finish();
 		}
 
 		// Loop around all questions, setting up the score in each one.
-		for(Iterator iResult=mScores.entrySet().iterator();iResult.hasNext();)
+		for(Map.Entry<String, QuestionVersion> me : questionVersions.entrySet())
 		{
-			// Get details
-			Map.Entry me=(Map.Entry)iResult.next();
-			String sQuestion=(String)me.getKey();
-			QuestionScoreDetails qsd=(QuestionScoreDetails)me.getValue();
+			// Get create the score
+			String sQuestion = me.getKey();
+			QuestionVersion qv = me.getValue();
+			CombinedScore score = CombinedScore.fromArrays(questionScores.get(sQuestion),
+					getMaximumScores(rt, sQuestion, qv.toString(), request));
 
-			// Get max scores for question
-			Score[] asMax=getMaximumScores(rt,sQuestion,qsd.qv.toString(),request);
-
-			// Build PartialScore object
-			PartialScore ps=new PartialScore();
-			for(int iAxis=0;iAxis<asMax.length;iAxis++)
+			// Attatch it to the appropriate TestQuestion.
+			for (int iQuestion=0;iQuestion<us.atl.length;iQuestion++)
 			{
-				Integer iThis=qsd.mAxes.get(asMax[iAxis].getAxis());
-				int iValue=iThis==null ? 0 : iThis.intValue();
-				ps.setScore(asMax[iAxis].getAxis(),iValue,asMax[iAxis].getMarks());
-			}
-
-			// Find the TestQuestion
-			for(int iQuestion=0;iQuestion<us.atl.length;iQuestion++)
-			{
-				if(!(us.atl[iQuestion] instanceof TestQuestion)) continue;
-				TestQuestion tq=(TestQuestion)us.atl[iQuestion];
-				if(tq.getID().equals(sQuestion))
+				if (!(us.atl[iQuestion] instanceof TestQuestion)) continue;
+				TestQuestion tq = (TestQuestion)us.atl[iQuestion];
+				if (tq.getID().equals(sQuestion))
 				{
-					tq.setActualScore(ps);
+					tq.setActualScore(score);
 					break;
 				}
 			}
@@ -2309,13 +2305,6 @@ public class NavigatorServlet extends HttpServlet
 		{
 			return new Score[] {};
 		}
-	}
-
-	/** Just used in getScore */
-	private static class QuestionScoreDetails
-	{
-		Map<String,Integer> mAxes=new HashMap<String,Integer>();
-		QuestionVersion qv=new QuestionVersion();
 	}
 
 	/**
@@ -2778,8 +2767,8 @@ public class NavigatorServlet extends HttpServlet
 					{
 						// Get score (scaled)
 						TestQuestion tq=(TestQuestion)us.atl[us.iIndex];
-						PartialScore ps=tq.getScoreContribution(us.tg);
-						String[] asAxes=ps.getAxes();
+						CombinedScore ps=tq.getScoreContribution(us.tg);
+						String[] asAxes=ps.getAxesOrdered();
 						for(int iAxis=0;iAxis<asAxes.length;iAxis++)
 						{
 							String sAxis=asAxes[iAxis];
