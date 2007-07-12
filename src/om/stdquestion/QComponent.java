@@ -1129,17 +1129,17 @@ public abstract class QComponent
 	/**
 	 * Lists subcomponents of given class. Not designed for question developer use
 	 * (hence package-only access), use QDocument.find().
-	 * @param cClass Desired Java class
-	 * @param cList Array of matching components
+	 * @param c Desired Java class
+	 * @param components Array of matching components
 	 */
-	final void listSubComponents(Class<?> cClass,Collection<QComponent> cList)
+	final <T extends QComponent> void listSubComponents(Class<T> c, Collection<T> components)
 	{
-		if(getClass()==cClass) cList.add(this);
+		if (c.isAssignableFrom(getClass())) components.add(c.cast(this));
 		for(Object o : llChildren)
 		{
 			if(o instanceof QComponent)
 			{
-				((QComponent)o).listSubComponents(cClass,cList);
+				((QComponent)o).listSubComponents(c,components);
 			}
 		}
 	}

@@ -96,18 +96,17 @@ public class DropBoxComponent extends QComponent
 		Map<String, String> m=new HashMap<String, String>();
 		m.put(NOANSWEROPTION,"");
 		
-		// Find all applicable dragboxes			
-		DragBoxComponent[] adbc=
-			(DragBoxComponent[])getQDocument().find(DragBoxComponent.class);
-		for(int iDragbox=0;iDragbox<adbc.length;iDragbox++)
+		// Find all applicable dragboxes
+		List<DragBoxComponent> dragBoxes = getQDocument().find(DragBoxComponent.class);
+		for(DragBoxComponent dragBox : dragBoxes)
 		{
-			if(!adbc[iDragbox].getString(PROPERTY_GROUP).equals(getString(PROPERTY_GROUP)))
+			if(!dragBox.getString(PROPERTY_GROUP).equals(getString(PROPERTY_GROUP)))
 				continue;
 				
-			String sOption=adbc[iDragbox].getPlainDropboxContent(false);
-			m.put(sOption,adbc[iDragbox].getID());
+			String sOption=dragBox.getPlainDropboxContent(false);
+			m.put(sOption,dragBox.getID());
 			
-			sbCrap.append(sOption +"="+adbc[iDragbox].getID()+"\n");
+			sbCrap.append(sOption +"="+dragBox.getID()+"\n");
 		}
 		
 		return m;
@@ -128,16 +127,15 @@ public class DropBoxComponent extends QComponent
 			XML.createText(eFirst,NOANSWEROPTION);
 					
 			// Find all applicable dragboxes			
-			DragBoxComponent[] adbc=
-				(DragBoxComponent[])getQDocument().find(DragBoxComponent.class);
 			boolean bSomethingSelected=false;
-			for(int iDragbox=0;iDragbox<adbc.length;iDragbox++)
+			List<DragBoxComponent> dragBoxes = getQDocument().find(DragBoxComponent.class);
+			for(DragBoxComponent dragBox : dragBoxes)
 			{
-				if(!adbc[iDragbox].getString(PROPERTY_GROUP).equals(getString(PROPERTY_GROUP)))
+				if(!dragBox.getString(PROPERTY_GROUP).equals(getString(PROPERTY_GROUP)))
 					continue;
 					
-				String sOption=adbc[iDragbox].getPlainDropboxContent(bInit);
-				boolean bSelected=getValue()==adbc[iDragbox].getID();
+				String sOption=dragBox.getPlainDropboxContent(bInit);
+				boolean bSelected=getValue()==dragBox.getID();
 				bSomethingSelected|=bSelected;
 				
 				Element eOption=XML.createChild(eSelect,"option");

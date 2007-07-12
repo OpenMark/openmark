@@ -307,14 +307,15 @@ public class QDocument
 	 * Searches the tree for components of a given class. Returns an array of
 	 * the components, in document order. You may cast the array to one of the
 	 * specifed class.
+	 * @param <T> The type of component to find.
 	 * @param c Class to look for
 	 * @return Array of components (zero-length if none)
 	 */
-	public QComponent[] find(Class<? extends QComponent> c)
+	public <T extends QComponent> List<T> find(Class<T> c)
 	{
-		List<QComponent> l=new LinkedList<QComponent>();
+		List<T> l=new LinkedList<T>();
 		qcRoot.listSubComponents(c,l);
-		return l.toArray(new QComponent[l.size()]);
+		return l;
 	}
 	
 	/**
