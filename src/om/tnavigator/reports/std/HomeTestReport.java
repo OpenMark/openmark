@@ -199,7 +199,7 @@ public class HomeTestReport implements OmTestReport {
 		{
 			DbInfoQuestion diq=(DbInfoQuestion)i.next();
 			Score[] as=ns.getMaximumScores(null,diq.sQuestion,
-				ns.getLatestVersion(diq.sQuestion,diq.iMajor).toString(),request);
+				ns.getLatestVersion(diq.sQuestion,diq.iMajor).toString());
 			String sMax="??";
 			for(int iScore=0;iScore<as.length;iScore++)
 			{

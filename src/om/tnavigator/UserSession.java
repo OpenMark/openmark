@@ -88,7 +88,8 @@ public class UserSession
 	String sProgressInfo="";
 	
 	/** Database ID for test, question, sequence */
-	int iDBti,iDBqi,iDBseq;
+	int iDBqi;
+	int iDBseq;
 	
 	/** True if they have finished the test */
 	private boolean bFinished;
@@ -175,6 +176,15 @@ public class UserSession
 	}
 
 	/**
+	 * @return the tdDeployment
+	 * @throws OmException if the deployment has not already been
+	 * loaded, and there is an error doing so.
+	 */
+	public TestRealisation getTestRealisation() {
+		return testRealisation;
+	}
+
+	/**
 	 * @return the lRandomSeed
 	 */
 	long getRandomSeed() {
@@ -238,6 +248,20 @@ public class UserSession
 	}
 
 	/**
+	 * @param dbTi the dbTi to set.
+	 */
+	void setDbTi(int dbTi) {
+		testRealisation.setDbTi(dbTi);
+	}
+
+	/**
+	 * @return the iDBti
+	 */
+	int getDbTi() {
+		return testRealisation.getDbTi();
+	}
+
+	/**
 	 * Store a miscellaneous piece of information in the user session.
 	 * @param key the key identifying this piece of information.
 	 * @param value the value to store.
@@ -278,18 +302,19 @@ public class UserSession
 	 * @param finished whether the student had finished their attempt.
 	 * @param randomSeed the random seed to use for this attempt.
 	 * @param fixedVariant the fixed variant to use, or -1 for none.
+	 * @param dbTi the ti of the row in the tests table corresponding to this attempt. 0 if not known yet.
 	 * @throws OmException 
 	 */
-	public void realiseTest(String testID, boolean finished, long randomSeed, int fixedVariant) throws OmException {
+	public void realiseTest(String testID, boolean finished, long randomSeed, int fixedVariant, int dbTi) throws OmException {
 		if(isSingle())
 		{
 			testDefinition = null;
-			testRealisation = TestRealisation.realiseSingleQuestion(tdDeployment.getQuestion(), randomSeed, -1, testID);
+			testRealisation = TestRealisation.realiseSingleQuestion(tdDeployment.getQuestion(), randomSeed, -1, testID, dbTi);
 		}
 		else
 		{
 			testDefinition = tdDeployment.getTestDefinition();
-			testRealisation = TestRealisation.realiseTest(testDefinition, randomSeed, -1, testID);
+			testRealisation = TestRealisation.realiseTest(testDefinition, randomSeed, -1, testID, dbTi);
 		}
 		testPosition = 0;
 		bFinished = finished;

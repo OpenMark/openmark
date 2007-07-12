@@ -345,7 +345,7 @@ public class NavigatorServlet extends HttpServlet
 	 */
 	private void initTestSession(UserSession us, RequestTimings rt,
 			String sTestID, HttpServletRequest request, HttpServletResponse response,
-			boolean bFinished, boolean bStarted, long randomSeed, int fixedVariant) throws Exception
+			boolean bFinished, boolean bStarted, long randomSeed, int fixedVariant, int iDBti) throws Exception
 	{
 		// Check access
 		if(!us.getTestDeployment().isWorldAccess() && !us.getTestDeployment().hasAccess(us.ud))
@@ -380,7 +380,7 @@ public class NavigatorServlet extends HttpServlet
 
 		// Realise the test for this student.
 		// Initialise test settings
-		us.realiseTest(sTestID, bFinished, randomSeed, fixedVariant);
+		us.realiseTest(sTestID, bFinished, randomSeed, fixedVariant, iDBti);
 	}
 
 	private static class StopException extends OmException
@@ -1161,7 +1161,7 @@ public class NavigatorServlet extends HttpServlet
 		// Random seed is normally time in milliseconds. For system testing we fix
 		// it to always be the same value.
 		initTestSession(us,rt,sTestID,request, response, false, false,
-				us.ud.isSysTest() ? 1124965882611L : System.currentTimeMillis(), -1);
+				us.ud.isSysTest() ? 1124965882611L : System.currentTimeMillis(), -1, 0);
 
 		// Don't store anything in database for singles version
 		if(us.isSingle()) return;
@@ -1180,19 +1180,21 @@ public class NavigatorServlet extends HttpServlet
 				us.ud.isLoggedIn() ? us.ud.getPersonID() : us.sOUCU,
 				us.getFixedVariant(),
 				us.navigatorVersion);
-			us.iDBti=oq.getInsertedSequenceID(dat,"tests","ti");
+			int dbTi = oq.getInsertedSequenceID(dat,"tests","ti");
+			l.logDebug("TI = " + dbTi);
+			us.setDbTi(dbTi);
 
 			for(int i=0;i<us.getTestLeavesInOrder().length;i++)
 			{
 				if(us.getTestLeavesInOrder()[i] instanceof TestQuestion)
 				{
 					TestQuestion tq=(TestQuestion)us.getTestLeavesInOrder()[i];
-					oq.insertTestQuestion(dat,us.iDBti,tq.getNumber(),tq.getID(),
+					oq.insertTestQuestion(dat,us.getDbTi(),tq.getNumber(),tq.getID(),
 						tq.getVersion(),tq.getSection());
 				}
 			}
 
-			storeSessionInfo(request,dat,us.iDBti);
+			storeSessionInfo(request,dat,us.getDbTi());
 		}
 		finally
 		{
@@ -1271,7 +1273,7 @@ public class NavigatorServlet extends HttpServlet
 		if(bScores)
 		{
 			// Build the scores list from database
-			getScore(rt,us,request);
+			us.getTestRealisation().getScore(rt, this, da, oq);
 		}
 		addSummaryTable(rt,us,eDiv,inPlainMode(request),
 			us.testDefinition.doesSummaryIncludeQuestions(),
@@ -1357,7 +1359,7 @@ public class NavigatorServlet extends HttpServlet
 		DatabaseAccess.Transaction dat=da.newTransaction();
 		try
 		{
-			ResultSet rs=oq.querySummary(dat,us.iDBti);
+			ResultSet rs=oq.querySummary(dat,us.getDbTi());
 
 			// Build table
 			int iCurrentQuestion=1;
@@ -1904,7 +1906,7 @@ public class NavigatorServlet extends HttpServlet
 			}
 
 			// OK, work out the student's score
-			CombinedScore ps=getScore(rt,us,request);
+			CombinedScore ps = us.getTestRealisation().getScore(rt, this, da, oq);
 
 			// Now process each element from the final part of the definition
 			processFinalTags(rt,us,us.testDefinition.getFinalPage(),eMain, ps,request);
@@ -2100,132 +2102,19 @@ public class NavigatorServlet extends HttpServlet
 		}
 	}
 
-	private CombinedScore getScore(RequestTimings rt,UserSession us,HttpServletRequest request) throws Exception
-	{
-		// These two maps should always have the say set of keys.
-		Map<String, Map<String, Double> > questionScores =
-				new HashMap<String, Map<String, Double>>();
-		Map<String, QuestionVersion> questionVersions =
-				new HashMap<String, QuestionVersion>();
-		DatabaseAccess.Transaction dat=da.newTransaction();
-		try
-		{
-			// Query for all questions in test alongside each completed attempt
-			// at that question, ordered so that the most recent completed attempt
-			// occurs *first* [we then ignore following attempts for each question
-			// in code]
-			ResultSet rs=oq.queryScores(dat,us.iDBti);
-
-			// Build into map of question ID -> axis string/"" -> score (Integer)
-			String sCurQuestion="";
-			int iCurAttempt=-1;
-			while(rs.next())
-			{
-				String sQuestion=rs.getString(1);
-				int iMajor=rs.getInt(2),iMinor=rs.getInt(3); // Will be 0 if null
-				boolean bGotVersion=!rs.wasNull() && iMajor!=0;
-				int iAttempt=rs.getInt(4);
-				String sAxis=rs.getString(5);
-				int iScore=rs.getInt(6);
-				int iRequiredMajor=rs.getInt(7);
-
-				// Ignore all attempts on a question other than the first encountered
-				// (this is a pain to do in SQL so I'm doing it in code, relying on
-				// the sort order that makes the latest finished attempt appear first)
-				if(sCurQuestion.equals(sQuestion) && iAttempt!=iCurAttempt)
-					continue;
-				sCurQuestion = sQuestion;
-
-				// Find question. If it's not there create it - all questions get
-				// an entry in the hashmap even if they have no results
-				Map<String, Double> scores = questionScores.get(sQuestion);
-				if (scores == null)
-				{
-					QuestionVersion qv = new QuestionVersion();
-					if (bGotVersion)
-					{
-						// If they actually took the question, we use the version they took
-						// (this version info is used for getting max score)
-						qv.iMajor = iMajor;
-						qv.iMinor = iMinor;
-					}
-					else
-					{
-						// If they didn't take the question then either use the latest version
-						// overall or the latest specified major version
-						qv = getLatestVersion(sQuestion,
-								iRequiredMajor==0 ? TestQuestion.VERSION_UNSPECIFIED : iRequiredMajor);
-					}
-					questionVersions.put(sQuestion, qv);
-					
-					scores = new HashMap<String, Double>();
-					questionScores.put(sQuestion, scores);
-				}
-
-				// In this case null axis => SQL null => no results for this question.
-				// Default axis is ""
-				if(sAxis!=null)
-				{
-					if(sAxis.equals(""))
-						scores.put(null,(double)iScore);
-					else
-						scores.put(sAxis,(double)iScore);
-				}
-			}
-		}
-		finally
-		{
-			rt.lDatabaseElapsed += dat.finish();
-		}
-
-		// Loop around all questions, setting up the score in each one.
-		for(Map.Entry<String, QuestionVersion> me : questionVersions.entrySet())
-		{
-			// Get create the score
-			String sQuestion = me.getKey();
-			QuestionVersion qv = me.getValue();
-			CombinedScore score = CombinedScore.fromArrays(questionScores.get(sQuestion),
-					getMaximumScores(rt, sQuestion, qv.toString(), request));
-
-			// Attatch it to the appropriate TestQuestion.
-			for (int iQuestion=0;iQuestion<us.getTestLeavesInOrder().length;iQuestion++)
-			{
-				if (!(us.getTestLeavesInOrder()[iQuestion] instanceof TestQuestion)) continue;
-				TestQuestion tq = (TestQuestion)us.getTestLeavesInOrder()[iQuestion];
-				if (tq.getID().equals(sQuestion))
-				{
-					tq.setActualScore(score);
-					break;
-				}
-			}
-		}
-
-		// Sanity check: make sure all the questions have a score
-		for(int iQuestion=0;iQuestion<us.getTestLeavesInOrder().length;iQuestion++)
-		{
-			if(!(us.getTestLeavesInOrder()[iQuestion] instanceof TestQuestion)) continue;
-			TestQuestion tq=(TestQuestion)us.getTestLeavesInOrder()[iQuestion];
-			if(!tq.hasActualScore())
-				throw new OmException("Couldn't find score for question: "+tq.getID());
-		}
-
-		// Now calculate the total score
-		return us.getRootTestGroup().getFinalScore();
-	}
-
 	/**
 	 * @param rt
 	 * @param sID
 	 * @param sVersion
-	 * @param request
+	 * @param ns 
 	 * @return something to do with scores.
 	 * @throws IOException
 	 * @throws RemoteException
 	 */
-	public Score[] getMaximumScores(RequestTimings rt,String sID,String sVersion,HttpServletRequest request)
+	public Score[] getMaximumScores(RequestTimings rt,String sID,String sVersion)
 		throws IOException,RemoteException
 	{
-		Element eMetadata=getQuestionMetadata(rt,sID,sVersion,request);
+		Element eMetadata = getQuestionMetadata(rt, sID, sVersion);
 		if(XML.hasChild(eMetadata,"scoring"))
 		{
 			try
@@ -2277,14 +2166,13 @@ public class NavigatorServlet extends HttpServlet
 	 * @param rt Timings
 	 * @param sID ID of question
 	 * @param sVersion Version of question
-	 * @param request HTTP request (used to get question URL base)
 	 * @return Metadata document
 	 * @throws RemoteException If service has a problem
 	 * @throws IOException If there's an I/O problem before/after the remote service
 	 */
-	private Element getQuestionMetadata(
+	Element getQuestionMetadata(
 		RequestTimings rt,String sID,
-		String sVersion,HttpServletRequest request) throws RemoteException, IOException
+		String sVersion) throws RemoteException, IOException
 	{
 		String sKey=sID+"\n"+sVersion;
 		Element e;
@@ -2310,7 +2198,7 @@ public class NavigatorServlet extends HttpServlet
 		throws RemoteException,IOException,OmException
 	{
 		Element eMetadata=getQuestionMetadata(rt,tq.getID(),
-			getLatestVersion(tq.getID(),tq.getVersion()).toString(),request);
+			getLatestVersion(tq.getID(),tq.getVersion()).toString());
 		return "yes".equals(XML.getText(eMetadata,"plainmode"));
 	}
 
@@ -2367,7 +2255,7 @@ public class NavigatorServlet extends HttpServlet
 						// Find actions from the latest attempt on this question in this test.
 						// This returns qi and the maximum sequence number. If the latest
 						// attempt wasn't unfinished then it returns 0.
-						ResultSet rs=oq.queryQuestionActions(dat,us.iDBti,tq.getID());
+						ResultSet rs=oq.queryQuestionActions(dat,us.getDbTi(),tq.getID());
 
 						// If there was a previous attempt that wasn't finished
 						// then it's time to resurrect the question!
@@ -2584,7 +2472,7 @@ public class NavigatorServlet extends HttpServlet
 				DatabaseAccess.Transaction dat=da.newTransaction();
 				try
 				{
-					oq.insertInfoPage(dat,us.iDBti,us.getTestPosition());
+					oq.insertInfoPage(dat,us.getDbTi(),us.getTestPosition());
 				}
 				finally
 				{
@@ -2605,7 +2493,7 @@ public class NavigatorServlet extends HttpServlet
 		if(us.isSingle())
 		{
 			Element eMetadata=getQuestionMetadata(rt,tq.getID(),
-				getLatestVersion(tq.getID(),tq.getVersion()).toString(),request);
+				getLatestVersion(tq.getID(),tq.getVersion()).toString());
 			serveTestContent(us,XML.hasChild(eMetadata,"title") ? XML.getText(eMetadata,"title") : "Question","",
 					null,us.sProgressInfo,sXHTML,true, request, response, false);
 		}
@@ -2614,7 +2502,7 @@ public class NavigatorServlet extends HttpServlet
 			if(us.testDefinition!=null && us.testDefinition.areQuestionsNamed())
 			{
 				Element eMetadata=getQuestionMetadata(rt,tq.getID(),
-					getLatestVersion(tq.getID(),tq.getVersion()).toString(),request);
+					getLatestVersion(tq.getID(),tq.getVersion()).toString());
 				if(XML.hasChild(eMetadata,"title"))
 				{
 					serveTestContent(us,XML.getText(eMetadata,"title"),"("+tq.getNumber()+" of "+getQuestionMax(us)+")",
@@ -2646,13 +2534,13 @@ public class NavigatorServlet extends HttpServlet
 		try
 		{
 			// See if there's an existing attempt
-			ResultSet rs=oq.queryMaxQuestionAttempt(dat,us.iDBti,tq.getID());
+			ResultSet rs=oq.queryMaxQuestionAttempt(dat,us.getDbTi(),tq.getID());
 			int iMaxAttempt=0;
 			if(rs.next() && rs.getMetaData().getColumnCount()>0) iMaxAttempt=rs.getInt(1);
 			iAttempt=iMaxAttempt+1;
 
 			// Initially zero version - we set this later when question is started
-			oq.insertQuestion(dat,us.iDBti,tq.getID(),iAttempt);
+			oq.insertQuestion(dat,us.getDbTi(),tq.getID(),iAttempt);
 			us.iDBqi=oq.getInsertedSequenceID(dat,"questions","qi");
 		}
 		finally
@@ -2699,7 +2587,7 @@ public class NavigatorServlet extends HttpServlet
 			if(us.testDefinition.doesSummaryIncludeScores())
 			{
 				// Update score data, we'll need it later
-				getScore(rt,us,request);
+				us.getTestRealisation().getScore(rt, this, da, oq);
 			}
 
 			// Get results (question and users's answer only) from this question
@@ -2816,7 +2704,7 @@ public class NavigatorServlet extends HttpServlet
 			DatabaseAccess.Transaction dat=da.newTransaction();
 			try
 			{
-				oq.updateTestFinished(dat,us.iDBti);
+				oq.updateTestFinished(dat,us.getDbTi());
 				us.setFinished(true);
 			}
 			finally
@@ -2876,7 +2764,7 @@ public class NavigatorServlet extends HttpServlet
 				if(bScores)
 				{
 					// Build the scores list from database
-					getScore(rt,us,request);
+					us.getTestRealisation().getScore(rt, this, da, oq);
 				}
 				addSummaryTable(rt,us,eDiv,inPlainMode(request),
 					us.testDefinition.doesSummaryIncludeQuestions(),
@@ -2903,7 +2791,7 @@ public class NavigatorServlet extends HttpServlet
 		int iCount=0;
 		try
 		{
-			ResultSet rs=oq.queryQuestionAttemptCount(dat,us.iDBti);
+			ResultSet rs=oq.queryQuestionAttemptCount(dat,us.getDbTi());
 			rs.next();
 			iCount=rs.getInt(1);
 		}
@@ -2938,7 +2826,7 @@ public class NavigatorServlet extends HttpServlet
 		dat=da.newTransaction();
 		try
 		{
-			oq.updateTestVariant(dat,us.iDBti,us.getFixedVariant());
+			oq.updateTestVariant(dat,us.getDbTi(),us.getFixedVariant());
 		}
 		finally
 		{
@@ -3310,7 +3198,7 @@ public class NavigatorServlet extends HttpServlet
 		DatabaseAccess.Transaction dat=da.newTransaction();
 		try
 		{
-			oq.updateSetTestPosition(dat,us.iDBti,iNewIndex);
+			oq.updateSetTestPosition(dat,us.getDbTi(),iNewIndex);
 			us.setTestPosition(iNewIndex);
 		}
 		finally
@@ -3397,8 +3285,7 @@ public class NavigatorServlet extends HttpServlet
 			storeSessionInfo(request,dat,iDBti);
 
 			// Set up basic data
-			us.iDBti=iDBti;
-			initTestSession(us,rt,sTestID,request, response, bFinished, true, lRandomSeed, iTestVariant);
+			initTestSession(us,rt,sTestID,request, response, bFinished, true, lRandomSeed, iTestVariant, iDBti);
 			us.setTestPosition(iPosition);
 			us.navigatorVersion = navigatorversion;
 
@@ -3407,7 +3294,7 @@ public class NavigatorServlet extends HttpServlet
 			{
 				// Find out which questions they've done (counting either 'getting
 				// results' or 'question end')
-				rs=oq.queryDoneQuestions(dat,us.iDBti);
+				rs=oq.queryDoneQuestions(dat,us.getDbTi());
 
 				// Get all those question IDs
 				Set<String> sDone=new HashSet<String>();
@@ -3425,7 +3312,7 @@ public class NavigatorServlet extends HttpServlet
 				}
 
 				// Find out info pages they've done
-				rs=oq.queryDoneInfoPages(dat,us.iDBti);
+				rs=oq.queryDoneInfoPages(dat,us.getDbTi());
 				while(rs.next())
 				{
 					int iIndex=rs.getInt(1);
@@ -4248,14 +4135,14 @@ public class NavigatorServlet extends HttpServlet
 			// let's forget the position too. Conditions:
 			// * Error is caused by a bug, not permission failure etc
 			// * The test allows navigation (otherwise we shouldn't change their position)
-			if(isBug && us.iDBti>0 && us.testDefinition!=null && us.testDefinition.isNavigationAllowed() &&
+			if(isBug && us.getDbTi()>0 && us.testDefinition!=null && us.testDefinition.isNavigationAllowed() &&
 				((System.currentTimeMillis() - us.lSessionStart) < 5000))
 			{
 				DatabaseAccess.Transaction dat=null;
 				try
 				{
 					dat=da.newTransaction();
-					oq.updateSetTestPosition(dat,us.iDBti, 0);
+					oq.updateSetTestPosition(dat,us.getDbTi(), 0);
 					bClearedPosition=true;
 				}
 				catch(SQLException se)

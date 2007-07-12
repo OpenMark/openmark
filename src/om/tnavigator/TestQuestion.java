@@ -37,7 +37,7 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	private String sSection;
 	private int iNumber;
 	private boolean bDone=false;
-	CombinedScore psActual=null;
+	CombinedScore actualScore=null;
 	
 	TestQuestion(TestItem iParent,Element eQuestion) throws OmFormatException
 	{
@@ -148,11 +148,11 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	
 	/**
 	 * Call to fill in user's actual score on this question.
-	 * @param ps Score (use null to clear)
+	 * @param score Score (use null to clear)
 	 */
-	void setActualScore(CombinedScore ps)
+	void setActualScore(CombinedScore score)
 	{
-		this.psActual = ps;
+		this.actualScore = score;
 	}
 	
 	/**
@@ -160,35 +160,35 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	 */
 	boolean hasActualScore()
 	{
-		return psActual!=null;
+		return actualScore != null;
 	}
 	
 	@Override
 	CombinedScore getFinalScore(String sOnly,boolean bMax) throws OmFormatException
 	{
-		CombinedScore psRescored=rescore(psActual);
+		CombinedScore score=rescore(actualScore);
 		
 		if(sOnly!=null && !sOnly.equals(sID))
 		{
-			psRescored = CombinedScore.zeroScore(psRescored);
+			score = CombinedScore.zeroScore(score);
 		}
 		else if(bMax)
 		{
-			psRescored = CombinedScore.maxScore(psRescored);
+			score = CombinedScore.maxScore(score);
 		}
 		
-		return psRescored;
+		return score;
 	}
 	
 	/** 
-	 * @return Contribution toward final marks after all scaling
+	 * @return contribution from this question towards final score of a test group
 	 */
-	CombinedScore getScoreContribution(TestGroup tgRoot) throws OmFormatException
+	CombinedScore getScoreContribution(TestGroup testGroup) throws OmFormatException
 	{
 		// Work out contributions this question only has to final results if (a)
 		// they score what they actually scored, and (b) they score the max possible
-		CombinedScore contribution = tgRoot.getFinalScore(getID(),false);
-		CombinedScore max = tgRoot.getFinalScore(getID(),true);
+		CombinedScore contribution = testGroup.getFinalScore(getID(),false);
+		CombinedScore max = testGroup.getFinalScore(getID(),true);
 		return CombinedScore.scoreOutOfMax(contribution, max);
 	}
 }
