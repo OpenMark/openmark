@@ -66,14 +66,32 @@ public class TestRealisation {
 		this.testId = testId;
 	}
 
-	static TestRealisation realiseTest(TestDefinition def, long lRandomSeed, int iFixedVariant,
+	/**
+	 * @param def
+	 * @param lRandomSeed
+	 * @param iFixedVariant
+	 * @param testId
+	 * @param dbTi
+	 * @return a realisation of the sepecified test, given the random seed and variant.
+	 * @throws OmFormatException
+	 */
+	public static TestRealisation realiseTest(TestDefinition def, long lRandomSeed, int iFixedVariant,
 			String testId, int dbTi) throws OmFormatException {
 		TestGroup testGroup = def.getResolvedContent(lRandomSeed);
 		return new TestRealisation(testGroup, testGroup.getLeafItems(),
 				lRandomSeed, iFixedVariant, testId, dbTi);
 	}
 	
-	static TestRealisation realiseSingleQuestion(String question, long lRandomSeed,
+	/**
+	 * @param question
+	 * @param lRandomSeed
+	 * @param iFixedVariant
+	 * @param testId
+	 * @param dbTi
+	 * @return a realisation of a single question mode.
+	 * @throws OmFormatException
+	 */
+	public static TestRealisation realiseSingleQuestion(String question, long lRandomSeed,
 			int iFixedVariant, String testId, int dbTi) throws OmFormatException {
 		TestLeaf[] leaves = new TestLeaf[1];
 		Element e=XML.createDocument().createElement("question");
@@ -165,7 +183,7 @@ public class TestRealisation {
 	 * @return the score for this testRealisation by fetching the scores from the database.
 	 * @throws Exception
 	 */
-	CombinedScore getScore(RequestTimings rt, NavigatorServlet ns, DatabaseAccess da, OmQueries oq) throws Exception
+	public CombinedScore getScore(RequestTimings rt, NavigatorServlet ns, DatabaseAccess da, OmQueries oq) throws Exception
 	{
 		// These two maps should always have the say set of keys.
 		Map<String, Map<String, Double> > questionScores =

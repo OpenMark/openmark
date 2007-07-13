@@ -44,13 +44,13 @@ public class UserSession
 	long lSessionStart=System.currentTimeMillis();
 	
 	/** Time of last action in session */
-	long lLastAction=System.currentTimeMillis();
+	private long lastActionTime = System.currentTimeMillis();
 	
 	// Current test deployment.
 	private TestDeployment tdDeployment = null;
 	
 	/** Current test definition (null for single question) */
-	TestDefinition testDefinition = null;
+	private TestDefinition testDefinition = null;
 	
 	// The test realisation, that is, exactly what sections
 	// and questions make up the test for this user, given
@@ -88,6 +88,7 @@ public class UserSession
 	String sProgressInfo="";
 	
 	/** Database ID for test, question, sequence */
+	private int dbTi;
 	int iDBqi;
 	int iDBseq;
 	
@@ -130,8 +131,11 @@ public class UserSession
 	/**
 	 * @param owner
 	 */
-	UserSession(NavigatorServlet owner) {
+	UserSession(NavigatorServlet owner, String cookie) {
 		this.ns = owner;
+		this.lSessionStart = System.currentTimeMillis();
+		this.sCookie = cookie;
+		ns.getLog().logDebug("Created new UserSession.");
 	}
 
 	/**
@@ -251,14 +255,44 @@ public class UserSession
 	 * @param dbTi the dbTi to set.
 	 */
 	void setDbTi(int dbTi) {
-		testRealisation.setDbTi(dbTi);
+		this.dbTi = dbTi;
+		if (testRealisation != null) testRealisation.setDbTi(dbTi);
 	}
 
 	/**
 	 * @return the iDBti
 	 */
 	int getDbTi() {
-		return testRealisation.getDbTi();
+		return dbTi;
+	}
+
+	/**
+	 * @return the testDefinition
+	 */
+	TestDefinition getTestDefinition() {
+		return testDefinition;
+	}
+
+	/**
+	 * Update the last action time, to record the fact this session has just been used again.
+	 */
+	void touch() {
+		this.lastActionTime = System.currentTimeMillis();
+	}
+
+	/**
+	 * Set the last action time to a long way in the past, so this session
+	 * is expired the next time the session expirer runs.
+	 */
+	void markForDiscard() {
+		this.lastActionTime = 0;
+	}
+
+	/**
+	 * @return the last time this session was used.
+	 */
+	long getLastActionTime() {
+		return lastActionTime;
 	}
 
 	/**
@@ -305,7 +339,7 @@ public class UserSession
 	 * @param dbTi the ti of the row in the tests table corresponding to this attempt. 0 if not known yet.
 	 * @throws OmException 
 	 */
-	public void realiseTest(String testID, boolean finished, long randomSeed, int fixedVariant, int dbTi) throws OmException {
+	public void realiseTest(String testID, boolean finished, long randomSeed, int fixedVariant) throws OmException {
 		if(isSingle())
 		{
 			testDefinition = null;

@@ -27,7 +27,7 @@ import org.w3c.dom.*;
 import util.xml.*;
 
 /** Represents the test definition XML file */
-class TestDefinition
+public class TestDefinition
 {
 	private Document dTest;
 	private String sName;

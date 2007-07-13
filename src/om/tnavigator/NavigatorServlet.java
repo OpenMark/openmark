@@ -262,7 +262,7 @@ public class NavigatorServlet extends HttpServlet
 				for(Iterator i=sessions.values().iterator();i.hasNext();)
 				{
 					UserSession us=(UserSession)i.next();
-					if(us.lLastAction < lExpiry)
+					if(us.getLastActionTime() < lExpiry)
 					{
 						i.remove();
 						usernames.remove(us.sCheckedOUCUKey);
@@ -345,7 +345,7 @@ public class NavigatorServlet extends HttpServlet
 	 */
 	private void initTestSession(UserSession us, RequestTimings rt,
 			String sTestID, HttpServletRequest request, HttpServletResponse response,
-			boolean bFinished, boolean bStarted, long randomSeed, int fixedVariant, int iDBti) throws Exception
+			boolean bFinished, boolean bStarted, long randomSeed, int fixedVariant) throws Exception
 	{
 		// Check access
 		if(!us.getTestDeployment().isWorldAccess() && !us.getTestDeployment().hasAccess(us.ud))
@@ -380,7 +380,7 @@ public class NavigatorServlet extends HttpServlet
 
 		// Realise the test for this student.
 		// Initialise test settings
-		us.realiseTest(sTestID, bFinished, randomSeed, fixedVariant, iDBti);
+		us.realiseTest(sTestID, bFinished, randomSeed, fixedVariant);
 	}
 
 	private static class StopException extends OmException
@@ -391,7 +391,10 @@ public class NavigatorServlet extends HttpServlet
 		}
 	}
 
-	static class RequestTimings
+	/**
+	 * Class for accumulating performance information.
+	 */
+	public static class RequestTimings
 	{
 		long lStart,lDatabaseElapsed,lQEngineElapsed;
 	}
@@ -732,9 +735,7 @@ public class NavigatorServlet extends HttpServlet
 					}
 					while(sessions.containsKey(sCookie)); // And what are the chances of that?
 
-					us=new UserSession(this);
-					us.lSessionStart=System.currentTimeMillis();
-					us.sCookie=sCookie;
+					us=new UserSession(this, sCookie);
 					sessions.put(sCookie,us);
 					// We do the actual redirect later on outside this synch
 
@@ -801,7 +802,7 @@ public class NavigatorServlet extends HttpServlet
 			synchronized(us)
 			{
 				// Set last action time (so session doesn't time out)
-				us.lLastAction=System.currentTimeMillis();
+				us.touch();
 
 				// If they have an OUCU but also a temp-login then we need to chuck away
 				// their session...
@@ -839,7 +840,7 @@ public class NavigatorServlet extends HttpServlet
 						// They've been redirected to SAMS. Chuck their session as soon
 						// as expirer next runs, they won't be needing it as we didn't give
 						// them a cookie yet
-						us.lLastAction=0; // Causes it to expire immediately.
+						us.markForDiscard();
 						return;
 					}
 
@@ -854,18 +855,22 @@ public class NavigatorServlet extends HttpServlet
 
 					// If they're not logged in, give them a not-logged-in cookie with
 					// a made-up OUCU in it
-					if(!us.ud.isLoggedIn())
+					if(us.ud.isLoggedIn())
+					{
+						us.sOUCU = us.ud.getUsername();
+					}
+					else
 					{
 						if(sFakeOUCU==null)
 						{
 							// Make 8-letter random OUCU. We don't bother storing a list,
 							// but there are about 3,000 billion possibilities so it should
 							// be OK.
-							us.sOUCU="_";
-							for(int i=0;i<7;i++) us.sOUCU+=randomAlNum();
+							us.sOUCU = "_";
+							for(int i = 0; i < 7; i++) us.sOUCU += randomAlNum();
 
 							// Set it in cookie for future sessions
-							Cookie c=new Cookie(FAKEOUCUCOOKIENAME,us.sOUCU);
+							Cookie c = new Cookie(FAKEOUCUCOOKIENAME,us.sOUCU);
 							c.setPath("/");
 							// Expiry is 4 years
 							c.setMaxAge( (3*365 + 366) * 24 * 60 * 60 ) ;
@@ -875,16 +880,12 @@ public class NavigatorServlet extends HttpServlet
 						}
 						else
 						{
-							us.sOUCU=sFakeOUCU;
+							us.sOUCU = sFakeOUCU;
 						}
-					}
-					else
-					{
-						us.sOUCU=us.ud.getUsername();
 					}
 
 					// Remember auth hash so that it'll know if they change cookie now
-					us.iAuthHash=iAuthHash;
+					us.iAuthHash = iAuthHash;
 				}
 
 				us.bAllowAfterForbid=
@@ -1003,7 +1004,7 @@ public class NavigatorServlet extends HttpServlet
 					// Redo command is posted
 					if(sCommand.equals("?redo") && bPost)
 					{
-						if(!us.testDefinition.isRedoQuestionAllowed() && !us.bAdmin)
+						if(!us.getTestDefinition().isRedoQuestionAllowed() && !us.bAdmin)
 							sendError(us,request,response,
 								HttpServletResponse.SC_FORBIDDEN,true,false, null, "Forbidden", "This test does not permit questions to be redone.", null);
 						else
@@ -1013,7 +1014,7 @@ public class NavigatorServlet extends HttpServlet
 					// So is restart command
 					if(sCommand.equals("?restart") && bPost)
 					{
-						if(!us.testDefinition.isRedoTestAllowed() && !us.bAdmin)
+						if(!us.getTestDefinition().isRedoTestAllowed() && !us.bAdmin)
 							sendError(us,request,response,
 								HttpServletResponse.SC_FORBIDDEN,true,false, null, "Forbidden", "This test does not permit restarting it.", null);
 						else
@@ -1066,7 +1067,7 @@ public class NavigatorServlet extends HttpServlet
 					}
 					if(sCommand.equals("?summary"))
 					{
-						if(!us.testDefinition.isSummaryAllowed())
+						if(!us.getTestDefinition().isSummaryAllowed())
 							sendError(us,request,response,
 								HttpServletResponse.SC_FORBIDDEN,true,false, null, "Forbidden", "This test does not permit summary display.", null);
 						else
@@ -1161,7 +1162,7 @@ public class NavigatorServlet extends HttpServlet
 		// Random seed is normally time in milliseconds. For system testing we fix
 		// it to always be the same value.
 		initTestSession(us,rt,sTestID,request, response, false, false,
-				us.ud.isSysTest() ? 1124965882611L : System.currentTimeMillis(), -1, 0);
+				us.ud.isSysTest() ? 1124965882611L : System.currentTimeMillis(), -1);
 
 		// Don't store anything in database for singles version
 		if(us.isSingle()) return;
@@ -1269,15 +1270,15 @@ public class NavigatorServlet extends HttpServlet
 		XML.replaceTokens(d,mReplace);
 		Element eDiv=XML.find(d,"id","summarytable");
 
-		boolean bScores=us.testDefinition.doesSummaryIncludeScores();
+		boolean bScores=us.getTestDefinition().doesSummaryIncludeScores();
 		if(bScores)
 		{
 			// Build the scores list from database
 			us.getTestRealisation().getScore(rt, this, da, oq);
 		}
 		addSummaryTable(rt,us,eDiv,inPlainMode(request),
-			us.testDefinition.doesSummaryIncludeQuestions(),
-			us.testDefinition.doesSummaryIncludeAttempts(),
+			us.getTestDefinition().doesSummaryIncludeQuestions(),
+			us.getTestDefinition().doesSummaryIncludeAttempts(),
 			bScores);
 
 		serveTestContent(us,"Your answers so far","",null,null,XML.saveString(d),false, request, response, true);
@@ -1605,7 +1606,7 @@ public class NavigatorServlet extends HttpServlet
 		stopQuestionSession(rt, us);
 
 		// Get next question that's permitted
-		if(!findNextQuestion(rt,us,false,!us.testDefinition.isRedoQuestionAllowed(),!us.testDefinition.isRedoQuestionAllowed()))
+		if(!findNextQuestion(rt,us,false,!us.getTestDefinition().isRedoQuestionAllowed(),!us.getTestDefinition().isRedoQuestionAllowed()))
 			// If there are none left, go to end page
 			redirectToEnd(request,response);
 		else
@@ -1909,7 +1910,7 @@ public class NavigatorServlet extends HttpServlet
 			CombinedScore ps = us.getTestRealisation().getScore(rt, this, da, oq);
 
 			// Now process each element from the final part of the definition
-			processFinalTags(rt,us,us.testDefinition.getFinalPage(),eMain, ps,request);
+			processFinalTags(rt,us,us.getTestDefinition().getFinalPage(),eMain, ps,request);
 		}
 		else
 		{
@@ -1920,9 +1921,9 @@ public class NavigatorServlet extends HttpServlet
 		}
 
 		// Show restart button, if enabled
-		if((us.testDefinition.isRedoTestAllowed()&&!us.getTestDeployment().isAfterForbid()) || us.bAdmin)
+		if((us.getTestDefinition().isRedoTestAllowed()&&!us.getTestDeployment().isAfterForbid()) || us.bAdmin)
 		{
-			if(!us.testDefinition.isRedoTestAllowed())
+			if(!us.getTestDefinition().isRedoTestAllowed())
 			{
 				Element eMsg=XML.createChild(eMain,"div");
 				eMsg.setAttribute("class","adminmsg");
@@ -2270,7 +2271,7 @@ public class NavigatorServlet extends HttpServlet
 							{
 								int iQI=rs.getInt(1);
 
-								if(us.testDefinition.isAutomaticRedoQuestionAllowed())
+								if(us.getTestDefinition().isAutomaticRedoQuestionAllowed())
 								{
 									handleRedo(rt,us,request,response);
 									throw new StopException();
@@ -2499,7 +2500,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 		else
 		{
-			if(us.testDefinition!=null && us.testDefinition.areQuestionsNamed())
+			if(us.getTestDefinition()!=null && us.getTestDefinition().areQuestionsNamed())
 			{
 				Element eMetadata=getQuestionMetadata(rt,tq.getID(),
 					getLatestVersion(tq.getID(),tq.getVersion()).toString());
@@ -2582,9 +2583,9 @@ public class NavigatorServlet extends HttpServlet
 		String sXHTML=
 			"<div class='basicpage'>";
 
-		if(us.testDefinition.isSummaryAllowed())
+		if(us.getTestDefinition().isSummaryAllowed())
 		{
-			if(us.testDefinition.doesSummaryIncludeScores())
+			if(us.getTestDefinition().doesSummaryIncludeScores())
 			{
 				// Update score data, we'll need it later
 				us.getTestRealisation().getScore(rt, this, da, oq);
@@ -2600,12 +2601,12 @@ public class NavigatorServlet extends HttpServlet
 					sXHTML+=
 						"<p>You have already answered this question.</p>" +
 						"<table class='leftheaders'>";
-					if(us.testDefinition.doesSummaryIncludeQuestions()) sXHTML+=
+					if(us.getTestDefinition().doesSummaryIncludeQuestions()) sXHTML+=
 						"<tr><th scope='row'>Question</th><td>"+XHTML.escape(rs.getString(1),XHTML.ESCAPE_TEXT)+"</td></tr>" +
 						"<tr><th scope='row'>Your answer</th><td>"+XHTML.escape(rs.getString(2),XHTML.ESCAPE_TEXT)+"</td></tr>";
-					if(us.testDefinition.doesSummaryIncludeAttempts()) sXHTML+=
+					if(us.getTestDefinition().doesSummaryIncludeAttempts()) sXHTML+=
 						"<tr><th scope='row'>Result</th><td>"+XHTML.escape(getAttemptsString(rs.getInt(3)),XHTML.ESCAPE_TEXT)+"</td></tr>";
-					if(us.testDefinition.doesSummaryIncludeScores())
+					if(us.getTestDefinition().doesSummaryIncludeScores())
 					{
 						// Get score (scaled)
 						TestQuestion tq=(TestQuestion)us.getTestLeavesInOrder()[us.getTestPosition()];
@@ -2647,9 +2648,9 @@ public class NavigatorServlet extends HttpServlet
 				"<p>You have already answered this question.</p>";
 		}
 
-		if(us.testDefinition.isRedoQuestionAllowed() || us.bAdmin)
+		if(us.getTestDefinition().isRedoQuestionAllowed() || us.bAdmin)
 		{
-			if(!us.testDefinition.isRedoQuestionAllowed())
+			if(!us.getTestDefinition().isRedoQuestionAllowed())
 			{
 				sXHTML+="<div class='adminmsg'>You are only permitted to redo the " +
 					"question because you have admin privileges. Students will not see " +
@@ -2698,7 +2699,7 @@ public class NavigatorServlet extends HttpServlet
 
 		// If they can't navigate then this really is the end, mark it finished
 		// and we're gone. Also if we are currently actually posting.
-		if(!us.testDefinition.isNavigationAllowed() || bPost)
+		if(!us.getTestDefinition().isNavigationAllowed() || bPost)
 		{
 			// Set in database
 			DatabaseAccess.Transaction dat=da.newTransaction();
@@ -2718,7 +2719,7 @@ public class NavigatorServlet extends HttpServlet
 				String sEmail=IO.loadString(
 						new FileInputStream(getServletContext().getRealPath("WEB-INF/templates/submit.email.txt")));
 				Map<String,String> mReplace=new HashMap<String,String>();
-				mReplace.put("NAME", us.testDefinition.getName());
+				mReplace.put("NAME", us.getTestDefinition().getName());
 				mReplace.put("TIME",(new SimpleDateFormat("dd MMMM yyyy HH:mm")).format(new Date()));
 				sEmail=XML.replaceTokens(sEmail, "%%", mReplace);
 
@@ -2748,31 +2749,31 @@ public class NavigatorServlet extends HttpServlet
 			Document d=XML.parse(new File(getServletContext().getRealPath("WEB-INF/templates/endcheck.xhtml")));
 			Map<String,Object> mReplace=new HashMap<String,Object>();
 			mReplace.put("EXTRA",endOfURL(request));
-			mReplace.put("BUTTON",us.testDefinition.getConfirmButtonLabel());
-			mReplace.put("CONFIRMPARAS",us.testDefinition.getConfirmParagraphs());
+			mReplace.put("BUTTON",us.getTestDefinition().getConfirmButtonLabel());
+			mReplace.put("CONFIRMPARAS",us.getTestDefinition().getConfirmParagraphs());
 			if(bTimeOver)
 				XML.remove(XML.find(d,"id","return"));
 			else
 				XML.remove(XML.find(d,"id","timeover"));
 
 			XML.replaceTokens(d,mReplace);
-			if(us.testDefinition.isSummaryIncludedAtEndCheck())
+			if(us.getTestDefinition().isSummaryIncludedAtEndCheck())
 			{
 				Element eDiv=XML.find(d,"id","summarytable");
 //				XML.createText(eDiv,"h3","Your answers");
-				boolean bScores=us.testDefinition.doesSummaryIncludeScores();
+				boolean bScores=us.getTestDefinition().doesSummaryIncludeScores();
 				if(bScores)
 				{
 					// Build the scores list from database
 					us.getTestRealisation().getScore(rt, this, da, oq);
 				}
 				addSummaryTable(rt,us,eDiv,inPlainMode(request),
-					us.testDefinition.doesSummaryIncludeQuestions(),
-					us.testDefinition.doesSummaryIncludeAttempts(),
+					us.getTestDefinition().doesSummaryIncludeQuestions(),
+					us.getTestDefinition().doesSummaryIncludeAttempts(),
 					bScores);
 			}
 
-			serveTestContent(us,us.testDefinition.getConfirmTitle(),"",null,null,XML.saveString(d),false, request, response, true);
+			serveTestContent(us,us.getTestDefinition().getConfirmTitle(),"",null,null,XML.saveString(d),false, request, response, true);
 		}
 	}
 
@@ -3074,7 +3075,7 @@ public class NavigatorServlet extends HttpServlet
 			else
 			{
 				// Go onto next un-done question that's available
-				if(!findNextQuestion(rt,us,false,!us.testDefinition.isRedoQuestionAllowed(),!us.testDefinition.isRedoQuestionAllowed()))
+				if(!findNextQuestion(rt,us,false,!us.getTestDefinition().isRedoQuestionAllowed(),!us.getTestDefinition().isRedoQuestionAllowed()))
 				{
 					// No more? Jump to end
 					redirectToEnd(request,response);
@@ -3260,6 +3261,7 @@ public class NavigatorServlet extends HttpServlet
 		{
 			// Search for matching unfinished sessions for this OUCU
 			String sOUCU=us.sOUCU;
+			l.logDebug("Looking for a lost session for user " + sOUCU + " on test " + sTestID);
 			ResultSet rs=oq.queryUnfinishedSessions(dat,sOUCU,sTestID);
 			int iDBti=-1;
 			long lRandomSeed=0;
@@ -3285,7 +3287,8 @@ public class NavigatorServlet extends HttpServlet
 			storeSessionInfo(request,dat,iDBti);
 
 			// Set up basic data
-			initTestSession(us,rt,sTestID,request, response, bFinished, true, lRandomSeed, iTestVariant, iDBti);
+			us.setDbTi(iDBti);
+			initTestSession(us,rt,sTestID,request, response, bFinished, true, lRandomSeed, iTestVariant);
 			us.setTestPosition(iPosition);
 			us.navigatorVersion = navigatorversion;
 
@@ -3804,10 +3807,10 @@ public class NavigatorServlet extends HttpServlet
 			? ( bPlain ? singlesPlainTemplate : singlesTemplate )
 			: ( bPlain ? plainTemplate : template) );
 		Map<String,Object> mReplace=new HashMap<String,Object>();
-		if(us.isSingle() || sTitle.equals(us.testDefinition.getName()))
+		if(us.isSingle() || sTitle.equals(us.getTestDefinition().getName()))
 			mReplace.put("TITLEBAR",sTitle);
 		else
-			mReplace.put("TITLEBAR",us.testDefinition.getName()+" - "+sTitle);
+			mReplace.put("TITLEBAR",us.getTestDefinition().getName()+" - "+sTitle);
 		mReplace.put("RESOURCES","resources/"+us.getTestPosition());
 		if(!bPlain)
 		{
@@ -3836,7 +3839,7 @@ public class NavigatorServlet extends HttpServlet
 					XML.find(d,"title","%%TOOLTIP%%").removeAttribute("title");
 			}
 
-			mReplace.put("TESTTITLE",us.testDefinition.getName());
+			mReplace.put("TESTTITLE",us.getTestDefinition().getName());
 			mReplace.put("TITLE",sTitle);
 			mReplace.put("AUXTITLE",sAuxTitle);
 			if( (sProgressInfo==null || sProgressInfo.equals("") ))
@@ -3883,7 +3886,7 @@ public class NavigatorServlet extends HttpServlet
 			{
 				eProgress=XML.find(d,"id","progressPlain");
 			}
-			else if(us.testDefinition.getNavLocation()==TestDefinition.NAVLOCATION_LEFT)
+			else if(us.getTestDefinition().getNavLocation()==TestDefinition.NAVLOCATION_LEFT)
 			{
 				XML.remove(XML.find(d,"id","progressBottom"));
 				eProgress=XML.find(d,"id","progressLeft");
@@ -3895,7 +3898,7 @@ public class NavigatorServlet extends HttpServlet
 				XML.remove(XML.find(d,"id","progressLeft"));
 				eProgress=XML.find(d,"id","progressBottom");
 				eProgress.setAttribute("id","progress");
-				if (us.testDefinition.getNavLocation()==TestDefinition.NAVLOCATION_WIDE) {
+				if (us.getTestDefinition().getNavLocation()==TestDefinition.NAVLOCATION_WIDE) {
 					addAccessibilityClasses(d,request,"progresswide");
 				} else {
 					addAccessibilityClasses(d,request,"progressbottom");
@@ -3922,7 +3925,7 @@ public class NavigatorServlet extends HttpServlet
 				Element eNumbers=XML.createChild(eProgress,bPlain ? "ul" : "div");
 				if(!bPlain) eNumbers.setAttribute("class","numbers");
 
-				boolean bAllowNavigation=us.bAdmin || us.testDefinition.isNavigationAllowed();
+				boolean bAllowNavigation=us.bAdmin || us.getTestDefinition().isNavigationAllowed();
 
 				boolean bFirstInSection=true;
 				for(int i=0;i<us.getTestLeavesInOrder().length;i++)
@@ -3975,7 +3978,7 @@ public class NavigatorServlet extends HttpServlet
 						bDone=tl.isDone(),
 						bAvailable=tl.isAvailable();
 					if(!bDone)bAllDone=false;
-					boolean bLink=(!bCurrent || us.testDefinition.isRedoQuestionAllowed())
+					boolean bLink=(!bCurrent || us.getTestDefinition().isRedoQuestionAllowed())
 						&& bAllowNavigation && bAvailable;
 
 					// Make child directly in progress or in current section if there is one
@@ -4018,8 +4021,8 @@ public class NavigatorServlet extends HttpServlet
 				}
 
 				// Do the summary
-				boolean bStopButton=(us.testDefinition.isStopAllowed() || bAllDone);
-				if(us.testDefinition.isSummaryAllowed())
+				boolean bStopButton=(us.getTestDefinition().isStopAllowed() || bAllDone);
+				if(us.getTestDefinition().isSummaryAllowed())
 				{
 					Element eSummary=XML.createChild(eButtons,"div");
 					if(!bPlain) eSummary.setAttribute("class","button");
@@ -4070,11 +4073,11 @@ public class NavigatorServlet extends HttpServlet
 	{
 		// Check labelset ID
 		String sKey;
-		if(us.testDefinition==null || us.testDefinition.getLabelSet()==null ||
-				us.testDefinition.getLabelSet().equals(""))
+		if(us.getTestDefinition()==null || us.getTestDefinition().getLabelSet()==null ||
+				us.getTestDefinition().getLabelSet().equals(""))
 			sKey="!default";
 		else
-			sKey=us.testDefinition.getLabelSet();
+			sKey=us.getTestDefinition().getLabelSet();
 
 		// Get from cache
 		Map<String,String> mLabels=labelReplace.get(sKey);
@@ -4135,7 +4138,7 @@ public class NavigatorServlet extends HttpServlet
 			// let's forget the position too. Conditions:
 			// * Error is caused by a bug, not permission failure etc
 			// * The test allows navigation (otherwise we shouldn't change their position)
-			if(isBug && us.getDbTi()>0 && us.testDefinition!=null && us.testDefinition.isNavigationAllowed() &&
+			if(isBug && us.getDbTi()>0 && us.getTestDefinition()!=null && us.getTestDefinition().isNavigationAllowed() &&
 				((System.currentTimeMillis() - us.lSessionStart) < 5000))
 			{
 				DatabaseAccess.Transaction dat=null;
@@ -4501,6 +4504,15 @@ public class NavigatorServlet extends HttpServlet
 		return reports;
 	}
 
+	/**
+	 * @param testId a test id.
+	 * @return the path to its deploy file.
+	 */
+	public File pathForTestDeployment(String testId)
+	{
+		return resolveRelativePath("testbank/" + testId + ".deploy.xml");
+	}
+	
 	/**
 	 * @param relativePath a path relative to servlet folder.
 	 * @return the corresponding canonical path.

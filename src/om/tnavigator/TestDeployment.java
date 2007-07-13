@@ -65,7 +65,7 @@ public class TestDeployment
 	 * @throws OmException Failure loading file or parsing XML
 	 * @throws OmFormatException Anything wrong with the specific format
 	 */
-	TestDeployment(File f) throws OmException 
+	public TestDeployment(File f) throws OmException 
 	{		
 		String sErrorIdentifier=f.getName();
 		
@@ -545,7 +545,7 @@ public class TestDeployment
 	 * @return the definition of the test this deployment file points to.
 	 * @throws OmException
 	 */
-	TestDefinition getTestDefinition() throws OmException
+	public TestDefinition getTestDefinition() throws OmException
 	{
 		File fDefinition=new File(testBank, getDefinition()+".test.xml");
 		return new TestDefinition(fDefinition);

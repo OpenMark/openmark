@@ -27,21 +27,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import om.OmException;
 import om.OmUnexpectedException;
-import om.tnavigator.NavigatorServlet;
 
 /**
  * Base class for reports that are basically a table of data
  */
-public abstract class TabularReportBase implements OmReport {
-	NavigatorServlet ns;
-	
-	/**
-	 * @param ns 
-	 */
-	public TabularReportBase(NavigatorServlet ns) {
-		this.ns = ns;
-	}
-	
+public abstract class TabularReportBase {
 	private static enum Format {
 		/** HTML output class */
 		html(HtmlReportWriter.class, "HTML"),
@@ -131,10 +121,13 @@ public abstract class TabularReportBase implements OmReport {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see om.tnavigator.reports.OmReport#handle(om.tnavigator.NavigatorServlet, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	/**
+	 * Produce the report.
+	 * @param request
+	 * @param response
+	 * @throws OmException
 	 */
-	public void handleReport(String suffix, HttpServletRequest request, 
+	public void handleReport(HttpServletRequest request, 
 			HttpServletResponse response) throws OmException {
 		List<ColumnDefinition> columns = init(request);
 		TabularReportWriter reportWriter = setupWriter(request, response, columns);
