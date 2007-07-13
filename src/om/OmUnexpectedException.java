@@ -37,4 +37,13 @@ public class OmUnexpectedException extends RuntimeException
 	{
 		super("An unexpected error occurred: "+s);
 	}
+	
+	/**
+	 * @param s Description of error
+	 * @param t Exception that wasn't expected to happen
+	 */
+	public OmUnexpectedException(String s, Throwable t)
+	{
+		super("An unexpected error occurred: "+s,t);
+	}
 }
