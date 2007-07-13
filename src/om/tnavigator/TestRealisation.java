@@ -64,6 +64,7 @@ public class TestRealisation {
 		this.randomSeed = randomSeed;
 		this.fixedVariant = fixedVariant;
 		this.testId = testId;
+		this.dbTi = dbTi;
 	}
 
 	/**

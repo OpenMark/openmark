@@ -109,6 +109,9 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 							continue;
 						}
 
+						ns.getLog().logDebug("Adding results for " + pi +
+								" to the moodle report. (ti = " + ti + ")");
+
 						// Create TestRealisation
 						TestRealisation testRealisation = TestRealisation.realiseTest(
 								def, randomSeed, fixedVariant, testId, ti
