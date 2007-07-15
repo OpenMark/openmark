@@ -318,7 +318,7 @@
 	<target name="all-nolibs" depends="qengine-nolibs,tnavigator-nolibs,devserver" 
 		description="Build question engine, test navigator, and devserver webapps without external libraries"/>
 	
-    <target name="bundlesource"
+    <target name="bundle-source"
         description="Bundle the source for upload to the project site.">
         <zip destfile="${build}/openmark_${buildversion}_src.zip">
             <fileset dir=".">
