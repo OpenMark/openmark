@@ -17,14 +17,16 @@
  */
 package om.qengine;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
 import om.OmVersion;
-import util.misc.*;
+import util.misc.IO;
+import util.misc.NameValuePairs;
 
 /** Servlet just to provide the automated check page */
 public class CheckServlet extends HttpServlet

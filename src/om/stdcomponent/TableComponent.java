@@ -18,12 +18,15 @@
 package om.stdcomponent;
 
 import java.awt.Color;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 import om.*;
-import om.stdquestion.*;
+import om.stdquestion.QComponent;
+import om.stdquestion.QContent;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import util.xml.XML;
 

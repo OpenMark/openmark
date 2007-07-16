@@ -20,18 +20,23 @@ package om.tnavigator;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import om.*;
+import om.OmUnexpectedException;
+import om.OmVersion;
 import om.tnavigator.db.DatabaseAccess;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-import util.misc.*;
-import util.xml.*;
+import util.misc.IO;
+import util.misc.Strings;
+import util.xml.XHTML;
+import util.xml.XML;
 
 class StatusPages
 {

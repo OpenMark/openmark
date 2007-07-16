@@ -17,12 +17,15 @@
  */
 package om.helper;
 
-import om.*;
+import om.OmDeveloperException;
+import om.OmException;
 import om.question.*;
 import om.stdcomponent.BoxComponent;
-import om.stdquestion.*;
+import om.stdquestion.QComponent;
+import om.stdquestion.StandardQuestion;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import util.xml.XML;
 

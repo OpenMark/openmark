@@ -19,12 +19,13 @@ package om.stdcomponent;
 
 import java.io.IOException;
 
+import om.OmDeveloperException;
+import om.OmException;
+import om.stdquestion.QComponent;
+import om.stdquestion.QContent;
+
 import org.w3c.dom.Element;
 
-import om.*;
-import om.OmDeveloperException;
-import om.stdquestion.*;
-import om.stdquestion.QComponent;
 import util.xml.XML;
 
 /** 

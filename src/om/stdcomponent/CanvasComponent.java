@@ -19,21 +19,24 @@ package om.stdcomponent;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import om.*;
-import om.graph.*;
+import om.graph.GraphFormatException;
+import om.graph.World;
 import om.question.ActionParams;
 import om.stdquestion.*;
 
 import org.w3c.dom.Element;
 
 import util.misc.IO;
-import util.xml.*;
+import util.xml.XML;
+import util.xml.XMLException;
 
 /** 
 Represents a Java BufferedImage so that you can draw graphics from Java code.

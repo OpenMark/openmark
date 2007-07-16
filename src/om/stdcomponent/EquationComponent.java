@@ -17,11 +17,10 @@
  */
 package om.stdcomponent;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.Dimension;
-import java.awt.Color;
-import java.awt.Point;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 import om.*;
 import om.equation.Equation;

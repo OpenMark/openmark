@@ -17,9 +17,11 @@
  */
 package om.tnavigator.db.sqlserver;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import om.tnavigator.db.*;
+import om.tnavigator.db.DatabaseAccess;
+import om.tnavigator.db.OmQueries;
 import om.tnavigator.db.DatabaseAccess.Transaction;
 import util.misc.Strings;
 

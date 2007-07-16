@@ -17,14 +17,16 @@
  */
 package om.tnavigator;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 import om.OmFormatException;
 import om.tnavigator.scores.CombinedScore;
 
 import org.w3c.dom.Element;
 
-import util.xml.*;
+import util.xml.XML;
+import util.xml.XMLException;
 
 
 /** Represents a question */

@@ -17,7 +17,8 @@
  */
 package om.graph;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 
 /** Draws f(x) functions in the graph space */
 public class ColourFieldItem extends GraphItem

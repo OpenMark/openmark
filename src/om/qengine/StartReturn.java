@@ -20,7 +20,8 @@ package om.qengine;
 import java.io.IOException;
 
 import om.OmUnexpectedException;
-import om.question.*;
+import om.question.Rendering;
+import om.question.Resource;
 import util.xml.XHTML;
 
 

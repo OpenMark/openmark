@@ -19,7 +19,8 @@ package util.misc;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.IOException;
+import java.io.InterruptedIOException;
 
 import javax.swing.JLabel;
 

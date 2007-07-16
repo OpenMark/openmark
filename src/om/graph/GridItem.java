@@ -18,7 +18,7 @@
 package om.graph;
 
 import java.awt.*;
-import java.awt.geom.*;
+import java.awt.geom.Line2D;
 
 /** Draws a grid. */
 public class GridItem extends GraphItem

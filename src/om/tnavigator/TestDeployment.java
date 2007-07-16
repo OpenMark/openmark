@@ -17,16 +17,22 @@
  */
 package om.tnavigator;
 
-import java.io.*;
-import java.text.*;
-import java.util.*;
-import java.util.regex.*;
-
-import org.w3c.dom.*;
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import om.*;
 import om.tnavigator.auth.UserDetails;
-import util.xml.*;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import util.xml.XML;
+import util.xml.XMLException;
 
 /** Represents information from the .deploy.xml file */
 public class TestDeployment

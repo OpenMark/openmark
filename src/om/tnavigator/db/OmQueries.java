@@ -18,9 +18,11 @@
 package om.tnavigator.db;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import util.misc.*;
+import util.misc.IO;
+import util.misc.Strings;
 
 /** 
  * Used to obtain a version of the SQL queries used in Om for a given database.

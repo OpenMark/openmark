@@ -17,14 +17,17 @@
  */
 package om.tnavigator;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
-import om.*;
+import om.OmException;
+import om.OmFormatException;
 
 import org.w3c.dom.*;
 
-import util.xml.*;
+import util.xml.XML;
+import util.xml.XMLException;
 
 /** Represents the test definition XML file */
 public class TestDefinition

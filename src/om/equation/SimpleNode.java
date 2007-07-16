@@ -17,12 +17,12 @@
  */
 package om.equation;
 import java.util.*;
-import java.util.HashSet;
+
+import om.equation.generated.*;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import om.equation.generated.*;
 import util.xml.XML;
 
 /**

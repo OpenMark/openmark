@@ -18,13 +18,15 @@
 package om.stdquestion;
 
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
-import om.*;
+import om.OmDeveloperException;
+import om.OmUnexpectedException;
 import om.question.Resource;
 
 import org.w3c.dom.*;

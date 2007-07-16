@@ -20,7 +20,8 @@ package om.loadtest;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import util.misc.IO;
 import util.xml.XML;

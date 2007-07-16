@@ -22,7 +22,8 @@ import java.net.URL;
 import java.util.*;
 
 import om.axis.qengine.OmServiceServiceLocator;
-import util.misc.*;
+import util.misc.NameValuePairs;
+import util.misc.Strings;
 
 /**
  * Class for load-testing a question engine.

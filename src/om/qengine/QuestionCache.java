@@ -22,13 +22,15 @@ import java.net.URL;
 import java.util.*;
 import java.util.jar.JarFile;
 
-import om.*;
+import om.OmDeveloperException;
+import om.OmException;
 import om.question.Question;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-import util.misc.*;
 import util.misc.ClosableClassLoader;
+import util.misc.IO;
 import util.xml.XML;
 
 /** 

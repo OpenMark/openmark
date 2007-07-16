@@ -18,8 +18,10 @@
 package om.loadtest;
 
 import java.io.*;
-import java.util.*;
-import java.util.regex.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** 
  * Represents a test script created by saving from the Firefox 

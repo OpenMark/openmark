@@ -17,8 +17,10 @@
  */
 package om.stdcomponent;
 
-import om.*;
-import om.stdquestion.*;
+import om.OmDeveloperException;
+import om.OmException;
+import om.stdquestion.QComponent;
+import om.stdquestion.QContent;
 
 import org.w3c.dom.Element;
 

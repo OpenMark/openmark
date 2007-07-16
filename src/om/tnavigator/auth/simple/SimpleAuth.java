@@ -19,20 +19,27 @@ package om.tnavigator.auth.simple;
 
 import java.io.*;
 import java.net.URLEncoder;
-import java.security.*;
-import java.sql.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.*;
 
-import org.w3c.dom.*;
-
-import om.tnavigator.*;
+import om.tnavigator.Mail;
+import om.tnavigator.NavigatorServlet;
 import om.tnavigator.auth.*;
 import om.tnavigator.db.DatabaseAccess;
-import util.misc.*;
-import util.xml.*;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import util.misc.IO;
+import util.misc.Strings;
+import util.xml.XHTML;
+import util.xml.XML;
 
 /** 
  * Simple implementation of authentication that just uses extra database tables.

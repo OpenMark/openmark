@@ -19,7 +19,8 @@ package util.misc;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /** 
  * Obtains information about fonts that is more accurate then the built-in

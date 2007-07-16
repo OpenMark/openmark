@@ -17,9 +17,9 @@
  */
 package om.graph;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.*;
-import java.awt.geom.Ellipse2D;
 
 /** Draws simple ellipses in the graph space. */
 public class EllipseItem extends GraphItem

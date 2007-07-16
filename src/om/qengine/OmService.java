@@ -18,15 +18,17 @@
 package om.qengine;
 
 import java.awt.GraphicsEnvironment;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.*;
 import java.util.*;
 
-import javax.servlet.*;
+import javax.servlet.ServletContext;
 import javax.xml.rpc.ServiceException;
-import javax.xml.rpc.server.*;
+import javax.xml.rpc.server.ServiceLifecycle;
+import javax.xml.rpc.server.ServletEndpointContext;
 
-import om.*;
+import om.OmException;
 import om.question.*;
 
 import org.w3c.dom.Document;

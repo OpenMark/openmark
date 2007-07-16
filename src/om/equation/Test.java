@@ -19,7 +19,8 @@ package om.equation;
 
 import java.awt.*;
 import java.awt.font.GlyphVector;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.io.StringReader;
 
@@ -27,7 +28,8 @@ import javax.swing.*;
 
 import om.equation.generated.EquationFormat;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import util.misc.Fonts;
 import util.xml.XML;

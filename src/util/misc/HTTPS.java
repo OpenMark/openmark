@@ -18,7 +18,8 @@
 package util.misc;
 
 import java.net.URLConnection;
-import java.security.cert.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import javax.net.ssl.*;
 

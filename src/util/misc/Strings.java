@@ -17,7 +17,8 @@
  */
 package util.misc;
 
-import java.text.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 
 /** Utilities related to strings and string formatting */

@@ -17,9 +17,9 @@
  */
 package om.question;
 
-import org.w3c.dom.Document;
-
 import om.OmException;
+
+import org.w3c.dom.Document;
 
 /** Basic low-level interface that all questions must implement. */
 public interface Question

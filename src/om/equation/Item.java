@@ -18,7 +18,6 @@
 package om.equation;
 
 import java.awt.*;
-import java.awt.Font;
 import java.awt.image.BufferedImage;
 
 import om.OmUnexpectedException;

@@ -19,12 +19,14 @@ package om.tnavigator;
 
 import java.util.*;
 
-import om.*;
+import om.OmFormatException;
+import om.OmUnexpectedException;
 import om.tnavigator.scores.CombinedScore;
 
 import org.w3c.dom.Element;
 
-import util.xml.*;
+import util.xml.XML;
+import util.xml.XMLException;
 
 /** Represents a group of test items in the tree */
 class TestGroup extends TestMarkedItem

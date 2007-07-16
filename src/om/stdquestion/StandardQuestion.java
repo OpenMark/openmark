@@ -25,10 +25,12 @@ import om.*;
 import om.question.*;
 import om.stdcomponent.*;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import util.misc.IO;
-import util.xml.*;
+import util.xml.XML;
+import util.xml.XMLException;
 
 /** 
  * Standard Om question with question components defined in initial XML. 

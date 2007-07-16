@@ -17,7 +17,8 @@
  */
 package om.equation;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.font.LineMetrics;
 
 import om.OmUnexpectedException;

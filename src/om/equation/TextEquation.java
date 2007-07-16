@@ -17,17 +17,19 @@
  */
 package om.equation;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.StringReader;
 
 import javax.xml.transform.Transformer;
 
 import om.OmUnexpectedException;
-import om.equation.generated.*;
+import om.equation.generated.EquationFormat;
+import om.equation.generated.ParseException;
 
 import org.w3c.dom.*;
-import org.w3c.dom.Node;
 
-import util.xml.*;
+import util.xml.XML;
+import util.xml.XSL;
 
 /** Interprets simple equations into XHTML */
 public class TextEquation

@@ -25,14 +25,17 @@ import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
-import om.*;
+import om.OmException;
+import om.OmVersion;
 import om.question.*;
 import om.stdquestion.StandardQuestion;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import util.misc.*;
-import util.xml.*;
+import util.xml.XHTML;
+import util.xml.XML;
 
 /** 
  * Servlet used to build and test questions on a developer machine. Not suitable 

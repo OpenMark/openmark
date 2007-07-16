@@ -23,7 +23,7 @@ import om.*;
 import om.question.ActionParams;
 import om.stdquestion.*;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
 
 import util.xml.XML;
 

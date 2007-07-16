@@ -18,7 +18,8 @@
 package om.graph;
 
 import java.awt.*;
-import java.awt.geom.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 
 /** Draws straight lines in the graph space. */
 public class LineItem extends GraphItem

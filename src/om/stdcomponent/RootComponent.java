@@ -19,12 +19,16 @@ package om.stdcomponent;
 
 import java.util.*;
 
-import om.*;
-import om.stdquestion.*;
+import om.OmException;
+import om.OmFormatException;
+import om.stdquestion.QComponent;
+import om.stdquestion.QContent;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-import util.xml.*;
+import util.xml.XML;
+import util.xml.XMLException;
 
 /** 
  * Represents the document root. 

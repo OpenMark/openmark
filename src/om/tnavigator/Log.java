@@ -20,11 +20,14 @@ package om.tnavigator;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-import util.misc.*;
+import util.misc.Exceptions;
+import util.misc.IO;
 import util.xml.XML;
 
 /**

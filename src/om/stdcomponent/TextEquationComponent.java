@@ -19,7 +19,8 @@ package om.stdcomponent;
 
 import om.*;
 import om.equation.TextEquation;
-import om.stdquestion.*;
+import om.stdquestion.QComponent;
+import om.stdquestion.QContent;
 
 import org.w3c.dom.*;
 

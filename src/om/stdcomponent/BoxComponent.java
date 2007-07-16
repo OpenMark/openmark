@@ -20,8 +20,8 @@ package om.stdcomponent;
 import java.awt.Color;
 
 import om.*;
-import om.stdquestion.*;
 import om.stdquestion.QComponent;
+import om.stdquestion.QContent;
 
 import org.w3c.dom.Element;
 

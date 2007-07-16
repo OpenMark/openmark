@@ -24,7 +24,7 @@ import om.OmFormatException;
 
 import org.w3c.dom.Element;
 
-import util.xml.*;
+import util.xml.XML;
 
 /**
  * A mapping of scores to scores. The output scores on each axis is computed by

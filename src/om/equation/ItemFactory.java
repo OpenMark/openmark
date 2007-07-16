@@ -17,8 +17,8 @@
  */
 package om.equation;
 
-import java.util.*;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 

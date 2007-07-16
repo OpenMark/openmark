@@ -18,7 +18,8 @@
 package om.tnavigator;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /** 
  * Allows classes to be notified when the webapp is shut down so that they can

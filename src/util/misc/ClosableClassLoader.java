@@ -19,7 +19,8 @@ package util.misc;
 
 import java.io.*;
 import java.net.URL;
-import java.util.jar.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /** 
  * Classloader for jar files that doesn't leave them open infinitely if you

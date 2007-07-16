@@ -20,10 +20,12 @@ package om.equation;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.StringReader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import om.OmUnexpectedException;
-import om.equation.generated.*;
+import om.equation.generated.EquationFormat;
+import om.equation.generated.ParseException;
 
 import org.w3c.dom.Element;
 

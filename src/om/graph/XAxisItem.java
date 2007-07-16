@@ -18,7 +18,8 @@
 package om.graph;
 
 import java.awt.Graphics2D;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 
 import util.misc.Fonts;
 

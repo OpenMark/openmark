@@ -21,7 +21,7 @@ import om.*;
 import om.question.ActionParams;
 import om.stdquestion.*;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
 
 /** 
 A standard XHTML button. 

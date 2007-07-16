@@ -17,7 +17,8 @@
  */
 package util.misc;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /** Represents named parameters that can be turned into two arrays */ 
 public class NameValuePairs

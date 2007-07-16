@@ -17,7 +17,8 @@
  */
 package om.tnavigator.db.postgres;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.db.DatabaseAccess.Transaction;

@@ -17,7 +17,8 @@
  */
 package om.equation;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 
 /** Arranges two child Items one above the other with a line between, centred */
 public class Fraction extends Item

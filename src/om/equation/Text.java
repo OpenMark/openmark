@@ -18,9 +18,10 @@
 package om.equation;
 
 import java.awt.*;
-import java.awt.font.*;
+import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.w3c.dom.Element;
 

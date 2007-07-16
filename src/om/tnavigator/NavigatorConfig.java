@@ -17,13 +17,15 @@
  */
 package om.tnavigator;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.*;
 import java.util.*;
 
 import om.tnavigator.db.OmQueries;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import util.xml.XML;
 

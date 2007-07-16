@@ -18,16 +18,19 @@
 package om.devservlet;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import om.*;
-import om.question.*;
+import om.question.Question;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import util.misc.ClosableClassLoader;
-import util.xml.*;
+import util.xml.XHTML;
+import util.xml.XML;
 
 /** 
  * Represents the information from a question definition file, and actions on 

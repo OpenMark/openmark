@@ -18,7 +18,8 @@
 package util.misc;
 
 import java.io.*;
-import java.net.*;
+import java.net.URL;
+import java.net.URLConnection;
 
 /** I/O related utility methods */
 public abstract class IO

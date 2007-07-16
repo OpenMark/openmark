@@ -20,7 +20,8 @@ package om.tnavigator.auth;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 /** Interface to handle authentication */

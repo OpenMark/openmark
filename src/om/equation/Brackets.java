@@ -17,7 +17,8 @@
  */
 package om.equation;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
 
 import org.w3c.dom.Element;

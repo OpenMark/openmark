@@ -22,10 +22,11 @@ import java.io.IOException;
 
 import om.OmUnexpectedException;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-import util.xml.*;
 import util.xml.XML;
+import util.xml.XMLException;
 
 
 /** Represents a text page */

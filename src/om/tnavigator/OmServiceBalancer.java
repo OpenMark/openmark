@@ -22,11 +22,13 @@ import java.rmi.RemoteException;
 
 import javax.xml.rpc.ServiceException;
 
+import om.axis.qengine.OmService;
+import om.axis.qengine.OmServiceServiceLocator;
+import om.tnavigator.NavigatorServlet.RequestTimings;
+
 import org.apache.axis.client.Stub;
 import org.w3c.dom.Element;
 
-import om.axis.qengine.*;
-import om.tnavigator.NavigatorServlet.RequestTimings;
 import util.misc.Strings;
 import util.xml.XML;
 
