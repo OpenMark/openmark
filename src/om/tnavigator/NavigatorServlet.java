@@ -315,20 +315,6 @@ public class NavigatorServlet extends HttpServlet
 		handle(true,request,response);
 	}
 
-	/** @return A random alphanumeric character */
-	private char randomAlNum()
-	{
-		int i=(int)(Math.random()*62);
-
-		if(i<26)
-			return (char)(i+'A');
-		i-=26;
-		if(i<26)
-			return (char)(i+'a');
-		i-=26;
-			return (char)(i+'0');
-	}
-
 	/**
 	 * Initialises the basic information in a UserSession that relates to a
 	 * particular test. Before calling this, you must initialise the random
@@ -730,8 +716,7 @@ public class NavigatorServlet extends HttpServlet
 					do
 					{
 						// Make 7-letter random cookie
-						sCookie="";
-						for(int i=0;i<7;i++) sCookie+=randomAlNum();
+						sCookie = Strings.randomAlNumString(7);
 					}
 					while(sessions.containsKey(sCookie)); // And what are the chances of that?
 
@@ -866,8 +851,7 @@ public class NavigatorServlet extends HttpServlet
 							// Make 8-letter random OUCU. We don't bother storing a list,
 							// but there are about 3,000 billion possibilities so it should
 							// be OK.
-							us.sOUCU = "_";
-							for(int i = 0; i < 7; i++) us.sOUCU += randomAlNum();
+							us.sOUCU = "_" + Strings.randomAlNumString(7);
 
 							// Set it in cookie for future sessions
 							Cookie c = new Cookie(FAKEOUCUCOOKIENAME,us.sOUCU);
