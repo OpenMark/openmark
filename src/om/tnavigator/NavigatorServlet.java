@@ -2091,7 +2091,6 @@ public class NavigatorServlet extends HttpServlet
 	 * @param rt
 	 * @param sID
 	 * @param sVersion
-	 * @param ns 
 	 * @return something to do with scores.
 	 * @throws IOException
 	 * @throws RemoteException

@@ -31,7 +31,6 @@ public interface OmTestReport {
 	/**
 	 * Generate the report, sending it to <code>response</code>. 
 	 * 
-	 * @param tn The test navigator servlet that we got this request from.
 	 * @param us The user's session on this test.
 	 * @param sSuffix The remainder of the URL.
 	 * @param request The request being responded to. It is recommended that you only use

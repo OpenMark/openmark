@@ -141,7 +141,6 @@ public abstract class TabularReportBase {
 	/**
 	 * Initialise this instance of this report. Including checking access, and initialising
 	 * <code>columns</code>.
-	 * @param tn The test navigator servlet that we got this request from.
 	 * @param request The request being responded to. It is recommended that you only use
 	 * 	the values obtainable from getParameterMap. The URL will have been consumed in getting this
 	 *  far. Autentication and cookies should be checked using methods of NavigatorServlet. 

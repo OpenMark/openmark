@@ -28,7 +28,6 @@ public interface OmReport {
 	/**
 	 * Generate the report, sending it to <code>response</code>. 
 	 * @param suffix the remainder of the URL.
-	 * @param tn The test navigator servlet that we got this request from.
 	 * @param request The request being responded to.
 	 * @param response The response we are sending.
 	 * @throws Exception 

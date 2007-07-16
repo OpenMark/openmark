@@ -336,7 +336,6 @@ public class UserSession
 	 * @param finished whether the student had finished their attempt.
 	 * @param randomSeed the random seed to use for this attempt.
 	 * @param fixedVariant the fixed variant to use, or -1 for none.
-	 * @param dbTi the ti of the row in the tests table corresponding to this attempt. 0 if not known yet.
 	 * @throws OmException 
 	 */
 	public void realiseTest(String testID, boolean finished, long randomSeed, int fixedVariant) throws OmException {

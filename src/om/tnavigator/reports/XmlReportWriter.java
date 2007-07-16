@@ -32,7 +32,6 @@ public class XmlReportWriter extends TabularReportWriter {
 	/**
 	 * Create an instance of this writer for writing the given report to the given HTTP Servlet
 	 * @param report the report we will be responsible for outputting.
-	 * @param pw the print writer we will be writing to.
 	 * @param columns a list of column definitions.
 	 */
 	public XmlReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns) {
