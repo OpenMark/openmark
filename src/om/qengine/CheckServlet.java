@@ -35,17 +35,17 @@ public class CheckServlet extends HttpServlet
 	private final static int FREEMEMORYREQ=3*MB;
 
 	@Override
-	protected void doGet(HttpServletRequest request,HttpServletResponse response) 
+	protected void doGet(HttpServletRequest request,HttpServletResponse response)
 		throws ServletException,IOException
 	{
 		response.setContentType("text/plain");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter pw=response.getWriter();
-		
+
 		try
 		{
 			String sInfo="";
-			
+
 			// 1. Check free memory
 			Runtime r=Runtime.getRuntime();
 			if(r.freeMemory() < FREEMEMORYREQ)
@@ -59,10 +59,10 @@ public class CheckServlet extends HttpServlet
 						throw new Exception("QEFAIL1. Memory low ("+
 							((r.totalMemory()-r.freeMemory())/MB)+"MB used; "+(r.freeMemory()/MB)+"MB free)");
 					}
-				}				
+				}
 			}
 			sInfo+="Memory used "+((r.totalMemory()-r.freeMemory())/MB)+"MB; free "+(r.freeMemory()/MB)+"MB. ";
-			
+
 			// 2. Check QE service exists, create if needed
 			OmService os=OmService.getStatic();
 			if(os==null)
@@ -77,13 +77,13 @@ public class CheckServlet extends HttpServlet
 				}
 				catch(Throwable t)
 				{
-					throw new Exception("QEFAIL2. Attempt to request initial service failed ("+t.getMessage()+")"); 
+					throw new Exception("QEFAIL2. Attempt to request initial service failed ("+t.getMessage()+")");
 				}
 				os=OmService.getStatic();
 				if(os==null)
-					throw new Exception("QEFAIL3. Attempt to request initial service gave no error, but failed nonetheless."); 
+					throw new Exception("QEFAIL3. Attempt to request initial service gave no error, but failed nonetheless.");
 			}
-			
+
 			// 3. Try to run a 'question session'
 			try
 			{
@@ -94,19 +94,19 @@ public class CheckServlet extends HttpServlet
 				os.process(sr.getQuestionSession(),null,null);
 				os.stop(sr.getQuestionSession());
 				long lTime=System.currentTimeMillis()-lStart;
-				sInfo+="Start/process time: "+lTime+"ms. ";				
+				sInfo+="Start/process time: "+lTime+"ms. ";
 			}
 			catch(Throwable t)
 			{
-				throw new Exception("QEFAIL4. Attempt to run test question session failed ("+t.getMessage()+")"); 
+				throw new Exception("QEFAIL4. Attempt to run test question session failed ("+t.getMessage()+")");
 			}
-			
+
 			// Add version
 			sInfo+=OmVersion.getVersion()+" ("+OmVersion.getBuildDate()+").";
-			
+
 			// OK then, set status to OK (default, but anyway)
 			response.setStatus(HttpServletResponse.SC_OK);
-			pw.println("OK. "+sInfo);						
+			pw.println("OK. "+sInfo);
 		}
 		catch(Throwable t)
 		{
@@ -117,7 +117,7 @@ public class CheckServlet extends HttpServlet
 		{
 			pw.close();
 		}
-		
+
 	}
 
 }

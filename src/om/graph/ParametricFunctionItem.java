@@ -30,41 +30,41 @@ public class ParametricFunctionItem extends GraphItem
 	public ParametricFunctionItem(World w) throws GraphFormatException
 	{
 		super(w);
-		gr=new GraphRange(0,1);		
+		gr=new GraphRange(0,1);
 	}
 
 	/** Range of t within which to calculate function */
 	private GraphRange gr=null;
-	
+
 	/** How many steps to calculate */
 	private int iSteps=100;
-	
+
 	/** Actual function */
 	private Function f=null;
-	
+
 	/** Line thickness */
 	private double dLineWidth=1.0;
-	
+
 	/** Colour of line */
-	private Color cLine=null;	
-	
+	private Color cLine=null;
+
 	/** Interface callers must provide */
 	public static interface Function
 	{
 		/**
-		 * Evaluates function. This will be called once per t value step 
+		 * Evaluates function. This will be called once per t value step
 		 * @param t Value of t
 		 * @return X and Y as a GraphPoint (world co-ordinates)
 		 */
 		public GraphPoint f(double t);
 	}
-	
+
 	@Override
 	public void init() throws GraphFormatException
 	{
 		if(cLine==null) cLine=getWorld().convertColour("fg");
 	}
-	
+
 	/**
 	 * Set the actual function implementation.
 	 * @param f Function implementor
@@ -73,32 +73,32 @@ public class ParametricFunctionItem extends GraphItem
 	{
 		this.f=f;
 	}
-	
+
 	@Override
 	public void paint(Graphics2D g2)
 	{
 		if(f==null) return;
 
-		GeneralPath gpPath=new GeneralPath();		
+		GeneralPath gpPath=new GeneralPath();
 		for(int i=0;i<iSteps;i++)
 		{
 			double t=((double)i / (double)(iSteps-1)) * (gr.getMax()-gr.getMin()) + gr.getMin();
 			GraphPoint gp=f.f(t);
-			float 
+			float
 				fX=getWorld().convertXFloat(gp.getX().getWorldPosition())+gp.getX().getPixelOffset(),
 				fY=getWorld().convertYFloat(gp.getY().getWorldPosition())+gp.getY().getPixelOffset();
-			
-			if(i==0) 
+
+			if(i==0)
 				gpPath.moveTo(fX,fY);
-			else 
+			else
 				gpPath.lineTo(fX,fY);
 		}
-		
+
 		g2.setColor(cLine);
 		g2.setStroke(new BasicStroke((float)dLineWidth));
 		g2.draw(gpPath);
 	}
-	
+
 	/**
 	 * Sets line colour.
 	 * <p>
@@ -109,17 +109,17 @@ public class ParametricFunctionItem extends GraphItem
 	{
 		cLine=c;
 	}
-	
+
 	/**
-	 * Sets line width in pixels. 
+	 * Sets line width in pixels.
 	 * @param d Line width
-	 * @throws GraphFormatException 
+	 * @throws GraphFormatException
 	 */
 	public void setLineWidth(double d) throws GraphFormatException
 	{
 		dLineWidth=d;
 	}
-	
+
 	/**
 	 * @param iSteps Number of points at which t is evaluated
 	 */
@@ -127,7 +127,7 @@ public class ParametricFunctionItem extends GraphItem
 	{
 		this.iSteps=iSteps;
 	}
-	
+
 	/**
 	 * @param d New maximum extent of function
 	 */
@@ -135,12 +135,12 @@ public class ParametricFunctionItem extends GraphItem
 	{
 		gr=new GraphRange(gr.getMin(),d);
 	}
-	
+
 	/**
 	 * @param d New minimum extent of function
 	 */
 	public void setMinT(double d)
 	{
 		gr=new GraphRange(d,gr.getMax());
-	}		
+	}
 }

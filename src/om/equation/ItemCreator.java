@@ -17,7 +17,7 @@
  */
 package om.equation;
 
-/** 
+/**
  * Interface implemented by inner classes in static item methods to construct
  * items without the possibility of throwing exceptions.
  */

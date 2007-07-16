@@ -318,7 +318,7 @@ public class StringConverterAndSplitter
 
     /*
      * commented out by pgb July 2005
-     * 
+     *
      *  Removes whitespace characters ' ' '\t' '\n'  and '+' from a string
      *
      *  @param input The initial string

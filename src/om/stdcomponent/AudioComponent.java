@@ -28,8 +28,8 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
-Allows users to play MP3 audio files. 
+/**
+Allows users to play MP3 audio files.
 <h2>XML usage</h2>
 &lt;centre&gt;...&lt;/centre&gt;
 <h2>Properties</h2>
@@ -43,22 +43,22 @@ Allows users to play MP3 audio files.
 */
 public class AudioComponent extends QComponent
 {
-	// We are currently using this mp3 player from 
+	// We are currently using this mp3 player from
 	// http://web.uvic.ca/hrd/halfbaked/howto/audio.htm
 	private static final String MP3PLAYERFLASH="hbs_mp3_player.swf";
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "audio";
 	}
-	
+
 	/** Path of mp3 file relative to question class. */
 	public final static String PROPERTY_FILEPATH="filePath";
-	
+
 	/** Audio file that was last sent to user */
 	private String sSentAudio=null;
-	
+
 	@Override
 	protected String[] getRequiredAttributes()
 	{
@@ -67,7 +67,7 @@ public class AudioComponent extends QComponent
 			PROPERTY_FILEPATH,
 		};
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
@@ -78,13 +78,13 @@ public class AudioComponent extends QComponent
 	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain)
 		throws OmException
-	{		
+	{
 		// Add the audio player. Because the resource list is a hashmap it doesn't
 		// matter if we do this with several instances of the component
 		if(bInit)
 		{
 			qc.addResource(MP3PLAYERFLASH,
-				"application/x-shockwave-flash",getClassResource(MP3PLAYERFLASH));		
+				"application/x-shockwave-flash",getClassResource(MP3PLAYERFLASH));
 		}
 
 		// Work out audio file and name
@@ -92,23 +92,23 @@ public class AudioComponent extends QComponent
 		String sName=sFilePath;
 		int iLastSlash=sName.lastIndexOf('/');
 		if(iLastSlash!=-1) sName=sName.substring(iLastSlash+1);
-		
+
 		if(!sFilePath.equals(sSentAudio))
 		{
 			sSentAudio=sFilePath;
 			byte[] abAudio;
-			try 
+			try
 			{
 				abAudio=getQuestion().loadResource(sFilePath);
-			} 
-			catch (IOException e) 
+			}
+			catch (IOException e)
 			{
 				throw new OmException("<audio>: Audio file not found: "+sFilePath,e);
 			}
 			qc.addResource(sName,"audio/mp3",abAudio);
 		}
-		
-		// Create html object tag (based on sample code at 
+
+		// Create html object tag (based on sample code at
 		// http://web.uvic.ca/hrd/halfbaked/howto/audio.htm)
 		Element eObject=qc.createElement("object");
 		qc.addInlineXHTML(eObject);
@@ -127,7 +127,7 @@ public class AudioComponent extends QComponent
 		createParam(eObject,"loop","false");
 		createParam(eObject,"quality","high");
 		createParam(eObject,"wmode","transparent");
-		
+
 		// Alternate version for if object tag fails
 		Element eA=XML.createChild(eObject,"a");
 		eA.setAttribute("href","%%RESOURCES%%/"+sName);
@@ -138,6 +138,6 @@ public class AudioComponent extends QComponent
 	{
 		Element eParam=XML.createChild(eObject,"param");
 		eParam.setAttribute("name",sName);
-		eParam.setAttribute("value",sValue);		
+		eParam.setAttribute("value",sValue);
 	}
 }

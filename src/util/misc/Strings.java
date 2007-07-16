@@ -25,14 +25,14 @@ import java.util.*;
 public class Strings
 {
 	private static Random random;
-	
+
 	private static synchronized Random getRandom() {
 		if (random == null) {
 			random = new Random();
 		}
 		return random;
 	}
-	
+
 	/**
 	 * Makes a string comprising the toString of all the elements of collection c,
 	 * with a copy of border between each item.
@@ -77,7 +77,7 @@ public class Strings
 	{
 		if(asItems.length==0) return "";
 		if(asItems.length==1) return asItems[0];
-		
+
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<asItems.length;i++)
 		{
@@ -89,11 +89,11 @@ public class Strings
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Replaces text in a string. Like Java built-in replaceAll, but replaces only
 	 * literal strings not regular expressions (so you don't have to escape
-	 * anything). 
+	 * anything).
 	 * @param sSource Source string
 	 * @param sSearch Thing to search for
 	 * @param sReplace Thing to replace with
@@ -113,9 +113,9 @@ public class Strings
 			sb.append(sSource.substring(0,iFound));
 			sb.append(sReplace);
 			sSource=sSource.substring(iFound+sSearch.length());
-		}		
+		}
 	}
-	
+
 	/**
 	 * @param iBytes Number of bytes
 	 * @return String containing size and unit in sensible units
@@ -126,7 +126,7 @@ public class Strings
 		if(iBytes<1024*1024) return formatOneDecimal(iBytes,1024)+" KB";
 		return formatOneDecimal(iBytes,1024*1024)+" MB";
 	}
-	
+
 	/**
 	 * @param lBytes Number of bytes
 	 * @return String containing size and unit in sensible units
@@ -135,7 +135,7 @@ public class Strings
 	{
 		return formatBytes((int)lBytes);
 	}
-	
+
 	/** Format used for numbers to one DP. */
 	private static final NumberFormat ONEDP = new DecimalFormat("#########0.0");
 	/**
@@ -158,19 +158,19 @@ public class Strings
 	}
 
 	/**
-	 * Quotes a string for SQL - doubles any inner quotes and add the two 
+	 * Quotes a string for SQL - doubles any inner quotes and add the two
 	 * surrounding quotes. Use this for *any* quote in SQL, even if sure
-	 * the string doesn't have ' inside (just to be on the safe side). There 
-	 * should be no ' character literals in SQL queries/update strings in this 
+	 * the string doesn't have ' inside (just to be on the safe side). There
+	 * should be no ' character literals in SQL queries/update strings in this
 	 * code.
 	 * @param s Input string
 	 * @return String surrounded by single quotes and escaped as necessary
 	 */
 	public static String sqlQuote(String s)
 	{
-		if(s==null) 
+		if(s==null)
 			return "NULL";
-		else 
+		else
 			return "'"+s.replaceAll("'","''")+"'";
 	}
 
@@ -180,7 +180,7 @@ public class Strings
 		Random r = getRandom();
 		int i = 0;
 		synchronized (r) {
-			i = r.nextInt(62);			
+			i = r.nextInt(62);
 		}
 
 		if(i<26)

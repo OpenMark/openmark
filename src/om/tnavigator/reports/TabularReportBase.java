@@ -44,7 +44,7 @@ public abstract class TabularReportBase {
 		tsv(TsvReportWriter.class, "Tab-separated text"),
 		/** Moodle XML output class */
 		xml(XmlReportWriter.class, "XML");
-		
+
 		private final Class<? extends TabularReportWriter> writerClass;
 		private final String niceName;
 		Format(Class<? extends TabularReportWriter> writerClass, String niceName) {
@@ -57,11 +57,11 @@ public abstract class TabularReportBase {
 		public String getNiceName() {
 			return niceName;
 		}
-		
+
 		/**
 		 * @param pw a print writer
 		 * @param columns a list of ColumnDefinitions.
-		 * @return an instance of the specific type of TabularReportWriter, initialised with ph and columns. 
+		 * @return an instance of the specific type of TabularReportWriter, initialised with ph and columns.
 		 */
 		public TabularReportWriter makeInstance(PrintWriter pw, List<ColumnDefinition>columns) {
 			try
@@ -87,7 +87,7 @@ public abstract class TabularReportBase {
 			}
 		}
 	};
-	
+
 	protected class ColumnDefinition {
 		/** The internal name of this column, used, for example, as a tag name when writing to XML, or a CSS class name. */
 		public final String id;
@@ -102,7 +102,7 @@ public abstract class TabularReportBase {
 			this.name = name;
 		}
 	}
-	
+
 	private TabularReportWriter setupWriter(HttpServletRequest request,
 			HttpServletResponse response, List<ColumnDefinition> columns) throws OmException {
 		String format = request.getParameter("format");
@@ -121,14 +121,14 @@ public abstract class TabularReportBase {
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/**
 	 * Produce the report.
 	 * @param request
 	 * @param response
 	 * @throws OmException
 	 */
-	public void handleReport(HttpServletRequest request, 
+	public void handleReport(HttpServletRequest request,
 			HttpServletResponse response) throws OmException {
 		List<ColumnDefinition> columns = init(request);
 		TabularReportWriter reportWriter = setupWriter(request, response, columns);
@@ -143,7 +143,7 @@ public abstract class TabularReportBase {
 	 * <code>columns</code>.
 	 * @param request The request being responded to. It is recommended that you only use
 	 * 	the values obtainable from getParameterMap. The URL will have been consumed in getting this
-	 *  far. Autentication and cookies should be checked using methods of NavigatorServlet. 
+	 *  far. Autentication and cookies should be checked using methods of NavigatorServlet.
 	 * @return A list of column definitions.
 	 */
 	public abstract List<ColumnDefinition> init(HttpServletRequest request);
@@ -153,7 +153,7 @@ public abstract class TabularReportBase {
 	 * @param reportWriter the place to send output.
 	 */
 	public abstract void generateReport(TabularReportWriter reportWriter);
-	
+
 	/**
 	 * A change for the report to output some extra content, for example a settings form
 	 * before the HTML table.
@@ -167,7 +167,7 @@ public abstract class TabularReportBase {
 	}
 
 	/**
-	 * Write out a HTML &lt;select&gt; element for choosing a format. 
+	 * Write out a HTML &lt;select&gt; element for choosing a format.
 	 * @param pw place to write it.
 	 */
 	public static void outputFormatSelector(PrintWriter pw) {

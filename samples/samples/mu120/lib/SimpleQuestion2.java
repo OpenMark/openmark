@@ -50,16 +50,16 @@ import om.stdquestion.*;
 public abstract class SimpleQuestion2 extends StandardQuestion {
     /** Which question attempt the user is on */
     private int iAttempt = 1;
-    
+
     /** Maximum number of attempts allowed (after that it tells you the answer) */
     private int iMaxAttempts = 3;
-    
+
     /** true once you get a wrong answer, to cater for the 'hint, wrong, ...' sequence */
     private boolean bPreviouslyWrong = false;
-    
+
     /** If true, question ends when you click OK */
     private boolean bEndNext = false;
-    
+
     public Rendering init(Document d, InitParams ip) throws OmException {
         Rendering r = super.init(d, ip);
         if (iMaxAttempts == 1)
@@ -68,7 +68,7 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
             r.setProgressInfo("You have " + iMaxAttempts + " attempts.");
         return r;
     }
-    
+
     /**
      * Set the maximum number of attempts permitted. After that it will tell you
      * the answer. The default is 3.
@@ -78,7 +78,7 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
     protected void setMaxAttempts(int iMaxAttempts) {
         this.iMaxAttempts = iMaxAttempts;
     }
-    
+
     /**
      * Callback that Om calls when the user clicks the 'Submit' button to enter
      * their answer. Calls checkAnswer for further processing.
@@ -88,7 +88,7 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
     public void actionSubmit() throws OmException {
         checkAnswer(false, false);
     }
-    
+
     /**
      * Callback that Om calls when the user clicks the 'Give Up' button. Calls
      * checkAnswer for further processing.
@@ -99,7 +99,7 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
         getResults().appendActionSummary("Attempt " + iAttempt + ": " + "Passed");
         checkAnswer(true, false);
     }
-    
+
     /**
      * Callback that Om calls when the user clicks the 'Hint' button.
      * Treat 'Hint' as a wrong answer for feedback and scoring.
@@ -110,7 +110,7 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
         getResults().appendActionSummary("Attempt " + iAttempt + ": " + "Hint");
         checkAnswer(false, true);
     }
-    
+
     /**
      * Callback that Om calls when the user clicks the 'OK' button after seeing
      * the response to their answer. This either ends the question, or hides the
@@ -127,14 +127,14 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
                 setProgressInfo("This is your last attempt.");
             else
                 setProgressInfo("You have " + iAttemptsLeft + " attempts left.");
-            
+
             getComponent("answerbox").setDisplay(false);
             getComponent("inputbox").setBoolean(
                     BoxComponent.PROPERTY_PLAINHIDE, false);
             getComponent("inputbox").setEnabled(true);
         }
     }
-    
+
     /**
      * Hide all components where the id is defined by the user, recursively
      */
@@ -150,7 +150,7 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
             }
         }
     }
-    
+
     /**
      * Handles the framework around checking the user's answer.
      *
@@ -160,14 +160,14 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
      */
     private void checkAnswer(boolean bPass, boolean bHint)
     throws OmDeveloperException {
-        
+
         // Disable input, show answer
         getComponent("inputbox").setEnabled(false);
         getComponent("inputbox").setBoolean(BoxComponent.PROPERTY_PLAINHIDE,true);
         getComponent("answerbox").setDisplay(true);
-        
+
         //sFeedbackID = null;
-        
+
         // hide all hints and feedback, they may not be there!
         try {
             hideAllQComponents(getComponent("hints"));
@@ -178,29 +178,29 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
         try {
             hideAllQComponents(getComponent("answer"));
         } catch (OmDeveloperException omde) {};
-        
+
         // Get the four basic states
         boolean bRight = false;
         if (! bPass && ! bHint) {
             bRight = isRight(iAttempt);
         }
         boolean bWrong = ! bRight && ! bPass && ! bHint;
-        
+
         // OK now show/hide the basic 'you were wrong' bit
         getComponent("wrong").setDisplay(bWrong);
         getComponent("still").setDisplay(bWrong && bPreviouslyWrong);
         bPreviouslyWrong = bPreviouslyWrong || bWrong;
         getComponent("right").setDisplay(bRight);
         getComponent("pass").setDisplay(bPass);
-        
+
         // Optionally provide a hint out of the feedback block
         if (bHint) {
             provideHint(iAttempt);
         }
-        
+
         // Should we end next time?
         bEndNext = bRight || iAttempt == iMaxAttempts || bPass;
-        
+
         // If so, show answer, a possible reference, and update score
         getComponent("hints").setDisplay(! bEndNext);
         getComponent("feedback").setDisplay(! bEndNext && ! bHint);
@@ -217,23 +217,23 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
                 log("Warning: question.xml should be updated to make OK and Next buttons work");
             }
         }
-        
+
         // Give overriders a chance
         doAdditionalAnswerProcessing(bRight, bWrong, bPass, bHint, iAttempt);
-        
+
         // Increment feedback level
         iAttempt++;
-        
+
         // hide hintButton, if its there, for the final attempt
         try {
             if (iAttempt == iMaxAttempts)
                 getComponent("hintButton").setDisplay(false);
         } catch (OmDeveloperException omde) {};
-        
+
         // Clear progress info (looks bad esp. in plain mode)
         setProgressInfo("");
     }
-    
+
     /**
      * Override this method to check whether the user's answer
      * is correct or not.
@@ -250,7 +250,7 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
      */
     protected abstract boolean isRight(int iAttempt)
     throws OmDeveloperException;
-    
+
     /**
      * Method to provide hints.
      * There can be a single hint called 'hint'
@@ -283,7 +283,7 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
                 break;
         }
     }
-    
+
     /**
      * Override this method to change the scoring.
      * The method should call getResults().setScore.
@@ -308,7 +308,7 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
         else
             getResults().setScore(4 - iAttempt, iAttempt);
     }
-    
+
     /**
      * This is quite different from SimpleQuestion1.
      * We simply switch on a message for display, i.e. feedback.
@@ -322,7 +322,7 @@ public abstract class SimpleQuestion2 extends StandardQuestion {
         if (qc != null)
             qc.setDisplay(true);
     }
-    
+
     /**
      * Override this method if you want to do any additional processing with the
      * user's answer. This is called after all default processing.

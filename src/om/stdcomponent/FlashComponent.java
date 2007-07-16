@@ -30,7 +30,7 @@ import util.misc.IO;
 import util.xml.XML;
 import util.xml.XMLException;
 
-/** 
+/**
 Represents a flash applet
 <p/>
 <h2>XML usage</h2>
@@ -64,33 +64,33 @@ public class FlashComponent extends QComponent
 	{
 		return "flash";
 	}
-	
+
 	/** Property for the alt text. */
 	public final static String PROPERTY_ALT="alt";
-	
+
 	/** path to image file */
 	private String sFilePath=null; // Currently-loaded file
 	private int iWidth = 300;
 	private int iHeight = 300;
 	private byte[] movieData;
 	private String sMimeType;
-	
-	/** 
+
+	/**
 	 * Keep track of resources we added to users so we can save SOAP time by
 	 * not transferring them again.
-	 */ 
+	 */
 	private Set<String> sAddedResources=new HashSet<String>();
-	
+
 	/** True if there was whitespace before or after the &lt;flash&gt; tag */
 	private boolean bSpaceBefore,bSpaceAfter;
-	
+
 	/** Specifies attributes required */
 	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[] {PROPERTY_ALT,PROPERTY_FILEPATH, PROPERTY_WIDTH,PROPERTY_HEIGHT};
 	}
-	
+
 	/** Specifies possible attributes */
 	@Override
 	protected void defineProperties() throws OmDeveloperException
@@ -101,7 +101,7 @@ public class FlashComponent extends QComponent
 		defineInteger(PROPERTY_WIDTH);
 		defineInteger(PROPERTY_HEIGHT);
 	}
-	
+
 	/** parses internals of tag to create java component*/
 	@Override
 	protected void initChildren(Element eThis) throws OmException
@@ -121,23 +121,23 @@ public class FlashComponent extends QComponent
 				bSpaceAfter=true;
 		}
 	}
-	
-	/** @return FilePath of Image 
+
+	/** @return FilePath of Image
 	 * @throws OmDeveloperException */
 	public String getFilePath() throws OmDeveloperException
-	{ 
-		return getString(PROPERTY_FILEPATH); 
+	{
+		return getString(PROPERTY_FILEPATH);
 	}
-	
-	/** 
+
+	/**
 	 * Sets the Image file path and alt text.
 	 * <p>
 	 * @param sFilePath New value for filePath
-	 * @param sAlt New value for screenreader alternative 
+	 * @param sAlt New value for screenreader alternative
 	 * @throws OmDeveloperException -- when?
 	 */
 	public void setApplet(String sFilePath, String sAlt) throws OmDeveloperException
-	{ 
+	{
 		setString(PROPERTY_FILEPATH, sFilePath);
 		setString(PROPERTY_ALT, sAlt);
 	}
@@ -163,17 +163,17 @@ public class FlashComponent extends QComponent
 			if (sFilePath == null || !sFilePath.equals(getString(PROPERTY_FILEPATH)))
 			{
 				sFilePath=getString(PROPERTY_FILEPATH);
-				
+
 				//get image mime type
 				String sFL = sFilePath.toLowerCase();
 				if (sFL.endsWith(".swf")) sMimeType = FLASH_MIMETYPE;
 				else throw new OmException("Invalid flash file type: "+sFilePath);
-	
-				try 
+
+				try
 				{
 					movieData=getQuestion().loadResource(sFilePath);
-				} 
-				catch (IOException e) 
+				}
+				catch (IOException e)
 				{
 					throw new OmDeveloperException("Flash file not found: "+sFilePath,e);
 				}
@@ -186,11 +186,11 @@ public class FlashComponent extends QComponent
 
 			if (bInit) {
 				byte[] installMovieData;
-				try 
+				try
 				{
 					installMovieData=IO.loadResource(FlashComponent.class,EXPRESSINSTALL_SWF);
-				} 
-				catch (IOException e) 
+				}
+				catch (IOException e)
 				{
 					throw new OmUnexpectedException("Flash file not found: "+EXPRESSINSTALL_SWF);
 				}
@@ -205,15 +205,15 @@ public class FlashComponent extends QComponent
 			Element eEnsureSpaces=qc.createElement("div");
 			eEnsureSpaces.setAttribute("class","flash");
 			qc.addInlineXHTML(eEnsureSpaces);
-			
-			int 
+
+			int
 				iActualWidth=(int)(iWidth*dZoom+0.5),
 				iActualHeight=(int)(iHeight*dZoom+0.5);
-			
+
 			// If there's a space before, add one here too (otherwise IE eats it)
 			if(bSpaceBefore)
 				XML.createText(eEnsureSpaces," ");
-			
+
 			// Put in placeholder that UFO will eat.
 			String movieId = QDocument.ID_PREFIX+getID()+"_movie";
 			Element placeholderSpan=XML.createChild(eEnsureSpaces,"span");
@@ -230,15 +230,15 @@ public class FlashComponent extends QComponent
 			placeholderSpan.setAttribute("id", movieId);
 
 			// Create JavaScrip
-			String js = 
+			String js =
 					"var FO = { movie:'%%RESOURCES%%/" + sFilePath + "', width:'" + iActualWidth +
 						"', height:'" + iActualHeight + "', majorversion:\"9\", build:\"0\"," +
-						"ximovie:\"%%RESOURCES%%/"+EXPRESSINSTALL_SWF+"\", xi:\"true\" };\n" + 
+						"ximovie:\"%%RESOURCES%%/"+EXPRESSINSTALL_SWF+"\", xi:\"true\" };\n" +
 					"UFO.create(FO, '" + movieId + "');";
 			Element scriptTag=XML.createChild(eEnsureSpaces,"script");
 			XML.createText(scriptTag, js);
 			scriptTag.setAttribute("type", "text/javascript");
-			
+
 			if(bSpaceAfter)
 				XML.createText(eEnsureSpaces," ");
 		}

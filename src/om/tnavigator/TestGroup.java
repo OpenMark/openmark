@@ -36,10 +36,10 @@ class TestGroup extends TestMarkedItem
 
 	/** Title of group, or null if none */
 	private String sTitle=null;
-	
+
 	/** ID of group, or null if none */
 	private String sID=null;
-	
+
 	/**
 	 * Construct group.
 	 * @param iParent Parent item (null if root)
@@ -63,10 +63,10 @@ class TestGroup extends TestMarkedItem
 		if(eGroup.hasAttribute("id"))
 			sID=eGroup.getAttribute("id");
 	}
-	
+
 	/** Get ID or null if none */
 	String getID() { return sID; }
-	
+
 	/**
 	 * Adds item to group.
 	 * @param i Item to add
@@ -75,7 +75,7 @@ class TestGroup extends TestMarkedItem
 	{
 		lItems.add(i);
 	}
-	
+
 	/** Add correct number to all questions (call at top level only) */
 	void numberQuestions()
 	{
@@ -90,9 +90,9 @@ class TestGroup extends TestMarkedItem
 			}
 		}
 	}
-	
+
 	/**
-	 * @return Array of all leaf items within this group (recursively). 
+	 * @return Array of all leaf items within this group (recursively).
 	 */
 	TestLeaf[] getLeafItems()
 	{
@@ -100,18 +100,18 @@ class TestGroup extends TestMarkedItem
 		addLeafItems(this,l,null);
 		return l.toArray(new TestLeaf[0]);
 	}
-	
+
 	/**
 	 * Recursively finds questions 'under' a particular ID.
 	 * @param sMatchID Relevant ID
-	 * @param c Receives a list of all questions either with that ID or inside 
+	 * @param c Receives a list of all questions either with that ID or inside
 	 *   groups that have that ID
 	 */
 	public void listQuestionsUnderID(String sMatchID,Collection<TestQuestion> c)
 	{
 		listQuestionsUnderID(sMatchID,c,false);
 	}
-	
+
 	/**
 	 * Recursively finds questions 'under' a particular ID - either questions
 	 * with that ID, or questions inside groups with that ID.
@@ -122,7 +122,7 @@ class TestGroup extends TestMarkedItem
 	private void listQuestionsUnderID(String sMatchID,Collection<TestQuestion> cQuestions,boolean bMatched)
 	{
 		if(sID!=null && sID.equals(sMatchID)) bMatched=true;
-		
+
 		for(TestItem i : lItems)
 		{
 			if(i instanceof TestGroup)
@@ -130,18 +130,18 @@ class TestGroup extends TestMarkedItem
 				((TestGroup)i).listQuestionsUnderID(sMatchID,cQuestions,bMatched);
 			}
 			else if(i instanceof TestQuestion)
-			{				 
+			{
 				if(bMatched || ((TestQuestion)i).getID().equals(sMatchID)) cQuestions.add((TestQuestion)i);
 			}
 		}
 	}
-	
+
 	/** @return Title of group, or null if it doesn't have one */
 	String getTitle()
 	{
 		return sTitle;
 	}
-	
+
 	/**
 	 * Recursively builds a list of all leaf items within this group. Also sets
 	 * up their section titles and does other initialisation.
@@ -152,14 +152,14 @@ class TestGroup extends TestMarkedItem
 	private void addLeafItems(TestGroup tgRoot,Collection<TestLeaf> c,String sCurrentTitle)
 	{
 		if(sTitle!=null) sCurrentTitle=sTitle;
-		
+
 		for(TestItem i : lItems)
 		{
 			if(i instanceof TestGroup)
 			{
 				((TestGroup)i).addLeafItems(tgRoot,c,sCurrentTitle);
 			}
-			else 
+			else
 			{
 				((TestLeaf)i).setSection(sCurrentTitle);
 				if(i instanceof TestQuestion)
@@ -168,12 +168,12 @@ class TestGroup extends TestMarkedItem
 			}
 		}
 	}
-	
+
 	CombinedScore getFinalScore() throws OmFormatException
 	{
 		return getFinalScore(null,false);
 	}
-	
+
 	@Override
 	CombinedScore getFinalScore(String sOnly,boolean bMax) throws OmFormatException
 	{
@@ -183,11 +183,11 @@ class TestGroup extends TestMarkedItem
 		{
 			if((item instanceof TestMarkedItem))
 			{
-				TestMarkedItem tmi = (TestMarkedItem) item;			
+				TestMarkedItem tmi = (TestMarkedItem) item;
 				ps.add(tmi.getFinalScore(sOnly, bMax));
 			}
 		}
-		
+
 		return rescore(ps);
 	}
 }

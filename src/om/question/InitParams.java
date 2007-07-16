@@ -17,7 +17,7 @@
  */
 package om.question;
 
-/** 
+/**
  * Parameters that are passed to a question when it is being initialised.
  * <p>
  * This is represented by a class, rather than including separate parameters,
@@ -26,27 +26,27 @@ package om.question;
  */
 public class InitParams
 {
-	/** 
+	/**
 	 * Value that should be used to seed random number generators used to
 	 * determine which question to ask.
 	 */
 	private long lRandomSeed;
-	
+
 	/** Fixed colours for accessibility */
 	private String sFixedColourFG,sFixedColourBG;
-	
+
 	/** Zoom level */
 	private double dZoom;
-	
+
 	/** Plain mode */
 	private boolean bPlainMode;
-	
+
 	/** ClassLoader for resources */
 	private ClassLoader cl;
-	
+
 	/** Variant mode */
 	private int iFixedVariant=-1;
-	
+
 	/**
 	 * Construct and set values.
 	 * @param lRandomSeed Random number seed
@@ -68,59 +68,59 @@ public class InitParams
 		this.cl=cl;
 		this.iFixedVariant=iFixedVariant;
 	}
-	
-	/** 
-	 * @return Value that should be used to seed random number generators used 
+
+	/**
+	 * @return Value that should be used to seed random number generators used
 	 *   to determine which question to ask
 	 */
 	public long getRandomSeed()
 	{
 		return lRandomSeed;
 	}
-	
+
 	/** @return Fixed FG colour #rrggbb or null if not fixed */
 	public String getFixedColourFG()
 	{
 		return sFixedColourFG;
 	}
-	
+
 	/** @return Fixed BG colour #rrggbb or null if not fixed */
 	public String getFixedColourBG()
 	{
 		return sFixedColourBG;
 	}
-	
+
 	/** @return Zoom level (default 1.0) */
 	public double getZoom()
 	{
 		return dZoom;
 	}
-	
+
 	/** @return True if plain mode (no Javascript etc) is selected */
 	public boolean isPlainMode()
 	{
 		return bPlainMode;
 	}
-	
+
 	/** @return ClassLoader that should be used to load resources */
 	public ClassLoader getClassLoader()
 	{
 		return cl;
 	}
-	
+
 	/** @return True if the question variant has been fixed */
 	public boolean hasFixedVariant()
 	{
 		return iFixedVariant!=-1;
 	}
-	
+
 	/** @return Fixed variant number */
 	public int getFixedVariant()
 	{
 		return iFixedVariant;
 	}
-		
+
 	// TODO Add information about the jar files for any shared packages so we
-	// can go find any additional question component classes (see 
+	// can go find any additional question component classes (see
 	// QComponentManager)
 }

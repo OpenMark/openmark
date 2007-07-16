@@ -47,28 +47,28 @@ public class Q3 extends SimpleQuestion1
 	private final static String[]	yAt80 = {"1.55", "1.40", "1.40", "1.60", "1.60"};
 	private final static String[]	rise = {"0.35", "0.30", "0.45", "0.20", "0.50"};
 	private final static String[]	gradInSF = {"4.4", "3.8", "5.6", "2.5", "6.3"};
-	
+
 	/** Selected question */
 	private	double	answer;
 	private int 	iVariant;
-	
+
 	//--------------------------------------------------------------------------------------------
-	
+
 	protected void init() throws OmException
 	{
 		int i;
 		double	x1, x2, y1, y2;
-		
+
 		Random r = getRandom();
 		iVariant=r.nextInt(gradient.length);
 
 		answer = answersArray[iVariant];
-		
+
 		setPlaceholder("ZERO", yAt0[iVariant]);
 		setPlaceholder("EIGHTY", yAt80[iVariant]);
 		setPlaceholder("RISE", rise[iVariant]);
 		setPlaceholder("GRADINSF", gradInSF[iVariant]);
-		
+
 		CanvasComponent cc=getCanvas("graph");
 		World w=cc.getWorld("w1");
 
@@ -90,7 +90,7 @@ public class Q3 extends SimpleQuestion1
 		catch(GraphFormatException gfe) {
 			throw new OmFormatException("error creating line item");
 		}
-		
+
 		// add three vertical and horizontal lines to aid reading main line
 		for (i = 1; i < 4; ++ i) {
 			x1 = x2 = i * 40.0;
@@ -122,13 +122,13 @@ public class Q3 extends SimpleQuestion1
 				throw new OmFormatException("error creating line item");
 			}
 		}
-		
+
 		cc.repaint();
 
-		getResults().setQuestionLine("What is the gradient of a line passing through x=0, y=" + yAt0[iVariant] + " and x=80, y=" + yAt80[iVariant] + "?");		
+		getResults().setQuestionLine("What is the gradient of a line passing through x=0, y=" + yAt0[iVariant] + " and x=80, y=" + yAt80[iVariant] + "?");
 	}
 	//--------------------------------------------------------------------------------------------
-  
+
 	protected boolean isRight(int iAttempt) throws OmDeveloperException
 	{
 		double	dbl;
@@ -141,7 +141,7 @@ public class Q3 extends SimpleQuestion1
 		getComponent("notsn").setDisplay(false);
 		getComponent("wrongfactorof10").setDisplay(false);
 		getComponent("wrongfactorof10noteylabel").setDisplay(false);
-		
+
 		// trim() removes leading and trailing spaces
 		respon=(getAdvancedField("response").getValue().trim());
 

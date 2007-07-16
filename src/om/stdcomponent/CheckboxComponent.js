@@ -7,7 +7,7 @@ function checkboxOnClick(checkboxID,idPrefix)
 function checkboxFix(checkboxID,idPrefix)
 {
   var container=document.getElementById(idPrefix+checkboxID);
-  
+
   // Find ancestor row
   var row=container;
   while(row!=null && (row.tagName.toLowerCase()!='div' || row.className!='layoutgridrow'))

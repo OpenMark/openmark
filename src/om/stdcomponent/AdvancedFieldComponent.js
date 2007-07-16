@@ -37,7 +37,7 @@ function formatChem(win)
   	if(isIE)
   	{
 		if (c0.toLowerCase()==c2.toLowerCase()) return false;
-  		sel = win.document.selection;   	
+  		sel = win.document.selection;
   		r0= sel.createRange().duplicate();
   		r0.moveStart("character",-99);
   		var caretPos=r0.text.length;
@@ -51,7 +51,7 @@ function formatChem(win)
   	{
 		if (c0.toLowerCase()==c2.toLowerCase()) return false;
   		var caretNode, node, subnode;
-  		
+
   		r0=win.getSelection().getRangeAt(0);
   		r0.setStart(root,0);
   		var caretOffset=r0.toString().length;
@@ -63,8 +63,8 @@ function formatChem(win)
   		{
   			if (na[j].nodeType == 3) // text
   			{
-  				if (caretOffset <= na[j].length) caretNode=na[j]; 
-  				else caretOffset -= na[j].length; 
+  				if (caretOffset <= na[j].length) caretNode=na[j];
+  				else caretOffset -= na[j].length;
   			}
   			else
   			{
@@ -72,15 +72,15 @@ function formatChem(win)
   				for(jj=0;jj<sna.length && !caretNode;jj++)
   				{
   					if (caretOffset <= sna[jj].length) caretNode=sna[jj];
-  					else caretOffset -= sna[jj].length; 
+  					else caretOffset -= sna[jj].length;
   				}
   			}
   		}
-  		
+
 		if (caretNode)
 		{
 			r1 = win.document.createRange();
-  			r1.setStart(caretNode,caretOffset);		
+  			r1.setStart(caretNode,caretOffset);
 			sel = win.getSelection();
 			sel.removeAllRanges();
 			sel.addRange(r1);
@@ -95,7 +95,7 @@ function advancedfieldKeyFilter(fieldName,idPrefix,e)
   	var mydoc=myframe.contentWindow.document;
 	var doSuppress=true;
 	var reFocus = true;
-    if(!e) var e=myframe.contentWindow.event;  
+    if(!e) var e=myframe.contentWindow.event;
 	var k = e.keyCode;
 	suppress=false; //global
 
@@ -103,9 +103,9 @@ function advancedfieldKeyFilter(fieldName,idPrefix,e)
   	{
   	  	reFocus=false;
  		if (isIE) focusFromList(idPrefix+fieldName,1); // cludge to clear Iframe focus in IE
-  	  	
+
   	  	if(e.shiftKey) focusFromList(idPrefix+fieldName,-1);
-  	  	else 
+  	  	else
   	  	{
   	  		if (mysubtype[idPrefix+fieldName]=="chem") focusFromList(idPrefix+fieldName,1);
   	  		else // has sup or sub boxes
@@ -120,20 +120,20 @@ function advancedfieldKeyFilter(fieldName,idPrefix,e)
   	  		}
   	  	}
   	}
-  	else if(k==13) 
-  	{		
+  	else if(k==13)
+  	{
   	}
   	else if(k==38) // arrow up
   	{
-  		if (mydoc.queryCommandState("subscript")) 
+  		if (mydoc.queryCommandState("subscript"))
  	 		mydoc.execCommand("subscript",false,null);
  	 	else if( (mysubtype[idPrefix+fieldName]=="superscript" || mysubtype[idPrefix+fieldName]=="both")
- 	 		      && (!mydoc.queryCommandState("superscript")) ) 
+ 	 		      && (!mydoc.queryCommandState("superscript")) )
   	    	mydoc.execCommand("superscript",false,null);
   	}
   	else if (k==40) // arrow down
   	{
-  		if (mydoc.queryCommandState("superscript")) 
+  		if (mydoc.queryCommandState("superscript"))
   			mydoc.execCommand("superscript",false,null);
   		else if( (mysubtype[idPrefix+fieldName]=="subscript" || mysubtype[idPrefix+fieldName]=="both")
   				  && (!mydoc.queryCommandState("subscript")) )
@@ -151,7 +151,7 @@ function advancedfieldKeyFilter(fieldName,idPrefix,e)
 }
 
 function advancedfieldUpdateState(fieldName,idPrefix)
-{ 
+{
   var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
   var mydoc=myframe.contentWindow.document;
 
@@ -180,52 +180,52 @@ function setCursor(myWin)
 		var sel=myWin.getSelection();
 		sel.selectAllChildren(sel.anchorNode);
 		sel.collapseToEnd();
-		
+
 		/*
 		var na=myWin.document.body.childNodes;
-		var caretNode; 
+		var caretNode;
 		var node, subnode;
 		var caretOffset = myWin.document.body.innerHTML.length-2;
 		log("Initial caret Offset="+caretOffset);
 		log("There are "+na.length+" nodes at top level.");
-		
+
   		var j, jj;
   		for (j=0;j<na.length && !caretNode;j++)
   		{
   			if (na[j].nodeType == 3) // text
   			{
-  				if (caretOffset <= na[j].length) { caretNode=na[j]; log("Have text node"); } 
-  				else caretOffset -= na[j].length; 
+  				if (caretOffset <= na[j].length) { caretNode=na[j]; log("Have text node"); }
+  				else caretOffset -= na[j].length;
   			}
   			else
   			{
   				var sna = na[j].childNodes;
   				log("There are "+na.length+" nodes at level "+j);
-  				
+
   				for(jj=0;jj<sna.length && !caretNode;jj++)
   				{
   					if (caretOffset <= sna[jj].length) { caretNode=sna[jj]; log("Have node"); }
-  					else caretOffset -= sna[jj].length; 
+  					else caretOffset -= sna[jj].length;
   				}
   			}
   		}
-  		
+
 		log("Final caret offset="+caretOffset);
-		
+
 		if (caretNode )
 		{
 			var r1 = myWin.document.createRange();
-  			r1.setStart(caretNode,caretOffset-2);		
+  			r1.setStart(caretNode,caretOffset-2);
 			var sel = myWin.getSelection();
 			sel.removeAllRanges();
 			sel.addRange(r1);
 		}
-		
+
 		*/
-		
+
 		delayedFocus(myWin);
-		
-		
+
+
   	}
 }
 
@@ -235,27 +235,27 @@ function advancedfieldFix(fieldName,idPrefix,enabled,type,dZoom, sfg,sbg)
   var mydoc=myframe.contentWindow.document;
 
   mysubtype[idPrefix+fieldName]=type;
-  
+
   var sContent = document.getElementById(idPrefix+"omval_"+fieldName).value;
   if (type=="chem") sContent=toChemHtml(sContent);
-  
+
   mydoc.open();
   mydoc.write("<html><head><style type='text/css'>"+
     "sup{ vertical-align:baseline; position:relative; top:-.5em; } "+ // IE fix
     "sub{ vertical-align:baseline; position:relative; top:0.5em; } "+ // IE fix
-    "body{ margin:0; font:" + Math.ceil(13*dZoom)+ 
+    "body{ margin:0; font:" + Math.ceil(13*dZoom)+
     "px Verdana, sans-serif; white-space:nowrap; "+
     "line-height:"+Math.ceil(26*dZoom)+"px; " +
     "color:"+sfg+";"+
     "background:"+sbg+";"+
-    "padding:2px;"+ 
+    "padding:2px;"+
   	"margin:0px; }"+
     "</style></head><body>"+
     sContent+
     "</body></html>");
   mydoc.close();
 
-  if(enabled) 
+  if(enabled)
   {
   	mydoc.designMode="on";
   	setTimeout(function() { advancedfieldInit(fieldName,idPrefix) },0); // IE needs this.
@@ -267,7 +267,7 @@ function advancedfieldInit(fieldName,idPrefix)
 {
   var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
   var mydoc=myframe.contentWindow.document;
-  
+
   mydoc.onkeyup=function(e) {advancedfieldUpdateState(fieldName,idPrefix); delayedFocus(myframe.contentWindow);return false;};
 
   if (isIE) {
@@ -281,7 +281,7 @@ function advancedfieldInit(fieldName,idPrefix)
   }
   addPreSubmit(document.getElementById(idPrefix+"omval_"+fieldName).form,
          function() { advancedfieldPreSubmit(fieldName,idPrefix); });
-         
+
 
 }
 
@@ -299,11 +299,11 @@ function advancedfieldSub(fieldName,idPrefix)
   if (mydoc.queryCommandState("subscript") != sub.checked)
      mydoc.execCommand("subscript",false,null);
 
-  var sup=document.getElementById(idPrefix+"om_"+fieldName+"_sup");  
+  var sup=document.getElementById(idPrefix+"om_"+fieldName+"_sup");
   if (sup) sup.checked=false;
 }
 
- 
+
 function advancedfieldSup(fieldName,idPrefix)
 {
   var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
@@ -312,7 +312,7 @@ function advancedfieldSup(fieldName,idPrefix)
 
   var mydoc=myframe.contentWindow.document;
   var sup=document.getElementById(idPrefix+"om_"+fieldName+"_sup");
-    
+
   if (mydoc.queryCommandState("subscript"))
      mydoc.execCommand("subscript",false,null);
 

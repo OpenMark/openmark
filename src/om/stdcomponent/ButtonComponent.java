@@ -23,8 +23,8 @@ import om.stdquestion.*;
 
 import org.w3c.dom.Element;
 
-/** 
-A standard XHTML button. 
+/**
+A standard XHTML button.
 <h2>XML usage</h2>
 &lt;button action="actionOK" label="OK"/&gt;
 <h2>Properties</h2>
@@ -43,13 +43,13 @@ public class ButtonComponent extends QComponent
 	public static final String PROPERTY_ACTION="action";
 	/** Text of button label */
 	public static final String PROPERTY_LABEL="label";
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "button";
 	}
-	
+
 	@Override
 	protected String[] getRequiredAttributes()
 	{
@@ -57,9 +57,9 @@ public class ButtonComponent extends QComponent
 		{
 			PROPERTY_LABEL,
 			PROPERTY_ACTION,
-		};		
+		};
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
@@ -67,20 +67,20 @@ public class ButtonComponent extends QComponent
 		defineString(PROPERTY_LABEL);
 		defineString(PROPERTY_ACTION);
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null) throw new OmFormatException(
 			"<button> may not contain other content");
 	}
-	
+
 	@Override
 	protected void initSpecific(Element eThis) throws OmException
 	{
 		getQuestion().checkCallback(getString(PROPERTY_ACTION));
 	}
-	
+
 	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
@@ -96,13 +96,13 @@ public class ButtonComponent extends QComponent
 			eInput.setAttribute("onclick","if(this.hasSubmitted) { return false; } this.hasSubmitted=true; preSubmit(this.form); return true;");
 		}
 		if(!isEnabled()) eInput.setAttribute("disabled","yes");
-				
+
 		qc.addInlineXHTML(eInput);
 		if(isEnabled())	qc.informFocusable(QDocument.ID_PREFIX+QDocument.ACTION_PREFIX+getID(),bPlain);
-		
+
 		qc.addTextEquivalent("[Button: "+getString(PROPERTY_LABEL)+"]");
 	}
-	
+
 	@Override
 	protected void formCallAction(String sValue,ActionParams ap) throws OmException
 	{

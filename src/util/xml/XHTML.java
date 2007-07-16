@@ -39,7 +39,7 @@ public class XHTML
 	 * Includes the junk that goes at the start of the document, and replaces
 	 * the parent element with an &lt;html&gt; tag that contains the appropriate
 	 * namespace information.
-	 * @param d Document (The root element will be discarded and replaced with 
+	 * @param d Document (The root element will be discarded and replaced with
 	 *   an &lt;html&gt; element, but attributes on it will be retained)
 	 * @param w Writer to receive data
 	 * @param bIncludeXMLDeclaration If true, includes... you know the drill
@@ -115,10 +115,10 @@ public class XHTML
 					" "+a.getName()+"='"+escape(a.getValue(),ESCAPE_ATTRSQ)+"'");
 			}
 		}
-		
+
 		w.write(">\n");
 	}
-	
+
 
 	/**
 	 * Saves an XHTML node to a Writer. Does not include the junk that goes at
@@ -133,7 +133,7 @@ public class XHTML
 		// exactly what is null (and how!)
 		if(n==null) throw new NullPointerException();
 		if(w==null) throw new NullPointerException();
-		
+
 		switch(n.getNodeType())
 		{
 			case Node.ELEMENT_NODE:
@@ -141,21 +141,21 @@ public class XHTML
 				// Write start of element
 				Element e=(Element)n;
 				w.write("<"+e.getTagName());
-	
+
 				// Write attributes if any
 				NamedNodeMap nnm=e.getAttributes();
 				for(int iAttribute=0;iAttribute<nnm.getLength();iAttribute++)
 				{
 					Attr a=(Attr)nnm.item(iAttribute);
 					String sValue=a.getValue();
-	
+
 					// Try to avoid escaping things in the attribute if possible
 					if(sValue.indexOf('\"')!=-1)
 						w.write(" "+a.getName()+"=\'"+escape(sValue,ESCAPE_ATTRSQ)+"\'");
 					else
 						w.write(" "+a.getName()+"=\""+escape(sValue,ESCAPE_ATTRDQ)+"\"");
 				}
-	
+
 				// Check for minimizing
 				if(sMinimize.contains(e.getTagName()))
 				{
@@ -165,7 +165,7 @@ public class XHTML
 				else
 				{
 					w.write(">");
-					
+
 					// Write contents
 					for(Node nChild=e.getFirstChild();nChild!=null;nChild=nChild.getNextSibling())
 					{
@@ -188,14 +188,14 @@ public class XHTML
 			case Node.DOCUMENT_NODE:
 			{
 				save(((Document)n).getDocumentElement(),w);
-			} break;			
+			} break;
 			default:
 			{
 				w.write("<!-- [UNEXPECTED XML] "+n.getNodeType()+": "+n.getNodeValue()+" -->");
 			} break;
 		}
 	}
-	
+
 	/**
 	 * Saves an XHTML node to a string. Does not include the junk that goes at
 	 * the start of a document, e.g. doctype etc.
@@ -233,11 +233,11 @@ public class XHTML
 		for(iSkipCheck=0;iSkipCheck<sSource.length();iSkipCheck++)
 		{
 			char c=sSource.charAt(iSkipCheck);
-			// This if (which is sort of approximate) is faster than a humungous switch 
-			if( (c<=0x27 && c!=0x20) || c==0x3c) break; 
+			// This if (which is sort of approximate) is faster than a humungous switch
+			if( (c<=0x27 && c!=0x20) || c==0x3c) break;
 		}
 		if(iSkipCheck==sSource.length()) return sSource;
-	
+
 		StringBuffer sbOutput=new StringBuffer();
 		for(int i=0;i<sSource.length();i++)
 		{
@@ -266,7 +266,7 @@ public class XHTML
 				case 13:
 				{
 					sbOutput.append(c);
-				} break;					
+				} break;
 				default:
 				{
 					// Skip altogether control characters that are forbidden by XML
@@ -301,7 +301,7 @@ public class XHTML
 
 		return bXHTML;
 	}
-	
+
 	/**
 	 * Outputs an XHTML document in response to a servlet request.
 	 * @param d Document to output
@@ -318,6 +318,6 @@ public class XHTML
 	  XHTML.setContentType(request,response);
 	  PrintWriter pw=response.getWriter();
 	  XHTML.saveFullDocument(d,pw,false,sLang);
-	  pw.close();	
+	  pw.close();
 	}
 }

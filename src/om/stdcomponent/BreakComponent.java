@@ -24,10 +24,10 @@ import om.stdquestion.QContent;
 
 import org.w3c.dom.Element;
 
-/** 
+/**
 A line break that forces following text or components to start a new line
 (consider also {@link GapComponent} which is the same thing but with
-some blank space). May not contain anything. 
+some blank space). May not contain anything.
 <h2>XML usage</h2>
 &lt;break/&gt;
 <h2>Properties</h2>
@@ -45,14 +45,14 @@ public class BreakComponent extends QComponent
 	{
 		return "break";
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null) throw new OmFormatException(
-			"<break> may not contain other content"); 
+			"<break> may not contain other content");
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{

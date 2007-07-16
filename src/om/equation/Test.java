@@ -55,7 +55,7 @@ public class Test extends JFrame
 			t.printStackTrace();
 		}
 	}
-	
+
 	@SuppressWarnings("unused")
 	private static void testTextEquation() throws Exception
 	{
@@ -66,22 +66,22 @@ public class Test extends JFrame
 		Element e=ef.equation().createDOM(XML.createDocument());
 		e.getOwnerDocument().appendChild(e);
 		System.out.println(XML.saveString(e.getOwnerDocument()));
-		
+
 		Document d=XML.createDocument();
 		System.out.println(TextEquation.process(sEquation,d).getAttribute("alt"));
-		
+
 		d=XML.createDocument();
 		System.out.println(XML.saveString(TextEquation.process(sEquation,d)));
 	}
-	
+
 	Test() throws Exception
-	{		
+	{
 		super("Equation test");
 
 		boolean bAntiAlias=true;
 		float fSize=1.0f;
 		int iCols=4;
-		
+
 		String sSolo=null;
 //		sSolo="\\left|\\frac{2n+6n}{2} + 4\\right|+\\left[\\frac{2n+6n}{2} + 4\\right]";
 //		sSolo="2^{\\frac{1}{\\left(\\frac{2n+6n}{2} + 4\\right)+1}}";
@@ -115,35 +115,35 @@ public class Test extends JFrame
 			"125^{\\frac{2}{3}}", // From Phil (alternate)
 			"\\frac{1}{125_{\\frac{2}{3}}}",
 			"8 - (-4) = -\\frac{8}{4}=-2", // From Phil
-			
-			
+
+
 			"m = \\frac{1}{2n^2} \\sqrt{\\frac{2p}{q}}",
 			"\\frac {n}{6} ÷ \\frac{6n}{p}",
 			"\\frac{m^2 - nm - 2mn + 2n^2}{m - 2n}",
-			
+
 			"H = L\\mbox{sin}\u03b8", // From Greg
-			
+
 			"\\frac{\\sqrt{a}}{\\sqrt{b}}", // From Will
-			
+
 			// Greek letter tests
 			"\\Delta + \\delta",
-			
+
 			// Super/sub testset
 			"N^{N^{N^{N^{N^2}}}}",
 			"N_{N_{N_{N_{N_2}}}}",
 			"N^{N_{N_{N_3}}}_{N^{N^{N^2}}}",
 			"N^{N^{N^N}}+\\sqrt{\\sqrt{\\sqrt{x}}}",
 			"\\frac{1}{pq}",
-			
+
 			// Sigma tests
 			"\\sum 4+z",
 			"\\sum_{i=1}^{10} e^i",
 			"\\int_{i=1}^{10} e^i \\frac{1}{2} \\sum_{i=1}^{10} e^i \\frac{1}{2}",
 			"\\frac{1}{\\int_{i=1}^{10} e^i \\frac{1}{2} \\sum_{i=1}^{10} e^i \\frac{1}{2}}",
-			
+
 			// Displaysize test
 			"\\frac{\\int_{i=1}^{10} e^i}{\\sum_{i=1}^{10} e^i + \\displaystyle\\sum_{i=1}^{10} e^i}",
-			
+
 			// Sub overlap
 			"k_yx^2",
 
@@ -153,12 +153,12 @@ public class Test extends JFrame
 			"\\left(\\frac{2n+6n}{2} + 4\\right)",
 			"\\left{\\frac{2n+6n}{2} + 4\\right}",
 			"2+\\left{\\frac{2n+6n}{2}+4\\right.",
-			
+
 //			"x^2=n + N^N_N"
 //			"N_N^N"
 //			"= x ^N_N"
 		};
-		
+
 		((JComponent)getContentPane()).setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 		getContentPane().setLayout(new GridLayout(0,iCols,10,10));
 		if(sSolo==null) for(int i=0;i<asTest.length;i++)
@@ -169,7 +169,7 @@ public class Test extends JFrame
 		{
 			getContentPane().add(getEquation(sSolo,bAntiAlias,fSize));
 		}
-		
+
 //		showOverlap('r',new Font("Times New Roman",Font.PLAIN,28));
 //		stupidTest2(new Font("Times New Roman",Font.PLAIN,13));
 //		stupidTest2(new Font("Times New Roman",Font.PLAIN,11));
@@ -177,12 +177,12 @@ public class Test extends JFrame
 //		stupidTest2(new Font("Times New Roman",Font.ITALIC,13));
 //		stupidTest2(new Font("Times New Roman",Font.ITALIC,11));
 //		stupidTest2(new Font("Times New Roman",Font.ITALIC,9));
-		
+
 		pack();
 		setVisible(true);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);		
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-	
+
 	@SuppressWarnings("unused")
 	private void showOverlap(char c,Font f)
 	{
@@ -205,14 +205,14 @@ public class Test extends JFrame
 			bAntiAlias ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 
 		char c='X';
-		
+
   	// Get outline of letter
   	GlyphVector gv=f.createGlyphVector(g2.getFontRenderContext(),new char[] {c});
   	Shape s=gv.getOutline(50,50);
   	Shape sRight;
   	if(f.isItalic())
   	{
-  		// Use italic version for comparing right side 
+  		// Use italic version for comparing right side
   		Area aItalic=new Area(s);
   		AffineTransform at=new AffineTransform();
   		at.translate(0,50);
@@ -225,7 +225,7 @@ public class Test extends JFrame
   	{
   		sRight=s;
   	}
-  	
+
   	g2.setColor(Color.white);
   	g2.fillRect(0,0,100,100);
   	g2.setColor(new Color(255,255,210));
@@ -236,7 +236,7 @@ public class Test extends JFrame
   	g2.fill(s);
   	g2.setColor(Color.black);
   	g2.fill(sRight);
-  	
+
 		JLabel l=new JLabel(new ImageIcon(bi));
 		getContentPane().add(l);
 	}
@@ -253,12 +253,12 @@ public class Test extends JFrame
 	{
 		int iX=(c-'A')*(iSize*2)+iSize;
 		char cLower=(char)(c-'A'+'a');
-		
+
 		Fonts.drawCharacterTest(g2,f,c,iX,iSize*2);
 		Fonts.drawCharacterTest(g2,f,cLower,iX,iSize*5);
 	}
 	Fonts.drawCharacterTest(g2,f,' ',26*iSize*2+iSize,iSize*4);
-		
+
 //		boolean bAntiAlias=true;
 //		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 //			bAntiAlias ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -273,21 +273,21 @@ public class Test extends JFrame
 //		{
 //			int iX=(c-'A')*(iSize*2)+iSize;
 //			char cLower=(char)(c-'A'+'a');
-//			
+//
 //			showChar(f,g2,c,iX,iSize*2);
 //			showChar(f,g2,cLower,iX,iSize*5);
 //		}
-  	
+
 		JLabel l=new JLabel(new ImageIcon(bi));
 		getContentPane().add(l);
 	}
-	
+
 	@SuppressWarnings("unused")
 	private void showChar(Font f,Graphics2D g2,char c,int iX,int iY)
 	{
 		g2.setColor(Color.red);
 		g2.fillRect(iX-2,iY-Fonts.getAscent(f,c),1,Fonts.getAscent(f,c));
-		g2.setColor(Color.black);			
+		g2.setColor(Color.black);
 		g2.drawString(""+c,iX,iY);
 	}
 
@@ -297,7 +297,7 @@ public class Test extends JFrame
 		EquationFormat ef=new EquationFormat(new StringReader(sEquation	));
 		Element eXML=ef.equation().createDOM(XML.createDocument());
 //		System.out.println("\nDocument:\n\n"+XML.saveString(eXML));
-		
+
 		Equation e=Equation.create(eXML,fSize);
 		e.prepare();
 		e.setFont("Verdana",null);

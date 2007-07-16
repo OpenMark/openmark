@@ -24,9 +24,9 @@ import om.stdquestion.QContent;
 
 import org.w3c.dom.Element;
 
-/** 
-Inserts a link on the web page. 
-This link is followed in a new window 
+/**
+Inserts a link on the web page.
+This link is followed in a new window
 when any of the contents are clicked upon.
 <h2>XML usage</h2>
 &lt;link url="http://www.open.ac.uk">Open University&lt;/link>
@@ -46,20 +46,20 @@ public class LinkComponent extends QComponent
 	{
 		return "link";
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
-	}	
-	
+	}
+
 	/** Specifies attributes required */
 	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[]	{"url"};
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{

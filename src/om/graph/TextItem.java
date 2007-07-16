@@ -31,32 +31,32 @@ public class TextItem extends GraphItem
 	{
 		super(w);
 	}
-	
+
 	/** Actual text */
 	private String sText;
 
 	/** Location of text */
 	private GraphPoint gpOrigin=GraphPoint.ZERO;
-	
+
 	/** Angle */
 	private double dAngle=0.0;
-	
+
 	/** Font */
 	private Font fText=null;
-	
+
 	/** Colour */
-	private Color cText=null;	
-	
+	private Color cText=null;
+
 	/** Alignment */
 	private String sAlign=ALIGN_CENTRE;
-	
+
 	/** Alignment constant */
 	public final static String ALIGN_LEFT="left";
 	/** Alignment constant */
 	public final static String ALIGN_RIGHT="right";
 	/** Alignment constant */
 	public final static String ALIGN_CENTRE="centre";
-	
+
 	@Override
 	public void init() throws GraphFormatException
 	{
@@ -69,17 +69,17 @@ public class TextItem extends GraphItem
 	{
 		g2.setFont(fText);
 		g2.setColor(cText);
-		
+
 		// Origin point
 		Point p=gpOrigin.convert(getWorld());
-		
+
 		AffineTransform at=null;
 		if(dAngle!=0.0)
 		{
 			at=g2.getTransform();
 			g2.rotate(dAngle / 180.0 * Math.PI,p.x,p.y);
 		}
-		
+
 		if(sAlign.equals(ALIGN_LEFT))
 			g2.drawString(sText,p.x,p.y);
 		else
@@ -90,13 +90,13 @@ public class TextItem extends GraphItem
 			else if(sAlign.equals(ALIGN_RIGHT))
 				g2.drawString(sText,p.x-iSize,p.y);
 		}
-		
+
 		if(at!=null)
 		{
 			g2.setTransform(at);
 		}
 	}
-	
+
 	/**
 	 * Sets origin point, X co-ordinate.
 	 * @param gsX Co-ordinate
@@ -106,7 +106,7 @@ public class TextItem extends GraphItem
 		gpOrigin=gpOrigin.newX(gsX);
 	}
 	/**
-	 * Sets origin point, Y co-ordinate. 
+	 * Sets origin point, Y co-ordinate.
 	 * @param gsY Co-ordinate
 	 */
 	public void setY(GraphScalar gsY)
@@ -122,9 +122,9 @@ public class TextItem extends GraphItem
 	 */
 	public void setColour(Color c)
 	{
-		cText=c;		
+		cText=c;
 	}
-	
+
 	/**
 	 * Sets angle of text.
 	 * @param dDegrees Degrees clockwise from normal horizontal text
@@ -133,7 +133,7 @@ public class TextItem extends GraphItem
 	{
 		dAngle=dDegrees;
 	}
-	
+
 	/**
 	 * @param f Font to use
 	 */
@@ -144,9 +144,9 @@ public class TextItem extends GraphItem
 
 	/**
 	 * Sets text alignment.
-	 * @param s In code, use an ALIGN_x constant. In XML, valid options are 
+	 * @param s In code, use an ALIGN_x constant. In XML, valid options are
 	 *   "left", "right", and "centre"
-	 * @throws GraphFormatException 
+	 * @throws GraphFormatException
 	 */
 	public void setAlign(String s) throws GraphFormatException
 	{
@@ -155,7 +155,7 @@ public class TextItem extends GraphItem
 		else
 			throw new GraphFormatException("<text>: invalid align= value: "+s);
 	}
-	
+
 	/**
 	 * Sets the actual text.
 	 * @param s New text string
@@ -163,5 +163,5 @@ public class TextItem extends GraphItem
 	public void setText(String s)
 	{
 		sText=s;
-	}	
+	}
 }

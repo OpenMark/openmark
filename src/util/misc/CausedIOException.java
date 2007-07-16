@@ -32,7 +32,7 @@ public class CausedIOException extends IOException {
 		super(e.getMessage());
 		initCause(e);
 	}
-	
+
 	/**
 	 * @param sMessage the error message.
 	 * @param e the exception that is causing this one - can be null.

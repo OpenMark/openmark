@@ -27,7 +27,7 @@ public class OmFormatException extends OmDeveloperException
 	{
 		super(sText);
 	}
-	
+
 	/**
 	 * @param sText Exception message (do not end in full stop)
 	 * @param t Cause

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package om.tnavigator.reports.std;
 
@@ -20,7 +20,7 @@ import util.xml.XML;
  */
 public class QuestionTestReport implements OmTestReport {
 	NavigatorServlet ns;
-	
+
 	/**
 	 * Create an instance of this report.
 	 * @param ns the navigator servlet we belong to.
@@ -49,7 +49,7 @@ public class QuestionTestReport implements OmTestReport {
 	public boolean isApplicable(TestDeployment td) {
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.OmTestReport#handleTestReport(om.tnavigator.UserSession, java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -58,14 +58,14 @@ public class QuestionTestReport implements OmTestReport {
 			throws Exception {
 		// Build result
 		StringBuffer sb=new StringBuffer("<div class='basicpage questionreport report'>");
-		
+
 		SimpleDateFormat sdf=new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
-		
+
 		// Query from database for PIs and questions
-		DatabaseAccess.Transaction dat=ns.getDatabaseAccess().newTransaction();		
+		DatabaseAccess.Transaction dat=ns.getDatabaseAccess().newTransaction();
 		try
 		{
-		  ResultSet rs=ns.getOmQueries().queryQuestionReport(dat,us.getTestId(),sQuestion);		  
+		  ResultSet rs=ns.getOmQueries().queryQuestionReport(dat,us.getTestId(),sQuestion);
 		  String sCurrentPI=null;
 		  int iCurrentAttempt=0;
 		  boolean bInPI=false,bInAttempt=false;
@@ -74,8 +74,8 @@ public class QuestionTestReport implements OmTestReport {
 		  	String sPI=rs.getString(1);
 				if(!sPI.equals(sCurrentPI))
 		  	{
-		  		if(bInAttempt) 
-		  		{		  			
+		  		if(bInAttempt)
+		  		{
 		  			sb.append("</div></div>");
 		  			bInAttempt=false;
 		  		}
@@ -83,7 +83,7 @@ public class QuestionTestReport implements OmTestReport {
 		  		sCurrentPI=sPI;
 		  		sb.append("<div class='pi'><h3>"+sCurrentPI+" ("+rs.getString(2)+")</h3>");
 		  		iCurrentAttempt=0;
-		  		bInPI=true;  
+		  		bInPI=true;
 		  	}
 		  	if(rs.getInt(3)!=iCurrentAttempt)
 		  	{
@@ -108,7 +108,7 @@ public class QuestionTestReport implements OmTestReport {
 		  		sb.append("</em></div><div class='scores'><span class='t'>Score:</span>");
 		  		bInAttempt=true;
 		  	}
-		  	
+
 		  	String sAxis=rs.getString(9);
 				if(sAxis!=null)
 		  	{
@@ -124,11 +124,11 @@ public class QuestionTestReport implements OmTestReport {
 		{
 			dat.finish();
 		}
-		
+
 		sb.append("<p><a href='reports!'>Back to reports home</a></p>");
 		sb.append("</div>");
-		
-		ns.serveTestContent(us,"Reports: "+sQuestion,"",null,null,sb.toString(),false, request, response, true);				
+
+		ns.serveTestContent(us,"Reports: "+sQuestion,"",null,null,sb.toString(),false, request, response, true);
 	}
 
 }

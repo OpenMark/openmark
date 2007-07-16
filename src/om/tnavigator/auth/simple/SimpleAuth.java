@@ -41,15 +41,15 @@ import util.misc.Strings;
 import util.xml.XHTML;
 import util.xml.XML;
 
-/** 
+/**
  * Simple implementation of authentication that just uses extra database tables.
- * 
+ *
  * Tables
  * ------
- * simpleauth_users(username,password,[optional]email) 
- * simpleauth_groups(username,groupname) 
+ * simpleauth_users(username,password,[optional]email)
+ * simpleauth_groups(username,groupname)
  * Usernames and group names must contain only alphanumerics.
- * 
+ *
  * Authentication
  * --------------
  * Authentication is stored in a cookie 'simpleauth':
@@ -67,22 +67,22 @@ public class SimpleAuth implements Authentication
 {
 	/** Database access */
 	private DatabaseAccess da;
-	
+
 	/** Name of cookie used for simple authentication */
 	private final static String COOKIE="simpleauth";
-	
+
 	/** Magic random number for hashing */
 	private String magicNumber;
-	
+
 	/** Template folder */
 	private File templatesFolder;
-	
+
 	/** From address for email */
 	private String mailFrom;
-	
+
 	private static final String LOGINFORM="simpleauth.login.xhtml";
 	private static final String OFFERLOGIN="simpleauth.offerlogin.xhtml";
-	
+
 	/**
 	 * Standard constructor. Creates database tables if they don't already exist.
 	 * @param ns Servlet
@@ -92,12 +92,12 @@ public class SimpleAuth implements Authentication
 	{
 		// Magic number: everything after the . in a random double.
 		magicNumber=(Math.random()+"").substring(2);
-		
+
 		// Remember settings from servlet
-		da=ns.getDatabaseAccess();		
+		da=ns.getDatabaseAccess();
 		templatesFolder=ns.getTemplatesFolder();
 		mailFrom=ns.getNavigatorConfig().getAlertMailFrom();
-		
+
 		// Check tables are present
 		DatabaseAccess.Transaction dat=da.newTransaction();
 		try
@@ -112,7 +112,7 @@ public class SimpleAuth implements Authentication
 		{
 			dat.finish();
 		}
-		
+
 		// No tables? Let's make some
 		dat=da.newTransaction();
 		try
@@ -127,7 +127,7 @@ public class SimpleAuth implements Authentication
 		finally
 		{
 			dat.finish();
-		}		
+		}
 	}
 
 	public void becomeTestUser(HttpServletResponse response,String suffix)
@@ -146,7 +146,7 @@ public class SimpleAuth implements Authentication
 		String offer=IO.loadString(new FileInputStream(new File(templatesFolder,OFFERLOGIN)));
 		return XML.replaceToken(offer,"%%","LOGINURL",XHTML.escape(getLoginPageURL(request)		,XHTML.ESCAPE_ATTRSQ));
 	}
-	
+
 	private String getCookie(HttpServletRequest request)
 	{
 		Cookie[] ac=request.getCookies();
@@ -170,7 +170,7 @@ public class SimpleAuth implements Authentication
 		else
 			return new SimpleUncheckedUser(cookie,cookie.substring(0,cookie.indexOf(':')));
 	}
-	
+
 	private String hash(String password) throws IOException
 	{
 		String plaintext=password+magicNumber;
@@ -207,7 +207,7 @@ public class SimpleAuth implements Authentication
 		HttpServletResponse response,boolean bRequireLogin) throws IOException
 	{
 		SimpleUncheckedUser details=(SimpleUncheckedUser)getUncheckedUserDetails(request);
-		if(details.getCookie()!=null) 
+		if(details.getCookie()!=null)
 		{
 			// Find out password for purported user
 			DatabaseAccess.Transaction dat=null;
@@ -244,10 +244,10 @@ public class SimpleAuth implements Authentication
 			Cookie c=new Cookie(COOKIE,"");
 			c.setMaxAge(0);
 			c.setPath("/");
-			response.addCookie(c);			
-		} 
+			response.addCookie(c);
+		}
 		// No cookie or auth failed
-		if(bRequireLogin) 
+		if(bRequireLogin)
 		{
 			redirect(request,response);
 			return null;
@@ -263,21 +263,21 @@ public class SimpleAuth implements Authentication
 	{
 		// Only offer login page
 		if(!subPath.equals("login")) return false;
-		
+
 		// Load form and fill in URL
 		Document d=XML.parse(new File(templatesFolder,LOGINFORM));
 		Element urlField=XML.find(d,"name","url");
 		String url=request.getParameter("url");
 		if(url==null) throw new Exception("Missing url parameter");
 		urlField.setAttribute("value",url);
-		
+
 		if(request.getMethod().equals("POST"))
 		{
 			// Get username/password
-			String 
+			String
 				username=request.getParameter("username"),
 				password=request.getParameter("password");
-			
+
 			// Check they match
 			DatabaseAccess.Transaction dat=da.newTransaction();
 			try
@@ -305,14 +305,14 @@ public class SimpleAuth implements Authentication
 			finally
 			{
 				dat.finish();
-			}			
+			}
 		}
 		else
 		{
 			XHTML.output(d,request,response,"en");
 		}
-		
-		return true;		
+
+		return true;
 	}
 
 	public void obtainPerformanceInfo(Map m)
@@ -325,7 +325,7 @@ public class SimpleAuth implements Authentication
 	{
 		response.sendRedirect(getLoginPageURL(request));
 	}
-	
+
 	private String getLoginPageURL(HttpServletRequest request) throws IOException
 	{
 		// Get URL up to before webapp context, add the context back (doesn't end
@@ -343,8 +343,8 @@ public class SimpleAuth implements Authentication
 		// Split into subject and message
 		String[] subjectAndMessage=content.split("\n",2);
 		if(subjectAndMessage.length!=2) throw new IOException(
-			"Email content must begin with a one-line subject then contain additional content"); 
-		
+			"Email content must begin with a one-line subject then contain additional content");
+
 		// Find out password for purported user
 		DatabaseAccess.Transaction dat=null;
 		try
@@ -378,6 +378,6 @@ public class SimpleAuth implements Authentication
 		{
 			if(dat!=null) dat.finish();
 		}
-		
+
 	}
 }

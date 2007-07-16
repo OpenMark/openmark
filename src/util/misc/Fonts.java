@@ -22,7 +22,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-/** 
+/**
  * Obtains information about fonts that is more accurate then the built-in
  * metrics.
  */
@@ -30,17 +30,17 @@ public abstract class Fonts
 {
 	/** Turn on when checking metrics */
 	private final static boolean DEBUGMETRICS=false;
-	
+
 	/** Map of Font -> String (character) -> CharacterInfo */
 	private static Map<Font,Map<String,CharacterInfo> > mCache=
 			new HashMap<Font,Map<String,CharacterInfo> >();
-	
-	/** 
+
+	/**
 	 * BufferedImage used for calculating character information (retained to
 	 * save creation time)
 	 */
 	private static BufferedImage biCache=null;
-	
+
 	/** Information stored about a single character */
 	private static class CharacterInfo
 	{
@@ -59,10 +59,10 @@ public abstract class Fonts
 	{
 		return getCharacterInfo(f,cEdge).iLeftOverlap;
 	}
-	
+
 	/**
 	 * Obtain the number of pixels that a given character overlaps to the right
-	 * of its claimed advance width. 
+	 * of its claimed advance width.
 	 * @param f Font
 	 * @param cEdge Character being considered
 	 * @return Number of pixels (min 0)
@@ -72,7 +72,7 @@ public abstract class Fonts
 		CharacterInfo ci=getCharacterInfo(f,cEdge);
 		return ci.iRightExtent-ci.iReportedWidth;
 	}
-	
+
 	/**
 	 * Returns the reported width of a character (from Java).
 	 * @param f Font
@@ -83,24 +83,24 @@ public abstract class Fonts
 	{
 		return getCharacterInfo(f,c).iReportedWidth;
 	}
-	
+
 	/**
 	 * Returns the actual right extent of a character, in pixels from its
 	 * origin point (i.e. does not include the left overlap).
 	 * @param f Font
 	 * @param c Character
 	 * @return Right extent in pixels
-	 */	
+	 */
 	public static int getRightExtent(Font f,char c)
 	{
-		return getCharacterInfo(f,c).iRightExtent;		
+		return getCharacterInfo(f,c).iRightExtent;
 	}
 
 	/**
 	 * Obtain the number of pixels that a given character overlaps to the right
 	 * of its claimed advance width, when the italic slope is taken into account.
 	 * (In other words, it is expected that the top part of an I will overlap by
-	 * a bit, so we don't count that here whereas getRightOverlap does.)  
+	 * a bit, so we don't count that here whereas getRightOverlap does.)
 	 * @param f Font
 	 * @param cEdge Character being considered
 	 * @return Number of pixels (min 0)
@@ -109,7 +109,7 @@ public abstract class Fonts
 	{
 		return getCharacterInfo(f,cEdge).iRightItalicOverlap;
 	}
-	
+
 	/**
 	 * Display character metrics (for testing).
 	 * @param g2 Graphics context
@@ -140,10 +140,10 @@ public abstract class Fonts
 		g2.fillRect(iX+3+ci.iLeftOverlap,iY+ci.iDescent+4,ci.iReportedWidth,1);
 		g2.setColor(Color.magenta);
 		g2.fillRect(iX+3+ci.iLeftOverlap+ci.iReportedWidth,iY+ci.iDescent+5,ci.iRightItalicOverlap,1);
-		
+
 		return 3+ci.iLeftOverlap+ci.iRightExtent;
 	}
-	
+
 	/**
 	 * Mac OS X 10.3.9, at least in Java version 1.4.2_12, throws nasty
 	 * exceptions when trying to render Unicode characters in headless mode
@@ -152,9 +152,9 @@ public abstract class Fonts
 	 * is therefore not supported.
 	 */
 	public static boolean isBrokenMacOS=
-		System.getProperty("os.name").indexOf("Mac")!=-1 && 
+		System.getProperty("os.name").indexOf("Mac")!=-1 &&
 		System.getProperty("os.version").startsWith("10.3");
-	
+
 	/**
 	 * Obtains information for a single character.
 	 * @param f Font
@@ -179,13 +179,13 @@ public abstract class Fonts
 			{
 				ci=new CharacterInfo();
 				mCharacters.put(sCharacter,ci);
-				
+
 				// Get image for calculations (reuse if possible)
 				int iSize=f.getSize();
 				if(DEBUGMETRICS) System.err.println("=== "+c+" ("+f+") ===");
 				if(biCache==null || !(biCache.getWidth()==iSize*3 && biCache.getHeight()==iSize*3))
 					biCache=new BufferedImage(iSize*3,iSize*3,BufferedImage.TYPE_BYTE_GRAY);
-				
+
 				// Clear image and draw character in it
 				Graphics2D g2=biCache.createGraphics();
 				g2.setColor(Color.black);
@@ -197,7 +197,7 @@ public abstract class Fonts
 				g2.setColor(Color.white);
 				System.err.println("About to draw character "+c+" ("+(int)c+")");
 				g2.drawString(sCharacter,iSize,iSize*2);
-				
+
 				// Check for ascent (highest non-blank line)
 				// Defined as number of pixels above (not including) baseline
 				byte[] abLine=new byte[iSize*3];
@@ -217,7 +217,7 @@ public abstract class Fonts
 					ci.iAscent=iSize*2-iY;
 					if(DEBUGMETRICS) System.err.println("Ascent: "+ci.iAscent);
 				}
-				
+
 				// Check for descent (lowest non-blank line)
 				// Defined as number of pixels below (or including) baseline
 				{
@@ -236,7 +236,7 @@ public abstract class Fonts
 					ci.iDescent=iY-(iSize*2-1);
 					if(DEBUGMETRICS) System.err.println("Descent: "+ci.iDescent);
 				}
-				
+
 				// Check for left overlap
 				{
 					byte[] abCol=new byte[ci.iAscent+ci.iDescent];
@@ -253,12 +253,12 @@ public abstract class Fonts
 					ci.iLeftOverlap=iSize-iX;
 					if(DEBUGMETRICS) System.err.println("Left overlap: "+ci.iLeftOverlap);
 				}
-				
+
 				// Check for width and italic right overlap
 				{
 					ci.iReportedWidth=(int)f.getStringBounds(	sCharacter,
 						biCache.createGraphics().getFontRenderContext()).getWidth();
-					
+
 					for(int iY=iSize*2-ci.iAscent;iY<iSize*2+ci.iDescent;iY++)
 					{
 						biCache.getData().getDataElements(0,iY,iSize*3,1,abLine);
@@ -277,7 +277,7 @@ public abstract class Fonts
 								(iX-iSize+1) - (ci.iReportedWidth+(int)(f.getItalicAngle()*(iSize*2-iY))));
 						}
 					}
-					
+
 					// Handle spaces/blank characters
 					if(ci.iRightExtent==0) ci.iRightExtent=ci.iReportedWidth;
 				}
@@ -287,20 +287,20 @@ public abstract class Fonts
 			return ci;
 		}
 	}
-	
+
 	/**
 	 * Do we count a pixel as being filled and not disposable?
-	 * @param b Byte value 
+	 * @param b Byte value
 	 * @return True if it's solid enough to count
 	 */
 	private final static boolean filled(final byte b)
 	{
 		return (b&0xff) > 10;
 	}
-	
+
 	/**
 	 * Obtains the actual ascent of a given character. Ascent is defined as pixels
-	 * above the baseline. 
+	 * above the baseline.
 	 * @param f Font
 	 * @param c Character
 	 * @return Ascent in pixels
@@ -309,7 +309,7 @@ public abstract class Fonts
 	{
 		return getCharacterInfo(f,c).iAscent;
 	}
-	
+
 	/**
 	 * Obtains the actual descent of a given character. Ascent is defined as
 	 * pixels below and including the baseline.
@@ -321,7 +321,7 @@ public abstract class Fonts
 	{
 		return getCharacterInfo(f,c).iDescent;
 	}
-	
+
 	/**
 	 * Returns ascent for a piece of text.
 	 * @param f Font
@@ -365,14 +365,14 @@ public abstract class Fonts
 	  for(char c='A';(c>='A' && c<='Z') || (c>='a' && c<='z') || (c>='0' && c<='9') ;c++)
 	  {
 	  	iAscent=Math.max(iAscent,getAscent(f,c));
-	  	
+
 	  	// Makes loop work
 	  	if(c=='Z') c='a'-1;
 	  	if(c=='z') c='0'-1;
 	  }
 	  return iAscent;
 	}
-	
+
 	/**
 	 * @param f Font to consider
 	 * @return Maximum descent for alphanumeric characters in font (does NOT
@@ -384,11 +384,11 @@ public abstract class Fonts
 	  for(char c='A';(c>='A' && c<='Z') || (c>='a' && c<='z') || (c>='0' && c<='9') ;c++)
 	  {
 	  	iDescent=Math.max(iDescent,getDescent(f,c));
-	  	
+
 	  	// Makes loop work
 	  	if(c=='Z') c='a'-1;
 	  	if(c=='z') c='0'-1;
 	  }
 	  return iDescent;
-	}	
+	}
 }

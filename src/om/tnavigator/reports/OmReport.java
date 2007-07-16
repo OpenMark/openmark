@@ -26,15 +26,15 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface OmReport {
 	/**
-	 * Generate the report, sending it to <code>response</code>. 
+	 * Generate the report, sending it to <code>response</code>.
 	 * @param suffix the remainder of the URL.
 	 * @param request The request being responded to.
 	 * @param response The response we are sending.
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void handleReport(String suffix, HttpServletRequest request,HttpServletResponse response)
 			throws Exception;
-	
+
 	/**
 	 * @return The part of the URL that means the servlet should run this report.
 	 */

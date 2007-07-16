@@ -56,8 +56,8 @@ public class ComponentRegistry
 		TextComponent.class,
 		TextEquationComponent.class
 		// Do not include root component as it can't be created from a tag
-	};	
-	
+	};
+
 	/**
 	 * Register all known components with a QComponentManager.
 	 * @param qcm the QComponentManager to register components with.

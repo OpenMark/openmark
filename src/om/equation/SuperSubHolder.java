@@ -30,9 +30,9 @@ public class SuperSubHolder extends Item
 	{
 		return isWhitespaceBefore() ? null : getSiblingBefore();
 	}
-	
-	/** 
-	 * Interface items (appearing in 'main' slot) should implement if they eat 
+
+	/**
+	 * Interface items (appearing in 'main' slot) should implement if they eat
 	 * their own super and sub items and don't want a SuperSubHolder to render
 	 * them.
 	 */
@@ -49,7 +49,7 @@ public class SuperSubHolder extends Item
 		 */
 		public void attachSuperSub(Item iSuper,Item iSub);
 	}
-	
+
 	private Item getSuper()
 	{
 		for(int iChild=0;iChild<getChildren().length;iChild++)
@@ -86,7 +86,7 @@ public class SuperSubHolder extends Item
 	    default: throw new OmUnexpectedException("Incorrect textsize");
 		}
 	}
-	
+
 	/** @return Appropriate offset to use based on text size */
 	private int getSubOffset()
 	{
@@ -102,26 +102,26 @@ public class SuperSubHolder extends Item
 	    default: throw new OmUnexpectedException("Incorrect textsize");
 		}
 	}
-	
+
 	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
 		Item iMain=getMain2();
 		if(iMain!=null && iMain instanceof EatsOwnSuperSub)
 			return;
-		
+
 		if(hasSuper()) getSuper().render(g2,iX+iSupOffset,iY+iBaseline+iSupBaseline-getSuper().getBaseline());
 		if(hasSub()) getSub().render(g2,iX+iSubOffset,iY+iBaseline+iSubBaseline-getSub().getBaseline());
 	}
-	
+
 	int iSubBaseline,iSupBaseline,iSubOffset,iSupOffset;
-	
+
 	@Override
 	public boolean useAdvanceAfter(Item iBefore)
 	{
 		return true;
 	}
-	
+
 	@Override
 	protected void internalPrepare()
 	{
@@ -131,12 +131,12 @@ public class SuperSubHolder extends Item
 		{
 			EatsOwnSuperSub e=(EatsOwnSuperSub)iMain;
 			e.attachSuperSub(getSuper(),getSub());
-			return;			
+			return;
 		}
-		
+
 		int iMainAscent;
 		float fMainSlope;
-		if(iMain==null) 
+		if(iMain==null)
 		{
 			Font fPlain=getFont(Font.PLAIN);
 			LineMetrics lm=fPlain.getLineMetrics("Ay",Text.frc);
@@ -148,7 +148,7 @@ public class SuperSubHolder extends Item
 			iMainAscent=iMain.getBaseline();
 			fMainSlope=iMain.getEndSlope();
 		}
-		
+
 		// Get details of sup/sub
 		int iSupDescent=0,iSupAscent=0,iSupWidth=0;
 		if(hasSuper())
@@ -164,20 +164,20 @@ public class SuperSubHolder extends Item
 			iSubAscent=getSub().getBaseline();
 			iSubWidth=getSub().getWidth();
 		}
-		
+
 		// Use to define preferred baselines relative to main baseline
 		iSubBaseline=getSubOffset();
 		iSupBaseline=getSuperOffset();
-		
+
 		// Shift baselines if super gets near the main baseline...
 		iSupBaseline=Math.min(iSupBaseline,-(iMainAscent/3)-iSupDescent);
 		// ... or if sub gets near the top
 		iSubBaseline=Math.max(iSubBaseline,iSubAscent-((iMainAscent*2)/3) );
-			
+
 		// Shift baselines if children will run into each other
 		if(hasSub() && hasSuper())
 		{
-			int iGap = (iSubBaseline-iSubAscent) - (iSupBaseline+iSupDescent); 
+			int iGap = (iSubBaseline-iSubAscent) - (iSupBaseline+iSupDescent);
 			int iRequiredGap=getSuitableGap(getSuper().getTextSize());
 			if( iGap< iRequiredGap)
 			{
@@ -185,11 +185,11 @@ public class SuperSubHolder extends Item
 				iSubBaseline+=(iRequiredGap-iGap+1)/2; // +1 is to round it correctly
 			}
 		}
-		
+
 		// Apply offset for each baseline
 		iSubOffset=Math.round(fMainSlope*(-iSubBaseline))+SPACEBEFORE;
 		iSupOffset=Math.round(fMainSlope*(-iSupBaseline))+SPACEBEFORE;
-		
+
 		// Calculate height specs
 		iBaseline=Math.max(
 			hasSuper() ? iSupAscent-iSupBaseline : 0,
@@ -197,19 +197,19 @@ public class SuperSubHolder extends Item
 		iHeight=Math.max(
 			hasSub()? iSubBaseline+iSubDescent+iBaseline : 0,
 			hasSuper()? iSupBaseline+iSupDescent+iBaseline : 0);
-		
+
 		// Calculate width specs
 		iWidth=Math.max(iSubOffset+iSubWidth,iSupOffset+iSupWidth);
-		
+
 		// Allow a little space afterward
 		iWidth+=SPACEAFTER;
 	}
-	
+
 	/** Extra space before each scripted item */
 	private final static int SPACEBEFORE=1;
 	/** Extra space after the thing */
 	private final static int SPACEAFTER=1;
-	
+
 	/**
 	 * @param f ItemFactory to register this class with.
 	 */

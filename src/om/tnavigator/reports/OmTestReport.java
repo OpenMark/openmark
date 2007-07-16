@@ -29,13 +29,13 @@ import om.tnavigator.UserSession;
  */
 public interface OmTestReport {
 	/**
-	 * Generate the report, sending it to <code>response</code>. 
-	 * 
+	 * Generate the report, sending it to <code>response</code>.
+	 *
 	 * @param us The user's session on this test.
 	 * @param sSuffix The remainder of the URL.
 	 * @param request The request being responded to. It is recommended that you only use
 	 * 	the values obtainable from getParameterMap. The URL will have been consumed in getting this
-	 *  far. Autentication and cookies should be checked using methods of NavigatorServlet. 
+	 *  far. Autentication and cookies should be checked using methods of NavigatorServlet.
 	 * @param response The response we are sending.
 	 * @throws Exception
 	 */
@@ -56,7 +56,7 @@ public interface OmTestReport {
 	/**
 	 * @param td The test deployment.
 	 * @return whether this report is applicable to this test.
-	 * 
+	 *
 	 */
 	public boolean isApplicable(TestDeployment td);
 }

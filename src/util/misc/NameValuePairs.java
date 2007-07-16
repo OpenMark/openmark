@@ -20,13 +20,13 @@ package util.misc;
 import java.util.LinkedList;
 import java.util.List;
 
-/** Represents named parameters that can be turned into two arrays */ 
+/** Represents named parameters that can be turned into two arrays */
 public class NameValuePairs
 {
 	/** Names and values */
 	private List<String> lNames=new LinkedList<String>();
 	private List<String> lValues=new LinkedList<String>();
-	
+
 	/** @return Names array */
 	public String[] getNames()
 	{
@@ -47,10 +47,10 @@ public class NameValuePairs
 		lNames.add(sName);
 		lValues.add(sValue);
 	}
-	
+
 	@Override
 	public int hashCode()
-	{		
+	{
 		int iCode=0;
 		String[] asNames=getNames(),asValues=getValues();
 		for (int i=0; i < asNames.length; i++)

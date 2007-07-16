@@ -60,6 +60,6 @@ public class PostgreSQL extends OmQueries
 	{
 		return "CURRENT_TIMESTAMP";
 	}
-	
-	
+
+
 }

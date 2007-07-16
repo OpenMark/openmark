@@ -19,13 +19,13 @@ package om.stdcomponent;
 
 import om.OmException;
 
-/** Interface implemented by components that can accept a {@link LabelComponent}. */ 
-public interface Labelable 
+/** Interface implemented by components that can accept a {@link LabelComponent}. */
+public interface Labelable
 {
 	/**
-	 * @param bPlain True if in plain mode 
+	 * @param bPlain True if in plain mode
 	 * @return The XHTML id of the thing that should be labelled (the for= ID)
-	 * @throws OmException 
-	 */ 
+	 * @throws OmException
+	 */
 	public String getLabelTarget(boolean bPlain) throws OmException;
 }

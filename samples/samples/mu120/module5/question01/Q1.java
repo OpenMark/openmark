@@ -26,21 +26,21 @@ import om.OmException;
 import samples.shared.Helper;
 
 public class Q1 extends SimpleQuestion2 {
-    
+
     private static final double tolerance = 1E-6;
-    
+
     // Numbers for question variants
     private final static double [] numbers = {0.5, 2.0, 3.0};
     private final static String [] features = {"Patio", "Summer House", "Flowerbed", "Vegetable Plot", "Pond"};
     private final static int [] widths = {4, 3, 2, 3, 2};
     private final static int [] lengths = {7, 5, 7, 10, 3};
-    
+
     private String Y;
     private int W, L;
     private double X, AnsW, AnsL;
-    
+
     protected void init() throws OmException {
-        
+
         Random r = getRandom();
         X = numbers [r.nextInt(numbers.length)];
         int i = r.nextInt(features.length);
@@ -49,37 +49,37 @@ public class Q1 extends SimpleQuestion2 {
         L = lengths [i];
         AnsW = W * X;
         AnsL = L * X;
-        
+
         setPlaceholder("X", "" + X);
         setPlaceholder("Y", Y);
         setPlaceholder("W", "" + W);
         setPlaceholder("L", "" + L);
         setPlaceholder("AnsW", "" + AnsW);
         setPlaceholder("AnsL", "" + AnsL);
-        
+
         // store question information
         getResults().setQuestionLine("What is (X*W) " + X + "*" + W + ", (X*L)"	+ X + "*" + L + "?");
         getResults().setAnswerLine(X*W + ", " + X*L);
     }
-    
+
     protected boolean isRight(int iAttempt) throws OmDeveloperException {
-        
+
         String response1 = (getEditField("response1").getValue().trim());
         String response2 = (getEditField("response2").getValue().trim());
         double dbl1 = Helper.inputNumber(response1);
         double dbl2 = Helper.inputNumber(response2);
-        
+
         // store response information
         getResults().appendActionSummary("Attempt " + iAttempt + ": " + response1 + ", " + response2);
-        
+
         // correct answer (can be wrong way round) ?
         if (Helper.range(dbl1, AnsW, tolerance) && Helper.range(dbl2, AnsL, tolerance))
             return true;
         if (Helper.range(dbl1, AnsL, tolerance) && Helper.range(dbl2, AnsW, tolerance))
             return true;
-        
+
         // wrong answer handled from here on .....
-        
+
         if (Double.isNaN(dbl1) || Double.isNaN(dbl2))
             getComponent("nonumber").setDisplay(true);
         else { // so we have two numbers
@@ -101,7 +101,7 @@ public class Q1 extends SimpleQuestion2 {
             } else
                 setFeedbackID("allwrong");
         }
-        
+
         // feeback, given attempt 1, 2, or 3
         switch (iAttempt) {
             case 1:
@@ -111,8 +111,8 @@ public class Q1 extends SimpleQuestion2 {
             case 3:
                 break;
         }
-        
+
         return false;
     }
-    
+
 }

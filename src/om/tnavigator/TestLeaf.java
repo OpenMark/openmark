@@ -20,26 +20,26 @@ package om.tnavigator;
 /**
  * This is the interface used by the navigation panel to get the
  * information it needs to display each actual thing in the test
- * (questions or text pages) in the appropriate state, and with a 
+ * (questions or text pages) in the appropriate state, and with a
  * section heading before each section.
  */
 public interface TestLeaf
 {
 	/**
-	 * @param s Section name for question (or null for none) 
+	 * @param s Section name for question (or null for none)
 	 */
 	void setSection(String s);
-	
+
 	/**
 	 * @return Section name of question (null if not in a section)
 	 */
 	String getSection();
-	
+
 	/**
 	 * @return True if user has finished the item
 	 */
 	boolean isDone();
-	
+
 	/**
 	 * @return True if item is available for display
 	 */

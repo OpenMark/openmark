@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
+/**
 A component onto which DragBoxComponents may be dropped.
 <h2>XML usage</h2>
 &lt;dropbox/&gt;
@@ -43,8 +43,8 @@ A component onto which DragBoxComponents may be dropped.
 <tr><td>sidelabel</td><td>(string)</td><td>Optional label that appears in small text beside the box</td></tr>
 </table>
 <h2>Sizing</h2>
-<p>Drop boxes are automatically made the same size as the largest dragbox 
-that can be dropped in them (i.e. has the same group). 
+<p>Drop boxes are automatically made the same size as the largest dragbox
+that can be dropped in them (i.e. has the same group).
 There is no way to change their size.</p>
 */
 public class DropBoxComponent extends QComponent
@@ -60,13 +60,13 @@ public class DropBoxComponent extends QComponent
 	public final static String PROPERTY_FORCEBORDER="forceborder";
 	/** Property name for label alongside box */
 	public final static String PROPERTY_SIDELABEL="sidelabel";
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "dropbox";
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
@@ -79,39 +79,39 @@ public class DropBoxComponent extends QComponent
 		setString(PROPERTY_VALUE,"");
 		setBoolean(PROPERTY_FORCEBORDER,false);
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null)
 			throw new OmFormatException("<dropbox> may not include children");
 	}
-	
+
 	private StringBuffer sbCrap=new StringBuffer();
-	
+
 	/** @return Map of strings to component ID for the answers in plain mode (built on request) */
 	private Map getPlainAnswers() throws OmException
 	{
 		// Build map from plain answers -> ID
 		Map<String, String> m=new HashMap<String, String>();
 		m.put(NOANSWEROPTION,"");
-		
+
 		// Find all applicable dragboxes
 		List<DragBoxComponent> dragBoxes = getQDocument().find(DragBoxComponent.class);
 		for(DragBoxComponent dragBox : dragBoxes)
 		{
 			if(!dragBox.getString(PROPERTY_GROUP).equals(getString(PROPERTY_GROUP)))
 				continue;
-				
+
 			String sOption=dragBox.getPlainDropboxContent(false);
 			m.put(sOption,dragBox.getID());
-			
+
 			sbCrap.append(sOption +"="+dragBox.getID()+"\n");
 		}
-		
+
 		return m;
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
@@ -122,22 +122,22 @@ public class DropBoxComponent extends QComponent
 			Element eSelect=qc.createElement("select");
 			qc.addInlineXHTML(eSelect);
 			eSelect.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
-			
+
 			Element eFirst=XML.createChild(eSelect,"option");
 			XML.createText(eFirst,NOANSWEROPTION);
-					
-			// Find all applicable dragboxes			
+
+			// Find all applicable dragboxes
 			boolean bSomethingSelected=false;
 			List<DragBoxComponent> dragBoxes = getQDocument().find(DragBoxComponent.class);
 			for(DragBoxComponent dragBox : dragBoxes)
 			{
 				if(!dragBox.getString(PROPERTY_GROUP).equals(getString(PROPERTY_GROUP)))
 					continue;
-					
+
 				String sOption=dragBox.getPlainDropboxContent(bInit);
 				boolean bSelected=getValue()==dragBox.getID();
 				bSomethingSelected|=bSelected;
-				
+
 				Element eOption=XML.createChild(eSelect,"option");
 				if(bSelected) eOption.setAttribute("selected","selected");
 				XML.createText(eOption,sOption);
@@ -153,7 +153,7 @@ public class DropBoxComponent extends QComponent
 			qc.addInlineXHTML(eImg);
 			// Needed for IE (no it's not! now it screws it in IE! argh)
 			//qc.addInlineXHTML(qc.getOutputDocument().createTextNode(" "));
-			
+
 			Element eBox=qc.createElement("div");
 			eBox.setAttribute("class","dropbox");
 			String sGroup=getString(PROPERTY_GROUP);
@@ -165,30 +165,30 @@ public class DropBoxComponent extends QComponent
 				getBoolean(PROPERTY_FORCEBORDER) ||
 				convertHash(getBackground()).equals(sBorderColour))
 				sBorderColour="#ccc";
-			
+
 			eBox.setAttribute("style",
 				"background:"+sColour+"; border-color: "+sBorderColour+";");
 			eBox.setAttribute("id",QDocument.ID_PREFIX+getID()+"box");
 			if(isEnabled())
 				eBox.setAttribute("tabindex","0");
 			qc.addInlineXHTML(eBox);
-			
+
 			Element eInput=qc.createElement("input");
 			eInput.setAttribute("type","hidden");
 			eInput.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 			eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 			eInput.setAttribute("value",getValue());
 			qc.addInlineXHTML(eInput);
-			
+
 			Element eScript=qc.createElement("script");
 			eScript.setAttribute("type","text/javascript");
 			XML.createText(eScript,"addOnLoad(function() { dropboxFix('"+getID()+"','"+QDocument.ID_PREFIX+"',"+
 				(isEnabled() ? "true" : "false") + ",'"+sGroup+"','"+sBorderColour+"'); });");
 			qc.addInlineXHTML(eScript);
-			
-			if(isEnabled()) qc.informFocusable(eBox.getAttribute("id"),bPlain);		
+
+			if(isEnabled()) qc.informFocusable(eBox.getAttribute("id"),bPlain);
 		}
-		
+
 		String sSideLabel=null;
 		if(isPropertySet(PROPERTY_SIDELABEL))
 		{
@@ -199,12 +199,12 @@ public class DropBoxComponent extends QComponent
 					qc.getOutputDocument().createTextNode(sSideLabel));
 			qc.addInlineXHTML(eSideLabel);
 		}
-		
+
 		qc.addTextEquivalent("[Dropbox: "+getValue()+"]"+
 				(sSideLabel!=null ? sSideLabel + " " : ""));
 
 	}
-	
+
 	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
@@ -214,7 +214,7 @@ public class DropBoxComponent extends QComponent
 			String sAnswer=(String)getPlainAnswers().get(sValue);
 			if(sAnswer==null)
 				throw new OmException("Unexpected dropdown value: "+sValue+"\n"+sbCrap.toString());
-			
+
 			setString(PROPERTY_VALUE,sAnswer);
 		}
 		else
@@ -223,7 +223,7 @@ public class DropBoxComponent extends QComponent
 			setString(PROPERTY_VALUE,sValue);
 		}
 	}
-	
+
 	/** @return ID of dragbox that's placed in box (null if none) */
 	public String getValue()
 	{
@@ -236,9 +236,9 @@ public class DropBoxComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/** @param sValue ID of dragbox that should be placed in box */
-	public void setValue(String sValue) 
+	public void setValue(String sValue)
 	{
 		try
 		{
@@ -249,7 +249,7 @@ public class DropBoxComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/** Clears the box, removing any component */
 	public void clear()
 	{

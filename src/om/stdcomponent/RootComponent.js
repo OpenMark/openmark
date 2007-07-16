@@ -6,7 +6,7 @@ function addOnLoad(handler)
 }
 
 function myOnLoad()
-{	
+{
 	window.mLoaded=true;
 	for(var i=0;i<onLoadEvents.length;i++)
 	{
@@ -65,7 +65,7 @@ function preSubmit(specifiedForm)
 function isDomElement(node,tagName)
 {
 	if(!node.tagName || node.tagName.toLowerCase()!=tagName) return false;
-	
+
 	for(var i=1;i<arguments.length;i++)
 	{
 		if(node.getAttribute(arguments[i][0])!=arguments[i][1]) return false;
@@ -100,10 +100,10 @@ function log(line)
 		logBox.style.fontSize="11px";
 		logBox.style.borderTop="2px solid #888";
 	}
-	
-	var newLine=document.createElement("div");		
+
+	var newLine=document.createElement("div");
 	newLine.appendChild(document.createTextNode(line));
-	
+
 	if(!logBox.firstChild)
 		logBox.appendChild(newLine);
 	else
@@ -111,8 +111,8 @@ function log(line)
 }
 
 
-// We don't really care about KHTML and Opera, they will both be served the 
-// 'correct' version and are welcome to either work or not. They are detected 
+// We don't really care about KHTML and Opera, they will both be served the
+// 'correct' version and are welcome to either work or not. They are detected
 // only so we know they're not the 'real' ones they imitate.
 var isKHTML=navigator.userAgent.indexOf('KHTML')!=-1;
 var isGecko=!isKHTML && navigator.userAgent.indexOf('Gecko/')!=-1;
@@ -136,15 +136,15 @@ function inlinePositionFix(imageID)
 {
 	var imageElement=document.getElementById(imageID);
 	var rootx=imageElement.offsetLeft,rooty=imageElement.offsetTop;
-	
+
 	for(var i=1;i<arguments.length;i++)
 	{
 		var ph=document.getElementById(arguments[i][0]);
 
  		// Hack for IE positioning editfields one too far down (?!)
 		var moveUp=false;
-		if(isIE && (ph.childNodes.length==1 || 
-			(ph.childNodes.length==2 && ph.childNodes[1].nodeName.toLowerCase()=="script")) && 
+		if(isIE && (ph.childNodes.length==1 ||
+			(ph.childNodes.length==2 && ph.childNodes[1].nodeName.toLowerCase()=="script")) &&
 			isDomElement(ph.childNodes[0],"input",["type","text"]))
 		{
 			moveUp=true;
@@ -153,7 +153,7 @@ function inlinePositionFix(imageID)
 		if(isIE && ph.firstChild && ph.firstChild.nodeType==1 && ph.firstChild.currentStyle.display=="inline")
 		{
 			// In IE, if you don't put some text (such as this 0-size NBSP) before the
-			// first item in the placeholder, then in some (only some) cases, it adds 
+			// first item in the placeholder, then in some (only some) cases, it adds
 			// a humungous chunk of space before that first item.
 			var ieSucks=document.createElement("span");
 			ieSucks.style.fontSize="0";
@@ -169,19 +169,19 @@ function inlinePositionFix(imageID)
 			ph.style.left=(rootx+arguments[i][1])+'px';
 		}
 		ph.style.top=(rooty+arguments[i][2]-(moveUp ? 1 : 0))+'px';
-		
-		ph.style.visibility='visible';		
+
+		ph.style.visibility='visible';
 	}
 }
 
 function checkEnter(e)
-{	
+{
 	var target = e.target ? e.target : e.srcElement;
 	var keyCode = e.keyCode ? e.keyCode : e.which;
-	
+
 	// Stifle Enter on anything except submit buttons and textareas
-	if(keyCode==13 && (!target.type || (target.type!='submit' && target.type!='textarea'))) 
-		return false; 
+	if(keyCode==13 && (!target.type || (target.type!='submit' && target.type!='textarea')))
+		return false;
 	else
 		return true;
 }
@@ -190,7 +190,7 @@ function checkEnter(e)
 function fixEvent(e)
 {
 	if(!e) e=window.event;
-	
+
 	if(e.pageX)
 		e.mPageX=e.pageX;
 	else if(e.clientX)
@@ -203,12 +203,12 @@ function fixEvent(e)
 		e.mTarget=e.target;
 	else if(e.srcElement)
 		e.mTarget=e.srcElement;
-	if(e.keyCode) 
+	if(e.keyCode)
 		e.mKey=e.keyCode;
-	else if(e.which) 
+	else if(e.which)
 		e.mKey=e.which;
-	
-	return e;	
+
+	return e;
 }
 
 
@@ -220,18 +220,18 @@ function addFocusable(id,expr)
 	var o=new Object();
 	o.id=id;
 	o.expr=expr;
-	
+
 	if(focusList.length==0)
 	{
 		addOnLoad(function() {
 		setTimeout(o.expr+'.focus();setTimeout("window.scroll(0,0);",0)',100);
-		});		
+		});
 	}
-	
+
 	focusList.push(o);
 }
 
-// Focus the next (offset=1) or previous (offset=-1) one 
+// Focus the next (offset=1) or previous (offset=-1) one
 function focusFromList(idThis,offset)
 {
 	for(var i=0;i<focusList.length;i++)
@@ -248,7 +248,7 @@ function focusFromList(idThis,offset)
 
 // overflow hidden is set on the divs just so floats don't bounce
 // around while loading, turn it off now
-if(window.isDevServlet===undefined || !window.isDevServlet) 
+if(window.isDevServlet===undefined || !window.isDevServlet)
 {
 	addPostLoad(function()
 	{

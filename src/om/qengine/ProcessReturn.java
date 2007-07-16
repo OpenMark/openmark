@@ -24,7 +24,7 @@ import om.question.*;
 import util.xml.XHTML;
 
 
-/** 
+/**
  * Returned data from {@link OmService#process(java.lang.String, java.lang.String[], java.lang.String[])} call.
  * <p>
  * API CLASS: This class is used in SOAP returns and should probably not be
@@ -33,12 +33,12 @@ import util.xml.XHTML;
 public class ProcessReturn
 {
 	private boolean bQuestionEnd;
-	
+
 	private String sXHTML,sCSS,sProgressInfo;
 	private Resource[] arResources;
-	
+
 	private Results r;
-	
+
 	ProcessReturn(ActionRendering ar)
 	{
 		bQuestionEnd=ar.isSessionEnd();
@@ -58,25 +58,25 @@ public class ProcessReturn
 		arResources=ar.getResources();
 		r=ar.getResults();
 	}
-	
+
 	/**
 	 * @return Results from this question if provided this time; null if
 	 *   not provided. (Results are sometimes provided before the end of the
 	 *   question, if the last page shows answers etc.)
 	 */
 	public Results getResults() { return r; }
-	
-	/** 
+
+	/**
 	 * @return True if the question has now ended and the test navigator should
 	 * proceed to show a new question.
 	 */
 	public boolean isQuestionEnd() { return bQuestionEnd; }
-	
-	/** 
+
+	/**
 	 * Obtains new XHTML content, which replaces the previous content. See
 	 * {@link StartReturn#getXHTML()} for full description. Must be null if
 	 * isQuestionEnd() returns true, not-blank otherwise.
-	 * @return XHTML content as string.  
+	 * @return XHTML content as string.
 	 */
 	public String getXHTML() { return sXHTML; }
 	/** @return CSS file. Null if no change from previous. */
@@ -85,13 +85,13 @@ public class ProcessReturn
 	 *   in addition to previously-sent resources, not instead; they replace
 	 *   previous resources if the filename is the same. */
 	public Resource[] getResources() { return arResources; }
-	
-	/** 
-	 * @return Short textual information of progress on question, which should 
-	 *   be displayed alongside the question. (For example, this might indicate 
+
+	/**
+	 * @return Short textual information of progress on question, which should
+	 *   be displayed alongside the question. (For example, this might indicate
 	 *   how many attempts at the question are remaining.)
 	 *   Null indicates no change from previously-returned info (or blank if this
 	 *   is the first time).
-	 */ 
-	public String getProgressInfo() { return sProgressInfo; }	
+	 */
+	public String getProgressInfo() { return sProgressInfo; }
 }

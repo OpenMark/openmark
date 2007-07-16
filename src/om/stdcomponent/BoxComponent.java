@@ -25,9 +25,9 @@ import om.stdquestion.QContent;
 
 import org.w3c.dom.Element;
 
-/** 
-A top-level box that goes within the root &lt;question&gt; tag (after the 
-&lt;layout&gt; section). Contains other controls and text. 
+/**
+A top-level box that goes within the root &lt;question&gt; tag (after the
+&lt;layout&gt; section). Contains other controls and text.
 <h2>XML usage</h2>
 &lt;box gridx="0" gridy="0"&gt;...&lt;/box&gt;
 <h2>Properties</h2>
@@ -40,7 +40,7 @@ A top-level box that goes within the root &lt;question&gt; tag (after the
 <tr><td>gridy</td><td>(integer)</td><td>Controls position in question grid (0 = topmost)</td></tr>
 <tr><td>gridwidth</td><td>(integer)</td><td>Width in grid cells, default 1</td></tr>
 <tr><td>gridheight</td><td>(integer)</td><td>Height in grid cells, default 1</td></tr>
-<tr><td>background</td><td>(string; colour)</td><td>Predefined colour constant 
+<tr><td>background</td><td>(string; colour)</td><td>Predefined colour constant
   to use for background: "input", "answer", or "other"</td></tr>
 </table>
 */
@@ -50,13 +50,13 @@ public class BoxComponent extends QComponent
 	public final static String PROPERTY_BACKGROUND="background";
 	/** If true, never show this box in plain mode. */
 	public final static String PROPERTY_PLAINHIDE="plainhide";
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "box";
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
@@ -69,28 +69,28 @@ public class BoxComponent extends QComponent
 		setInteger("gridheight",1);
 		defineBoolean(PROPERTY_PLAINHIDE);
 		setBoolean(PROPERTY_PLAINHIDE,false);
-		
+
 		defineString(PROPERTY_BACKGROUND,COLOURCONSTANTS_REGEXP);
 		setString(PROPERTY_BACKGROUND,"input");
-		
+
 		// Decided not to do it this way as there isn't a mechanism for actually
 		// changing/setting the colours and the system needs to know what they are
 //		defineString("type","(question)|(answer)|(other)");
 //		setString("type","other");
 	}
-	
+
 	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[] { "gridx","gridy" };
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
-	
+
 	@Override
 	protected Color getChildBackground(QComponent qcChild)
 	{
@@ -103,7 +103,7 @@ public class BoxComponent extends QComponent
 			throw new OmUnexpectedException(ode);
 		}
 	}
-	
+
 	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain)
 	  throws OmException

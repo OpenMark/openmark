@@ -23,18 +23,18 @@ import om.helper.SimpleQuestion1;
 public class Oceanfloor extends SimpleQuestion1
 {
   private static String[] order= {"a6", "a7", "a0", "a2", "a5", "a3", "a4", "a1"}; // this will be altered below
-  
+
   protected void init() throws OmException
   {
   }
-    
+
   protected boolean isRight(int iAttempt) throws OmDeveloperException
   {
 	String resp0, resp1, resp2, resp3, resp4, resp5, resp6, resp7;
   	int ticks = 0;
 	int r0, r1, r2, r3, r4, r5, r6, r7;
 	r0 = r1 = r2 = r3 = r4 = r5 = r6 = r7 = 0;
-		
+
 	getComponent("oneWrong").setDisplay(false);
 	getComponent("manyWrong").setDisplay(false);
 	getComponent("plain").setDisplay(false);
@@ -58,7 +58,7 @@ public class Oceanfloor extends SimpleQuestion1
 
     // store response information
     // getResults().setAnswerLine(respon);
-    
+
     if (resp0.equals(order[0])) {
     	ticks++;
     	r0 = 1;
@@ -138,8 +138,8 @@ public class Oceanfloor extends SimpleQuestion1
     if (ticks == 8) {
    	  return true;
    	}
-   	
-    if (iAttempt == 2) 	{ 
+
+    if (iAttempt == 2) 	{
   		setFeedbackID("still");
   	}
 
@@ -164,5 +164,5 @@ public class Oceanfloor extends SimpleQuestion1
     }
 
     return false;
-  }	
+  }
 }

@@ -27,65 +27,65 @@ public class DatabaseAccess
 {
 	/** JDBC URL for database */
 	private String sURL;
-	
+
 	/** Maximum number of JDBC connections */
 	private int iMaxConnections=5;
-	
+
 	/** How long an unused connection lurks around before expiring (1 hr) */
 	private final static int CONNECTIONEXPIRY=60 * 60 * 1000;
-	
+
 	/** How often we check for expired connections (15 mins) */
 	private final static int CONNECTIONCHECKDELAY=15*60*1000;
-	
+
 	/** Current available connections (List of ConnectionInfo) */
-	private LinkedList<ConnectionInfo> llAvailableConnections=new LinkedList<ConnectionInfo>(); 
-	
+	private LinkedList<ConnectionInfo> llAvailableConnections=new LinkedList<ConnectionInfo>();
+
 	/** Connections currently in-use */
-	private Set<ConnectionInfo> sInUseConnections=new HashSet<ConnectionInfo>(); 
-	
+	private Set<ConnectionInfo> sInUseConnections=new HashSet<ConnectionInfo>();
+
 	/** If access has been closed */
 	private boolean bClosed=false;
-	
+
 	/** Log for debug logging */
 	private Log l;
-	
+
 	/** Information about one connection */
 	private static class ConnectionInfo
 	{
 		/** Actual connection */
 		Connection c;
-		
+
 		/** Statement */
 		Statement s;
-				
+
 		/** Last-used time */
 		long lLastUsed;
 	}
-	
-	/** 
+
+	/**
 	 * A single SQL transaction that can contain multiple queries and updates.
 	 * These are <i>not</i> themselves thread-safe, a single transaction must be
-	 * used in a single thread only. 
+	 * used in a single thread only.
 	 */
 	public class Transaction
 	{
 		/** Connection this transaction is using */
 		private ConnectionInfo ci;
-		
+
 		/** True if an error has occurred and we should rollback instead of committing */
 		private boolean bError=false;
-		
+
 		/** Current result-set (if any) */
 		private ResultSet rsCurrent=null;
-		
+
 		private long lTime=0L;
-		
-		/** 
+
+		/**
 		 * Constructs internally.
 		 * @param ci Connection
 		 */
 		private Transaction(ConnectionInfo ci) { this.ci=ci; }
-				
+
 		/**
 		 * Runs an SQL query and returns a result set.
 		 * <p>
@@ -96,14 +96,14 @@ public class DatabaseAccess
 		 * @throws SQLException
 		 */
 		public ResultSet query(String sSQL) throws SQLException
-		{			
+		{
 			if(ci==null) throw new SQLException("Already commited");
-			if(rsCurrent!=null) 
+			if(rsCurrent!=null)
 			{
 				rsCurrent.close();
 				rsCurrent=null;
 			}
-			
+
 			try
 			{
 				logDebug("[Q] "+sSQL);
@@ -120,7 +120,7 @@ public class DatabaseAccess
 				throw se;
 			}
 		}
-		
+
 		/**
 		 * Runs an SQL update.
 		 * @param sSQL SQL update command
@@ -132,7 +132,7 @@ public class DatabaseAccess
 			try
 			{
 				if(ci==null) throw new SQLException("Already commited");
-				if(rsCurrent!=null) 
+				if(rsCurrent!=null)
 				{
 					rsCurrent.close();
 					rsCurrent=null;
@@ -151,25 +151,25 @@ public class DatabaseAccess
 				throw se;
 			}
 		}
-		
-		/** 
+
+		/**
 		 * Must be called in try-finally, even if exceptions are thrown from other
 		 * methods. Can safely call it more than once.
 		 * @return Total time spent waiting inside all database calls
 		 */
 		public long finish()
 		{
-			if(ci!=null) 
+			if(ci!=null)
 			{
 				try
 				{
-					if(rsCurrent!=null) 
+					if(rsCurrent!=null)
 					{
 						rsCurrent.close();
 						rsCurrent=null;
 					}
 					long lStart=System.currentTimeMillis();
-					if(!bError) 
+					if(!bError)
 						ci.c.commit();
 					else
 					  ci.c.rollback();
@@ -187,9 +187,9 @@ public class DatabaseAccess
 			lTime=0L;
 			return lReturn;
 		}
-		
+
 		/**
-		 * Call optionally before calling finish(), if some other error (not an 
+		 * Call optionally before calling finish(), if some other error (not an
 		 * exception from a Transaction method) occurred and you want to rollback.
 		 * <p>
 		 * finish() should <i>always</i> be called - you just call this first.
@@ -199,7 +199,7 @@ public class DatabaseAccess
 			bError=true;
 		}
 	}
-	
+
 	/**
 	 * Logs string, with exception.
 	 * @param s Message
@@ -217,15 +217,15 @@ public class DatabaseAccess
 	{
 		if(l!=null) l.logDebug("DatabaseAccess",s,null);
 	}
-	
+
 	/** @return Number of DB connections currently up */
 	private synchronized int getNumConnections()
 	{
 		return llAvailableConnections.size()+sInUseConnections.size();
 	}
-	
+
 	/** Thread that gets rid of unused connections every now and then */
-	private class CheckThread extends Thread	
+	private class CheckThread extends Thread
 	{
 		@Override
 		public void run()
@@ -254,7 +254,7 @@ public class DatabaseAccess
 							llAvailableConnections.removeLast();
 						}
 					}
-						
+
 					// Wait until it's time to check again
 					long lWakeTarget=System.currentTimeMillis()+CONNECTIONCHECKDELAY;
 					while(!bClosed && System.currentTimeMillis() < lWakeTarget)
@@ -266,12 +266,12 @@ public class DatabaseAccess
 						catch(InterruptedException e)
 						{
 						}
-					}					
+					}
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Constructs access pool. Note that this starts a cleanup thread so you must
 	 * take care to always call close().
@@ -280,20 +280,20 @@ public class DatabaseAccess
 	 */
 	public DatabaseAccess(String sURL,Log l)
 	{
-		this.sURL=sURL;				
+		this.sURL=sURL;
 		this.l=l;
 		(new CheckThread()).start();
 	}
-	
+
 	/**
 	 * Closes access pool along with all database connections.
 	 */
 	public synchronized void close()
 	{
 		if(bClosed) return;
-		
+
 		logDebug("Database connection closing ("+sInUseConnections.size()+" active)");
-		
+
 		for(Iterator i=llAvailableConnections.iterator();i.hasNext();)
 		{
 			ConnectionInfo ci=(ConnectionInfo)i.next();
@@ -321,35 +321,35 @@ public class DatabaseAccess
 			}
 		}
 		sInUseConnections=null;
-		
+
 		bClosed=true;
 		notifyAll();
 	}
-	
+
 	/**
 	 * Sets the number of JDBC connections to open (at maximum). Default is 5.
 	 * @param iMaxConnections Max. number of connections
 	 */
 	public void setMaxConnections(int iMaxConnections)
 	{
-		this.iMaxConnections=iMaxConnections;		
+		this.iMaxConnections=iMaxConnections;
 	}
-	
+
 	/**
 	 * Creates a new DatabaseAccess.Transaction. You <i>must</i> call finish()
 	 * on this - immediately after this call returns, a try/finally block should
 	 * begin that calls finish() on the Transaction.
 	 * <p>
-	 * This call may block if no connection is available. 
+	 * This call may block if no connection is available.
 	 * @return Transaction object to do stuff with
 	 * @throws SQLException If there's a problem creating a required database
 	 *   connection
 	 */
 	public Transaction newTransaction() throws SQLException
 	{
-		return new Transaction(getConnection());		
+		return new Transaction(getConnection());
 	}
-	
+
 	/**
 	 * Obtains a new connection separate from the general pool. You <i>must</i>
 	 * close this connection when done with it (use try/finally).
@@ -362,7 +362,7 @@ public class DatabaseAccess
 		c.setAutoCommit(false);
 		return c;
 	}
-	
+
 	/**
 	 * Obtain a database connection and lock it (must call releaseConnection).
 	 * @return Connection info
@@ -377,25 +377,25 @@ public class DatabaseAccess
 			{
 				ConnectionInfo ci=llAvailableConnections.removeFirst();
 				sInUseConnections.add(ci);
-				return ci;			
+				return ci;
 			}
-			
+
 			// If we're allowed to create another connection, do so
 			if(sInUseConnections.size() < iMaxConnections)
 			{
 				logDebug("Creating new DB connection " +
 					"(# before: "+getNumConnections()+")");
-				
+
 				ConnectionInfo ci=new ConnectionInfo();
-				
+
 				ci.c = DriverManager.getConnection(sURL);
 				ci.c.setAutoCommit(false);
 				ci.s=ci.c.createStatement();
-				
+
 				sInUseConnections.add(ci);
-				return ci;				
+				return ci;
 			}
-			
+
 			// Otherwise connections must be maxed, so block
 			try
 			{
@@ -406,10 +406,10 @@ public class DatabaseAccess
 				throw new SQLException("Interrupted while waiting for connection");
 			}
 		}
-		
-		throw new SQLException("Database access closed while getting connection");		
+
+		throw new SQLException("Database access closed while getting connection");
 	}
-	
+
 	/**
 	 * Release a database connection obtained using getConnection().
 	 * @param ci Connection info
@@ -419,20 +419,20 @@ public class DatabaseAccess
 	private synchronized void releaseConnection(ConnectionInfo ci,boolean bDiscard)
 	{
 		if(bClosed) return;
-		
+
 		// Remove from 'in use' and add to front of available pile
 		if(!sInUseConnections.remove(ci))
 			throw new Error("Tried to release connection that was not in use");
 		if(!bDiscard) // Don't add it back if discarding!
 			llAvailableConnections.addFirst(ci);
-		
+
 		// Set last-used date
 		ci.lLastUsed=System.currentTimeMillis();
-		
+
 		// Notify for anyone waiting (note: we should do this even if discarding)
 		notifyAll();
 	}
-	
+
 	/** @return Number of connections currently up */
 	public synchronized int getConnectionCount()
 	{

@@ -19,7 +19,7 @@ package om.helper;
 
 import om.OmDeveloperException;
 
-/** 
+/**
  * Question class you can use while developing question xml if you don't
  * have an actual class for it yet. Works as for SimpleQuestion1; assumes
  * any answer is wrong.

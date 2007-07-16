@@ -21,25 +21,25 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-/** 
+/**
  * Allows classes to be notified when the webapp is shut down so that they can
- * null any relevant static member fields that might be keeping things from 
+ * null any relevant static member fields that might be keeping things from
  * being properly GCed.
  */
 public class ShutdownManager
 {
 	/** Set of classes that have requested notification */
 	private static Set<Class<?> > sShutdownListeners=new HashSet<Class<?> >();
-	
+
 	/**
-	 * Call from within classes that need notification 
+	 * Call from within classes that need notification
 	 * @param c class to be notified when the servlet is shut down.
 	 */
 	public static void requestShutdownNotification(Class<?> c)
 	{
 		sShutdownListeners.add(c);
 	}
-	
+
 	/** Call when webapp is shut down */
 	public static void shutdown()
 	{
@@ -57,7 +57,7 @@ public class ShutdownManager
 				e.printStackTrace();
 			}
 		}
-		
+
 		// Remove our own list so that the classes can be collected
 		sShutdownListeners=null;
 	}

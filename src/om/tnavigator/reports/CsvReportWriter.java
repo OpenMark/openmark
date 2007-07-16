@@ -35,7 +35,7 @@ public class CsvReportWriter extends TextReportWriter {
 	{
 		super(pw,columns,",");
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.TabularReportWriter#sendHeaders(javax.servlet.http.HttpServletResponse)
 	 */

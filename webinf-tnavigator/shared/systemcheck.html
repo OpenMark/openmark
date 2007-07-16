@@ -50,7 +50,7 @@ if(ua.match(/KHTML/))
   else browser="a KHTML-based browser";
   message="Some parts of this system rely on features that are not "+
     "included in current versions of KHTML-based browsers (like Safari) "+
-    "at the time of writing.";  
+    "at the time of writing.";
 }
 else if(ua.match(/\ Gecko\//))
 {
@@ -71,9 +71,9 @@ else if(ua.match(/\ Gecko\//))
 			  ok=versionResult[1]>1;
       browser+=" "+versionResult[1]+"."+versionResult[2];
     }
-    
+
     message="Firefox is one of our supported browsers, but you should use "+
-      "the latest version (at least version 1.0). Using old browser versions "+ 
+      "the latest version (at least version 1.0). Using old browser versions "+
       "also leaves you open to security risks.";
   }
   else browser="a Gecko-based browser";
@@ -87,7 +87,7 @@ else if(ua.match(/Opera/))
 else if(ua.match(/MSIE.*Windows/))
 {
   browser="Internet Explorer"
-  
+
   var re=/\ MSIE\ ([0-9]+).([0-9]+)/;
   var versionResult=re.exec(ua);
   if(versionResult)
@@ -95,7 +95,7 @@ else if(ua.match(/MSIE.*Windows/))
     ok=(versionResult[1]>=6);
     browser+=" "+versionResult[1]+"."+versionResult[2];
   }
-    
+
   message="Internet Explorer is one of our supported browsers, but you should use "+
     "the latest version (at least version 6.0). Using old browser versions also "+
     "leaves you open to security risks.";

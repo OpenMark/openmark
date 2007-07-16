@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
 import util.misc.Strings;
 import util.xml.XML;
 
-/** 
+/**
  * Handles load balancing (and error recovery when possible) for Om service
  * access.
  */
@@ -40,24 +40,24 @@ class OmServiceBalancer
 {
 	/** Timeout (ms) for SOAP service calls; currently 30s */
 	private static final int SOAPTIMEOUT=30000;
-	
+
 	/** Array of available service URLs */
 	private URL[] au;
 	/** Array of available services */
 	private OmService[] aos;
-	
+
 	/** Track average performance of all services */
 	private MovingAverage[] ama;
-	
+
 	/** Number of measurements to track in the averaging process */
 	private final static int PERFORMANCEBUFFERSIZE=20;
-	
+
 	/** Log */
 	private Log l;
-	
+
 	/** True if we should log additional debug info */
 	private boolean bExtraDebug;
-	
+
 	/**
 	 * @param aos Array of available services
 	 */
@@ -66,7 +66,7 @@ class OmServiceBalancer
 		this.au=au;
 		this.l=l;
 		this.bExtraDebug=bExtraDebug;
-		
+
 		aos=new OmService[au.length];
 		OmServiceServiceLocator ossl=new OmServiceServiceLocator();
 		for(int i=0;i<aos.length;i++)
@@ -74,42 +74,42 @@ class OmServiceBalancer
 			aos[i]=ossl.getOm(au[i]);
 			((Stub)aos[i]).setTimeout(SOAPTIMEOUT);
 		}
-		
+
 		ama=new MovingAverage[aos.length];
 		for(int i=0;i<aos.length;i++) ama[i]=new MovingAverage(PERFORMANCEBUFFERSIZE);
 
 		lLastZero=System.currentTimeMillis();
 	}
-	
-	
-	/** 
+
+
+	/**
 	 * How often we add a zero to the averages (1 min, meaning a 'bad' number stays
-	 * for 20 mins) 
+	 * for 20 mins)
 	 */
 	private final static int AVERAGEUPDATEDELAY=1*60*1000;
-	
+
 	/** Time of last pick */
-	private long lLastZero;	
-		
+	private long lLastZero;
+
 	/** Picks a random service (must be called from within synch block) */
 	private int pickServer()
 	{
-		// Begin by adding zeros to the load balancer, corresponding to the time 
+		// Begin by adding zeros to the load balancer, corresponding to the time
 		// since last pick. This 'keeps it moving', meaning that 'bad' events
-		// are forgotten after 20 mins, otherwise it'd be very unlikely that a 
+		// are forgotten after 20 mins, otherwise it'd be very unlikely that a
 		// server would ever be chosen again...
-		long lNow=System.currentTimeMillis();		
+		long lNow=System.currentTimeMillis();
 		while(lLastZero+AVERAGEUPDATEDELAY < lNow)
 		{
 			for(int i=0;i<ama.length;i++) ama[i].add(0);
 			lLastZero+=AVERAGEUPDATEDELAY;
 		}
-		
+
 		// Pick service with good recent performance according to random number
 		// and the algorithm:
-			
+
 		// p(choosing server A) = (sum(avgsq) - avgsq[A]) / (SERVERS-1)*(sum(avgsq))
-		
+
 		double[] adAvg=new double[aos.length];
 		double[] adAvgSq=new double[aos.length];
 		double dSumAvgSq=0;
@@ -134,7 +134,7 @@ class OmServiceBalancer
 				Strings.formatOneDecimal(adAvg[i])+"ms, "+Strings.formatOneDecimal(adProb[i]*100.0)+"% ");
 		}
 		if(bExtraDebug) l.logDebug("OmServiceBalancer",sb.toString());
-		
+
 		double dPick=Math.random();
 		for(int i=0;i<aos.length;i++)
 		{
@@ -146,30 +146,30 @@ class OmServiceBalancer
 		}
 		return aos.length-1;
 	}
-		
-	/** 
+
+	/**
 	 * Represents a question session within a specific service. Once the session
 	 * has started, all calls are to the same service (and not really 'balanced'
 	 * any more).
-	 */ 
+	 */
 	class OmServiceSession
 	{
 		/** Start return (retained only temporarily) */
 		private om.axis.qengine.StartReturn srTemp;
-		
+
 		/** Question session */
 		private String sQuestionSession;
-		
+
 		/** Service index */
 		private int iService;
-		
+
 		private OmServiceSession(int iService,om.axis.qengine.StartReturn sr)
 		{
 			this.iService=iService;
 			srTemp=sr;
 			sQuestionSession=sr.getQuestionSession();
 		}
-		
+
 		/**
 		 * Returns the StartReturn then forgets about it (so you can call this only once).
 		 * @return StartReturn that came from om.start()
@@ -177,10 +177,10 @@ class OmServiceBalancer
 		om.axis.qengine.StartReturn eatStartReturn()
 		{
 			om.axis.qengine.StartReturn sr=srTemp;
-			srTemp=null;			
+			srTemp=null;
 			return sr;
 		}
-		
+
 		/**
 		 * Stops the question session (only necessary if a session is aborted before
 		 * ProcessReturn indicates that it ended anyhow).
@@ -195,7 +195,7 @@ class OmServiceBalancer
 			ama[iService].add(lElapsed);
 			rt.lQEngineElapsed+=lElapsed;
 		}
-		
+
 		/**
 		 * Processes another step of the question session.
 		 * @param rt Timings
@@ -213,14 +213,14 @@ class OmServiceBalancer
 			rt.lQEngineElapsed+=lElapsed;
 	  	return pr;
 	  }
-		
+
 	  /** @return URL of question engine being used */
 	  public URL getEngineURL()
 	  {
 	  	return au[iService];
 	  }
 	}
-	
+
 	/**
 	 * Calls an OmService start method on an appropriate question engine (picked
 	 * from the load-balanced set based on performance). If the first question
@@ -238,12 +238,12 @@ class OmServiceBalancer
 	 */
   OmServiceSession start(
   	RequestTimings rt,
-  	final String questionID, final String questionVersion, final String questionBaseURL, 
-  	final String[] initialParamNames, final String[] initialParamValues, final String[] cachedResources) 
+  	final String questionID, final String questionVersion, final String questionBaseURL,
+  	final String[] initialParamNames, final String[] initialParamValues, final String[] cachedResources)
   	throws RemoteException
 	{
-  	final OmServiceSession[] out=new OmServiceSession[1]; 
-  	
+  	final OmServiceSession[] out=new OmServiceSession[1];
+
   	balanceThing(rt,new Balanceable()
   	{
 			public void run(int iService) throws RemoteException
@@ -252,7 +252,7 @@ class OmServiceBalancer
 	    		questionID, questionVersion, questionBaseURL, initialParamNames, initialParamValues, cachedResources));
 			}
   	});
-  	
+
   	return out[0];
 	}
 
@@ -266,11 +266,11 @@ class OmServiceBalancer
    * @throws RemoteException If all services fail
    */
   public String getQuestionMetadata(RequestTimings rt,
-  	final String questionID, final String questionVersion, final String questionBaseURL) 
+  	final String questionID, final String questionVersion, final String questionBaseURL)
   	throws RemoteException
   {
   	final String[] out=new String[1];
-  	
+
   	balanceThing(rt,new Balanceable()
   	{
 			public void run(int iService) throws RemoteException
@@ -278,7 +278,7 @@ class OmServiceBalancer
 	  		out[0]=aos[iService].getQuestionMetadata(questionID, questionVersion, questionBaseURL);
 			}
   	});
-  	
+
   	return out[0];
   }
 
@@ -289,9 +289,9 @@ class OmServiceBalancer
   	 * @param iService
   	 * @throws RemoteException
   	 */
-  	void run(int iService) throws RemoteException;  	
+  	void run(int iService) throws RemoteException;
   }
-  
+
   /**
    * Load-balances (retrying across different services) a task.
    * @param rt Receives timing information (may be null)
@@ -318,20 +318,20 @@ class OmServiceBalancer
   			l.logError("OmServiceBalancer","Service "+au[iService]+"failed at balanced task",re);
   			// Add a 60 second penalty for not working
   			ama[iService].add(60000);
-  			
+
 	  		// Try next service - if there are any left!
 	  		iService++;
 	  		iService%=aos.length;
 	  		if(iService==iPick) throw re;
   		}
-  	}  	
+  	}
 	}
-  
-  /** 
+
+  /**
    * Checks whether a server is available, throws an exception if all servers
-   * fail. 
+   * fail.
    * @return Total time taken (ms)
-   * @throws RemoteException 
+   * @throws RemoteException
    */
   public int checkAvailable() throws RemoteException
   {
@@ -345,7 +345,7 @@ class OmServiceBalancer
 		});
   	return (int)(System.currentTimeMillis()-lStart);
   }
-  
+
   /**
    * Obtains information about question engine performance.
    * @return XHTML element that can be added to server status page.
@@ -354,18 +354,18 @@ class OmServiceBalancer
   {
   	Element eTable=XML.createDocument().createElement("table");
   	eTable.setAttribute("class","topheaders");
-  	
+
   	Element eTR=XML.createChild(eTable,"tr");
     XML.createText(eTR,"th","Engine");
     XML.createText(eTR,"th","Performance");
-    
+
     for(int i=0;i<au.length;i++)
     {
     	eTR=XML.createChild(eTable,"tr");
     	XML.createText(eTR,"td",au[i].getHost().replaceAll(".open.ac.uk","")+au[i].getPath());
-    	XML.createText(eTR,"td",""+(int)ama[i].get());    	
-    }  	
-  	
+    	XML.createText(eTR,"td",""+(int)ama[i].get());
+    }
+
   	return eTable;
   }
 

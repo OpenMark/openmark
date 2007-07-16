@@ -27,7 +27,7 @@ class ItemFactory
 {
 	/** Map of String (tag name) -> ItemCreator */
 	private Map<String, ItemCreator> mClasses=new HashMap<String, ItemCreator>();
-	
+
 	/**
 	 * Called by item register methods to add themselves as creatable.
 	 * @param sTagName XML tag name
@@ -35,15 +35,15 @@ class ItemFactory
 	 */
 	void addItemClass(String sTagName,ItemCreator ic)
 	{
-		mClasses.put(sTagName,ic);		
+		mClasses.put(sTagName,ic);
 	}
 
 	/**
 	 * Creates a new Item from the given element.
-	 * @param e Element 
+	 * @param e Element
 	 * @param iParent Parent item (may be null)
 	 * @return New item
-	 * @throws EquationFormatException If there isn't an item class matching 
+	 * @throws EquationFormatException If there isn't an item class matching
 	 *   the element name
 	 */
 	Item newItem(Element e,Item iParent,float fZoom) throws EquationFormatException
@@ -51,8 +51,8 @@ class ItemFactory
 		ItemCreator ic=mClasses.get(e.getTagName());
 		if(ic==null) throw new EquationFormatException(iParent,
 			"Child element not allowed in equations: <"+e.getTagName()+">");
-		
-		Item iNew=ic.newItem();		
+
+		Item iNew=ic.newItem();
 		iNew.init(this,e,iParent,fZoom);
 		return iNew;
 	}

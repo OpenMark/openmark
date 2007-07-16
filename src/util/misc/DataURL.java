@@ -23,7 +23,7 @@ import java.net.*;
 /** Allows you to create a URL object that refers to a byte array */
 public abstract class DataURL
 {
-	/** 
+	/**
 	 * Creates a URL referring to the given data.
 	 * @param abData Data bytes
 	 * @return URL object
@@ -44,7 +44,7 @@ public abstract class DataURL
 	private static class MyStreamHandler extends URLStreamHandler
 	{
 		private byte[] abData;
-		
+
 		/**
 		 * Construct, based on a byte[].
 		 * @param abData
@@ -53,18 +53,18 @@ public abstract class DataURL
 		{
 			this.abData=abData;
 		}
-		
+
 		@Override
 		protected URLConnection openConnection(URL u) throws IOException
 		{
 			return new MyConnection(u,abData);
 		}
 	}
-	
+
 	private static class MyConnection extends URLConnection
 	{
 		private ByteArrayInputStream bais;
-		
+
 		/**
 		 * Construct, based on a URL and abyte[].
 		 * @param u
@@ -75,17 +75,17 @@ public abstract class DataURL
 			super(u);
 			bais=new ByteArrayInputStream(abData);
 		}
-		
+
 		@Override
 		public void connect() throws IOException
 		{
 		}
-		
+
 		@Override
 		public InputStream getInputStream() throws IOException
 		{
 			return bais;
 		}
 	}
-	
+
 }

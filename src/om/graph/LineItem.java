@@ -32,34 +32,34 @@ public class LineItem extends GraphItem
 	{
 		super(w);
 	}
-	
+
 	/** Corners */
 	private GraphPoint gp1=GraphPoint.ZERO,gp2=GraphPoint.ONE;
-	
+
 	/** Colour */
 	private Color cLine=null;
-	
+
 	/** Outline thickness */
 	private int iLineWidth=1;
-	
+
 	@Override
 	public void init() throws GraphFormatException
 	{
 		if(cLine==null) cLine=getWorld().convertColour("fg");
-	}		
-	
+	}
+
 	@Override
 	public void paint(Graphics2D g2)
 	{
 		// Work out the two points and convert to pixels
 		Point2D.Float p1=gp1.convertFloat(getWorld()),p2=gp2.convertFloat(getWorld());
-		
+
 		// Set line thickness and draw
 		g2.setStroke(new BasicStroke(iLineWidth));
 		g2.setColor(cLine);
-		g2.draw(new Line2D.Float(p1.x,p1.y,p2.x,p2.y));				
+		g2.draw(new Line2D.Float(p1.x,p1.y,p2.x,p2.y));
 	}
-	
+
 	/**
 	 * Sets first point of line, X co-ordinate.
 	 * @param gsX Co-ordinate
@@ -69,7 +69,7 @@ public class LineItem extends GraphItem
 		gp1=gp1.newX(gsX);
 	}
 	/**
-	 * Sets first point of line, Y co-ordinate. 
+	 * Sets first point of line, Y co-ordinate.
 	 * @param gsY Co-ordinate
 	 */
 	public void setY(GraphScalar gsY)
@@ -77,18 +77,18 @@ public class LineItem extends GraphItem
 		gp1=gp1.newY(gsY);
 	}
 	/**
-	 * Sets second point of line, X co-ordinate. 
+	 * Sets second point of line, X co-ordinate.
 	 * @param gsX Co-ordinate
 	 */
-	public void setX2(GraphScalar gsX) 
+	public void setX2(GraphScalar gsX)
 	{
 		gp2=gp2.newX(gsX);
 	}
 	/**
-	 * Sets second point of line, Y co-ordinate. 
+	 * Sets second point of line, Y co-ordinate.
 	 * @param gsY Co-ordinate
 	 */
-	public void setY2(GraphScalar gsY) 
+	public void setY2(GraphScalar gsY)
 	{
 		gp2=gp2.newY(gsY);
 	}

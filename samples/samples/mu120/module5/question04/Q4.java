@@ -30,11 +30,11 @@ import om.stdcomponent.CanvasComponent;
 import samples.shared.Helper;
 
 public class Q4 extends SimpleQuestion2 {
-    
+
     private static final double tolerance = 1E-6;
-    
+
     // Graph data
-    
+
     int [] xFromTo = {-2, 2};
     int [] yFromTo = {-2, 2};
     String [] xLabels = {"-2", "-1", "0", "1", "2"};
@@ -42,43 +42,43 @@ public class Q4 extends SimpleQuestion2 {
     String [] pLabels = {"A", "B", "C", "D", "E", "F", "G", "H"};
     int [] pXs = {1, 2, -1, -2, 2, 1, -1, -2};
     int [] pYs = {2, 1, 2, 1, -1, -2, -2, -1};
-    
+
     String ABs; int ABx, ABy;
     String CDs; int CDx, CDy;
     String EFs; int EFx, EFy;
     String GHs; int GHx, GHy;
-    
-    
+
+
     protected void init() throws OmException {
-        
+
         Random r = getRandom();
         int ab = r.nextInt(2);
         int cd = 2+r.nextInt(2);
         int ef = 4+r.nextInt(2);
         int gh = 6+r.nextInt(2);
-        
+
         ABs = pLabels [ab]; ABx = pXs [ab]; ABy = pYs [ab];
         CDs = pLabels [cd]; CDx = pXs [cd]; CDy = pYs [cd];
         EFs = pLabels [ef]; EFx = pXs [ef]; EFy = pYs [ef];
         GHs = pLabels [gh]; GHx = pXs [gh]; GHy = pYs [gh];
-        
+
         setPlaceholder("ABs", ABs);
         setPlaceholder("CDs", CDs);
         setPlaceholder("EFs", EFs);
         setPlaceholder("GHs", GHs);
-        
+
         setPlaceholder("ABx", "" + ABx);
         setPlaceholder("CDx", "" + CDx);
         setPlaceholder("EFx", "" + EFx);
         setPlaceholder("GHx", "" + GHx);
-        
+
         setPlaceholder("ABy", "" + ABy);
         setPlaceholder("CDy", "" + CDy);
         setPlaceholder("EFy", "" + EFy);
         setPlaceholder("GHy", "" + GHy);
-        
+
         Graph54 g54 = new Graph54(xFromTo, yFromTo, "x", xLabels, "y", yLabels);
-        
+
         CanvasComponent cc = (CanvasComponent) getComponent("graph1"); // question graph
         Graphics g = cc.getGraphics().create();
         // draw background grid, i.e. the graph paper
@@ -96,7 +96,7 @@ public class Q4 extends SimpleQuestion2 {
         for (int i=0; i<pLabels.length; i++)
             g54.drawPoint(g, pLabels [i], pXs [i], pYs [i]);
         g.dispose();
-        
+
         cc = (CanvasComponent) getComponent("graph2"); // answer graph
         g = cc.getGraphics().create();
         // draw lines to points refered to
@@ -113,10 +113,10 @@ public class Q4 extends SimpleQuestion2 {
         for (int i=0; i<pLabels.length; i++)
             g54.drawPoint(g, pLabels [i], pXs [i], pYs [i]);
         g.dispose();
-        
+
         getComponent("inputbox").setDisplay(true);
         //cc.markChanged();
-        
+
         // store question information
         getResults().setQuestionLine("find (x,y) coordinates for: " + ABs + ", " + CDs + ", " + EFs + ", " + GHs);
         getResults().setAnswerLine(
@@ -128,9 +128,9 @@ public class Q4 extends SimpleQuestion2 {
                 ")"
                 );
     }
-    
+
     protected boolean isRight(int iAttempt) throws OmDeveloperException {
-        
+
         String rABx = (getEditField("rABx").getValue().trim()); double dABx = Helper.inputNumber(rABx);
         String rABy = (getEditField("rABy").getValue().trim()); double dABy = Helper.inputNumber(rABy);
         String rCDx = (getEditField("rCDx").getValue().trim()); double dCDx = Helper.inputNumber(rCDx);
@@ -139,7 +139,7 @@ public class Q4 extends SimpleQuestion2 {
         String rEFy = (getEditField("rEFy").getValue().trim()); double dEFy = Helper.inputNumber(rEFy);
         String rGHx = (getEditField("rGHx").getValue().trim()); double dGHx = Helper.inputNumber(rGHx);
         String rGHy = (getEditField("rGHy").getValue().trim()); double dGHy = Helper.inputNumber(rGHy);
-        
+
         // store response information
         getResults().appendActionSummary("Attempt " + iAttempt + ": " +
                 "(" +
@@ -149,7 +149,7 @@ public class Q4 extends SimpleQuestion2 {
                 "(" + rGHx + "," + rGHy + ")" +
                 ")"
                 );
-        
+
         // correct answer ?
         if (
                 (Helper.range((double) ABx, dABx, tolerance) && Helper.range((double) ABy, dABy, tolerance)) &&
@@ -158,9 +158,9 @@ public class Q4 extends SimpleQuestion2 {
                 (Helper.range((double) GHx, dGHx, tolerance) && Helper.range((double) GHy, dGHy, tolerance))
                 )
             return true;
-        
+
         // wrong answer handled from here on .....
-        
+
         if (
                 (Double.isNaN(dABx) || Double.isNaN(dABy)) ||
                 (Double.isNaN(dCDx) || Double.isNaN(dCDy)) ||
@@ -168,7 +168,7 @@ public class Q4 extends SimpleQuestion2 {
                 (Double.isNaN(dGHx) || Double.isNaN(dGHy))
                 )
             getComponent("nonumber").setDisplay(true);
-        
+
         int correct = 0;
         if (Helper.range((double) ABx, dABx, tolerance) && Helper.range((double) ABy, dABy, tolerance)) {
             getComponent("right0").setDisplay(true);
@@ -206,7 +206,7 @@ public class Q4 extends SimpleQuestion2 {
             setPlaceholder("CORRECT", "" + correct);
             getComponent("correct").setDisplay(true);
         }
-        
+
         int switched = 0;
         if (Helper.range((double) ABx, dABy, tolerance) && Helper.range((double) ABy, dABx, tolerance)) switched++;
         if (Helper.range((double) CDx, dCDy, tolerance) && Helper.range((double) CDy, dCDx, tolerance)) switched++;
@@ -216,7 +216,7 @@ public class Q4 extends SimpleQuestion2 {
             setPlaceholder("SWITCHED", "" + switched);
             getComponent("switched").setDisplay(true);
         }
-        
+
         // feeback, given attempt 1, 2, or 3
         switch (iAttempt) {
             case 1:
@@ -227,10 +227,10 @@ public class Q4 extends SimpleQuestion2 {
             case 3:
                 break;
         }
-        
+
         return false;
     }
-    
+
     public void actionOK() throws OmException {
         for (int i=0; i<4; i++) {
             getComponent("wrong"+i).setDisplay(false);
@@ -238,5 +238,5 @@ public class Q4 extends SimpleQuestion2 {
         }
         super.actionOK();
     }
-    
+
 }

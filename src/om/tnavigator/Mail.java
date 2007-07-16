@@ -30,10 +30,10 @@ public class Mail
 {
 	/** text/plain MIME type */
 	public final static String TEXTPLAIN="text/plain";
-	
+
 	/** SMTP server */
 	private static String smtpHost=null;
-	
+
 	/**
 	 * Sets the SMTP host used for sending mail
 	 * @param smtpHost Host name
@@ -42,7 +42,7 @@ public class Mail
 	{
 		Mail.smtpHost=smtpHost;
 	}
-	
+
 	/**
 	 * Sends the given mail message with a given MIME format.
 	 * @param from Sender address
@@ -72,7 +72,7 @@ public class Mail
 
 	/**
 	 * Create an empty MimeMessage object with all properties set
-	 * 
+	 *
 	 * @param from Sender address
 	 * @param replyTo Reply-to address (null to omit)
 	 * @param to Array of target addresses
@@ -105,7 +105,7 @@ public class Mail
 			}
 			mm.addRecipients(Message.RecipientType.CC,aiaCC);
 		}
-		
+
 		if(replyTo!=null)
 		{
 			InternetAddress[] aiaReplyTo=new InternetAddress[1];

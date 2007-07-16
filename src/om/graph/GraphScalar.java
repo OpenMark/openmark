@@ -17,24 +17,24 @@
  */
 package om.graph;
 
-/** 
+/**
  * Scalar value used in graph drawing that contains two components: the position
  * in world co-ordinates, and an offset in pixel co-ordinates.
  */
-public class GraphScalar 
+public class GraphScalar
 {
 	/** Position in world co-ordinate */
 	private double dWorldPosition;
-	
+
 	/** Offset in pixels */
 	private int iPixelOffset;
-	
+
 	/** Zero point */
 	public final static GraphScalar ZERO=new GraphScalar(0.0,0);
-	
+
 	/** One point */
 	public final static GraphScalar ONE=new GraphScalar(1.0,0);
-	
+
 	/**
 	 * Converts from string of the form world:pixel, or just plain world.
 	 * @param s String to convert
@@ -54,7 +54,7 @@ public class GraphScalar
 			dWorldPosition=Double.parseDouble(s.substring(0,iColon));
 		}
 	}
-	
+
 	/**
 	 * @param dWorldPosition Position in world co-ordinates
 	 * @param iPixelOffset Offset in pixels
@@ -64,9 +64,9 @@ public class GraphScalar
 		this.dWorldPosition=dWorldPosition;
 		this.iPixelOffset=iPixelOffset;
 	}
-	
-	/** 
-	 * Offsets an existing co-ordinate. 
+
+	/**
+	 * Offsets an existing co-ordinate.
 	 * @param iPixels Number of pixels to offset by
 	 * @return New co-ordinate
 	 */
@@ -74,7 +74,7 @@ public class GraphScalar
 	{
 		return new GraphScalar(dWorldPosition,iPixelOffset+iPixels);
 	}
-	
+
 	/**
 	 * Offsets co-ordinate.
 	 * @param gsOffset World and pixel offset
@@ -86,13 +86,13 @@ public class GraphScalar
 			dWorldPosition+gsOffset.getWorldPosition(),
 			iPixelOffset+gsOffset.getPixelOffset());
 	}
-	
+
 	/** @return Position in world co-ordinate */
 	public double getWorldPosition()
 	{
 		return dWorldPosition;
 	}
-	
+
 	/** @return Offset in pixels */
 	public int getPixelOffset()
 	{

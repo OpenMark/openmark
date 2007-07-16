@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 public class Brackets extends Item
 {
 	private char cLeftSymbol,cRightSymbol;
-	
+
 	private int getSymbolSize(char c)
 	{
 		switch(c)
@@ -39,15 +39,15 @@ public class Brackets extends Item
 		default : return getZoomed(2);
 		}
 	}
-	
+
 	private void drawSymbol(char c,Graphics2D g2,int iX,int iY)
 	{
 		GeneralPath gp=new GeneralPath();
 		int iSize=getSymbolSize(c);
-		
+
 		switch(c)
 		{
-		case '.' : 
+		case '.' :
 			return;
 		case '|':
 			gp.moveTo(iX,iY);
@@ -98,14 +98,14 @@ public class Brackets extends Item
 			gp.lineTo(iB,iY+(3*iHeight)/5f);
 			gp.lineTo(iB,iY+(4*iHeight)/5f);
 			gp.quadTo(iB,iY+iHeight-1,iC,iY+iHeight-1);
-			g2.draw(gp);			
+			g2.draw(gp);
 		}	break;
 		default:
 			throw new Error("wtf?");
 		}
 		g2.draw(gp);
 	}
-	
+
 	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
@@ -114,22 +114,22 @@ public class Brackets extends Item
 			return;
 		}
 		Item i=getChildren()[0];
-		
+
 		Color cForeground=getForeground();
 		g2.setColor(cForeground);
-		
+
 		int iRight=iX+i.getWidth()+getSuitableGap()-1;
 		if(cLeftSymbol!='.') iRight+=getSuitableGap()+getSymbolSize(cLeftSymbol);
-		
+
 		drawSymbol(cLeftSymbol,g2,iX,iY);
 		drawSymbol(cRightSymbol,g2,iRight,iY);
-		
-		i.render(g2,iX+getSymbolSize(cLeftSymbol)+getSuitableGap(),iY);			
+
+		i.render(g2,iX+getSymbolSize(cLeftSymbol)+getSuitableGap(),iY);
 	}
-	
+
 	@Override
 	protected void internalPrepare()
-	{		
+	{
 //		if(1==1) throw new Error("Do we even get here?!");
 		// Don't really support empty brackets, won't display anything
 		if(getChildren().length==0)
@@ -138,7 +138,7 @@ public class Brackets extends Item
 			iHeight=0;
 			return;
 		}
-		
+
 		// Get child details
 		Item i=getChildren()[0];
 		iHeight=i.getHeight();
@@ -148,11 +148,11 @@ public class Brackets extends Item
 		iBaseline=i.getBaseline();
 		iLeftMargin=iRightMargin=getZoomed(2);
 	}
-	
+
 	@Override
 	protected void internalInit(Element e) throws EquationFormatException
 	{
-		String SUPPORTEDSYMBOLS=".|[](){}";		
+		String SUPPORTEDSYMBOLS=".|[](){}";
 		if(!e.hasAttribute("leftsymbol")) throw new EquationFormatException(this,
 			"<int_brackets> requires leftsymbol=");
 		String sLeftSymbol=e.getAttribute("leftsymbol");
@@ -161,7 +161,7 @@ public class Brackets extends Item
 		cLeftSymbol=sLeftSymbol.charAt(0);
 		int iLeftSymbol=SUPPORTEDSYMBOLS.indexOf(cLeftSymbol);
 		if(iLeftSymbol==-1) throw new EquationFormatException(this,
-			"<int_brackets> symbol not supported: "+sLeftSymbol);		
+			"<int_brackets> symbol not supported: "+sLeftSymbol);
 		if(!e.hasAttribute("rightsymbol")) throw new EquationFormatException(this,
 			"<int_brackets> requires rightsymbol=");
 		String sRightSymbol=e.getAttribute("rightsymbol");
@@ -170,9 +170,9 @@ public class Brackets extends Item
 		cRightSymbol=sRightSymbol.charAt(0);
 		int iRightSymbol=SUPPORTEDSYMBOLS.indexOf(cRightSymbol);
 		if(iRightSymbol==-1) throw new EquationFormatException(this,
-			"<int_brackets> symbol not supported: "+sRightSymbol);		
-	}	
-	
+			"<int_brackets> symbol not supported: "+sRightSymbol);
+	}
+
 	/**
 	 * @param f ItemFactory to register this class with.
 	 */

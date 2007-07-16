@@ -22,40 +22,40 @@ import om.helper.SimpleQuestion1;
 
 /** Reactions Q7d: tests understanding of equilibrium */
 public class EquationEquivalence extends SimpleQuestion1
-{ 
-	 	 
+{
+
   protected boolean isRight(int iAttempt) throws OmDeveloperException
 	{
   	//Get answer text and trim whitespace
     String sAnswer=getEditField("input").getValue().trim();
-      
+
   	// store response information
     getResults().appendActionSummary("Attempt" + iAttempt + ":" + sAnswer);
 
     sAnswer = sAnswer.toLowerCase();
-      
+
     //Compare it against the right answer
-    if ((sAnswer.indexOf("heat") != -1) || 
-        (sAnswer.indexOf("raise") != -1 && sAnswer.indexOf("temp") != -1) || 
-        (sAnswer.indexOf("raising") != -1 && sAnswer.indexOf("temp") != -1) || 
-        (sAnswer.indexOf("rise") != -1 && sAnswer.indexOf("temp") != -1) || 
-        (sAnswer.indexOf("up") != -1 && sAnswer.indexOf("temp") != -1) || 
-        (sAnswer.indexOf("high") != -1 && sAnswer.indexOf("temp") != -1) || 
+    if ((sAnswer.indexOf("heat") != -1) ||
+        (sAnswer.indexOf("raise") != -1 && sAnswer.indexOf("temp") != -1) ||
+        (sAnswer.indexOf("raising") != -1 && sAnswer.indexOf("temp") != -1) ||
+        (sAnswer.indexOf("rise") != -1 && sAnswer.indexOf("temp") != -1) ||
+        (sAnswer.indexOf("up") != -1 && sAnswer.indexOf("temp") != -1) ||
+        (sAnswer.indexOf("high") != -1 && sAnswer.indexOf("temp") != -1) ||
         (sAnswer.indexOf("incre") != -1 && sAnswer.indexOf("temp") != -1) ||
-        (sAnswer.indexOf("hotter") != -1)) 
+        (sAnswer.indexOf("hotter") != -1))
       return true;
-      
+
     //Give feedback on second attempt only
     else if(sAnswer.indexOf("temp") != -1)
     {
-      if(iAttempt == 2) 
+      if(iAttempt == 2)
       {
       	//Compare against each possible feedback situation we know
-        setFeedbackID("Message1");     
+        setFeedbackID("Message1");
       }
     }
-      
+
       return false;
 	}
-  
+
 }

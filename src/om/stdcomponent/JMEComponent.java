@@ -28,15 +28,15 @@ import org.w3c.dom.Element;
 import util.misc.IO;
 import util.xml.XML;
 
-/** 
-Inserts a pushbutton that users can press to open the JME (Java Molecular 
-Editor) component. A popup window will appear, containing the JME itself plus 
+/**
+Inserts a pushbutton that users can press to open the JME (Java Molecular
+Editor) component. A popup window will appear, containing the JME itself plus
 'OK' button.
 <p>
-If the user clicks 'OK', the internal SMILES value is updated and 
-(if there is an action set) the form will be submitted. 
+If the user clicks 'OK', the internal SMILES value is updated and
+(if there is an action set) the form will be submitted.
 <p>
-The popup remains visible during one question. If the user begins a new 
+The popup remains visible during one question. If the user begins a new
 question (or restarts the same one) it will vanish. It will also vanish if they
 navigate to another website.
 <p>
@@ -52,7 +52,7 @@ noncommercial use). <a href="http://www.molinspiration.com/jme/">JME website</a>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates all children</td></tr>
 <tr><td>label</td><td>(string)</td><td>Label for button (default is 'Draw molecule')</td></tr>
-<tr><td>action</td><td>(string)</td><td>Name of method in question class that 
+<tr><td>action</td><td>(string)</td><td>Name of method in question class that
   is called after user clicks OK. Optional, default is to not submit form, but
   you probably want to do it.</td></tr>
 </table>
@@ -66,16 +66,16 @@ public class JMEComponent extends QComponent
 
 	/** Current (most recently set) value */
 	private String sValue;
-	
+
 	/** Random token used to check when user goes to different window */
 	private String sToken="t"+Math.random();
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "jme";
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
@@ -84,35 +84,35 @@ public class JMEComponent extends QComponent
 		defineString(PROPERTY_ACTION);
 		setString(PROPERTY_LABEL,"Draw molecule");
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(XML.getChildren(eThis).length!=0)
 			throw new OmFormatException("<jme>: Cannot contain child components");
 	}
-	
+
 	@Override
 	protected void initSpecific(Element eThis) throws OmException
 	{
 		getQuestion().checkCallback(getString(PROPERTY_ACTION));
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
-	{		
+	{
 		Element eScript=qc.createElement("script");
 		eScript.setAttribute("type","text/javascript");
 		XML.createText(eScript,"jmeInit('"+sToken+"');");
 		qc.addInlineXHTML(eScript);
-		
+
 		Element eInput=qc.createElement("input");
 		eInput.setAttribute("type","hidden");
 		String sInputID=QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID();
 		eInput.setAttribute("name",sInputID);
 		eInput.setAttribute("id",sInputID);
 		qc.addInlineXHTML(eInput);
-		
+
 		if(isPropertySet(PROPERTY_ACTION))
 		{
 			eInput=qc.createElement("input");
@@ -124,17 +124,17 @@ public class JMEComponent extends QComponent
 			eInput.setAttribute("disabled","disabled"); // Disabled unless submitted this way
 			qc.addInlineXHTML(eInput);
 		}
-		
+
 		eInput=qc.createElement("input");
 		String sButtonID=QDocument.ID_PREFIX+getID()+"_button";
 		eInput.setAttribute("id",sButtonID);
 		eInput.setAttribute("type","button");
 		eInput.setAttribute("value",getString(PROPERTY_LABEL));
 		if(!isEnabled()) eInput.setAttribute("disabled","disabled");
-		eInput.setAttribute("onclick","jmeClick('%%RESOURCES%%','"+getID()+"','"+QDocument.ID_PREFIX+"')");		
-		qc.addInlineXHTML(eInput);		
+		eInput.setAttribute("onclick","jmeClick('%%RESOURCES%%','"+getID()+"','"+QDocument.ID_PREFIX+"')");
+		qc.addInlineXHTML(eInput);
 		if(isEnabled())	qc.informFocusable(sButtonID,bPlain);
-		
+
 		if(bInit)
 		{
 			try
@@ -152,7 +152,7 @@ public class JMEComponent extends QComponent
 			}
 		}
 	}
-	
+
 	/**
 	 * @return SMILES string that was set, or empty string if none was set.
 	 */
@@ -160,13 +160,13 @@ public class JMEComponent extends QComponent
 	{
 		return sValue;
 	}
-	
+
 	@Override
 	protected void formSetValue(String newValue,ActionParams ap) throws OmException
 	{
 		this.sValue=newValue;
 	}
-	
+
 	@Override
 	protected void formCallAction(String newValue,ActionParams ap) throws OmException
 	{

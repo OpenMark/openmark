@@ -27,11 +27,11 @@ public class GraphPoint
 	private GraphScalar gsX,gsY;
 
 	/** Zero point */
-	public final static GraphPoint ZERO=new GraphPoint(GraphScalar.ZERO,GraphScalar.ZERO); 
+	public final static GraphPoint ZERO=new GraphPoint(GraphScalar.ZERO,GraphScalar.ZERO);
 
 	/** 1,1 point */
-	public final static GraphPoint ONE=new GraphPoint(GraphScalar.ONE,GraphScalar.ONE); 
-	
+	public final static GraphPoint ONE=new GraphPoint(GraphScalar.ONE,GraphScalar.ONE);
+
 
 	/**
 	 * Constructs with world co-ordinates only (no pixel offset).
@@ -42,7 +42,7 @@ public class GraphPoint
 	{
 		this(new GraphScalar(dX,0),new GraphScalar(dY,0));
 	}
-	
+
 	/**
 	 * @param gsX X co-ordinate
 	 * @param gsY Y co-ordinate
@@ -50,7 +50,7 @@ public class GraphPoint
 	public GraphPoint(GraphScalar gsX,GraphScalar gsY)
 	{
 		this.gsX=gsX;
-		this.gsY=gsY;		
+		this.gsY=gsY;
 	}
 
 	/**
@@ -63,19 +63,19 @@ public class GraphPoint
 	{
 		this(new GraphScalar(dX,iXPixels),new GraphScalar(dY,iYPixels));
 	}
-	
+
 	/** @return X co-ordinate */
 	public GraphScalar getX()
 	{
 		return gsX;
 	}
-	
+
 	/** @return Y co-ordinate */
 	public GraphScalar getY()
 	{
 		return gsY;
 	}
-	
+
 	/**
 	 * @param gsNewX New X value
 	 * @return New point with that x value
@@ -84,7 +84,7 @@ public class GraphPoint
 	{
 		return new GraphPoint(gsNewX,gsY);
 	}
-	
+
 	/**
 	 * @param gsNewY New Y value
 	 * @return New point with that y value
@@ -93,7 +93,7 @@ public class GraphPoint
 	{
 		return new GraphPoint(gsX,gsNewY);
 	}
-	
+
 	/**
 	 * Offsets the point by a number of pixels.
 	 * @param iX X pixel offset
@@ -104,7 +104,7 @@ public class GraphPoint
 	{
 		return new GraphPoint(gsX.offset(iX),gsY.offset(iY));
 	}
-	
+
 	/**
 	 * Offsets the point by all four elements (x, y, + pixel versions)
 	 * @param gpOffset Values to add to this point
@@ -113,9 +113,9 @@ public class GraphPoint
 	public GraphPoint offset(GraphPoint gpOffset)
 	{
 		return new GraphPoint(
-			gsX.offset(gpOffset.getX()),gsY.offset(gpOffset.getY()));			
+			gsX.offset(gpOffset.getX()),gsY.offset(gpOffset.getY()));
 	}
-	
+
 	/**
 	 * Converts to pixel co-ordinates.
 	 * @param w World co-ordinate system
@@ -126,7 +126,7 @@ public class GraphPoint
 		return new Point(
 			w.convertX(gsX),w.convertY(gsY));
 	}
-	
+
 	/**
 	 * Converts to pixel floating-point co-ordinates.
 	 * @param w World co-ordinate system

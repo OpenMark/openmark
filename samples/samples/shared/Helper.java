@@ -37,13 +37,13 @@ public class Helper {
     /**
      *  Extracts the first number from a sequence of characters
      *  Assumes ScientificNotationToE() has been called first
-     * 
+     *
      *  Allows the returned string to be parsed as a double by Double.parseDouble( String string )
      *  @param str The string to be parsed
      *  @return If the string is abc1.23e-7ms<sup>-1<sup/> then 1.23e-7 is extracted.
      *  If no number is found an empty string is returned.
      **/
-    
+
     public static String extractNumber(String str)
     {
         boolean			done;
@@ -56,12 +56,12 @@ public class Helper {
         StringBuffer 	sb = new StringBuffer(64);
 
         length = str.length();
-        
+
         if (length == 0)
         	return(sb.toString());
 
         // ok string contains characters; look for start of number
-    		
+
         // are there any non-numerics at start of string
     	sptr = -1;
     	done = false;
@@ -95,7 +95,7 @@ public class Helper {
     	if (!done) {	// no numeric found; return empty string
     	   	return(sb.toString());
     	}
-    		
+
     	// is first character also last character
     	if (sptr == (length - 1)) {
     		endOfNumber = length;
@@ -132,7 +132,7 @@ public class Helper {
     							done = false;
     						}
     						else {
-    							// set sptr back to pointing at letter e which is now seen 
+    							// set sptr back to pointing at letter e which is now seen
     							// to be just a letter
     							sptr = exponentPosition;
     						}
@@ -140,8 +140,8 @@ public class Helper {
     				}
     			}
     		} while (!done && (sptr < (length - 1)));
-    		
-    		if (done) 
+
+    		if (done)
     			endOfNumber = sptr;
     		else // last character in string is a digit; endOfNumber needs to point one beyond
     			endOfNumber = length;
@@ -166,7 +166,7 @@ public class Helper {
     {
     	double	ldbl;
     	String lstr;
-    	
+
     	lstr = extractNumber(str);
     	try {
     		ldbl=Double.parseDouble(lstr);
@@ -202,7 +202,7 @@ public class Helper {
      *  Replaces a substring from the beginning of a string
      *  Useful for adding '1x' when users just enter 10<sup>power</sup>
      *  before reading the answer as scientific notation
-     *  
+     *
      *  @param  The initial string
      *  @return The initial string with '1x' inserted
      **/
@@ -210,7 +210,7 @@ public class Helper {
     public static String insertAtStartOfString(String str, String toStartWith, String toInsert)
     {
     	String	str2= "";
-    	
+
     	// check if main string is longer than string to be removed
     	if (toStartWith.length() < str.length()) {
     		// dos the string start with toStartWith?
@@ -227,21 +227,21 @@ public class Helper {
     /**
      * To be in scientific notation a number must be in the form
      * 1E2, 1e2, 1.00E2, 1.00e2 not forgeting minus numbers
-     * 
+     *
      * Numbers of the sort 10E1 or 10.0e1 are not scientific notation as is 100 etc
-     * 
+     *
      * Note that the number part of the input should already have been isolated
      * and scientific input of the type *10 etc converted to E notation before
      * being passed to this method.
-     * 
+     *
      *  @param  The string to be checked.
      *  @return True if a number in scientific notation is present
      **/
-	
+
     public static boolean isScientificNotation(String numberStr)
     {
     	boolean scientific = false;
-    	
+
     	if ((numberStr != null) && (numberStr.length() >= 3)) {
     		int plusMinusAtStart = 0;
     	    if ((numberStr.charAt(0) == '+') || (numberStr.charAt(0) =='-')) {
@@ -251,7 +251,7 @@ public class Helper {
     	    char current = ' ';
     	    int eFoundPoint = 0;
     	    boolean eFound = false;
-    	    
+
     	    //first character or first character after any + or - symbols must be a number
     	    //between 1 and 9 inclusive
     	    current = numberStr.charAt(0 + plusMinusAtStart);
@@ -309,7 +309,7 @@ public class Helper {
     	int		i, length;
     	double	ldbl;
     	String  format, lstr, output;
-    	
+
     	ldbl = dbl;
     	if (ldbl < 0) {
     		positive = false;
@@ -327,7 +327,7 @@ public class Helper {
     	lstr = df.format(ldbl);
     	length = lstr.length();
     	i = lstr.indexOf("E");
-    	
+
     	if (positive)
     		output = lstr.substring(0, i) + " � 10^{" + lstr.substring(i+1, length) + "}";
     	else
@@ -341,7 +341,7 @@ public class Helper {
      *  Checks if a number is in a given range
      *
      *  @param  The number to be checked. The centre of the range.
-     *  		The tolerance either side of the centre. 
+     *  		The tolerance either side of the centre.
      *  @return True if within range, false otherwise
      **/
     public static boolean range(double testAnswer, double target, double tolerance)
@@ -362,18 +362,18 @@ public class Helper {
      *  respectively.
      *
      *  @param  The number to be checked. The centre of the correct range.
-     *  		The tolerance either side of the centre. 
+     *  		The tolerance either side of the centre.
      *  @return True if within range modified by a factor of 10, false otherwise
      **/
     public static boolean rangeButWrongFactorOf10(double testAnswer, double target, double tolerance)
     {
     	int		i;
     	double	ltarget, ltolerance;
-    	
+
     	// check powers of ten 10^10 up
     	for (i = 1; i <= 10; ++ i) {
-    		ltarget = target * Math.pow(10.0, (double) i); 
-    		ltolerance = tolerance * Math.pow(10.0, (double) i); 
+    		ltarget = target * Math.pow(10.0, (double) i);
+    		ltolerance = tolerance * Math.pow(10.0, (double) i);
         	if ( (testAnswer >= (ltarget - ltolerance)) &&
            		 (testAnswer <= (ltarget + ltolerance)) ) {
            		return(true);
@@ -381,8 +381,8 @@ public class Helper {
     	}
     	// check powers of ten 10^10 down
     	for (i = 1; i <= 10; ++ i) {
-    		ltarget = target / Math.pow(10.0, (double) i); 
-    		ltolerance = tolerance / Math.pow(10.0, (double) i); 
+    		ltarget = target / Math.pow(10.0, (double) i);
+    		ltolerance = tolerance / Math.pow(10.0, (double) i);
         	if ( (testAnswer >= (ltarget - ltolerance)) &&
            		 (testAnswer <= (ltarget + ltolerance)) ) {
            		return(true);
@@ -392,14 +392,14 @@ public class Helper {
    		return(false);
     }
     ///////////////////////////////////////////////////////////////////////////
-    
+
     /**
      *  Removes colons from a string
      *
      *  @param  The initial string
      *  @return The initial string with colons removed
      **/
-    
+
     public static String removeColons(String input) {
         StringBuffer sb = new StringBuffer(64);
         char ch;
@@ -435,7 +435,7 @@ public class Helper {
      *  @param  The initial string
      *  @return The initial string with commas removed
      **/
-    
+
     public static String removeCommas(String input) {
         StringBuffer sb = new StringBuffer(64);
         char ch;
@@ -456,7 +456,7 @@ public class Helper {
      *  @param input The initial string
      *  @return The initial string with xX* characters removed
      **/
-    
+
     public static String removeMultSigns(String input) {
         StringBuffer sb = new StringBuffer(64);
         char ch;
@@ -506,14 +506,14 @@ public class Helper {
      *  Removes '+' from a string
      *
      *  @param  The initial string
-     *  @return The initial string + removed 
+     *  @return The initial string + removed
      **/
 
     public static String removePlusSigns(String input)
     {
         StringBuffer sb = new StringBuffer(64);
         char ch;
-      
+
         for (int i = 0; i < input.length(); i++) {
         	ch = input.charAt(i);
         	if (input.charAt(i) != '+') {
@@ -573,7 +573,7 @@ public class Helper {
     	return sb.toString();
     }
     ///////////////////////////////////////////////////////////////////////////
-    
+
     /**
      *  Removes whitespace characters ' ' '\t' '\n' from a string
      *
@@ -596,25 +596,25 @@ public class Helper {
 
     /**
      *  Converts advanced field superscript format into E notation.
-     *  
+     *
      *  If the input string contains "x10<sup>+-n</sup>" or "*10<sup>+-n</sup>"
      *  indicating a power of 10 followed by a superscript
      *  replaces with "E+-n"
      *  otherwise just return the original string.
-     * 
+     *
      *  Allows the returned string to be parsed as a double by Double.parseDouble( String string )
      *  @param str The string to be parsed
      *  @return If "x10<sup>+-n</sup>" present replaced with "E+-n" otherwise
      *  returns the original string
      **/
-    
+
     public static String scientificNotationToE(String str)
     {
       	char 	ch;
         int		sptr, start;
         String 	lstr;
         StringBuffer sb = new StringBuffer(64);
-        
+
         lstr = removeWhitespace(str);
         sptr = -1;
         start = -1;
@@ -641,14 +641,14 @@ public class Helper {
     		// and return
     		return(sb.toString());
     	}
-    	
+
     	// if the next character is a number (as in x100) then this is not in
     	// scientific notation and no change is made
     	sptr = start + 3;
     	ch = lstr.charAt(sptr);
     	if (Character.isDigit(ch))
     		return(lstr);
-    	
+
     	if (ch == '<') {
     		// start to look for superscript
         	// does <sup>+-nn</sup> follow?
@@ -662,7 +662,7 @@ public class Helper {
     				do {
     					sb.append(lstr.substring(sptr, sptr + 1));
     					++sptr;
-    				} while ((sptr != lstr.length()) && 
+    				} while ((sptr != lstr.length()) &&
     						 (lstr.charAt(sptr) != '<'));
     				if (lstr.length() >= (sptr + 6)) {
     					// check for </sup>
@@ -681,7 +681,7 @@ public class Helper {
     			}
     			else {
     				// not normal x10<sup>n</sup> formatting; return original
-    				return(str); 				
+    				return(str);
     			}
       		}
     		else {
@@ -689,7 +689,7 @@ public class Helper {
     			return(str);
     		}
     	}
-    	
+
     	// who knows what follows; could be units
     	// replace "x10" by E1
     	sb.append("E1");
@@ -790,7 +790,7 @@ public class Helper {
         return sb.toString();
     }
     ///////////////////////////////////////////////////////////////////////////
-    
+
 // end of class
 }
 ///////////////////////////////////////////////////////////////////////////////

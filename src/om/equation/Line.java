@@ -26,11 +26,11 @@ public class Line extends Item
 {
 	/** Alignment type */
 	private int iVAlign=ALIGN_BASELINE;
-	
+
 	/** Position of baseline */
 	private int iBaseline=0;
-	
-	/** Names of valign= constants */ 
+
+	/** Names of valign= constants */
 	private final static String[] ALIGNMENT=
 	{
 		"top",
@@ -38,11 +38,11 @@ public class Line extends Item
 		"middle",
 		"baseline"
 	};
-	
+
 	/** Alignment constants match ALIGNMENT */
-	private final static int 
+	private final static int
 		ALIGN_TOP=0,ALIGN_BOTTOM=1,ALIGN_MIDDLE=2,ALIGN_BASELINE=3;
-	
+
 	@Override
 	public int getBaseline()
 	{
@@ -65,7 +65,7 @@ public class Line extends Item
 					iXPos+=iBefore.getWidth();
 				iXPos+=Math.max(iBefore.getRightMargin(),i.getLeftMargin());
 			}
-			
+
 			int iYPos;
 			switch(iVAlign)
 			{
@@ -75,7 +75,7 @@ public class Line extends Item
 			case ALIGN_BASELINE : iYPos=iBaseline-i.getBaseline(); break;
 			default: throw new Error("Invalid alignment");
 			}
-			
+
 			i.render(g2,iX+iXPos,iY+iYPos);
 			iBefore=i;
 		}
@@ -96,15 +96,15 @@ public class Line extends Item
 				throw new EquationFormatException(this,"valign attribute invalid: "+sVAlign);
 		}
 	}
-	
+
 	@Override
 	protected void internalPrepare()
-	{		
-		// Init metrics	
+	{
+		// Init metrics
 		iWidth=0;
 		int iMaxAboveBaseline=0;
 		int iMaxBelowBaseline=0;
-		int iMaxHeight=0;		
+		int iMaxHeight=0;
 		Item iBefore=null;
 		for(int iChild=0;iChild<getChildren().length;iChild++)
 		{
@@ -120,17 +120,17 @@ public class Line extends Item
 				iWidth+=Math.max(iBefore.getRightMargin(),i.getLeftMargin());
 			}
 
-			int 
+			int
 				iAbove=i.getBaseline(),
 				iBelow=i.getHeight()-iAbove;
 			iMaxAboveBaseline=Math.max(iAbove,iMaxAboveBaseline);
 			iMaxBelowBaseline=Math.max(iBelow,iMaxBelowBaseline);
 			iMaxHeight=Math.max(iMaxHeight,i.getHeight());
-			
+
 			iBefore=i;
 		}
 		if(iBefore!=null) iWidth+=iBefore.getWidth();
-		
+
 		if(iVAlign==ALIGN_BASELINE)
 		{
 			iHeight=iMaxAboveBaseline+iMaxBelowBaseline;

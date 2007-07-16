@@ -24,21 +24,21 @@ import om.helper.SimpleQuestion1;
 
 /** Example 4: tests students can reduce simple equations */
 public class Q6 extends SimpleQuestion1
-{ 
+{
 	/** Numbers for question variants */
 	private final static String[]	LETTERS_A = {"m",  "n", "p",  "q", "r",
 												 "s",  "t", "u",  "v", "w",
 												 "y", "z"};
-									
-	  
+
+
 	/** Selected question */
 	private int iVariant;
-	
+
 	/** For each answer 0-7, whether it's right or not */
 	final boolean[] RIGHTANSWERS= {false,true,true,true,false,true,true,false};
 
 //	--------------------------------------------------------------------------------------------
-	
+
 protected void init() throws OmException
 {
 	Random r = getRandom();
@@ -46,17 +46,17 @@ protected void init() throws OmException
 
 	setPlaceholder("A", LETTERS_A[iVariant]);
 
-	getResults().setQuestionLine("Which equations are equivalent to 4" + LETTERS_A[iVariant] + "?");		
+	getResults().setQuestionLine("Which equations are equivalent to 4" + LETTERS_A[iVariant] + "?");
 }
 //--------------------------------------------------------------------------------------------
-	
+
  protected boolean isRight(int iAttempt) throws OmDeveloperException
 {
     boolean bRight = true;
   	boolean bChecked;
   	int 	i, iCount = 0, correct = 0;
   	String 	sSummary = "";
-  	
+
 	// ensure all messages are off such that there are no hang-overs from previous attempts
   	getComponent("incomplete").setDisplay(false);
   	getComponent("toofew").setDisplay(false);
@@ -65,12 +65,12 @@ protected void init() throws OmException
   	getComponent("three").setDisplay(false);
   	getComponent("two").setDisplay(false);
   	getComponent("one").setDisplay(false);
-  	
+
   	getResults().setAnswerLine("(Selected equations)");
-  	
+
   	for (i = 0; i < 8; i++) {
   		bChecked = getCheckbox("box"+i).isChecked();
-  		if (bChecked) { 
+  		if (bChecked) {
   			iCount++;
   			if (RIGHTANSWERS[i])
   				++correct;
@@ -81,14 +81,14 @@ protected void init() throws OmException
   		sSummary += bChecked ? "[Yes]" : "[No]";
   	}
     getResults().appendActionSummary("Attempt "+iAttempt+": "+sSummary);
-  	
+
     if (bRight) return true;
 
     if ((iAttempt < 3) && (iCount < 5))
 		getComponent("toofew").setDisplay(true);
     else if ((iAttempt < 3) && (iCount > 5))
 		getComponent("toomany").setDisplay(true);
-    
+
     if (correct == 4)		getComponent("four").setDisplay(true);
     else if (correct == 3)	getComponent("three").setDisplay(true);
     else if (correct == 2)	getComponent("two").setDisplay(true);
@@ -104,11 +104,11 @@ protected void init() throws OmException
   	return false;
 }
 //--------------------------------------------------------------------------------------------
-  
+
 public void actionRedo() throws OmException
 {
 	int	i;
-	
+
 	for (i = 0; i < 8; i++) {
   		getCheckbox("box"+i).setChecked(false);
   	}

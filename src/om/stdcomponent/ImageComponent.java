@@ -28,7 +28,7 @@ import org.w3c.dom.*;
 
 import util.xml.XML;
 
-/** 
+/**
 Represents a displayed image from a file
 <p/>
 <h2>XML usage</h2>
@@ -63,10 +63,10 @@ public class ImageComponent extends QComponent
 	{
 		return "image";
 	}
-	
+
 	/** Alternative text for those who can't use the actual image */
 	public final static String PROPERTY_ALT="alt";
-	
+
 	/** path to image file */
 	private String sFilePath=null; // Currently-loaded file
 	private int iWidth = 30;
@@ -74,13 +74,13 @@ public class ImageComponent extends QComponent
 	private byte[] imageData;
 	private String sMimeType;
 	private ArrayList<IPlace> alIPlaces;
-	
-	/** 
+
+	/**
 	 * Keep track of resources we added to users so we can save SOAP time by
 	 * not transferring them again.
-	 */ 
+	 */
 	private Set<String> sAddedResources=new HashSet<String>();
-	
+
 	/** Represents one &lt;iplace&gt; item -- a pixel location for adding objects*/
 	private static class IPlace
 	{
@@ -92,14 +92,14 @@ public class ImageComponent extends QComponent
 
 	/** True if there was whitespace before or after the &lt;image&gt; tag */
 	private boolean bSpaceBefore,bSpaceAfter;
-	
+
 	/** Specifies attributes required */
 	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[]	{PROPERTY_ALT,PROPERTY_FILEPATH};
 	}
-	
+
 	/** Specifies possible attributes */
 	@Override
 	protected void defineProperties() throws OmDeveloperException
@@ -110,7 +110,7 @@ public class ImageComponent extends QComponent
 		defineInteger("width");
 		defineInteger("height");
 	}
-	
+
 	/** parses internals of tag to create java component*/
 	@Override
 	protected void initChildren(Element eThis) throws OmException
@@ -129,12 +129,12 @@ public class ImageComponent extends QComponent
 			if(sText.length()>0 && Character.isWhitespace(sText.charAt(0)))
 				bSpaceAfter=true;
 		}
-		
+
 		for(Node n=eThis.getFirstChild();n!=null;n=n.getNextSibling())
 		{
 			if(n instanceof Element)
 			{
-				
+
 				Element e=(Element)n;
 				if(e.getTagName().equals("iplace"))
 				{	//handle iplace
@@ -157,7 +157,7 @@ public class ImageComponent extends QComponent
 					p.sLabel=e.getAttribute("label");
 					if(e.hasAttribute("for"))
 						p.sLabelFor=e.getAttribute("for");
-					else 
+					else
 					{
 						QComponent[] aqcKids=p.qcPlaceContent.getComponentChildren();
 						if(aqcKids.length==1 && aqcKids[0] instanceof Labelable)
@@ -171,35 +171,35 @@ public class ImageComponent extends QComponent
 				{
 					throw new OmDeveloperException("<image> can only contain <iplace> tags");
 				}
-				
+
 				// text data is ignored
 			}
 		}
 	}
-	
-	/** @return FilePath of Image 
+
+	/** @return FilePath of Image
 	 * @throws OmDeveloperException */
 	public String getFilePath() throws OmDeveloperException
-	{ 
-		return getString(PROPERTY_FILEPATH); 
+	{
+		return getString(PROPERTY_FILEPATH);
 	}
-	
-	/** 
+
+	/**
 	 * Sets the Image file path and alt text.
 	 * <p>
 	 * @param sFilePath New value for filePath
-	 * @param sAlt New value for screenreader alternative 
+	 * @param sAlt New value for screenreader alternative
 	 * @throws OmDeveloperException -- when?
 	 */
 	public void setImage(String sFilePath,String sAlt) throws OmDeveloperException
-	{ 
+	{
 		setString(PROPERTY_FILEPATH,sFilePath);
 		setString(PROPERTY_ALT,sAlt);
 	}
-		
 
-	/** 
-	 * Checks whether the image dimensions have been specified in the xml.  
+
+	/**
+	 * Checks whether the image dimensions have been specified in the xml.
 	 * <p> If not them it reads the size from the image data.
 	 * <p>
 	 * @throws OmException if image data does not contain size information
@@ -224,7 +224,7 @@ public class ImageComponent extends QComponent
 			throw new OmException("Can't read image size from file "+sFilePath,e);
 		}
 	}
-	
+
 	/** creates web page output from java component */
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
@@ -237,7 +237,7 @@ public class ImageComponent extends QComponent
 			qc.addInlineXHTML(eDiv);
 			XML.createText(eDiv,getString(PROPERTY_ALT));
 			qc.addTextEquivalent(getString(PROPERTY_ALT));
-			
+
 			// Put each placeholder
 			if (alIPlaces != null)
 				for (int i=0; i < alIPlaces.size(); i++)
@@ -245,8 +245,8 @@ public class ImageComponent extends QComponent
 					IPlace ip = alIPlaces.get(i);
 
 					// Check content is not hidden
-					if(!ip.qcPlaceContent.isChildDisplayed()) continue;					
-					
+					if(!ip.qcPlaceContent.isChildDisplayed()) continue;
+
 					Element ePlace=XML.createChild(eDiv,"div");
 					if(!("".equals(ip.sLabel)))
 					{
@@ -259,7 +259,7 @@ public class ImageComponent extends QComponent
 					qc.setParent(ePlace);
 					ip.qcPlaceContent.produceOutput(qc,bInit,bPlain);
 					qc.unsetParent();
-				}			
+				}
 		}
 		else
 		{
@@ -267,7 +267,7 @@ public class ImageComponent extends QComponent
 			if (sFilePath == null || !sFilePath.equals(getString(PROPERTY_FILEPATH)))
 			{
 				sFilePath=getString(PROPERTY_FILEPATH);
-				
+
 				//get image mime type
 				String sFL = sFilePath.toLowerCase();
 				if (sFL.endsWith(".jpg")) sMimeType = "image/jpeg";
@@ -276,13 +276,13 @@ public class ImageComponent extends QComponent
 				else if (sFL.endsWith(".jpeg")) sMimeType = "image/jpeg";
 				else if(sFL.endsWith(".jpe")) sMimeType = "image/jpeg";
 				else throw new OmException("Invalid image file type: "+sFilePath);
-	
-				try 
+
+				try
 				{
 					imageData = getQuestion().loadResource(sFilePath);
 					findImageSize();
-				} 
-				catch (IOException e) 
+				}
+				catch (IOException e)
 				{
 					throw new OmException("Image file not found: "+sFilePath,e);
 				}
@@ -299,16 +299,16 @@ public class ImageComponent extends QComponent
 			qc.addInlineXHTML(eEnsureSpaces);
 
 			// work out actual w/h
-			int 
+			int
 				iActualWidth=(int)(iWidth*dZoom+0.5),
 				iActualHeight=(int)(iHeight*dZoom+0.5);
-			
+
 			// If there's a space before, add one here too (otherwise IE eats it)
 			if(bSpaceBefore)
 				XML.createText(eEnsureSpaces," ");
-			
+
 			// Create image tag
-			Element eImg=XML.createChild(eEnsureSpaces,"img");			
+			Element eImg=XML.createChild(eEnsureSpaces,"img");
 			eImg.setAttribute("id",QDocument.ID_PREFIX+getID());
 			eImg.setAttribute("onmousedown","return false;"); // Prevent Firefox drag/drop
 			eImg.setAttribute("ondragstart","return false;"); // Prevent IE drag/drop
@@ -317,52 +317,52 @@ public class ImageComponent extends QComponent
 			eImg.setAttribute("style","vertical-align:0px;"); // Is this needed?
 			eImg.setAttribute("width",""+iActualWidth);
 			eImg.setAttribute("height",""+iActualHeight);
-	
+
 			if(bSpaceAfter)
 				XML.createText(eEnsureSpaces," ");
-			
+
 			String sJavascript="addOnLoad(function() { inlinePositionFix('"+QDocument.ID_PREFIX+getID()+"'";
-			
+
 			/** if required, add span tags and insert content from alIplaces[] */
 			if (alIPlaces != null && alIPlaces.size()>0)
 			{
 				for (int i=0; i < alIPlaces.size(); i++)
 				{
 					IPlace ip = alIPlaces.get(i);
-					
+
 					// Must get the label even though not using it, just to indicate that
-					// it's been provided 
+					// it's been provided
 					if(ip.sLabelFor!=null)
 						LabelComponent.getLabel(getQDocument(),bPlain,ip.sLabelFor);
-					
-					int 
+
+					int
 						iActualX=(int)Math.round(dZoom * ip.iLeft),
 						iActualY=(int)Math.round(dZoom * ip.iTop);
-					
-					// Should be div w/ display:inline not span as otherwise it won't 
-					// technically be valid if we put divs in it 
+
+					// Should be div w/ display:inline not span as otherwise it won't
+					// technically be valid if we put divs in it
 					Element ePlace = XML.createChild(eEnsureSpaces,"div");
 					String sPlaceholderID=QDocument.ID_PREFIX+getID()+"_"+i;
 					ePlace.setAttribute("class","placeholder");
 					ePlace.setAttribute("id",sPlaceholderID);
-					
+
 					// Build contents
 					qc.addTextEquivalent(ip.sLabel);
 					qc.setParent(ePlace);
 					ip.qcPlaceContent.produceOutput(qc,bInit,bPlain);
-					qc.unsetParent();	
+					qc.unsetParent();
 
 					// Update JS
 					sJavascript+=
 						",['"+sPlaceholderID+"',"+iActualX+","+iActualY+"]";
 				}
 				sJavascript+="); });";
-				
+
 				Element eScript=XML.createChild(eEnsureSpaces,"script");
 				eScript.setAttribute("type","text/javascript");
 				XML.createText(eScript,sJavascript);
 			}
-			
+
 		}
 	}
 

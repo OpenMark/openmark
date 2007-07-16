@@ -34,12 +34,12 @@ public class q2 extends SimpleQuestion1
 	private final static int[]	NUMBERS_A={ 15,  16,  18,  20,  22},
 								NUMBERS_B={ 5,  2,  3,  5, 11},
 								NUMBERS_C={ 8,  3,  4,  6, 12};
-	  
+
 	/** Selected question */
 	private int iVariant;
-	
+
 //--------------------------------------------------------------------------------------------
-	
+
 protected void init() throws OmException
 {
 	Random r = getRandom();
@@ -60,12 +60,12 @@ protected void init() throws OmException
 	setPlaceholder("SHADES",""+NUMBERS_A[iVariant]);
 	setPlaceholder("B",""+NUMBERS_B[iVariant]);
 	setPlaceholder("C",""+NUMBERS_C[iVariant]);
-	
+
 	// store question information
-    getResults().setQuestionLine("What fraction voted? [" + NUMBERS_B[iVariant] + "/" + NUMBERS_C[iVariant] + "]");	
+    getResults().setQuestionLine("What fraction voted? [" + NUMBERS_B[iVariant] + "/" + NUMBERS_C[iVariant] + "]");
 }
 //--------------------------------------------------------------------------------------------
-  
+
 protected boolean isRight(int iAttempt) throws OmDeveloperException
 {
 	double	dblN, dblD;
@@ -78,24 +78,24 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
 	getComponent("toolarge").setDisplay(false);
 	getComponent("reference").setDisplay(false);
 
-	responN=(getEditField("numerator").getValue().trim());	
-	dblN = Helper.inputNumber(responN); 
+	responN=(getEditField("numerator").getValue().trim());
+	dblN = Helper.inputNumber(responN);
 
-	responD=(getEditField("denominator").getValue().trim());	
+	responD=(getEditField("denominator").getValue().trim());
 	dblD = Helper.inputNumber(responD);
 
 	// store response information
 	getResults().setAnswerLine(responN + "/" + responD);
     getResults().appendActionSummary("Attempt " + iAttempt + ": " + responN + "/" + responD);
-    
+
     targetN = (double) NUMBERS_B[iVariant];
 	targetD = (double) NUMBERS_C[iVariant];
-	
+
 	// Compare against the right answer
 	if ((Helper.range(dblN, targetN, tolerance)) &&
 		(Helper.range(dblD, targetD, tolerance)))
 			return true;
-	
+
 	// Compare against the not simplified answer
 	if ((Helper.range(dblN, NUMBERS_A[iVariant], tolerance)) &&
 		(Helper.range(dblD, 24, tolerance))) {
@@ -112,7 +112,7 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
 	if (iAttempt == 2) {
 			setFeedbackID("default");
 	}
-    
+
 	if (iAttempt == 3)
 		getComponent("reference").setDisplay(true);
 

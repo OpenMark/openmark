@@ -24,16 +24,16 @@ import om.helper.SimpleQuestion1;
 public class jmeQuestion extends SimpleQuestion1
 {
 	private static String sSmiles;
-	
+
 	protected void init() throws OmException
 	{
-		getResults().setQuestionLine("Draw the structure of the compound that gives the 13C shown.");				
+		getResults().setQuestionLine("Draw the structure of the compound that gives the 13C shown.");
 	}
-	
+
 	protected boolean isRight(int iAttempt) throws OmDeveloperException
 	{
 		int oxygenCount, carbonCount, nitrogenCount, tripleCount;
-		
+
 		getComponent("nooxygen").setDisplay(false);
 		getComponent("rightgroupwrongcarbons").setDisplay(false);
 		getComponent("tooManyCarbons").setDisplay(false);
@@ -43,25 +43,25 @@ public class jmeQuestion extends SimpleQuestion1
 		getComponent("notriple").setDisplay(false);
 		getComponent("nonitrogen").setDisplay(false);
 		getComponent("formula").setDisplay(false);
-		
+
 		//debug
-		setPlaceholder("SMILES",getJME("myjme").getSMILES());		
-		
+		setPlaceholder("SMILES",getJME("myjme").getSMILES());
+
 		//get the SMILES string of the entered structure
 		sSmiles = getJME("myjme").getSMILES();
-		
+
 		getResults().setAnswerLine(sSmiles);
 		getResults().appendActionSummary("Attempt "+iAttempt+": "+sSmiles);
 
 		//convert any wedge bonds into plain bonds
 		removeWedgeBonds();
-		
+
 		//match against correct answer
 		//two possibilities: CN drawn out or entered with the 'X' tool
 		if (sSmiles.equals("CCCCCCC=O")) {
 			return true;
 		}
-		
+
 		if (iAttempt < 3) {
 			if (sSmiles.equals("CCCCCC=O") || sSmiles.equals("CCCCCCC=O")) {
 	        	getComponent("rightgroupwrongcarbons").setDisplay(true);
@@ -87,15 +87,15 @@ public class jmeQuestion extends SimpleQuestion1
 				if (carbonCount == 7) {
 					getComponent("rightcarbons").setDisplay(true);
 				}
-	        
+
 				nitrogenCount = countElement(sSmiles, "N");
 				if (nitrogenCount > 0)
 					getComponent("nonitrogen").setDisplay(true);
-				
+
 				tripleCount = countElement(sSmiles, "#");
 				if (tripleCount > 0)
 					getComponent("notriple").setDisplay(true);
-				
+
 				carbonCount = countElement(sSmiles, "C");
 				//general feedback
 				if (iAttempt == 1)
@@ -106,7 +106,7 @@ public class jmeQuestion extends SimpleQuestion1
 		}
 		return false;
 	}
-	
+
 	protected void doAdditionalAnswerProcessing(
 	  	boolean bRight,boolean bWrong,
 	    boolean bPass,int iAttempt) throws OmDeveloperException
@@ -125,7 +125,7 @@ public class jmeQuestion extends SimpleQuestion1
 
 	//method to remove wedge bonds from a drawn structure
 	//applicable when stereochemistry is not important to the answer
-	
+
 	public void removeWedgeBonds() {
 	    int atIndex = sSmiles.lastIndexOf('@'), sqIndex;
 	    int counter = 0;

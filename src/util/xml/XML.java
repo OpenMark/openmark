@@ -57,35 +57,35 @@ public abstract class XML
 
 	/** Maximum number of parsers to cache */
 	private final static int MAXCACHEDPARSERS=10;
-	
+
 
 	/** Cached documentbuilderfactory object (if not using Xercse) */
 	private static DocumentBuilderFactory dbf=null;
-	
+
 	/** Cached DocumentImpl class (if using Xerces) */
 	private static Class<?> cDocumentImpl=null;
-	
+
 	/** Cached DOMParser class (if using Xerces) */
 	private static Class<?> cDOMParser=null;
-	
+
 	/** Cached setFeature method (if using Xerces) */
 	private static Method mSetFeature=null;
 	/** Cached parse method (if using Xerces) */
 	private static Method mParse=null;
 	/** Cached getDocument method (if using Xerces) */
 	private static Method mGetDocument=null;
-	
+
 	/** True if using Xerces for parsing */
 	private static boolean bUsingXerces;
-	
+
 	/** True if using JAX standard for parsing */
-	private static boolean bUsingJAX; 
-	
+	private static boolean bUsingJAX;
+
 	/* Initialise static members and determine whether to use Xerces or JAX */
 	private static void initStatics()
 	{
 		if(bUsingXerces||bUsingJAX) return;
-		
+
 		try
 		{
 			cDocumentImpl=Class.forName("org.apache.xerces.dom.DocumentImpl");
@@ -110,14 +110,14 @@ public abstract class XML
 			bUsingJAX=true;
 		}
 	}
-	
+
 	/** @return Description of XML parsing method in use */
 	public static String getVersion()
 	{
-		try		
+		try
 		{
 			initStatics();
-			if(bUsingXerces) 
+			if(bUsingXerces)
 				return "XML library: using Xerces";
 			else
 				return "XML library: using JAX";
@@ -127,16 +127,16 @@ public abstract class XML
 			return "XML library: error - "+e.getMessage();
 		}
 	}
-		
+
 	/** JAX parser wrapper */
 	static class MyJAXParser implements MyDOMParser
 	{
 		/** Document builder */
 		private DocumentBuilder db;
-		
+
 		/** Last-parsed document */
 		private Document d;
-		
+
 		/**
 		 * Constructor.
 		 */
@@ -149,7 +149,7 @@ public abstract class XML
 			catch(ParserConfigurationException e)
 			{
 				throw new Error("Error creating DocumentBuilder");
-			}			
+			}
 		}
 
 		public void parse(InputSource is) throws SAXException,IOException
@@ -162,7 +162,7 @@ public abstract class XML
 			return d;
 		}
 	}
-	
+
 	/** Xerces parser wrapper */
 	static class MyXercesParser implements MyDOMParser
 	{
@@ -177,7 +177,7 @@ public abstract class XML
 			{
 				o=cDOMParser.newInstance();
 				mSetFeature.invoke(o,new Object[]{
-					"http://apache.org/xml/features/dom/defer-node-expansion",Boolean.FALSE});			
+					"http://apache.org/xml/features/dom/defer-node-expansion",Boolean.FALSE});
 			}
 			catch(Exception e)
 			{
@@ -221,10 +221,10 @@ public abstract class XML
 			}
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Interface to generalise between Xerces and JAX parsing. Works same way
-	 * as Xerces DOMParser. 
+	 * as Xerces DOMParser.
 	 */
 	interface MyDOMParser
 	{
@@ -251,7 +251,7 @@ public abstract class XML
 			{
 				return lAvailableParsers.removeFirst();
 			}
-			
+
 			initStatics();
 			if(bUsingXerces)
 				return new MyXercesParser();
@@ -537,8 +537,8 @@ public abstract class XML
 			throw new XMLException(ioe);
 		}
 	}
-	
-	
+
+
 
 	/**
 	 * Creates new empty document
@@ -705,8 +705,8 @@ public abstract class XML
 		StringWriter sw=new StringWriter();
 		save(d,sw,true);
 		return sw.toString();
-	}	
-	
+	}
+
 	/**
 	 * Saves an XML element to file, omitting XML declaration.
 	 * <p>
@@ -1300,11 +1300,11 @@ public abstract class XML
 	public static String replaceTokens(String sValue,String sBorder,Map mReplace)
 	{
 		String sNew=replaceStringTokensInternal(sValue,sBorder,mReplace,true);
-		if(sNew==null) 
+		if(sNew==null)
 			return sValue;
 		else
 			return sNew;
-	}	
+	}
 
 	/**
 	 * Replaces tokens safely in a string.
@@ -1320,7 +1320,7 @@ public abstract class XML
 		Map<String,String> mReplace=new HashMap<String,String>();
 		mReplace.put(sToken,sValue);
 		return replaceTokens(sInput,sBorder,mReplace);
-	}	
+	}
 
 	/**
 	 * Replaces tokens in a string.
@@ -1338,7 +1338,7 @@ public abstract class XML
 		// Get value and look for tokens. If there aren't any, bail now.
 		if(mReplace==null || sValue.indexOf(sBorder)==-1) return null;
 		Pattern pTokens=Pattern.compile(sBorder+"(.*?)"+sBorder,Pattern.DOTALL);
-		
+
 		StringBuffer sbResult=new StringBuffer();
 		Matcher m=pTokens.matcher(sValue);
 		while(m.find())
@@ -1362,16 +1362,16 @@ public abstract class XML
 
 		return sbResult.toString();
 	}
-	
+
 	private static void replaceNodeTokens(Text t,String sBorder,Map mReplace)
 	{
 		// Get value and look for tokens. If there aren't any, bail now.
 		String sValue=t.getData();
 		if(mReplace==null || sValue.indexOf(sBorder)==-1) return;
-		
+
 		StringBuffer sbBefore=new StringBuffer();
-		
-		Pattern pTokens=Pattern.compile(sBorder+"(.*?)"+sBorder,Pattern.DOTALL);		
+
+		Pattern pTokens=Pattern.compile(sBorder+"(.*?)"+sBorder,Pattern.DOTALL);
 		Matcher m=pTokens.matcher(sValue);
 		while(m.find())
 		{
@@ -1393,14 +1393,14 @@ public abstract class XML
 					sbBefore.setLength(0);
 					// ...add the new node...
 					t.getParentNode().insertBefore(
-						t.getOwnerDocument().importNode(nMatch,true),t);					
+						t.getOwnerDocument().importNode(nMatch,true),t);
 				}
 			}
 		}
 		m.appendTail(sbBefore);
 		t.setData(sbBefore.toString());
 	}
-	
+
 	/**
 	 * Replace tokens in the form %%token-ID%%, anywhere they occur in text
 	 * or attribute values. %%%% becomes a literal %%. Anything not matched
@@ -1412,7 +1412,7 @@ public abstract class XML
 	{
 		replaceTokens(n,"%%",mReplace);
 	}
-	
+
 	/**
 	 * Replace tokens in the form %%token-ID%%, anywhere they occur in text
 	 * or attribute values. %%%% becomes a literal %%. Anything not matched
@@ -1422,7 +1422,7 @@ public abstract class XML
 	 * @param sBorder Border string e.g. %%; must be made of characters that don't
 	 *   need escaping in regexps
 	 * @param mReplace Map of token-ID to replacement text (String) or XML content
-	 *   (Node) 
+	 *   (Node)
 	 */
 	public static void replaceTokens(Node n, String sBorder,Map<String,? extends Object> mReplace)
 	{
@@ -1442,12 +1442,12 @@ public abstract class XML
 			else
 			{
 				throw new IllegalArgumentException("replaceTokens map may contain only Strings and Nodes");
-			}			
+			}
 		}
-		
+
 		replaceTokens(n,sBorder,mStrings,mNodes);
 	}
-	
+
 	/**
 	 * Replace tokens in the form %%token-ID%%, anywhere they occur in text
 	 * or attribute values. %%%% becomes a literal %%. Anything not matched
@@ -1456,15 +1456,15 @@ public abstract class XML
 	 * @param n Node to begin with
 	 * @param sBorder Border string e.g. %%; must be made of characters that don't
 	 *   need escaping in regexps
-	 * @param mStringReplace Map of token-ID to replacement text (String) 
-	 * @param mNodeReplace Map of token-ID to replacement XML content (Node) 
+	 * @param mStringReplace Map of token-ID to replacement text (String)
+	 * @param mNodeReplace Map of token-ID to replacement XML content (Node)
 	 */
 	private static void replaceTokens(Node n,String sBorder,Map mStringReplace,Map mNodeReplace)
 	{
 		if(n instanceof Text)
 		{
 			Text t=(Text)n;
-			// Only do 'final' replaces if nodereplace is false 
+			// Only do 'final' replaces if nodereplace is false
 			String sNew=replaceStringTokensInternal(t.getData(),sBorder,mStringReplace,mNodeReplace==null);
 			if(sNew!=null) t.setData(sNew);
 			replaceNodeTokens(t,sBorder,mNodeReplace);
@@ -1562,7 +1562,7 @@ public abstract class XML
 	{
 		return findAll(dParent.getDocumentElement(),sAttribute,sValue);
 	}
-	
+
 	/**
 	 * Recursively finds all elements with the given attribute/value pair.
 	 * @param eParent Parent to search within (will also be checked)
@@ -1576,7 +1576,7 @@ public abstract class XML
 		findAllInternal(eParent,sAttribute,sValue,lResult);
 		return lResult.toArray(new Element[0]);
 	}
-	
+
 	/**
 	 * Recursively finds all elements with the given attribute/value pair.
 	 * @param eParent Parent to search within (will also be checked)
@@ -1701,7 +1701,7 @@ public abstract class XML
 			eTarget.appendChild(eTarget.getOwnerDocument().importNode(n,true));
 		}
 	}
-	
+
 	/**
 	 * Remove all the children of node eSourceParent and append them (in the same order) to eTargetParent.
 	 * @param eSourceParent
@@ -1728,5 +1728,5 @@ public abstract class XML
 		for(int i=0;i<ae.length;i++)
 			ae[i]=(Element)nl.item(i);
 		return ae;
-	}	
+	}
 }

@@ -33,9 +33,9 @@ import util.xml.XML;
 /***
 This is a component to layout components as a table.<br/>
 The table component can only contain &lt;row> and &lt;title> elements directly.<br/>
-Rows can only contain &lt;t> (text) elements (each defines a cell), but these can contain things such as 
+Rows can only contain &lt;t> (text) elements (each defines a cell), but these can contain things such as
 images, text input areas and also formatting elements such as  &lt;centre> <br/>
-The title is placed as a string a the top of the table and is set 
+The title is placed as a string a the top of the table and is set
 to be the caption for improved accessibillity.
 <h2>Example XML usage</h2>
 &lt;table cols='2' rows='3' left='1' head='1' &gt; <br/>
@@ -66,8 +66,8 @@ public class TableComponent extends QComponent
 	{
 		return "table";
 	}
-	
-	
+
+
 	/** @return array of required attributes for tag */
 	@Override
 	protected String[] getRequiredAttributes()
@@ -77,7 +77,7 @@ public class TableComponent extends QComponent
 			"cols","rows"
 		};
 	}
-	
+
 	/** Defines possible attributes */
 	@Override
 	protected void defineProperties() throws OmDeveloperException
@@ -90,9 +90,9 @@ public class TableComponent extends QComponent
 		defineInteger("left");
 		defineInteger("right");
 	}
-	
+
 	/**
-	 * Question author callable funtion sets dimensions of table 
+	 * Question author callable funtion sets dimensions of table
 	 * @param iNewRows number of rows in the table.
 	 * @param iNewCols number of columns in the table.
 	 */
@@ -101,17 +101,17 @@ public class TableComponent extends QComponent
 		iRows = iNewRows;
 		iCols = iNewCols;
 	}
-	
-	private int iCols;  // columns for table		
+
+	private int iCols;  // columns for table
 	private int iRows;  // rows for table
 	private int iHead;  // number of header rows
 	private int iFoot;  // number of footer rows
 	private int iLeft;  // number of label columns on left
 	private int iRight; // number of label columns on right
-	
-	private ArrayList<TableRow> tableElements; // array of table elements (columns etc) 
+
+	private ArrayList<TableRow> tableElements; // array of table elements (columns etc)
 	private QComponent qcTitle; // title of table
-	
+
 	/** inner class which represents a table row */
 	class TableRow
 	{
@@ -123,13 +123,13 @@ public class TableComponent extends QComponent
 		if (isPropertySet(sName)) return getInteger(sName);
 		else return iDefault;
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		iRows = getInteger("rows");
 		iCols = getInteger("cols");
-		
+
 		iHead = getIntegerIfDefined("head",0);
 		iFoot = getIntegerIfDefined("foot",0);
 		iLeft = getIntegerIfDefined("left",0);
@@ -153,10 +153,10 @@ public class TableComponent extends QComponent
 				}
 				else throw new OmFormatException(
 				e.getTagName()+"<table> may only contain <row> and <title> tags");
-			}	
+			}
 		}
 	}
-	
+
 	protected void buildRow(TableRow tr, Element eRow) throws OmException
 	{
 		LinkedList<QComponent> lCells = new LinkedList<QComponent>();
@@ -174,8 +174,8 @@ public class TableComponent extends QComponent
 		tr.aqcCells = lCells.toArray(new QComponent[0]);
 		// throw new OmException("size of row =" + lCells.size());
 	}
-	
-	
+
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
@@ -185,10 +185,10 @@ public class TableComponent extends QComponent
 		qc.addInlineXHTML(eTable);
 
 		int iTableElement = 0;
-		
+
 		if (qcTitle != null) // title set
 		{ // create caption from title tag
-			Element eTitle = XML.createChild(eTable,"caption");	
+			Element eTitle = XML.createChild(eTable,"caption");
 			qc.setParent(eTitle);
 			qcTitle.produceOutput(qc,bInit,bPlain);
 			qc.unsetParent();
@@ -200,7 +200,7 @@ public class TableComponent extends QComponent
 
 			Element eRow = XML.createChild(eTBody,"tr");
 			Element eCell;
-			
+
 			for(int iCell = 0; iCell < iCols; iCell++)
 			{ // create cells
 				if (iRow < iHead)
@@ -208,7 +208,7 @@ public class TableComponent extends QComponent
 					eCell = XML.createChild(eRow,"th");
 					eCell.setAttribute("scope","col");
 				}
-				else if (iCell < iLeft)  
+				else if (iCell < iLeft)
 				{ // row label
 					eCell = XML.createChild(eRow,"th");
 					eCell.setAttribute("scope","row");
@@ -221,16 +221,16 @@ public class TableComponent extends QComponent
 					if (iRow >= (iRows-iFoot)) eCell.setAttribute("class","foot");
 					else if (iCell >= (iCols - iRight))eCell.setAttribute("class","right");
 				}
-				
+
 				qc.setParent(eCell);
-				if (iCell < tr.aqcCells.length) 
+				if (iCell < tr.aqcCells.length)
 					tr.aqcCells[iCell].produceOutput(qc,bInit,bPlain);
 				qc.unsetParent();
 			}
-			
+
 		}
 	}
-	
+
 	@Override
 	protected Color getChildBackground(QComponent qcChild)
 	{
@@ -253,7 +253,7 @@ public class TableComponent extends QComponent
 					}
 				}
 			}
-			
+
 			return convertRGB("innerbg");
 		}
 		catch(OmDeveloperException e)
@@ -261,6 +261,6 @@ public class TableComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
-	
+
+
 }  // end of class

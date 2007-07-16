@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package om.tnavigator.reports.std;
 
@@ -22,7 +22,7 @@ import om.tnavigator.reports.OmTestReport;
 public class HomeTestReport implements OmTestReport {
 	private static class DbInfoPerson
 	{
-		String sOUCU,sPI,sDate,sDateFinished,sTime,sTimeFinished;		
+		String sOUCU,sPI,sDate,sDateFinished,sTime,sTimeFinished;
 	}
 
 	private static class DbInfoQuestion
@@ -31,9 +31,9 @@ public class HomeTestReport implements OmTestReport {
 		int iMajor;
 		int iNumber;
 	}
-	
+
 	private NavigatorServlet ns;
-	
+
 	/**
 	 * Create an instance of this report.
 	 * @param ns the navigator servlet we belong to.
@@ -42,7 +42,7 @@ public class HomeTestReport implements OmTestReport {
 	{
 		this.ns = ns;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.OmTestReport#getUrlTestReportName()
 	 */
@@ -63,7 +63,7 @@ public class HomeTestReport implements OmTestReport {
 	public boolean isApplicable(TestDeployment td) {
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.OmTestReport#handleTestReport(om.tnavigator.NavigatorServlet, om.tnavigator.UserSession, java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -74,16 +74,16 @@ public class HomeTestReport implements OmTestReport {
 		List<DbInfoPerson> lUnfinished=new LinkedList<DbInfoPerson>();
 		List<DbInfoPerson> lAdmin=new LinkedList<DbInfoPerson>();
 		List<DbInfoQuestion> lQuestions=new LinkedList<DbInfoQuestion>();
-	
-		SimpleDateFormat 
+
+		SimpleDateFormat
 			sdfD=new SimpleDateFormat("dd MMMM yyyy"),
 			sdfT=new SimpleDateFormat("HH:mm:ss");
-		
+
 		// Query from database for PIs and questions
-		DatabaseAccess.Transaction dat=ns.getDatabaseAccess().newTransaction();		
+		DatabaseAccess.Transaction dat=ns.getDatabaseAccess().newTransaction();
 		try
 		{
-			// Get list of people who did the test. 
+			// Get list of people who did the test.
 			// Show:
 			// * Each person only once
 			// * Only the most recent finished attempt, or most recent unfinished attempt
@@ -94,7 +94,7 @@ public class HomeTestReport implements OmTestReport {
 			Set<String> sPIsDone=new HashSet<String>();
 			ResultSet rs=ns.getOmQueries().queryTestAttempters(dat,us.getTestId());
 			while(rs.next())
-			{				
+			{
 				DbInfoPerson dip=new DbInfoPerson();
 				dip.sOUCU=rs.getString(1);
 				dip.sPI=rs.getString(2);
@@ -104,12 +104,12 @@ public class HomeTestReport implements OmTestReport {
 				dip.sTime=sdfT.format(tsStart);
 				dip.sDate=sdfD.format(tsStart);
 				Timestamp tsFinished=rs.getTimestamp(6);
-				if(tsFinished==null) 
+				if(tsFinished==null)
 				{
 					dip.sTimeFinished="";
 					dip.sDateFinished="";
 				}
-				else 
+				else
 				{
 					dip.sTimeFinished=sdfT.format(tsFinished);
 					dip.sDateFinished=sdfD.format(tsFinished);
@@ -123,9 +123,9 @@ public class HomeTestReport implements OmTestReport {
 					lUnfinished.add(dip);
 				sPIsDone.add(dip.sPI);
 			}
-			
+
 			// Get list of questions in test
-			rs=ns.getOmQueries().queryQuestionList(dat,us.getTestId());				
+			rs=ns.getOmQueries().queryQuestionList(dat,us.getTestId());
 			while(rs.next())
 			{
 				DbInfoQuestion diq=new DbInfoQuestion();
@@ -152,10 +152,10 @@ public class HomeTestReport implements OmTestReport {
 		{
 			dat.finish();
 		}
-		
+
 		// Build result
 		StringBuffer sb=new StringBuffer("<div class='basicpage'>");
-		
+
 		sb.append("<h3>Finished tests ("+lFinished.size()+")</h3>");
 		sb.append("<p>Finished tests are those where the user clicked the " +
 			"'End test' button to submit their answers.</p>");
@@ -168,7 +168,7 @@ public class HomeTestReport implements OmTestReport {
 				"<td>"+dip.sDateFinished+"</td><td>"+dip.sTimeFinished+"</td></tr>");
 		}
 		sb.append("</table>");
-		
+
 		sb.append("<h3>Unfinished tests ("+lUnfinished.size()+")</h3>");
 		sb.append("<table class='topheaders'><tr><th>PI</th><th>OUCU</th><th>Start date</th><th>Time</th></tr>");
 		for(Iterator i=lUnfinished.iterator();i.hasNext();)
@@ -178,7 +178,7 @@ public class HomeTestReport implements OmTestReport {
 				"<td>"+dip.sOUCU+"</td><td>"+dip.sDate+"</td><td>"+dip.sTime+"</td></tr>");
 		}
 		sb.append("</table>");
-		
+
 		sb.append("<h3>Admin user tests</h3>");
 		sb.append("<p>Tests taken by admin users (finished or not) will not be included in any official results.</p>");
 		sb.append("<table class='topheaders'><tr><th>PI</th><th>OUCU</th><th>Start date</th><th>Time</th><th>Finish date</th><th>Time</th></tr>");
@@ -190,7 +190,7 @@ public class HomeTestReport implements OmTestReport {
 				"<td>"+dip.sDateFinished+"</td><td>"+dip.sTimeFinished+"</td></tr>");
 		}
 		sb.append("</table>");
-		
+
 		sb.append("<h3>Questions in test</h3>");
 		sb.append("<p>The following counts include all who attempted a question, " +
 			"whether or not they finished the test.</p>");
@@ -207,10 +207,10 @@ public class HomeTestReport implements OmTestReport {
 					sMax=""+as[iScore].getMarks();
 			}
 			sb.append("<tr><td>"+diq.iNumber+"</td><td><a href='reports!question!"+diq.sQuestion+"'>"+diq.sQuestion+"</a>" +
-				"</td><td>"+diq.sCount+"</td><td>"+diq.sAverage+"</td><td>"+sMax+"</td></tr>");			
+				"</td><td>"+diq.sCount+"</td><td>"+diq.sAverage+"</td><td>"+sMax+"</td></tr>");
 		}
 		sb.append("</table>");
-		
+
 		SortedMap<String, String> reportsToList = new TreeMap<String, String>();
 		for (OmTestReport report : ns.getReports().getTestReports())
 		{
@@ -227,11 +227,11 @@ public class HomeTestReport implements OmTestReport {
 				sb.append("<p><a href='reports!" + entry.getValue() + "'>" + entry.getKey() + "</a></p>");
 			}
 		}
-		
+
 		sb.append("<p style='margin-top:2em'><a href='./'>Return to test</a></p>");
-		
+
 		sb.append("</div>");
-		
-		ns.serveTestContent(us,"Reports","",null,null,sb.toString(),false, request, response, true);				
+
+		ns.serveTestContent(us,"Reports","",null,null,sb.toString(),false, request, response, true);
 	}
 }

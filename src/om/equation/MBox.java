@@ -19,7 +19,7 @@ package om.equation;
 
 import java.awt.Graphics2D;
 
-/** 
+/**
  * Doesn't do anything in itself, but ensures that text boxes format like
  * normal text instead of like an equation e.g. including whitespace.
  * (There is also special processing to not throw away whitespace in text
@@ -33,7 +33,7 @@ public class MBox extends Item
 		Item iChild=getChildren()[0];
 		iChild.render(g2,iX,iY);
 	}
-	
+
 	@Override
 	protected void internalPrepare()
 	{
@@ -42,7 +42,7 @@ public class MBox extends Item
 		iHeight=iChild.getHeight();
 		iBaseline=iChild.getBaseline();
 	}
-	
+
 	/**
 	 * @param f ItemFactory to register this class with.
 	 */

@@ -1,13 +1,13 @@
 function radioBoxOnClick(radioboxID,idPrefix)
 {
   var radiobox=document.getElementById(idPrefix+radioboxID);
-  if (!radiobox.disabled) radiobox.checked = true; 
+  if (!radiobox.disabled) radiobox.checked = true;
 }
 
 function radioBoxFix(radioboxID,idPrefix)
 {
   var container=document.getElementById(idPrefix+radioboxID);
-  
+
   // Find ancestor row
   var row=container;
   while(row!=null && (row.tagName.toLowerCase()!='div' || row.className!='layoutgridrow'))

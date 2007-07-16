@@ -235,7 +235,7 @@ html.zoom20 #progress .question,html.zoom20 #progress .text,html.zoom20 #progres
 	color:#888;
 /*FIXED*/ background:%%BG%%;
 /*FIXED*/ color:%%FG%%;
-/*FIXED*/ border-style:none; 
+/*FIXED*/ border-style:none;
 }
 
 #progress .current span,#progress .current a
@@ -245,7 +245,7 @@ html.zoom20 #progress .question,html.zoom20 #progress .text,html.zoom20 #progres
 	color:%%BG%%;
 /*FIXED*/ color:%%FG%%;
   font-weight:bold;
-}	
+}
 
 #progress span
 {
@@ -369,7 +369,7 @@ em.warning
 }
 .basicpage table.leftheaders th
 {
-  border-right:1px solid black;  
+  border-right:1px solid black;
   text-align:left;
 }
 .basicpage th,.basicpage td
@@ -392,7 +392,7 @@ em.warning
   border-bottom:1px dotted black;
   font-weight:bold;
 }
-.basicpage table tr.totals 
+.basicpage table tr.totals
 {
   font-weight:bold;
 }
@@ -409,9 +409,9 @@ em.warning
   width:210px;
   margin-right:0;
 }
-.displayoptions .examples img 
-{ 
-  display:block; 
+.displayoptions .examples img
+{
+  display:block;
 }
 .displayoptions .examples .right
 {
@@ -438,7 +438,7 @@ em.warning
 
 .basicpage p.email
 {
-  margin:0.5em 0 0.7em; 
+  margin:0.5em 0 0.7em;
 }
 
 .errormessage h1
@@ -458,7 +458,7 @@ em.warning
   border: 1px solid black;
   padding: 1em 1em;
   margin-bottom:1em;
-} 
+}
 .errormessage .technical
 {
   margin-top:4em;
@@ -521,12 +521,12 @@ em.warning
 {
   font-weight:bold;
 }
-.report .sessions 
+.report .sessions
 {
   font-size:0.75em;
   margin:0.8em 0 1em 1em;
 }
-.report .sessions .useragent 
+.report .sessions .useragent
 {
   color:#555;
 }
@@ -554,5 +554,5 @@ body,.basicpage,#questionouter,#titles
   color:black !important;
   background:white !important;
 }
-	
+
 }

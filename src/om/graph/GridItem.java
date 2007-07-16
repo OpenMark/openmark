@@ -31,17 +31,17 @@ public class GridItem extends GraphItem
 
 	/** Grid spacing */
 	private MajorMinor mmXSpacing=new MajorMinor(),mmYSpacing=new MajorMinor();
-	
+
 	/** Opacity of major and minor gridlines */
 	private MajorMinor mmOpacity=new MajorMinor();
-		
+
 	/** Range (x,y) of grid lines */
 	private GraphRange grX,grY;
-	
+
 	/** Default stroke used for axis lines */
 	private final static BasicStroke DEFAULTSTROKE=new BasicStroke(1.0f);
 
-	
+
 
 	/**
 	 * @param w coordinate system.
@@ -56,16 +56,16 @@ public class GridItem extends GraphItem
 		mmOpacity.dMajor=0.25;
 		mmOpacity.dMinor=mmOpacity.dMajor/2.0;
 	}
-	
+
 	/** Colour */
 	private Color cLine=null;
-	
+
 	@Override
 	public void init() throws GraphFormatException
 	{
 		if(cLine==null) cLine=getWorld().convertColour("fg");
-	}	
-	
+	}
+
 	private Color getMajorColour()
 	{
 		return new Color(cLine.getRed(),cLine.getGreen(),cLine.getBlue(),
@@ -76,13 +76,13 @@ public class GridItem extends GraphItem
 		return new Color(cLine.getRed(),cLine.getGreen(),cLine.getBlue(),
 			Math.min(255,(int)(256.0*mmOpacity.dMinor)));
 	}
-	
+
 	@Override
 	public void paint(Graphics2D g2)
 	{
 		g2.setStroke(DEFAULTSTROKE);
 
-		g2.setColor(getMajorColour());		
+		g2.setColor(getMajorColour());
 		if(mmXSpacing.dMajor!=0.0)
 		{
 			// Draw all lines in range except within omit range
@@ -91,7 +91,7 @@ public class GridItem extends GraphItem
 				dPoint<=grX.getMax();
 				dPoint+=mmXSpacing.dMajor)
 			{
-				float fX=getWorld().convertXFloat(dPoint);				
+				float fX=getWorld().convertXFloat(dPoint);
 				g2.draw(new Line2D.Float(fX,getWorld().convertYFloat(grY.getMin()),
 					fX,getWorld().convertYFloat(grY.getMax())));
 			}
@@ -110,7 +110,7 @@ public class GridItem extends GraphItem
 			}
 		}
 
-		g2.setColor(getMinorColour());		
+		g2.setColor(getMinorColour());
 		if(mmXSpacing.dMinor!=0.0)
 		{
 			// Draw all lines in range except within omit range
@@ -120,11 +120,11 @@ public class GridItem extends GraphItem
 				dPoint+=mmXSpacing.dMinor)
 			{
 				// Was there a major tick here?
-				if(mmXSpacing.dMajor!=0.0 && 
+				if(mmXSpacing.dMajor!=0.0 &&
 					Math.abs(Math.round(dPoint / mmXSpacing.dMajor) * mmXSpacing.dMajor - dPoint)<mmXSpacing.dMinor/10.0)
 					continue;
-				
-				float fX=getWorld().convertXFloat(dPoint);				
+
+				float fX=getWorld().convertXFloat(dPoint);
 				g2.draw(new Line2D.Float(fX,getWorld().convertYFloat(grY.getMin()),
 					fX,getWorld().convertYFloat(grY.getMax())));
 			}
@@ -138,22 +138,22 @@ public class GridItem extends GraphItem
 				dPoint+=mmYSpacing.dMinor)
 			{
 				// Was there a major tick here?
-				if(mmYSpacing.dMajor!=0.0 && 
+				if(mmYSpacing.dMajor!=0.0 &&
 					Math.abs(Math.round(dPoint / mmYSpacing.dMajor) * mmYSpacing.dMajor - dPoint)<mmYSpacing.dMinor/10.0)
 					continue;
-				
+
 				float fY=getWorld().convertYFloat(dPoint);
 				g2.draw(new Line2D.Float(getWorld().convertXFloat(grX.getMin()),fY,
 					getWorld().convertXFloat(grX.getMax()),fY));
 			}
-		}		
-		
+		}
+
 	}
-	
+
 
 	/**
-	 * Sets colour for grid lines. By default, major gridlines are drawn at 
-	 * 50% and minor at 30% transparency of this colour. Colour defaults to 
+	 * Sets colour for grid lines. By default, major gridlines are drawn at
+	 * 50% and minor at 30% transparency of this colour. Colour defaults to
 	 * normal foreground (usually black).
 	 * <p>
 	 * Appropriate colours can be obtained from {@link World#convertColour(String)}.
@@ -163,11 +163,11 @@ public class GridItem extends GraphItem
 	{
 		cLine=c;
 	}
-	
+
 	/**
 	 * Sets X spacing of gridlines. You can have major and minor grid lines;
 	 * minor ones are usually more transparent.
-	 * @param sSpacing For example "0.5" if you want major gridlines every 
+	 * @param sSpacing For example "0.5" if you want major gridlines every
 	 *   0.5, or "0.5,0.1" if you also want minor ones every 0.1.
 	 * @throws GraphFormatException If spacing string is invalid
 	 */
@@ -175,11 +175,11 @@ public class GridItem extends GraphItem
 	{
 		mmXSpacing=convertMajorMinor(sSpacing);
 	}
-	
+
 	/**
 	 * Sets Y spacing of gridlines. You can have major and minor grid lines;
 	 * minor ones are usually more transparent.
-	 * @param sSpacing For example "0.5" if you want major gridlines every 
+	 * @param sSpacing For example "0.5" if you want major gridlines every
 	 *   0.5, or "0.5,0.1" if you also want minor ones every 0.1.
 	 * @throws GraphFormatException If spacing string is invalid
 	 */
@@ -187,7 +187,7 @@ public class GridItem extends GraphItem
 	{
 		mmYSpacing=convertMajorMinor(sSpacing);
 	}
-	
+
 	/**
 	 * Converts spacing from a string in format "" (=0.0,0.0) "0.3" (=0.3,0.0)
 	 * or "0.3,0.1" (=0.3,0.1).
@@ -222,10 +222,10 @@ public class GridItem extends GraphItem
 		{
 			throw new GraphFormatException(
 				"<grid>: Invalid spacing specification: "+sSpacing);
-		}		
+		}
 		return s;
 	}
-	
+
 	/**
 	 * Sets opacity of gridlines. The default is 0.25 for major and half that for
 	 * minor.
@@ -239,7 +239,7 @@ public class GridItem extends GraphItem
 		mmOpacity=convertMajorMinor(sOpacity);
 		if(mmOpacity.dMinor==0.0) mmOpacity.dMinor=0.5*mmOpacity.dMajor;
 	}
-	
+
 	/**
 	 * @param d New maximum extent of grid
 	 */
@@ -247,7 +247,7 @@ public class GridItem extends GraphItem
 	{
 		grX=new GraphRange(grX.getMin(),d);
 	}
-	
+
 	/**
 	 * @param d New minimum extent of grid
 	 */
@@ -255,7 +255,7 @@ public class GridItem extends GraphItem
 	{
 		grX=new GraphRange(d,grX.getMax());
 	}
-	
+
 	/**
 	 * @param d New maximum extent of grid
 	 */
@@ -263,7 +263,7 @@ public class GridItem extends GraphItem
 	{
 		grY=new GraphRange(grY.getMin(),d);
 	}
-	
+
 	/**
 	 * @param d New minimum extent of grid
 	 */
@@ -271,5 +271,5 @@ public class GridItem extends GraphItem
 	{
 		grY=new GraphRange(d,grY.getMax());
 	}
-	
+
 }

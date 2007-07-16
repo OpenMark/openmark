@@ -28,7 +28,7 @@ public class Resource
 	private String sEncoding;
 	/** Resource content */
 	private byte[] abContent;
-	
+
 	/**
 	 * Stores the three pieces of information together.
 	 * @param sFilename Resource filename
@@ -43,7 +43,7 @@ public class Resource
 		this.sEncoding=sEncoding;
 		this.abContent=abContent;
 	}
-	
+
 	/**
 	 * Stores the three pieces of information together.
 	 * @param sFilename Resource filename
@@ -56,7 +56,7 @@ public class Resource
 		this.sMimeType=sMimeType;
 		this.abContent=abContent;
 	}
-	
+
 	/** @return Resource filename */
 	public String getFilename() { return sFilename; }
 	/** @return Resource MIME type */

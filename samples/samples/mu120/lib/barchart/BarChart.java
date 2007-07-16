@@ -36,12 +36,12 @@ import java.awt.Graphics2D;
  * @author ag
  */
 public class BarChart {
-    
+
     private final static int tickSize = 4;
-    
+
     private String xCaption;
     private String yCaption;
-    
+
     /**
      * Integer values for the bar chart
      */
@@ -54,7 +54,7 @@ public class BarChart {
      * Labels for the X axis
      */
     private String [] xLabels;
-    
+
     /** Creates a new instance of BarChart */
     public BarChart(String xCaption, String [] xLabels, String yCaption, String [] yLabels, int [] yValues) {
         this.xCaption = xCaption;
@@ -63,7 +63,7 @@ public class BarChart {
         this.yLabels = yLabels;
         this.yValues = yValues;
     }
-    
+
     /**
      * Utility for determining the width in pixels of the
      * given string as drawn on the given Graphics object.
@@ -74,7 +74,7 @@ public class BarChart {
         else
             return g.getFontMetrics().stringWidth(str);
     }
-    
+
     /**
      * Utility for determining the height in pixels of the
      * given string as drawn on the given Graphics object.
@@ -87,7 +87,7 @@ public class BarChart {
             //return g.getFontMetrics().getHeight();
             return g.getFontMetrics().getAscent()+g.getFontMetrics().getDescent();
     }
-    
+
     /**
      * Render the bar chart given a graphic context
      */
@@ -97,11 +97,11 @@ public class BarChart {
         int textDescent = g.getFontMetrics().getDescent();
         int yLabelsWidth = 0; // width of the widest Y label
         int yMax = 0; // maximum value for the Y axis
-        
+
         //g.clipRect(x, y, w, h);
         //g.setColor(Color.black);
         //g.setFont(new Font("Aerial", Font.PLAIN, 12));
-        
+
         // determine Y (vertical) axis maximum value
         // using either the final Y label, or the largest Y value.
         try {
@@ -111,7 +111,7 @@ public class BarChart {
                 if (yMax < yValues [i])
                     yMax = yValues [i];
         }
-        
+
         // calculate header, footer, margin sizes including ticks and labels
         for (i=0; i<yLabels.length; i++)
             if (yLabelsWidth < stringWidth(g,yLabels[i]))
@@ -119,11 +119,11 @@ public class BarChart {
         int header = textHeight;
         int footer = tickSize + textHeight + (xCaption.equals("") ? 0 : textHeight) + textDescent;
         int leftMargin = 1 + yLabelsWidth + tickSize;;
-        
+
         // calculate origin for the Bar Chart
         int x0 = x+leftMargin;
         int y0 = y+h-footer;
-        
+
         // scale, draw X axis, ticks and labels
         int dx = (x+w-x0)/xLabels.length;
         g.drawLine(x0-tickSize, y0, x0+dx*xLabels.length, y0);
@@ -135,8 +135,8 @@ public class BarChart {
         }
         if (! xCaption.equals(""))
             g.drawString(xCaption, x0, y0+tickSize+textHeight+textHeight-textDescent);
-        
-        
+
+
         // scale, draw Y axis, ticks and labels
         if (! yCaption.equals(""))
             g.drawString(yCaption, x0, y+header);
@@ -148,14 +148,14 @@ public class BarChart {
             String lab = yLabels [i];
             g.drawString(lab, x0-stringWidth(g,lab)-tickSize-1, yy);
         }
-        
+
         // scale, draw the bars
         for (i=0; i<yValues.length; i++) {
             int xx = (int) (x0 + i*dx);
             int yVal = yValues [i] * dy*(yLabels.length - 1) / yMax;
             g.fillRect(xx+1, y0-yVal, (int) (dx-1), yVal);
         }
-        
+
     }
-    
+
 }

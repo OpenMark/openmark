@@ -30,8 +30,8 @@ import org.w3c.dom.Element;
 import util.xml.XML;
 import util.xml.XMLException;
 
-/** 
- * Represents the document root. 
+/**
+ * Represents the document root.
  * <p>
  * This component is also where we dump shared Javascript and CSS that is
  * needed by other components.
@@ -40,7 +40,7 @@ public class RootComponent extends QComponent
 {
 	/** Layout grid size */
 	int[] aiRows,aiColumns;
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
@@ -48,9 +48,9 @@ public class RootComponent extends QComponent
 		// 'scoring' (which is handled as metadata by question engine),
 		// and 'define-component' (which is handled by question)
 		getQDocument().buildInsideExcept(this,eThis,new String[]{
-			"layout","scoring","define-component","title"});		
+			"layout","scoring","define-component","title"});
 	}
-	
+
 	@Override
 	protected void initSpecific(Element eThis) throws OmException
 	{
@@ -71,7 +71,7 @@ public class RootComponent extends QComponent
 			{
 				aiColumns[iCol]=Integer.parseInt(
 					XML.getRequiredAttribute(aeCols[iCol],"width"));
-			}			
+			}
 		}
 		catch(XMLException xe)
 		{
@@ -82,9 +82,9 @@ public class RootComponent extends QComponent
 			throw new OmFormatException("height= or width= not a valid number in <layout>");
 		}
 		if(aiRows.length==0 || aiColumns.length==0)
-			throw new OmFormatException("<layout> must include at least one row and column");		
-	}	
-	
+			throw new OmFormatException("<layout> must include at least one row and column");
+	}
+
 	@Override
 	public void produceOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
@@ -95,23 +95,23 @@ public class RootComponent extends QComponent
 		{
 			qc.addResource("clear.gif","image/gif",getClassResource("clear.gif"));
 		}
-		
+
 		Element rootDiv=d.createElement("div");
 		if(!bPlain)
 		{
 			rootDiv.setAttribute("class","om");
 			rootDiv.setAttribute("onkeypress","return checkEnter(event);");
 		}
-		
+
 		qc.addInlineXHTML(rootDiv);
-		
+
 		if(!bPlain)
 		{
 			Element script=XML.createChild(rootDiv,"script");
 			script.setAttribute("type","text/javascript");
-			script.setAttribute("src","%%RESOURCES%%/script.js");		
+			script.setAttribute("src","%%RESOURCES%%/script.js");
 		}
-		
+
 		// See if there's a component that wants to go there
 		Set<BoxThingy> sBoxes=new HashSet<BoxThingy>();
 		QComponent[] acChildren=getComponentChildren();
@@ -119,12 +119,12 @@ public class RootComponent extends QComponent
 		for(int iChild=0;iChild<acChildren.length;iChild++)
 		{
 			// Only include displayable boxes
-			if((acChildren[iChild] instanceof BoxComponent) &&  
-				acChildren[iChild].isDisplayed()) 
+			if((acChildren[iChild] instanceof BoxComponent) &&
+				acChildren[iChild].isDisplayed())
 			{
 				BoxComponent bc=(BoxComponent)acChildren[iChild];
-				
-				int 
+
+				int
 					iX=acChildren[iChild].getInteger("gridx"),
 					iY=acChildren[iChild].getInteger("gridy"),
 					iWidth=acChildren[iChild].getInteger("gridwidth"),
@@ -136,7 +136,7 @@ public class RootComponent extends QComponent
 						"This question has "+aiColumns.length+" columns and "+aiRows.length+
 						" rows; do not exceed those boundaries when positioning boxes on the grid.");
 				}
-				
+
 				sBoxes.add(new BoxThingy(iX,iY,iWidth,iHeight,bc));
 				for(int iGridX=iX;iGridX<iX+iWidth;iGridX++)
 				{
@@ -146,7 +146,7 @@ public class RootComponent extends QComponent
 							throw new OmFormatException("Two displayed boxes are overlapping;" +
 									"question cannot be shown.");
 						aabGridOccupancy[iGridX][iGridY]=true;
-					}					
+					}
 				}
 			}
 		}
@@ -159,23 +159,23 @@ public class RootComponent extends QComponent
 					sBoxes.add(new BoxThingy(iGridX,iGridY,1,1,null));
 			}
 		}
-		
+
 		qc.setParent(rootDiv);
 		subdivideGrid(sBoxes,0,0,aiColumns.length,aiRows.length,qc, bPlain, bInit);
 		qc.unsetParent();
-		
+
 		XML.createChild(rootDiv,"div").setAttribute("class","endform");
 	}
-	
+
 	private void subdivideGrid(Set<BoxThingy> sBoxes,int iMinX,int iMinY,int iWidth, int iHeight, QContent qc, boolean bPlain, boolean bInit)
 		throws OmException
 	{
-		if(sBoxes.size()==1) 
+		if(sBoxes.size()==1)
 		{
 			handleSingleBox(sBoxes.iterator().next(),qc, bPlain, bInit);
 			return;
 		}
-		
+
 		int iCrossover;
 		crossoverloop: for(iCrossover=iMinY+1;iCrossover<iHeight;iCrossover++)
 		{
@@ -187,7 +187,7 @@ public class RootComponent extends QComponent
 			}
 			break;
 		}
-		
+
 		if(iCrossover < iHeight)
 		{
 			// OK now strip out everything above this crossover and send it to new method
@@ -201,7 +201,7 @@ public class RootComponent extends QComponent
 					iBox.remove();
 				}
 			}
-			
+
 			// Make grid box
 			Element eFloat=qc.createElement("div");
 			if(!bPlain)
@@ -213,11 +213,11 @@ public class RootComponent extends QComponent
 					);
 			}
 			qc.addInlineXHTML(eFloat);
-			qc.setParent(eFloat);			
+			qc.setParent(eFloat);
 			// Handle block
 			subdivideGrid(sNew,iMinX,iMinY,iWidth,iCrossover-iMinY, qc, bPlain, bInit);
 			qc.unsetParent();
-			
+
 			eFloat=qc.createElement("div");
 			if(!bPlain)
 			{
@@ -228,14 +228,14 @@ public class RootComponent extends QComponent
 					);
 			}
 			qc.addInlineXHTML(eFloat);
-			qc.setParent(eFloat);			
+			qc.setParent(eFloat);
 			// Do remaining vertical blocks
 			subdivideGrid(sBoxes,iMinX,iCrossover,iWidth,iHeight-iCrossover, qc, bPlain, bInit);
 			qc.unsetParent();
-			
+
 			return;
 		}
-		
+
 		crossoverloop: for(iCrossover=iMinX+1;iCrossover<iWidth;iCrossover++)
 		{
 			for(BoxThingy bt : sBoxes)
@@ -245,7 +245,7 @@ public class RootComponent extends QComponent
 			}
 			break;
 		}
-		
+
 		if(iCrossover<iWidth)
 		{
 			// OK now strip out everything before this crossover and send it to new method
@@ -259,7 +259,7 @@ public class RootComponent extends QComponent
 					iBox.remove();
 				}
 			}
-			
+
 			// Make grid box
 			Element eFloat=qc.createElement("div");
 			if(!bPlain)
@@ -271,11 +271,11 @@ public class RootComponent extends QComponent
 					);
 			}
 			qc.addInlineXHTML(eFloat);
-			qc.setParent(eFloat);			
+			qc.setParent(eFloat);
 			// Handle block
 			subdivideGrid(sNew,iMinX,iMinY,iCrossover-iMinX,iHeight, qc, bPlain, bInit);
 			qc.unsetParent();
-			
+
 			eFloat=qc.createElement("div");
 			if(!bPlain)
 			{
@@ -286,21 +286,21 @@ public class RootComponent extends QComponent
 					);
 			}
 			qc.addInlineXHTML(eFloat);
-			qc.setParent(eFloat);			
+			qc.setParent(eFloat);
 			// Do remaining horizontal blocks
 			subdivideGrid(sBoxes,iCrossover,iMinY,iWidth-iCrossover,iHeight, qc, bPlain, bInit);
 			qc.unsetParent();
-			
+
 			return;
 		}
-		
+
 		throw new OmFormatException("Your box layout is too twisty for " +
 			"our system to convert to HTML. Try to make sure the layout can "+
 			"be subdivided into smaller rectangular blocks.");
 	}
-	
+
 	private final static int MARGIN=8;
-	
+
 	private int getGridWidth(int iX,int iW)
 	{
 		int iWidth=0;
@@ -309,15 +309,15 @@ public class RootComponent extends QComponent
 			iWidth+=aiColumns[iGridX];
 		}
 		iWidth=(int)(iWidth*getQuestion().getZoom());
-		
+
 		if(iX+iW < aiColumns.length)
 			iWidth+=iW*MARGIN;
 		else
 			iWidth+=(iW-1)*MARGIN;
-		
+
 		return iWidth;
 	}
-	
+
 	private int getGridHeight(int iY,int iH)
 	{
 		int iHeight=0;
@@ -326,32 +326,32 @@ public class RootComponent extends QComponent
 			iHeight+=aiRows[iGridY];
 		}
 		iHeight=(int)(iHeight*getQuestion().getZoom());
-		
+
 		if(iY+iH < aiRows.length)
 			iHeight+=iH*MARGIN;
 		else
 			iHeight+=(iH-1)*MARGIN;
-				
+
 		return iHeight;
 	}
-	
+
 	private final static int PADDING=4;
-	
+
 	private void handleSingleBox(BoxThingy bt,QContent qc, boolean bPlain, boolean bInit) throws OmException
 	{
 		// Calculate width and height
 		int iWidth=getGridWidth(bt.iX,bt.iW),iHeight=getGridHeight(bt.iY,bt.iH);
-		
+
 		// Subtract padding and right/bottom margin to get inner width and height
 		iWidth-=PADDING*2; iHeight-=PADDING*2;
-		boolean 
+		boolean
 			bRightMargin=bt.iX+bt.iW < aiColumns.length,
 			bBottomMargin=bt.iY+bt.iH < aiRows.length;
 		if(bRightMargin) iWidth-=MARGIN;
 		if(bBottomMargin) iHeight-=MARGIN;
 		// No need to actually use CSS margin because it automatically goes in the
 		// top left corner of the box
-		
+
 		// Make grid box
 		Element eFloat=qc.createElement("div");
 		if(!bPlain)
@@ -360,7 +360,7 @@ public class RootComponent extends QComponent
 			eFloat.setAttribute("style","width:"+iWidth+"px; height:"+iHeight+"px;");
 		}
 		qc.addInlineXHTML(eFloat);
-		
+
 		if(bt.bcIn!=null)
 		{
 			qc.setParent(eFloat);
@@ -374,7 +374,7 @@ public class RootComponent extends QComponent
 			qc.unsetParent();
 		}
 	}
-		
+
 	static class BoxThingy
 	{
 		int iX,iY,iW,iH;
@@ -385,6 +385,5 @@ public class RootComponent extends QComponent
 			this.bcIn=bcIn;
 		}
 	}
-	
+
 }
- 

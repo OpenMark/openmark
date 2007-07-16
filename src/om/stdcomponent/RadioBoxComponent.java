@@ -27,9 +27,9 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
-A radiobox component. Consists of an actual radiobox with a coloured box that 
-surrounds the radiobox and its content. The user can click anywhere in the box 
+/**
+A radiobox component. Consists of an actual radiobox with a coloured box that
+surrounds the radiobox and its content. The user can click anywhere in the box
 to toggle the check. (Consequently, the radiobox should not contain components that
 might require user input, as this behaviour is likely to break them.)
 <p/>
@@ -59,41 +59,41 @@ public class RadioBoxComponent extends QComponent
 
 	/** Property name for value of radiobox (boolean) */
 	public final static String PROPERTY_CHECKED="checked";
-	
+
 	/** Property name for radio groups (string) */
 	public final static String PROPERTY_GROUP="group";
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "radiobox";
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
-		
+
 		defineBoolean(PROPERTY_CHECKED);
 		defineBoolean(PROPERTY_HIGHLIGHT);
 		setBoolean(PROPERTY_CHECKED,false);
-		
+
 		defineString(PROPERTY_GROUP);
 		setString(PROPERTY_GROUP,"_rg");
 	}
-	
+
 	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eOuterBox=qc.createElement("div");
 		qc.addInlineXHTML(eOuterBox);
-		
+
 		if(!bPlain)
 		{
 			eOuterBox.setAttribute("class","radiobox");
 			eOuterBox.setAttribute("id",QDocument.ID_PREFIX+getID());
 			eOuterBox.setAttribute("onclick","radioBoxOnClick('rb_"+getID()+"','"+QDocument.ID_PREFIX+"');");
-			
+
 			if(isHighlight())
 			{
 				eOuterBox.setAttribute("style",
@@ -107,7 +107,7 @@ public class RadioBoxComponent extends QComponent
 					"border-color:"+convertHash("innerbg")+";");
 			}
 		}
-		
+
 		Element eInput=XML.createChild(eOuterBox,"input");
 		eInput.setAttribute("type","radio");
 		eInput.setAttribute("value",QDocument.ID_PREFIX+getID());
@@ -119,12 +119,12 @@ public class RadioBoxComponent extends QComponent
 			// eInput.setAttribute("onclick","radioBoxOnClick('rb_"+getID()+"');");
 		}
 		if(isChecked()) eInput.setAttribute("checked","yes");
-		if(!isEnabled()) eInput.setAttribute("disabled","yes");		
-		
+		if(!isEnabled()) eInput.setAttribute("disabled","yes");
+
 		if(!bPlain)
 		{
 			Element eContents=XML.createChild(eOuterBox,"div");
-			eContents.setAttribute("class","radioboxcontents");		
+			eContents.setAttribute("class","radioboxcontents");
 			qc.setParent(eContents);
 		}
 		else
@@ -146,9 +146,9 @@ public class RadioBoxComponent extends QComponent
 			eScript.setAttribute("type","text/javascript");
 			XML.createText(eScript,"addOnLoad(function() { radioBoxFix('"+getID()+"','"+QDocument.ID_PREFIX+"');});");
 		}
-		if(isEnabled()) qc.informFocusable(eInput.getAttribute("id"),bPlain);		
+		if(isEnabled()) qc.informFocusable(eInput.getAttribute("id"),bPlain);
 	}
-	
+
 	/** @return True if the radiobox was checked */
 	public boolean isChecked()
 	{
@@ -161,7 +161,7 @@ public class RadioBoxComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/**
 	 * Checks the radiobox.
 	 * @param bChecked True to check it, false to uncheck
@@ -177,7 +177,7 @@ public class RadioBoxComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/** @return True if the radiobox is highlighted */
 	public boolean isHighlight()
 	{
@@ -185,9 +185,9 @@ public class RadioBoxComponent extends QComponent
 		{
 			if(isPropertySet(PROPERTY_HIGHLIGHT))
 				return getBoolean(PROPERTY_HIGHLIGHT);
-			else 
-				// Default behaviour is to highlight when disabled and checked, this 
-				// means that the selected radioboxes are shown more clearly alongside 
+			else
+				// Default behaviour is to highlight when disabled and checked, this
+				// means that the selected radioboxes are shown more clearly alongside
 				// 'you got this wrong' pages
 				return isChecked() && !isEnabled();
 		}
@@ -196,7 +196,7 @@ public class RadioBoxComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/**
 	 * Sets the highlight value.
 	 * @param bHighlight True to highlight, false to unhighlight
@@ -212,27 +212,27 @@ public class RadioBoxComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
 		if(!isEnabled()) return;
 	}
-	
+
 	@Override
 	protected void formAllValuesSet(ActionParams ap) throws OmException
 	{
 		if(!isEnabled()) return;
-		
+
 		String group = getString("group");
 		if(ap.hasParameter(group))
 		{
 			String radioChoice = ap.getParameter(group);
-			boolean checked = radioChoice.equals(getID());		
+			boolean checked = radioChoice.equals(getID());
 			setChecked(checked);
 		}
 	}
-	
+
 	@Override
 	protected Color getChildBackground(QComponent qcChild)
 	{

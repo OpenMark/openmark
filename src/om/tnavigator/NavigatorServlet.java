@@ -69,7 +69,7 @@ public class NavigatorServlet extends HttpServlet
 	public final static int ATTEMPTS_UNSET=-99;
 
 	private static final int MAGIC_RANDOM_SEED_INCREMENT = 12637946;
-	
+
 	/** Database access */
 	DatabaseAccess da;
 	/** @return the DatabaseAccess object used by this servlet. */
@@ -220,10 +220,10 @@ public class NavigatorServlet extends HttpServlet
 		{
 			throw new ServletException("Failed to initialise XML templates",ioe);
 		}
-		
+
 		try
 		{
-			reports = new ReportDispatcher(this, Arrays.asList(nc.getExtraReports()));	
+			reports = new ReportDispatcher(this, Arrays.asList(nc.getExtraReports()));
 		}
 		catch(Exception e)
 		{
@@ -818,7 +818,7 @@ public class NavigatorServlet extends HttpServlet
 						else
 							throw oe;
 					}
-					
+
 					us.ud=auth.getUserDetails(request,response,!us.getTestDeployment().isWorldAccess());
 					if(us.ud==null)
 					{
@@ -1673,7 +1673,7 @@ public class NavigatorServlet extends HttpServlet
 	 * @param sQuestionID Question ID
 	 * @param iRequiredVersion Desired version or TestQuestion.VERSION_UNSPECIFIEDD
 	 * @return Appropriate version
-	 * @throws OmException 
+	 * @throws OmException
 	 */
 	public QuestionVersion getLatestVersion(String sQuestionID,int iRequiredVersion)
 		throws OmException
@@ -2472,7 +2472,7 @@ public class NavigatorServlet extends HttpServlet
 		sXHTML = "<form method='post' action='./' autocomplete='off'>" +
 				"<input type='hidden' name='" + SEQUENCEFIELD + "' value = '" + us.sSequence + "' />" +
 				sXHTML +
-				"</form>"; 
+				"</form>";
 
 		if(us.isSingle())
 		{
@@ -3332,7 +3332,7 @@ public class NavigatorServlet extends HttpServlet
 	 * @param request HTTP request
 	 * @param response HTTP response
 	 * @throws IOException Any error
-	 * @throws StopException 
+	 * @throws StopException
 	 */
 	private void doSystemCheck(UserSession us,HttpServletRequest request,HttpServletResponse response)
 		throws IOException,StopException
@@ -3422,7 +3422,7 @@ public class NavigatorServlet extends HttpServlet
 	/**
 	 * @param request HTTP request
 	 * @return True if originating IP is within OU network
-	 * @throws UnknownHostException 
+	 * @throws UnknownHostException
 	 */
 	public boolean checkLocalIP(HttpServletRequest request) throws UnknownHostException
 	{
@@ -3446,7 +3446,7 @@ public class NavigatorServlet extends HttpServlet
 	/**
 	 * @param request HTTP request
 	 * @return True if originating IP is within OU network
-	 * @throws UnknownHostException 
+	 * @throws UnknownHostException
 	 */
 	public boolean checkSecureIP(HttpServletRequest request) throws UnknownHostException
 	{
@@ -4096,7 +4096,7 @@ public class NavigatorServlet extends HttpServlet
 	 * @param isBug Set true if this is a bug and should be logged as such,
 	 *	 complete with the option for users to re-enter test. Generally I have
 	 *	 erred on the side of setting this true...
-	 * @param keepSession normally, this should be false, and OM will throw away the user's 
+	 * @param keepSession normally, this should be false, and OM will throw away the user's
 	 *   session in case it was corrupted in a way that caused the error. Then on the next request
 	 *   it will silently give them a new session. But very occasionally we don't want this behaviour
 	 *   in which case this parameter can be set to true.
@@ -4495,7 +4495,7 @@ public class NavigatorServlet extends HttpServlet
 	{
 		return resolveRelativePath("testbank/" + testId + ".deploy.xml");
 	}
-	
+
 	/**
 	 * @param relativePath a path relative to servlet folder.
 	 * @return the corresponding canonical path.

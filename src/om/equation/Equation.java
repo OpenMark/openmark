@@ -31,24 +31,24 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
+/**
  * Includes static utility methods to convert equations. Also represents the
  * outer &lt;int_equation&gt; tag in each equation.
- */ 
+ */
 public class Equation extends Line
 {
 	// Standard Item implementation
 	///////////////////////////////
-	
+
 	/** Colour used to draw equation */
 	private Color cForeground=Color.black;
-	
+
 	public static void register(ItemFactory f)
 	{
 		f.addItemClass("int_equation",new ItemCreator()
 			{	public Item newItem()	 {	return new Equation();	}	});
 	}
-	
+
 	@Override
 	public Color getForeground()
 	{
@@ -60,7 +60,7 @@ public class Equation extends Line
 
 	/** Map of placeholder locations (String -> Point) */
 	private Map<String, Point> mPlaceholders=new HashMap<String, Point>();
-	
+
 	/**
 	 * @param foreground Foreground colour
 	 * @param cBackground Background (used to clear bitmap with)
@@ -81,7 +81,7 @@ public class Equation extends Line
 		render(g,0,0);
 		return bi;
 	}
-	
+
 	/**
 	 * Called by a Placeholder component to inform the equation of its location
 	 * @param sID Placeholder ID
@@ -92,7 +92,7 @@ public class Equation extends Line
 	{
 		mPlaceholders.put(sID,new Point(iX,iY));
 	}
-	
+
 	/**
 	 * Obtains location of a given placeholder.
 	 * @param sID ID of desired placeholder
@@ -108,7 +108,7 @@ public class Equation extends Line
 
 	// Static methods for external access
 	/////////////////////////////////////
-	
+
 	private static ItemFactory ifDefault=new ItemFactory();
 	static
 	{
@@ -126,7 +126,7 @@ public class Equation extends Line
 		Text.register(ifDefault);
 		TextSizeChange.register(ifDefault);
 	}
-	
+
 	/**
 	 * Creates an equation from text (LaTeX-like) format, using the default
 	 * ItemFactory that includes all standard equation items.
@@ -139,7 +139,7 @@ public class Equation extends Line
 	{
 		return create(sEquation,ifDefault,fZoom);
 	}
-	
+
 	/**
 	 * Creates an equation from text (LaTeX-like) format.
 	 * @param sEquation Equation text
@@ -160,9 +160,9 @@ public class Equation extends Line
 		catch(ParseException pe)
 		{
 			throw new EquationFormatException(pe,sEquation);
-		}		
+		}
 	}
-	
+
 	/**
 	 * Creates an equation from XML format, using the default
 	 * ItemFactory that includes all standard equation items.
@@ -175,7 +175,7 @@ public class Equation extends Line
 	{
 		return create(eEquation,ifDefault,fZoom);
 	}
-	
+
 	/**
 	 * Creates an equation from XML format.
 	 * @param eEquation Top-level equation element
@@ -184,23 +184,23 @@ public class Equation extends Line
 	 * @return Equation object
 	 * @throws EquationFormatException If there's anything wrong with the input
 	 */
-	public static Equation create(Element eEquation,ItemFactory f,float fZoom) 
+	public static Equation create(Element eEquation,ItemFactory f,float fZoom)
 		throws EquationFormatException
 	{
 		Equation e=(Equation)f.newItem(eEquation,null,fZoom);
 		e.prepare();
 		return e;
 	}
-	
+
 	/**
 	 * Changes font.
-	 * @param sFont Font family for equation (null = leave unchanged) 
-	 * @param aiSizes 3-element array of text size (large, small, smaller) (null = leave unchanged)  
+	 * @param sFont Font family for equation (null = leave unchanged)
+	 * @param aiSizes 3-element array of text size (large, small, smaller) (null = leave unchanged)
 	 */
 	public void setFont(String sFont,int[] aiSizes)
 	{
 		if(sFont!=null) sDefaultFont=sFont;
 		if(aiSizes!=null) aiTextSize=aiSizes;
 		prepare();
-	}	
+	}
 }

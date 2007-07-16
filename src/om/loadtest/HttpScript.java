@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** 
- * Represents a test script created by saving from the Firefox 
+/**
+ * Represents a test script created by saving from the Firefox
  * LiveHTTPHeaders extension (with minor modifications).
  */
 public class HttpScript
@@ -32,41 +32,41 @@ public class HttpScript
 	/** Regexp to match content-length header in POST request */
 	public final static Pattern CONTENTLENGTH=Pattern.compile(
 		"Content-Length: ([0-9]+)");
-		
+
 	/** Single thing in HTTP script */
 	public static class Item
 	{
 		/** Requested URL */
 		private String sURL;
-		
+
 		/** Request lines, each terminated by \r\n (does not include extra closing \r\n) */
 		private String sRequest;
-		
+
 		/** Data for POST request or NULL if none */
 		private String sData;
-		
+
 		/** Response status code */
 		private int iExpectedResponse;
-		
+
 		/** @return Requested URL */
-		public String getURL() { return sURL; }		
+		public String getURL() { return sURL; }
 		/** @return Request lines, each terminated by \r\n (does not include extra closing \r\n) */
-		public String getRequest() { return sRequest; }		
-		/** @return Data for POST request or NULL if none */		
-		public String getData() { return sData; }		
+		public String getRequest() { return sRequest; }
+		/** @return Data for POST request or NULL if none */
+		public String getData() { return sData; }
 		/** @return Response */
 		public int getExpectedResponse() { return iExpectedResponse; }
-		
+
 		/** Reads next item from file */
 		boolean read(BufferedReader br) throws IOException
 		{
 			// Read URL
 			sURL=br.readLine();
 			if(sURL==null) return false;
-			
+
 			// Blank line
 			check(br,"");
-			
+
 			// Header
 			int iDataSize=0;
 			sRequest="";
@@ -81,9 +81,9 @@ public class HttpScript
 				{
 					iDataSize=Integer.parseInt(m.group(1));
 					break;
-				}					
-			}		
-			
+				}
+			}
+
 			// Data
 			if(iDataSize!=0)
 			{
@@ -96,7 +96,7 @@ public class HttpScript
 				}
 				check(br,"");
 			}
-			
+
 			// Response
 			iExpectedResponse=0;
 			while(true)
@@ -111,26 +111,26 @@ public class HttpScript
 						throw new IOException("Unexpected response first line");
 					iExpectedResponse=Integer.parseInt(m.group(1));
 				}
-			}		
-			
+			}
+
 			return true;
 		}
 	}
-	
+
 	/** Regexp for extracting HTTP status code. */
 	public final static Pattern STATUSCODE=Pattern.compile(
 		"HTTP/1.[01x] ([0-9]+) .*");
-	
+
 	/** List of items */
 	private List<HttpScript.Item> lItems=new LinkedList<HttpScript.Item>();
-	
+
 	/** @return List of all items in script */
 	public HttpScript.Item[] getItems()
 	{
 		return lItems.toArray(new HttpScript.Item[lItems.size()]);
 	}
-	
-	/** 
+
+	/**
 	 * Constructs script.
 	 * @param is Input stream containing script
 	 * @throws IOException If the script format is incorrect in any way
@@ -140,15 +140,15 @@ public class HttpScript
 		// Note that this lazily assumes everything is plaintext in default
 		// character set (in the test script I'm using, it is)
 		BufferedReader br=new BufferedReader(new InputStreamReader(is));
-		
+
 		while(true)
 		{
 			HttpScript.Item i=new Item();
 			if(!i.read(br)) break;
-			lItems.add(i);				
-		}			
+			lItems.add(i);
+		}
 	}
-	
+
 	/**
 	 * Check for required line.
 	 * @param br Reader

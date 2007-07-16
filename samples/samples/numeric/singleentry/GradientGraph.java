@@ -42,14 +42,14 @@ public class GradientGraph extends SimpleQuestion1
 
 	/** Selected question */
 	private int iVariant;
-  
+
 	protected void init() throws OmException
 	{
 		Random r = getRandom();
 		iVariant = r.nextInt(numbersA.length);
-    
+
 		String strNumA = numbersA[iVariant];
-		
+
 		setPlaceholder("NUMA",strNumA);
 		setPlaceholder("NUMB",""+numbersB[iVariant]);
 		setPlaceholder("ANSWER",""+answersC[iVariant]);
@@ -57,23 +57,23 @@ public class GradientGraph extends SimpleQuestion1
 		getResults().setQuestionLine("z = -" + strNumA + " over t^2, what is the gradient " +
 									 							 "of a graph of z against t at t = 2?");
 	}
-  
+
 	protected boolean isRight(int iAttempt) throws OmDeveloperException
 	{
 		getComponent("wrongSign").setDisplay(false);
 
 		//get answer text and trim whitespace
 		String sInput = Helper.removeWhitespace(getEditField("input").getValue());
- 
+
 		getResults().setAnswerLine(sInput);
 		getResults().appendActionSummary("Attempt "+iAttempt+": "+sInput);
 
 		//compare it against the right answer
 		if(sInput.equals(answersC[iVariant]))
 			return true;
-    
+
 		//give feedback on second attempt only
-		if(iAttempt==2) 
+		if(iAttempt==2)
 		{
 			setFeedbackID("default");
 			if(sInput.equals("-"+answersC[iVariant]))
@@ -81,8 +81,8 @@ public class GradientGraph extends SimpleQuestion1
 				getComponent("wrongSign").setDisplay(true);
 			}
 		}
-    
+
 		return false;
 	}
-  
+
 }

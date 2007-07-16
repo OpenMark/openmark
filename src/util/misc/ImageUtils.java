@@ -28,7 +28,7 @@ import javax.swing.JLabel;
 public class ImageUtils
 {
 	/**
-	 * Returns an Image that's fully loaded. Once it's fully loaded you can 
+	 * Returns an Image that's fully loaded. Once it's fully loaded you can
 	 * safely call getWidth with null, for instance.
 	 * @param abData Data for image
 	 * @return New fully loaded Image object
@@ -44,7 +44,7 @@ public class ImageUtils
 	/**
 	 * Returns a BufferedImage.
 	 * @param abData Data for image
-	 * @param bAlpha True if it needs an alpha channel 
+	 * @param bAlpha True if it needs an alpha channel
 	 * @return New BufferedImage object
 	 * @throws IOException
 	 */
@@ -54,7 +54,7 @@ public class ImageUtils
 		loadFully(i);
 		return getBuffered(i,bAlpha);
 	}
-	
+
   /**
    * Waits for an image to load fully.
    * @param i Original image
@@ -76,12 +76,12 @@ public class ImageUtils
 			throw new InterruptedIOException();
 		}
 	}
-	
+
   /**
    * Obtains buffered image from a fully loaded Image.
    * @param i Original image
    * @param bAlpha True if you need an alpha channel
-   * @return Fully loaded BufferedImage 
+   * @return Fully loaded BufferedImage
    * @throws IOException
    */
 	public static BufferedImage getBuffered(Image i,boolean bAlpha) throws IOException
@@ -95,11 +95,11 @@ public class ImageUtils
 			throw new IOException("Error loading image: failed to get w/h " +
 				"(did you forget to call loadFully?)");
 		}
-		
+
 		// Make buffered image
 		BufferedImage bi=new BufferedImage(iWidth,iHeight,
 			bAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
 		bi.createGraphics().drawImage(i,0,0,iWidth,iHeight,dummy);
 		return bi;
-	}	
+	}
 }

@@ -27,9 +27,9 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
-A checkbox component. Consists of an actual checkbox with a coloured box that 
-surrounds the checkbox and its content. The user can click anywhere in the box 
+/**
+A checkbox component. Consists of an actual checkbox with a coloured box that
+surrounds the checkbox and its content. The user can click anywhere in the box
 to toggle the check. (Consequently, the checkbox should not contain components that
 might require user input, as this behaviour is likely to break them.)
 <p/>
@@ -48,45 +48,45 @@ size itself to match other checkboxes on the same grid row.
 </table>
 */
 public class CheckboxComponent extends QComponent
-{	
+{
 	/** Property name for being highlighted (boolean) */
 	public static final String PROPERTY_HIGHLIGHT="highlight";
 
 	/** Property name for value of checkbox (boolean) */
 	public final static String PROPERTY_CHECKED="checked";
-	
+
 	/** Used to track whether or not we received a 'set value' call */
-	private boolean bReceivedSet=false;	
-	
+	private boolean bReceivedSet=false;
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "checkbox";
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
-		
+
 		defineBoolean(PROPERTY_CHECKED);
 		defineBoolean(PROPERTY_HIGHLIGHT);
 		setBoolean(PROPERTY_CHECKED,false);
 	}
-	
+
 	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eOuterBox=qc.createElement("div");
 		qc.addInlineXHTML(eOuterBox);
-		
+
 		eOuterBox.setAttribute("id",QDocument.ID_PREFIX+getID());
-		
+
 		if(!bPlain)
 		{
 			eOuterBox.setAttribute("class","checkbox");
 			eOuterBox.setAttribute("onclick","checkboxOnClick('"+getID()+"','"+QDocument.ID_PREFIX+"');");
-			
+
 			if(isHighlight())
 			{
 				eOuterBox.setAttribute("style",
@@ -100,26 +100,26 @@ public class CheckboxComponent extends QComponent
 					"border-color:"+convertHash("innerbg")+";");
 			}
 		}
-		
+
 		Element eInput=XML.createChild(eOuterBox,"input");
 		eInput.setAttribute("type","checkbox");
 		eInput.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
-		
+
 		if(!bPlain)
 		{
 			eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 			eInput.setAttribute("class","checkboxcheck");
 			eInput.setAttribute("onclick","checkboxOnClick('"+getID()+"','"+QDocument.ID_PREFIX+"');");
 		}
-		
+
 		if(isChecked()) eInput.setAttribute("checked","yes");
-		if(!isEnabled()) eInput.setAttribute("disabled","yes");		
-		
+		if(!isEnabled()) eInput.setAttribute("disabled","yes");
+
 		if(!bPlain)
 		{
 			Element eContents=XML.createChild(eOuterBox,"div");
 			eContents.setAttribute("class","checkboxcontents");
-			
+
 			qc.setParent(eContents);
 		}
 		else
@@ -142,9 +142,9 @@ public class CheckboxComponent extends QComponent
 			XML.createText(eScript,"addOnLoad(function() { checkboxFix('"+getID()+"','"+QDocument.ID_PREFIX+"');});");
 		}
 
-		if(isEnabled()) qc.informFocusable(eInput.getAttribute("id"),bPlain);		
+		if(isEnabled()) qc.informFocusable(eInput.getAttribute("id"),bPlain);
 	}
-	
+
 	/** @return True if the checkbox was checked */
 	public boolean isChecked()
 	{
@@ -157,7 +157,7 @@ public class CheckboxComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/**
 	 * Checks the checkbox.
 	 * @param bChecked True to check it, false to uncheck
@@ -173,7 +173,7 @@ public class CheckboxComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/** @return True if the checkbox is highlighted */
 	public boolean isHighlight()
 	{
@@ -181,9 +181,9 @@ public class CheckboxComponent extends QComponent
 		{
 			if(isPropertySet(PROPERTY_HIGHLIGHT))
 				return getBoolean(PROPERTY_HIGHLIGHT);
-			else 
-				// Default behaviour is to highlight when disabled and checked, this 
-				// means that the selected checkboxes are shown more clearly alongside 
+			else
+				// Default behaviour is to highlight when disabled and checked, this
+				// means that the selected checkboxes are shown more clearly alongside
 				// 'you got this wrong' pages
 				return isChecked() && !isEnabled();
 		}
@@ -192,7 +192,7 @@ public class CheckboxComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/**
 	 * Sets the highlight value.
 	 * @param bHighlight True to highlight, false to unhighlight
@@ -208,7 +208,7 @@ public class CheckboxComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
@@ -217,15 +217,15 @@ public class CheckboxComponent extends QComponent
 		// although we don't actually set the property until formAllValuesSet
 		bReceivedSet=true;
 	}
-	
+
 	@Override
 	protected void formAllValuesSet(ActionParams ap) throws OmException
 	{
-		if(!isEnabled()) return;		
+		if(!isEnabled()) return;
 		setChecked(bReceivedSet);
 		bReceivedSet=false;
 	}
-	
+
 	@Override
 	protected Color getChildBackground(QComponent qcChild)
 	{

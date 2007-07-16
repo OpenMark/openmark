@@ -41,14 +41,14 @@ public class ReportDispatcher
 		QuestionTestReport.class,
 		MoodleFormatReport.class,
 	};
-	
+
 	private NavigatorServlet ns;
-	
+
 	/**
 	 * Create a ReportDispatcher to serve a particular NavigatorServlet.
 	 * @param ns The navigator servlet
-	 * @param extraReports 
-	 * @throws OmException 
+	 * @param extraReports
+	 * @throws OmException
 	 */
 	public ReportDispatcher(NavigatorServlet ns, Collection<String> extraReports) throws OmException
 	{
@@ -147,7 +147,7 @@ public class ReportDispatcher
 
 	/**
 	 * @param us
-	 * @param suffix 
+	 * @param suffix
 	 * @param request
 	 * @param response
 	 * @throws Exception
@@ -156,7 +156,7 @@ public class ReportDispatcher
 		throws Exception
 	{
 		ns.getLog().logDebug("ReportDispatcher", "Handling report request for report " + suffix);
-		
+
 		// Require admin privileges AND within university (just for paranoia's sake)
 		// AND view report thing
 		if(!us.bAdmin || !us.bAllowReports)

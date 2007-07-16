@@ -25,7 +25,7 @@ import om.tnavigator.auth.UncheckedUserDetails;
 public class SimpleUncheckedUser implements UncheckedUserDetails
 {
 	private String cookie,username;
-	
+
 	/**
 	 * @param cookie Cookie value
 	 * @param username Username

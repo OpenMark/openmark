@@ -30,8 +30,8 @@ public class Camera extends StandardQuestion
 		  getDropdown("speed").getSelected()+
 		  "f"+getDropdown("aperture").getSelected()+".jpg");
 	}
-	
-	private final static Pattern 
+
+	private final static Pattern
 		DARKER=Pattern.compile(
 		"((more )?(dark|dim)(er)?)|(less (bright|light))"),
 		LIGHTER=Pattern.compile(
@@ -46,7 +46,7 @@ public class Camera extends StandardQuestion
 		getComponent("question1").setDisplay(false);
 		getComponent("question2").setDisplay(true);
 	}
-	
+
 	private String tidyValue(String sValue)
 	{
 		// Trim edges
@@ -59,11 +59,11 @@ public class Camera extends StandardQuestion
 		sValue=sValue.replaceAll("[^a-z0-9 ]","");
 		return sValue;
 	}
-	
+
 	public void actionOK2() throws OmException
 	{
 		String sValue=tidyValue(getEditField("speedchange").getValue());
-		
+
 		getComponent("question2").setEnabled(false);
 		if(DARKER.matcher(sValue).matches())
 			getComponent("answer2y").setDisplay(true);
@@ -72,13 +72,13 @@ public class Camera extends StandardQuestion
 		else
 			getComponent("answer2q").setDisplay(true);
 	}
-	
+
 	public void actionCont2() throws OmException
 	{
 		getComponent("question2").setEnabled(true);
-		getComponent("answer2q").setDisplay(false);		
+		getComponent("answer2q").setDisplay(false);
 	}
-	
+
 	public void actionOK2n() throws OmException
 	{
 		getComponent("answer2n").setDisplay(false);
@@ -90,7 +90,7 @@ public class Camera extends StandardQuestion
 	public void actionOK3() throws OmException
 	{
 		String sValue=tidyValue(getEditField("aperturechange1").getValue());
-		
+
 		getComponent("question3").setEnabled(false);
 		if(LIGHTER.matcher(sValue).matches())
 			getComponent("answer3y").setDisplay(true);
@@ -101,14 +101,14 @@ public class Camera extends StandardQuestion
 		else
 			getComponent("answer3q").setDisplay(true);
 	}
-	
+
 	public void actionCont3() throws OmException
 	{
 		getComponent("question3").setEnabled(true);
-		getComponent("answer3q").setDisplay(false);		
-		getComponent("answer3b").setDisplay(false);		
+		getComponent("answer3q").setDisplay(false);
+		getComponent("answer3b").setDisplay(false);
 	}
-	
+
 	public void actionOK3n() throws OmException
 	{
 		getComponent("answer3n").setDisplay(false);
@@ -116,11 +116,11 @@ public class Camera extends StandardQuestion
 		getComponent("question3").setDisplay(false);
 		getComponent("question4").setDisplay(true);
 	}
-	
+
 	public void actionOK4() throws OmException
 	{
 		String sValue=tidyValue(getEditField("aperturechange2").getValue());
-		
+
 		getComponent("question4").setEnabled(false);
 		if(BLURRED.matcher(sValue).matches())
 			getComponent("answer4y").setDisplay(true);
@@ -130,15 +130,15 @@ public class Camera extends StandardQuestion
 			getComponent("answer4b").setDisplay(true);
 		else
 			getComponent("answer4q").setDisplay(true);
-	}	
-	
+	}
+
 	public void actionCont4() throws OmException
 	{
 		getComponent("question4").setEnabled(true);
-		getComponent("answer4q").setDisplay(false);		
-		getComponent("answer4b").setDisplay(false);		
+		getComponent("answer4q").setDisplay(false);
+		getComponent("answer4b").setDisplay(false);
 	}
-	
+
 	public void actionOK4n() throws OmException
 	{
 		end();

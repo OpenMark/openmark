@@ -34,9 +34,9 @@ public class GraphRange
 		dMin=Math.min(d1,d2);
 		dMax=Math.max(d1,d2);
 	}
-	
+
 	/**
-	 * Constructs from XML attribute. 
+	 * Constructs from XML attribute.
 	 * @param sRange Either a single double e.g. 0.0 or a pair with commas -0.1,0.3
 	 * @throws GraphFormatException
 	 */
@@ -52,11 +52,11 @@ public class GraphRange
 			}
 			else
 			{
-				double 
+				double
 					d1=Double.parseDouble(sRange.substring(0,iComma)),
 					d2=Double.parseDouble(sRange.substring(iComma+1));
 				dMin=Math.max(d1,d2);
-				dMax=Math.max(d1,d2);			
+				dMax=Math.max(d1,d2);
 			}
 		}
 		catch(NumberFormatException nfe)
@@ -64,13 +64,13 @@ public class GraphRange
 			throw new GraphFormatException("<world>: Invalid range spec: "+sRange);
 		}
 	}
-	
+
 	/** @return Minimum end of range */
 	public double getMin()
 	{
 		return dMin;
 	}
-	
+
 	/** @return Maximum end of range */
 	public double getMax()
 	{
@@ -84,5 +84,5 @@ public class GraphRange
 	public boolean inRange(double dPoint)
 	{
 		return dPoint>=dMin && dPoint<=dMax;
-	}	
+	}
 }

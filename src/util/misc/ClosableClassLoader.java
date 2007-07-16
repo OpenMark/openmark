@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-/** 
+/**
  * Classloader for jar files that doesn't leave them open infinitely if you
  * read a resource.
  */
@@ -30,7 +30,7 @@ public class ClosableClassLoader extends ClassLoader
 {
 	/** Jar file */
 	private JarFile jf;
-	
+
 	/**
 	 * Constructs classloader.
 	 * @param fJar Jar file to use
@@ -44,15 +44,15 @@ public class ClosableClassLoader extends ClassLoader
 	}
 
 	/**
-	 * Close classloader and its jar file connection. 
+	 * Close classloader and its jar file connection.
 	 * <p>
-	 * Be sure to null all references to the classloader and to classes loaded by 
+	 * Be sure to null all references to the classloader and to classes loaded by
 	 * it before (or shortly after) calling this method.
 	 * <p>
 	 * You shouldn't need to use this method if you close it and do System.gc
-	 * a bit, but it's probably safer if you do. 
+	 * a bit, but it's probably safer if you do.
 	 */
-	public synchronized void close() 
+	public synchronized void close()
 	{
 		try
 		{
@@ -63,8 +63,8 @@ public class ClosableClassLoader extends ClassLoader
 		}
 		jf=null;
 	}
-	
-	
+
+
 	@Override
 	protected synchronized Class<?> findClass(String sName) throws ClassNotFoundException
 	{
@@ -73,7 +73,7 @@ public class ClosableClassLoader extends ClassLoader
 		{
 			JarEntry je=jf.getJarEntry(sName.replace('.','/')+".class");
 			if(je==null) throw new ClassNotFoundException("Not found: "+sName);
-			
+
 			byte[] abData=new byte[(int)je.getSize()];
 			InputStream is=jf.getInputStream(je);
 			for(int iRead=0;iRead<abData.length;)
@@ -83,15 +83,15 @@ public class ClosableClassLoader extends ClassLoader
 					"Unexpected error reading class: "+sName);
 				iRead+=iThisTime;
 			}
-			
+
 			return defineClass(sName,abData,0,abData.length);
 		}
 		catch(IOException ioe)
 		{
 			throw new ClassNotFoundException("Error finding: "+sName,ioe);
-		}		
+		}
 	}
-	
+
 	@Override
 	public synchronized URL findResource(String sName)
 	{
@@ -100,7 +100,7 @@ public class ClosableClassLoader extends ClassLoader
 		{
 			JarEntry je=jf.getJarEntry(sName);
 			if(je==null) return null;
-			
+
 			byte[] abData=new byte[(int)je.getSize()];
 			InputStream is=jf.getInputStream(je);
 			for(int iRead=0;iRead<abData.length;)
@@ -116,7 +116,7 @@ public class ClosableClassLoader extends ClassLoader
 		catch(IOException ioe)
 		{
 			throw new Error("Error reading resource: "+sName,ioe);
-		}		
+		}
 	}
-	
+
 }

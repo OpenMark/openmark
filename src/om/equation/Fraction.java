@@ -35,24 +35,24 @@ public class Fraction extends Item
 			{
 				iYPos+=iGap;
 				g2.setColor(cForeground);
-				g2.fillRect(iX,iY+iYPos,iWidth,getZoomed(1)); 
-				iYPos+=getZoomed(1);		
+				g2.fillRect(iX,iY+iYPos,iWidth,getZoomed(1));
+				iYPos+=getZoomed(1);
 				iYPos+=iGap;
 			}
-			
+
 			Item i=getChildren()[iChild];
-			
+
 			int iXPos=(iWidth-i.getWidth())/2;
 			i.render(g2,iX+iXPos,iY+iYPos);
-			
-			iYPos+=i.getHeight();		
+
+			iYPos+=i.getHeight();
 		}
 	}
 
 	@Override
 	protected void internalPrepare()
-	{		
-		// Init metrics	
+	{
+		// Init metrics
 		int iGap=getSuitableGap();
 		iWidth=0;
 		iHeight=0;
@@ -65,17 +65,17 @@ public class Fraction extends Item
 				iHeight+=iGap*2+getZoomed(1);
 			}
 			iHeight+=i.getHeight();
-			
+
 			iWidth=Math.max(iWidth,i.getWidth());
 		}
-		
+
 		// Set baseline so that the bar aligns with minus/equals/etc signs,
 		// as well as we can make it
 		if(getChildren().length==2)
 		{
 			// First height + gap
 			iBaseline=getChildren()[0].getHeight()+iGap;
-			
+
 			// Now move it down a bit to allow for the height of - in different fonts
 			switch(getTextSize())
 			{
@@ -88,10 +88,10 @@ public class Fraction extends Item
 		  	iBaseline+=getZoomed(4); break;
 			}
 		}
-		
+
 		iLeftMargin=iRightMargin=getZoomed(2);
 	}
-	
+
 	@Override
 	public int getTextSize()
 	{

@@ -28,18 +28,18 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import util.misc.CausedIOException;
 import util.xml.XML;
 
-/** 
+/**
  * Use this in conjunction with something implementing LogProcessorHandler
- * to carry out tasks that require looping around every log entry. 
+ * to carry out tasks that require looping around every log entry.
  */
 public class LogProcessor implements ContentHandler
 {
 	/** Document used to create elements */
 	private Document d;
-	
+
 	/** Handler that actually does stuff */
 	private LogProcessorHandler lph;
-	
+
 	/**
 	 * @param f
 	 * @param lph
@@ -50,7 +50,7 @@ public class LogProcessor implements ContentHandler
 		// Set up document
 		d=XML.createDocument();
 		this.lph=lph;
-		
+
 		// Do SAX parse
 		try
 		{
@@ -65,9 +65,9 @@ public class LogProcessor implements ContentHandler
 			throw new CausedIOException("Error processing log file: "+se.getMessage(),se);
 		}
 	}
-	
+
 	// SAX ContentHandler implementation
-	
+
 	/** Stack for building up DOM elements via SAX parsing */
 	Stack<Element> s=new Stack<Element>();
 
@@ -133,5 +133,5 @@ public class LogProcessor implements ContentHandler
 			lph.entry(e);
 		}
 	}
-	
+
 }

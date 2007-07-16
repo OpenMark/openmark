@@ -25,11 +25,11 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
-A text field that can allow the user to enter superscripts and subscripts, 
+/**
+A text field that can allow the user to enter superscripts and subscripts,
 or performs automatic subscript formatting for chemical formulae.<br/>
-Subscript and superscript modes can be changed using linked checkboxes or by 
-using the up and down arrow keys. 
+Subscript and superscript modes can be changed using linked checkboxes or by
+using the up and down arrow keys.
 <br/>
 The <b>plain</b> text version of the control asks the user to type the sub and sup
 tags themselves and in the chemical formula mode to ignore the formatting.
@@ -48,9 +48,9 @@ tags themselves and in the chemical formula mode to ignore the formatting.
 <tr><td>type</td><td>(string; 'superscript' | 'subscript' | 'both' | 'chem')</td><td>Type of field.</td></tr>
 </table>
 <br/>
-If type='chem' is specified then there are no subscript or subscript checkboxes 
-and the text is automatically displayed formatted with subscripts appropriate to 
-chemical formulae eg "3H<sub>2</sub>O + 2CO<sub>2</sub>".  
+If type='chem' is specified then there are no subscript or subscript checkboxes
+and the text is automatically displayed formatted with subscripts appropriate to
+chemical formulae eg "3H<sub>2</sub>O + 2CO<sub>2</sub>".
 The value returned does <b>not</b> include the formatting tags in this case.
 <br/>
 For types other than 'chem', the value returned includes the
@@ -74,9 +74,9 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 	public static final String PROPERTY_LABEL="label";
 	/** Type of editfield (affects JS) */
 	public final static String PROPERTY_TYPE="type";
-	
-	private boolean bGotLabel=false;	
-	
+
+	private boolean bGotLabel=false;
+
 	@Override
 	protected String[] getRequiredAttributes()
 	{
@@ -85,43 +85,43 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			"type"
 		};
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
 		defineString(PROPERTY_VALUE);
 		defineInteger(PROPERTY_COLS);
-		defineString(PROPERTY_LABEL);		
+		defineString(PROPERTY_LABEL);
 		defineString(PROPERTY_TYPE,"superscript|subscript|both|chem");
-		
+
 		setString(PROPERTY_VALUE,"");
 		setInteger(PROPERTY_COLS,20);
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null) throw new OmFormatException(
-			"<editfield> may not contain other content"); 
+			"<editfield> may not contain other content");
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
-	{		
+	{
 		if(bInit)
 		{
 			qc.addResource("blank.html","text/html;charset=UTF-8",
 				new byte[0]);
 		}
-		
+
 		String sType = getString(PROPERTY_TYPE);
-		
+
 		if(!(bGotLabel || isPropertySet(PROPERTY_LABEL)))
 		{
 			throw new OmFormatException("<advancedfield> "+getID()+": Requires <label> or label=");
 		}
-		
+
 		if(bPlain)
 		{
 			if(isPropertySet(PROPERTY_LABEL) && !getString(PROPERTY_LABEL).equals(""))
@@ -131,10 +131,10 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 				eLabel.setAttribute("for",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 				XML.createText(eLabel,getString(PROPERTY_LABEL));
 			}
-			
+
 			Element eDiv=qc.createElement("div");
 			qc.addInlineXHTML(eDiv);
-			
+
 			XML. createText(eDiv,"p",
 					"(In the following edit field: " +
 					(	(sType.equals("superscript") || sType.equals("both")) ?
@@ -150,13 +150,13 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 							"For example, two water molecules should be entered as 2H2O." : ""
 					)+	")"
 				);
-				
+
 			Element eInput=XML.createChild(eDiv,"input");
 			eInput.setAttribute("type","text");
 			eInput.setAttribute("size",""+getInteger(PROPERTY_COLS));
 			eInput.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 			eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
-			
+
 			String sValue=getString(PROPERTY_VALUE);
 			sValue=sValue.replaceAll("<sup>","{");
 			sValue=sValue.replaceAll("</sup>","}");
@@ -164,7 +164,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			sValue=sValue.replaceAll("</sub>","]");
 			eInput.setAttribute("value",sValue);
 
-			if(!isEnabled()) eInput.setAttribute("disabled","disabled");			
+			if(!isEnabled()) eInput.setAttribute("disabled","disabled");
 		}
 		else
 		{
@@ -189,17 +189,17 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 				else
 					eIframe.setAttribute("class","advancedfielddisabled");
 			}
-			
+
 			Element eHidden=qc.createElement("input");
 			eDiv.appendChild(eHidden);
 			eHidden.setAttribute("type","hidden");
 			eHidden.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 			eHidden.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 			eHidden.setAttribute("value",getString(PROPERTY_VALUE));
-			
+
 			eDiv.appendChild(qc.createElement("br"));
 			eDiv.appendChild(qc.getOutputDocument().createTextNode("\n"));
-			
+
 
 			if(sType.equals("superscript") || sType.equals("both"))
 			{
@@ -210,16 +210,16 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 				//was onclick below
 				eCheckbox.setAttribute("onclick",
 					"advancedfieldSup('"+getID()+"','"+QDocument.ID_PREFIX+"');");
-				if(!isEnabled()) 
+				if(!isEnabled())
 					eCheckbox.setAttribute("disabled","yes");
 				Element eLabel=qc.createElement("label");
 				eDiv.appendChild(eLabel);
 				eLabel.setAttribute("for",QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_sup");
-				eLabel.setAttribute("title","Click checkbox or type up arrow to enable superscript"); 
+				eLabel.setAttribute("title","Click checkbox or type up arrow to enable superscript");
 				XML.createText(eLabel,"Superscript (\u2191) ");
 
 			}
-			
+
 			if(sType.equals("subscript") || sType.equals("both"))
 			{
 				Element eCheckbox=qc.createElement("input");
@@ -232,36 +232,36 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 				Element eLabel=qc.createElement("label");
 				eDiv.appendChild(eLabel);
 				eLabel.setAttribute("for",QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_sub");
-				eLabel.setAttribute("title","Click checkbox or type down arrow to enable subscript"); 
+				eLabel.setAttribute("title","Click checkbox or type down arrow to enable subscript");
 				XML.createText(eLabel,"Subscript (\u2193)");
 			}
-			
+
 			Element eScript=qc.createElement("script");
 			eDiv.appendChild(eScript);
 			eScript.setAttribute("type","text/javascript");
 			String sfg=getQuestion().getFixedColourFG();
 			String sbg=getQuestion().getFixedColourBG();
 			if (sbg==null) sbg="#FFFFFF";
-			if (sfg==null) 
+			if (sfg==null)
 				{
 				if (isEnabled()) sfg="#000000";
 				else sfg="#999999";
 				}
 			XML.createText(eScript,"addOnLoad( function() { advancedfieldFix('"+getID()+"','"+QDocument.ID_PREFIX+"',"+
 				(isEnabled()?"true":"false")+ ",'" +sType+ "'," + dZoom+ ",'"+sfg+"','"+sbg+"'); } );");
-			
+
 			// Can be focused (hopefully)
 			if(isEnabled()) qc.informFocusableFullJS(QDocument.ID_PREFIX+getID(),"document.getElementById('"+
 					QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_iframe').contentWindow",bPlain);
 		}
 	}
-	
+
 	/**
 	 * Replaces something repeatedly until it's DEAD. (I think you might need this
 	 * when replacing something where the source string might overlap with the
-	 * next replacement.) 
-	 * @param sValue Original string 
-	 * @param sFind Thing to find 
+	 * next replacement.)
+	 * @param sValue Original string
+	 * @param sFind Thing to find
 	 * @param sReplace Thing to replace
 	 * @return Resulting string
 	 */
@@ -274,7 +274,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			sValue=sNew;
 		}
 	}
-		
+
 	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
@@ -285,10 +285,10 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			// Replace double-opening {[ (nesting is not allowed)
 			sValue=replaceContinuous(sValue,"(\\{[^}]*)\\{","$1");
 			sValue=replaceContinuous(sValue,"(\\[[^\\]]*)\\[","$1");
-			// Replace double-closing }] 
+			// Replace double-closing }]
 			sValue=replaceContinuous(sValue,"(\\}[^{]*)\\}","$1");
 			sValue=replaceContinuous(sValue,"(\\][^\\[]*)\\]","$1");
-			
+
 			// Untangle tangled groups  {   [ becomes  {  }[
 			sValue=sValue.replaceAll("(\\{[^}]*)\\[","$1}[");
 			sValue=sValue.replaceAll("(\\[[^\\]]*)\\{","$1]{");
@@ -298,16 +298,16 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			// Remove extra closes
 			sValue=sValue.replaceFirst("(\\{[^}]*)$","$1}");
 			sValue=sValue.replaceFirst("(\\[[^\\]]*)$","$1]");
-			
+
 			// The above might mess up the first part again, so...
-			
+
 			// Replace double-opening {[ (nesting is not allowed)
 			sValue=replaceContinuous(sValue,"(\\{[^}]*)\\{","$1");
 			sValue=replaceContinuous(sValue,"(\\[[^\\]]*)\\[","$1");
-			// Replace double-closing }] 
+			// Replace double-closing }]
 			sValue=replaceContinuous(sValue,"(\\}[^{]*)\\}","$1");
 			sValue=replaceContinuous(sValue,"(\\][^\\[]*)\\]","$1");
-			
+
 			// Replace with HTML tags
 			sValue=sValue.replaceAll("\\[","<sub>");
 			sValue=sValue.replaceAll("\\{","<sup>");
@@ -326,23 +326,23 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			// remove redundant pairs
 			sValue=sValue.replaceAll("</sup><sup>|</sub><sub>","");
 			// if not chemical formula need to save sup and sub
-			if (!getString(PROPERTY_TYPE).equals("chem")) 
+			if (!getString(PROPERTY_TYPE).equals("chem"))
 				sValue=sValue.replaceAll("<(sup|/sup|sub|/sub)>","`om~$1~mo`");
 			// remove all other tags
-			sValue=sValue.replaceAll("<[^<]+>",""); 
+			sValue=sValue.replaceAll("<[^<]+>","");
 			// put sub and sup tags back again
-			sValue=sValue.replaceAll("`om~(sup|/sup|sub|/sub)~mo`","<$1>"); 
-	
+			sValue=sValue.replaceAll("`om~(sup|/sup|sub|/sub)~mo`","<$1>");
+
 			sValue=sValue.replaceAll("&lt;","<"); // in case typed literally
 			sValue=sValue.replaceAll("&gt;",">"); // in case typed literally
 		}
-		
+
 		setString(PROPERTY_VALUE,trim(sValue,MAXCHARS_ADVANCEDFIELD));
 	}
-	
+
 	/** Maximum length of single line */
 	private final static int MAXCHARS_ADVANCEDFIELD=100;
-	
+
 	/** @return Current value of edit field (may include HTML codes). Trimmed to 100 characters. */
 	public String getValue()
 	{
@@ -355,9 +355,9 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/** @param sValue New value for edit field (may include HTML codes) */
-	public void setValue(String sValue) 
+	public void setValue(String sValue)
 	{
 		try
 		{
@@ -368,7 +368,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	public String getLabelTarget(boolean bPlain) throws OmDeveloperException
 	{
 		if(isPropertySet(PROPERTY_LABEL))
@@ -382,5 +382,5 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			else
 				return QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_iframe";
 		}
-	}	
+	}
 }

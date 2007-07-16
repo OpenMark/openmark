@@ -53,7 +53,7 @@ public class Match
 {
   /**
    * Constructs a pattern matching object, and calls setPattern(pattern) .
-   * @param pattern 
+   * @param pattern
    * @see #setPattern
    */
   public Match(String pattern)
@@ -108,7 +108,7 @@ public class Match
    * '#' means match any character. <br>
    * '$' match with the preceding OR the next word. <br>
    * See the examples above for details of usage.
-   * @param pattern 
+   * @param pattern
    */
   public void setPattern(String pattern)
   {
@@ -120,8 +120,8 @@ public class Match
    * The preferred method for using this class would be to create
    * an instance of the Match class and control its mode through the
    * object's fields.
-   * @param response 
-   * @param pattern 
+   * @param response
+   * @param pattern
    * @return whether the response matches the pattern.
    */
   static public boolean match(String response, String pattern)
@@ -146,7 +146,7 @@ public class Match
 
   /**
    * Tests whether the specified string satisfies the pattern matching rules.
-   * @param response 
+   * @param response
    * @return if the response matches the pattern, this method returns a
    * value of <code>true</code>, otherwise it returns <code>false</code>.
    */
@@ -264,7 +264,7 @@ public class Match
   {
     String sDelimiter = "" + delimiter;
     if (delimiter == '$') sDelimiter = "\\$"; // needs escaping for regex
-    
+
     text = Strings.replace(text, "\\" + delimiter, tempC);
     String tokens[] = text.split(sDelimiter);
     for (int i = 0; i < tokens.length; i++)

@@ -20,11 +20,11 @@ package om.equation;
 import java.awt.Graphics2D;
 
 /** Changes text size in force from this point in the equation onward. */
-public class TextSizeChange extends Item 
+public class TextSizeChange extends Item
 {
 	/** TEXTSIZE_xx constant */
 	private int iSize;
-	
+
 	/**
 	 * @param iSize TEXTSIZE_xx constant
 	 */
@@ -32,13 +32,13 @@ public class TextSizeChange extends Item
 	{
 		this.iSize=iSize;
 	}
-	
+
 	/** @return New text size */
 	int getNewSize()
 	{
 		return iSize;
 	}
-	
+
 	/**
 	 * @param f ItemFactory to register this class with.
 	 */
@@ -57,5 +57,5 @@ public class TextSizeChange extends Item
 	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
-	}	
+	}
 }

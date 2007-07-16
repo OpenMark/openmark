@@ -23,14 +23,14 @@ import java.awt.Graphics2D;
 public abstract class LimitsThing extends Item implements SuperSubHolder.EatsOwnSuperSub
 {
 	private Item iSuper,iSub;
-	
+
 	private int iSuperX=0,iSubX=0,iContentsX=0;
-	
+
 	@Override
 	public final void render(Graphics2D g2,int iX,int iY)
 	{
 		renderContents(g2,iX,iY,iContentsX);
-		
+
 		if(iSuper!=null)
 		{
 			iSuper.render(g2,iX+iSuperX,iY);
@@ -40,14 +40,14 @@ public abstract class LimitsThing extends Item implements SuperSubHolder.EatsOwn
 			iSub.render(g2,iX+iSubX,iY+iHeight-iSub.getHeight());
 		}
 	}
-	
+
 	/**
 	 * Override to render the actual contents of this. Should render relative
 	 * to baseline (which may have been shifted) and with the given offset over
 	 * initial position.
 	 * @param g2 Graphics context
-	 * @param iX X co-ordinate 
-	 * @param iY Y co-ordinate 
+	 * @param iX X co-ordinate
+	 * @param iY Y co-ordinate
 	 * @param iOffsetX X offset to draw at
 	 */
 	protected abstract void renderContents(Graphics2D g2,int iX,int iY,int iOffsetX);
@@ -58,40 +58,40 @@ public abstract class LimitsThing extends Item implements SuperSubHolder.EatsOwn
 	public void attachSuperSub(Item superscript,Item subscript)
 	{
 		this.iSuper=superscript; this.iSub=subscript;
-		
+
 		if(isAlongside())
 		{
 			// Calculate revised width and offset for where to draw sigma
-			int 
-				iSuperWidth=superscript==null ? 0 : superscript.getWidth(), 
+			int
+				iSuperWidth=superscript==null ? 0 : superscript.getWidth(),
 				iSubWidth=subscript==null ? 0 : subscript.getWidth();
 			int iOldWidth=iWidth;
 			iWidth=Math.max(iOldWidth+getSuitableGap()+iSuperWidth,iOldWidth+getSuitableGap()+iSubWidth);
-			
+
 			iSuperX=iSubX=iOldWidth+getSuitableGap();
-			int 
+			int
 				iSuperHeight=superscript==null ? 0 : superscript.getHeight(),
 				iSubHeight=subscript==null ? 0 : subscript.getHeight();
-			
+
 			if(iSuperHeight+iSubHeight+getSuitableGap() > iHeight)
 			{
 				int iDifference=iSuperHeight+iSubHeight+getSuitableGap() - iHeight;
 				iBaseline+=iDifference/2;
-				iHeight+=(iDifference+1)/2;				
+				iHeight+=(iDifference+1)/2;
 			}
-			
+
 			// Looks better with more rightmargin
 			iRightMargin=getZoomed(4);
 		}
 		else
 		{
 			// Calculate revised width and offset for where to draw sigma
-			int 
-				iSuperWidth=superscript==null ? 0 : superscript.getWidth(), 
+			int
+				iSuperWidth=superscript==null ? 0 : superscript.getWidth(),
 				iSubWidth=subscript==null ? 0 : subscript.getWidth();
 			int iOldWidth=iWidth;
 			iWidth=Math.max(Math.max(iWidth,iSuperWidth),iSubWidth);
-			
+
 			// Calculate revised height and baseline for superscript...
 			if(superscript!=null)
 			{
@@ -101,8 +101,8 @@ public abstract class LimitsThing extends Item implements SuperSubHolder.EatsOwn
 			if(subscript!=null)
 			{
 				iHeight+=subscript.getHeight()+getSuitableGap();
-			}		
-			
+			}
+
 			iContentsX=(iWidth-iOldWidth)/2;
 			iSuperX=(iWidth-iSuperWidth)/2;
 			iSubX=(iWidth-iSubWidth)/2;
@@ -112,5 +112,5 @@ public abstract class LimitsThing extends Item implements SuperSubHolder.EatsOwn
 	public boolean wantsSuperSub()
 	{
 		return true;
-	}	
+	}
 }

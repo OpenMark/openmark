@@ -67,7 +67,7 @@ public class XHTMLStream
 	/**
 	 * Opens a tag with no attributes.
 	 * @param sTag Tag name
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void tag(String sTag) throws IOException
 	{
@@ -80,7 +80,7 @@ public class XHTMLStream
 	 * @param sTag Tag name
 	 * @param sAttributes List of attributes exactly as it should be written to
 	 *   the output, after the tag name and a space
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void tag(String sTag,String sAttributes) throws IOException
 	{
@@ -95,7 +95,7 @@ public class XHTMLStream
 	 *   the output, after the tag name and a space.  null to omit
 	 * @param sText Text to insert within the tag.  null to omit (this will add
 	 * a closing tag with no space, rather than an empty tag).
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void completeTag(String sTag,String sAttributes, String sText) throws IOException
 	{
@@ -115,7 +115,7 @@ public class XHTMLStream
 	/**
 	 * Writes a comment
 	 * @param sComment Comment text
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void comment(String sComment) throws IOException
 	{
@@ -127,7 +127,7 @@ public class XHTMLStream
 	 * @param sTag Tag name
 	 * @param sAttributes List of attributes exactly as it should be written to
 	 *   the output, after the tag name and a space
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void empty(String sTag,String sAttributes) throws IOException
 	{
@@ -137,7 +137,7 @@ public class XHTMLStream
 	/**
 	 * Writes an empty tag with no attributes.
 	 * @param sTag Tag name
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void empty(String sTag) throws IOException
 	{
@@ -169,7 +169,7 @@ public class XHTMLStream
 	/**
 	 * Writes a string to the stream. (String is automatically escaped.)
 	 * @param s String to write
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void write(String s) throws IOException
 	{
@@ -177,7 +177,7 @@ public class XHTMLStream
 	}
 
 
-	/** Flushes output to the stream 
+	/** Flushes output to the stream
 	 * @throws IOException */
 	public void flush() throws IOException
 	{

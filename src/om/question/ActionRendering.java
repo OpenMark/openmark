@@ -22,11 +22,11 @@ public class ActionRendering extends Rendering
 {
 	/** True if session should now end */
 	private boolean bSessionEnd=false;
-	
+
 	/** Store question results (null if results should not be sent) */
 	private Results r=null;
-	
-	/** 
+
+	/**
 	 * Set as end of session. The question will receive a close()
 	 * call during processing of this response.
 	 */
@@ -34,15 +34,15 @@ public class ActionRendering extends Rendering
 	{
 		bSessionEnd=true;
 	}
-	
+
 	/** @return True if session should now end */
 	public boolean isSessionEnd() { return bSessionEnd; }
 
 	/** @return Results object */
 	public Results getResults() { return r; }
-	
-	/** 
-	 * Call this once results are finalised; they'll be sent back to the 
+
+	/**
+	 * Call this once results are finalised; they'll be sent back to the
 	 * server. (Don't call it twice for the same question!)
 	 * @param results the results to send.
 	 */

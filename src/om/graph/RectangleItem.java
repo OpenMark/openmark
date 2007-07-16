@@ -30,19 +30,19 @@ public class RectangleItem extends GraphItem
 	{
 		super(w);
 	}
-	
+
 	/** Corners */
 	private GraphPoint gp1=GraphPoint.ZERO,gp2=null;
-	
+
 	/** Width and height */
 	private GraphPoint gpSize=null;
-	
+
 	/** Colours */
 	private Color cFill=null,cLine=null;
-	
+
 	/** Outline thickness */
 	private int iLineWidth=-1;
-	
+
 	@Override
 	public void init() throws GraphFormatException
 	{
@@ -57,12 +57,12 @@ public class RectangleItem extends GraphItem
 		// Work out the two points and convert to pixels
 		GraphPoint gpOther=(gp2!=null ? gp2 : gp1.offset(gpSize));
 		Point p1=gp1.convert(getWorld()),p2=gpOther.convert(getWorld());
-		int 
+		int
 			iX=Math.min(p1.x,p2.x),
 			iY=Math.min(p1.y,p2.y),
 			iWidth=Math.max(p1.x,p2.x)-iX,
 			iHeight=Math.max(p1.y,p2.y)-iY;
-				
+
 		// Draw the fill
 		if(cFill!=null)
 		{
@@ -76,10 +76,10 @@ public class RectangleItem extends GraphItem
 			g2.fillRect(iX,iY,iWidth,iLineWidth);
 			g2.fillRect(iX,iY+iHeight-iLineWidth,iWidth,iLineWidth);
 			g2.fillRect(iX,iY+iLineWidth,iLineWidth,iHeight-2*iLineWidth);
-			g2.fillRect(iX+iWidth-iLineWidth,iY+iLineWidth,iLineWidth,iHeight-2*iLineWidth);			
+			g2.fillRect(iX+iWidth-iLineWidth,iY+iLineWidth,iLineWidth,iHeight-2*iLineWidth);
 		}
 	}
-	
+
 	/**
 	 * Sets first corner of rectangle, X co-ordinate.
 	 * @param gsX Co-ordinate
@@ -89,7 +89,7 @@ public class RectangleItem extends GraphItem
 		gp1=gp1.newX(gsX);
 	}
 	/**
-	 * Sets first corner of rectangle, Y co-ordinate. 
+	 * Sets first corner of rectangle, Y co-ordinate.
 	 * @param gsY Co-ordinate
 	 */
 	public void setY(GraphScalar gsY)
@@ -98,7 +98,7 @@ public class RectangleItem extends GraphItem
 	}
 	/**
 	 * Sets second corner of rectangle, X co-ordinate. (May not use in conjunction
-	 * with width or height.) 
+	 * with width or height.)
 	 * @param gsX Co-ordinate
 	 * @throws GraphFormatException If width/height is set
 	 */
@@ -111,7 +111,7 @@ public class RectangleItem extends GraphItem
 	}
 	/**
 	 * Sets second corner of rectangle, Y co-ordinate. (May not use in conjunction
-	 * with width or height.) 
+	 * with width or height.)
 	 * @param gsY Co-ordinate
 	 * @throws GraphFormatException If width/height is set
 	 */

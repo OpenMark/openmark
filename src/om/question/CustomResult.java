@@ -17,12 +17,12 @@
  */
 package om.question;
 
-/** 
+/**
  * Custom question result (ignored by test navigator system but may be used
- * in custom interpretation of results). 
+ * in custom interpretation of results).
  * <p>
  * API CLASS: This class is used in SOAP returns and should probably not be
- * altered (after initial release). 
+ * altered (after initial release).
  */
 public class CustomResult
 {
@@ -30,7 +30,7 @@ public class CustomResult
 	private String sName;
 	/** Value of result */
 	private String sValue;
-	
+
 	/**
 	 * @param sName Name (ID) of result
 	 * @param sValue Value of result
@@ -40,7 +40,7 @@ public class CustomResult
 		this.sName=sName;
 		this.sValue=sValue;
 	}
-	
+
 	/** @return Name (ID) of custom result */
 	public String getName() { return sName; }
 	/** @return Value of custom result */

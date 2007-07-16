@@ -35,17 +35,17 @@ class TestInfo extends TestItem implements TestLeaf
 	private String sSection;
 	private Element eThis;
 	private boolean bDone=false;
-	
-	/** 
+
+	/**
 	 * Construct from given XML element.
 	 * @param eText Element containing &lt;p&gt; tags etc.
-	 */		
+	 */
 	TestInfo(TestItem iParent,Element eText)
 	{
 		super(iParent,eText);
 		eThis=eText;
 	}
-	
+
 	/** @return Title or default if none */
 	String getTitle()
 	{
@@ -63,49 +63,49 @@ class TestInfo extends TestItem implements TestLeaf
 		else
 			return "Test information";
 	}
-	
+
 	/**
 	 * Copy the text node DOM into a target XHTML document.
-	 * @param eTargetParent Parent that the text elements/nodes will be added 
+	 * @param eTargetParent Parent that the text elements/nodes will be added
 	 *   to.
 	 */
 	void copyDOM(Element eTargetParent)
 	{
 		for(Node n=eThis.getFirstChild();n!=null;n=n.getNextSibling())
 		{
-			if(!(n instanceof Element)) 
-				continue;			
-			
-			if(((Element)n).getTagName().equals("title"))
-				continue;
-			
-			eTargetParent.appendChild(eTargetParent.getOwnerDocument().importNode(
-				n,true));
-		}
-	}
-	
-	String getXHTMLString() throws IOException
-	{
-		StringBuffer sb=new StringBuffer();
-		
-		for(Node n=eThis.getFirstChild();n!=null;n=n.getNextSibling())
-		{
-			if(!(n instanceof Element)) 
+			if(!(n instanceof Element))
 				continue;
 
 			if(((Element)n).getTagName().equals("title"))
 				continue;
-			
+
+			eTargetParent.appendChild(eTargetParent.getOwnerDocument().importNode(
+				n,true));
+		}
+	}
+
+	String getXHTMLString() throws IOException
+	{
+		StringBuffer sb=new StringBuffer();
+
+		for(Node n=eThis.getFirstChild();n!=null;n=n.getNextSibling())
+		{
+			if(!(n instanceof Element))
+				continue;
+
+			if(((Element)n).getTagName().equals("title"))
+				continue;
+
 			sb.append(XML.saveString((Element)n));
 		}
 		return sb.toString();
 	}
-	
+
 	public void setSection(String s)
 	{
 		sSection=s;
 	}
-	
+
 	public String getSection()
 	{
 		return sSection;
@@ -115,7 +115,7 @@ class TestInfo extends TestItem implements TestLeaf
 	{
 		return bDone;
 	}
-	
+
 	/**
 	 * Marks text as seen (or not)
 	 * @param bDone True if text has been shown
@@ -123,7 +123,7 @@ class TestInfo extends TestItem implements TestLeaf
 	void setDone(boolean bDone)
 	{
 		this.bDone=bDone;
-	}	
-	
+	}
+
 	public boolean isAvailable() { return true; }
 }

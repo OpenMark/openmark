@@ -17,8 +17,8 @@
  */
 package om;
 
-/** 
- * For throwing when an exception occurs due to a development error by a 
+/**
+ * For throwing when an exception occurs due to a development error by a
  * question developer.
  */
 public class OmDeveloperException extends OmException
@@ -30,7 +30,7 @@ public class OmDeveloperException extends OmException
 	{
 		super(sText);
 	}
-	
+
 	/**
 	 * @param sText Exception message (do not end in full stop)
 	 * @param tCause Cause

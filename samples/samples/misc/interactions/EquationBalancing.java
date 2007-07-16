@@ -30,30 +30,30 @@ import om.stdcomponent.CanvasComponent;
 public class EquationBalancing extends SimpleQuestion1
 {
 	CanvasComponent cc;
-	
+
 	private static final int BALANCED = 0;
 	private static final int LEFT = 1;
 	private static final int RIGHT = 2;
-	
+
 	//seesaw dimensions
 	private final int w = 70;
 	private final int h = 16;
-	
+
 	//equation coefficients which appear to the left of each compound
 	private int n1=1, n2=1, n3=1, n4=1;
-	
+
 	//numbers of C, H and O atoms displayed in the table
 	private int cLeft, cRight, hLeft, hRight, oLeft, oRight;
-	
+
 	private boolean scaled;
-	
+
 	protected void init() throws OmException
 	{
 		cc=getCanvas("seesaws");
-		
+
 		CalculateAtomNumbers();
 		CheckBalancing();
-		
+
 		//set the initial values etc
 		setPlaceholder("N1", "��");
 		setPlaceholder("N2", "��");
@@ -69,26 +69,26 @@ public class EquationBalancing extends SimpleQuestion1
 		getComponent("down2").setEnabled(false);
 		getComponent("down3").setEnabled(false);
 		getComponent("down4").setEnabled(false);
-		
+
 		getResults().setQuestionLine("Use the + and - buttons to balance this chemical equation.");
 	}
-	
+
 	protected boolean isRight(int iAttempt) throws OmDeveloperException
 	{
 		getComponent("scaled").setDisplay(false);
-		
-		String att = Integer.toString(n1) + ", " + Integer.toString(n2) + ", " + 
-						Integer.toString(n3) + ", " + Integer.toString(n4); 
-		
+
+		String att = Integer.toString(n1) + ", " + Integer.toString(n2) + ", " +
+						Integer.toString(n3) + ", " + Integer.toString(n4);
+
 		getResults().setAnswerLine(att);
 		getResults().appendActionSummary("Attempt " + iAttempt + ": " + att);
 
 		//equation correctly balanced
 		if ((n1==1)&&(n2==5)&&(n3==3)&&(n4==4)) return true;
-      	
+
 		//equation balanced but not simplest whole numbers
 		if ((cLeft==cRight)&&(hLeft==hRight)&&(oLeft==oRight)) scaled = true;
-		
+
 		if(scaled && iAttempt <= 2) {
 			getComponent("scaled").setDisplay(true);
 		}
@@ -105,7 +105,7 @@ public class EquationBalancing extends SimpleQuestion1
 	public void actionBalanceUp1() throws OmException
 	{
 		cc.clear();
-		
+
 		if (n1 < 50) {
 			n1++;
 			CalculateAtomNumbers();
@@ -113,11 +113,11 @@ public class EquationBalancing extends SimpleQuestion1
 			setPlaceholder("T1", Integer.toString(cLeft));
 			setPlaceholder("T2", Integer.toString(hLeft));
 		}
-		
+
 		if (n1 == 50) {
 			getComponent("up1").setEnabled(false);
 		}
-		
+
 		getComponent("down1").setEnabled(true);
 		CheckBalancing();
 	}
@@ -125,18 +125,18 @@ public class EquationBalancing extends SimpleQuestion1
 	public void actionBalanceUp2() throws OmException
 	{
 		cc.clear();
-		
+
 		if (n2 < 50) {
 			n2++;
 			CalculateAtomNumbers();
 			setPlaceholder("N2",Integer.toString(n2));
 			setPlaceholder("T3", Integer.toString(oLeft));
 		}
-		
+
 		if (n2 == 50) {
 			getComponent("up2").setEnabled(false);
 		}
-		
+
 		getComponent("down2").setEnabled(true);
 		CheckBalancing();
 	}
@@ -144,7 +144,7 @@ public class EquationBalancing extends SimpleQuestion1
 	public void actionBalanceUp3() throws OmException
 	{
 		cc.clear();
-		
+
 		if (n3 < 50) {
 			n3++;
 			CalculateAtomNumbers();
@@ -152,11 +152,11 @@ public class EquationBalancing extends SimpleQuestion1
 			setPlaceholder("T4", Integer.toString(cRight));
 			setPlaceholder("T6", Integer.toString(oRight));
 		}
-		
+
 		if (n3 == 50) {
 			getComponent("up3").setEnabled(false);
 		}
-		
+
 		getComponent("down3").setEnabled(true);
 		CheckBalancing();
 	}
@@ -164,7 +164,7 @@ public class EquationBalancing extends SimpleQuestion1
 	public void actionBalanceUp4() throws OmException
 	{
 		cc.clear();
-		
+
 		if (n4 < 50) {
 			n4++;
 			CalculateAtomNumbers();
@@ -172,11 +172,11 @@ public class EquationBalancing extends SimpleQuestion1
 			setPlaceholder("T5", Integer.toString(hRight));
 			setPlaceholder("T6", Integer.toString(oRight));
 		}
-		
+
 		if (n4 == 50) {
 			getComponent("up4").setEnabled(false);
 		}
-		
+
 		getComponent("down4").setEnabled(true);
 		CheckBalancing();
 	}
@@ -184,13 +184,13 @@ public class EquationBalancing extends SimpleQuestion1
 	public void actionBalanceDown1() throws OmException
 	{
 		cc.clear();
-		
+
 		if (n1 > 1) {
 			n1--;
 			CalculateAtomNumbers();
 			setPlaceholder("T1", Integer.toString(cLeft));
 			setPlaceholder("T2", Integer.toString(hLeft));
-			
+
 			if (n1 == 1) {
 				setPlaceholder("N1", "��");
 				getComponent("down1").setEnabled(false);
@@ -198,22 +198,22 @@ public class EquationBalancing extends SimpleQuestion1
 			else {
 				setPlaceholder("N1", Integer.toString(n1));
 			}
-			
+
 			getComponent("up1").setEnabled(true);
 		}
-		
+
 		CheckBalancing();
 	}
 
 	public void actionBalanceDown2() throws OmException
 	{
 		cc.clear();
-		
+
 		if (n2 > 1) {
 			n2--;
 			CalculateAtomNumbers();
 			setPlaceholder("T3", Integer.toString(oLeft)); //Integer.toString(n2));
-			
+
 			if (n2 == 1) {
 				setPlaceholder("N2", "��");
 				getComponent("down2").setEnabled(false);
@@ -221,7 +221,7 @@ public class EquationBalancing extends SimpleQuestion1
 			else {
 				setPlaceholder("N2", Integer.toString(n2));
 			}
-			
+
 			getComponent("up2").setEnabled(true);
 		}
 		CheckBalancing();
@@ -230,13 +230,13 @@ public class EquationBalancing extends SimpleQuestion1
 	public void actionBalanceDown3() throws OmException
 	{
 		cc.clear();
-		
+
 		if (n3 > 1) {
 			n3--;
 			CalculateAtomNumbers();
 			setPlaceholder("T4",Integer.toString(cRight));
 			setPlaceholder("T6",Integer.toString(oRight));
-			
+
 			if (n3 == 1) {
 				setPlaceholder("N3", "��");
 				getComponent("down3").setEnabled(false);
@@ -244,7 +244,7 @@ public class EquationBalancing extends SimpleQuestion1
 			else {
 				setPlaceholder("N3", Integer.toString(n3));
 			}
-			
+
 			getComponent("up3").setEnabled(true);
 		}
 		CheckBalancing();
@@ -253,13 +253,13 @@ public class EquationBalancing extends SimpleQuestion1
 	public void actionBalanceDown4() throws OmException
 	{
 		cc.clear();
-		
+
 		if (n4 > 1) {
 			n4--;
 			CalculateAtomNumbers();
 			setPlaceholder("T5", Integer.toString(hRight));
 			setPlaceholder("T6", Integer.toString(oRight));
-			
+
 			if (n4 == 1) {
 				setPlaceholder("N4", "��");
 				getComponent("down4").setEnabled(false);
@@ -267,7 +267,7 @@ public class EquationBalancing extends SimpleQuestion1
 			else {
 				setPlaceholder("N4", Integer.toString(n4));
 			}
-			
+
 			getComponent("up4").setEnabled(true);
 		}
 		CheckBalancing();
@@ -285,13 +285,13 @@ public class EquationBalancing extends SimpleQuestion1
 		hRight = n4*2;
 		oRight = (n3*2) + n4;
 	}
-	
+
 	public void CheckBalancing() throws OmException
 	{
 		//checks the balance of atoms on each side of the equation
 		//draws a see-saw left-heavy, right-heavy or level
 		//when all the see-saws are level the equation is balanced
-		
+
 		if (cLeft == cRight)
 			DrawSeeSaw(0,BALANCED);
 		else if(cLeft < cRight)
@@ -313,17 +313,17 @@ public class EquationBalancing extends SimpleQuestion1
 		else if(oLeft > oRight)
 			DrawSeeSaw(2,LEFT);
 	}
-	
+
 	private void DrawSeeSaw(int whichSeesaw, final int state) throws OmException
 	{
 		Graphics2D g = cc.getGraphics();
-		
+
 		//adjust position to line up with table rows
 		int offset = whichSeesaw * 20 + 20 + whichSeesaw;
-		
+
 		//need to change this to use the current text colour or something
 		g.setColor(Color.black);
-		
+
 		//draw the line
 		switch(state) {
 			case BALANCED:
@@ -335,26 +335,26 @@ public class EquationBalancing extends SimpleQuestion1
 			case RIGHT:
 				g.drawLine(0,offset,w,offset+h-1);
 		}
-			
+
 	  //draw the filled triangle
 	  int xPoints[] = {w/2, w/2-6, w/2+6}; //height = 10px, base = 12px
 	  int yPoints[] = {offset+h/2, offset+h, offset+h};
-	    
+
 	  //draw the filled triangle
 		//top point is half way along the straight line, height = 8px, base = 12px
-	    
+
 	  GeneralPath filledPolygon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, xPoints.length);
 	  filledPolygon.moveTo(xPoints[0], yPoints[0]);
-	    
+
 	  for(int index = 1; index<xPoints.length; index++)
 	  {
 	  	filledPolygon.lineTo(xPoints[index], yPoints[index]);
 	  };
-	  
+
 	  filledPolygon.closePath();
 	  g.setPaint(Color.black);
 	  g.fill(filledPolygon);
-	    
+
 	  //update the canvas
 		cc.markChanged();
 	}

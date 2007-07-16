@@ -31,14 +31,14 @@ public class Score
 		this.sAxis=sAxis;
 		this.iMarks=iMarks;
 	}
-	
+
 	private int iMarks;
 	private String sAxis;
-	
+
 	/** @return Score axis (null for default) */
 	public String getAxis() { return sAxis; }
-	
-	/** @return Number of marks achieved for question (or, maximum for this axis, 
+
+	/** @return Number of marks achieved for question (or, maximum for this axis,
 	 * in that context) */
 	public int getMarks() { return iMarks; }
 }

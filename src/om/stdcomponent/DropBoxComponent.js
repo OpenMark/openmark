@@ -8,7 +8,7 @@ function dragboxInform(id,idPrefix,enabled,group,infinite)
   dragbox.atHome=true;
   dragbox.inGroup=idPrefix+group;
   dragbox.valueId=id;
-  
+
   dragboxArray.push(idPrefix+id);
 }
 
@@ -26,16 +26,16 @@ function dropboxFix(id,idPrefix,enabled,group,bgcolour)
     if(db.offsetWidth>maxWidth) maxWidth=db.offsetWidth;
     if(db.offsetHeight>maxHeight) maxHeight=db.offsetHeight;
   }
-  
+
   // Init size of dropbox
   var img=document.getElementById(idPrefix+id+"img");
   var box=document.getElementById(idPrefix+id+"box");
   img.width=maxWidth;
-  img.height=maxHeight+2; 
+  img.height=maxHeight+2;
   box.style.width=(maxWidth-2)+"px";
   box.style.height=(maxHeight-2)+"px";
   box.inGroup=idPrefix+group;
-  
+
   // Init all dragboxes not already inited
   for(var i=0;i<dragboxArray.length;i++)
   {
@@ -45,29 +45,29 @@ function dropboxFix(id,idPrefix,enabled,group,bgcolour)
       var img2=document.getElementById(dragboxArray[i]+"img");
       img2.width=maxWidth;
       img2.height=maxHeight;
-      
+
       var dbInner=document.getElementById(dragboxArray[i]+"inner");
       dbInner.style.marginTop=(((maxHeight-6) - dbInner.offsetHeight)/2)+"px";
-      
+
       db.style.width=(maxWidth-6) +"px";
       db.style.height=(maxHeight-6)+"px";
-    
+
       db.isInited=true;
     }
   }
-  
+
   box.valueField=document.getElementById(idPrefix+"omval_"+id);
   if(enabled) dropboxArray.push(box);
   addPostLoad( function() { dropboxFix2(id,idPrefix); } );
-  
+
   // Add keydown
   box.onkeydown=function(e) { return dropboxKeyDown(id,idPrefix,fixEvent(e)); };
   box.onfocus=function(e) { box.style.border="1px dotted black"; }
-  box.onblur=function(e) { 
-    if(box.filledBorder) 
+  box.onblur=function(e) {
+    if(box.filledBorder)
       box.style.border="1px solid "+box.filledBorder;
-    else  
-      box.style.border="1px solid "+bgcolour; 
+    else
+      box.style.border="1px solid "+bgcolour;
   }
 }
 
@@ -76,7 +76,7 @@ function dropboxKeyDown(id,idPrefix,e)
 {
   var dropbox=document.getElementById(idPrefix+id+"box");
   var newDragbox;
-  
+
   if(e.mKey==27) // Escape
   {
   	// Get rid of anything already in dropbox
@@ -102,7 +102,7 @@ function dropboxKeyDown(id,idPrefix,e)
 		    }
 		    return true;
       }
-      
+
       if(startSeek)
       {
         var thisDragbox=document.getElementById(dragboxArray[i]);
@@ -112,14 +112,14 @@ function dropboxKeyDown(id,idPrefix,e)
           break;
         }
       }
-      
+
       if((dropbox.draggedItem) && dragboxArray[i]==dropbox.draggedItem.id)
       {
         if(startSeek) break; // Give up (avoid endless loop if failure)
         // Use next one
         startSeek=true;
       }
-    }    
+    }
   }
   else if(e.mKey==40 || e.mKey==39 || e.mKey==32 || e.mKey==13) // Down or right or space or return
   {
@@ -137,7 +137,7 @@ function dropboxKeyDown(id,idPrefix,e)
 		    }
 		    return true;
       }
-      
+
       if(startSeek)
       {
         var thisDragbox=document.getElementById(dragboxArray[i]);
@@ -147,35 +147,35 @@ function dropboxKeyDown(id,idPrefix,e)
           break;
         }
       }
-      
+
       if((dropbox.draggedItem) && dragboxArray[i]==dropbox.draggedItem.id)
       {
         if(startSeek) break; // Give up (avoid endless loop if failure)
         // Use next one
         startSeek=true;
       }
-    }    
+    }
   }
-  
+
   if(newDragbox)
   {
     resolvePageXY(newDragbox);
-    
+
   	// Get rid of anything already in dropbox
   	if(dropbox.draggedItem)
 		{
 	  	dragboxUnplace(dropbox.draggedItem,true);
     }
-    
+
     // Put new dragbox in dropbox
-    dragboxPlace(newDragbox,dropbox);    
-  
+    dragboxPlace(newDragbox,dropbox);
+
     // Tell browser not to handle key
     return false;
   }
-  else  
+  else
     // Wasn't a target keypress, ignore
-    return true; 
+    return true;
 }
 
 // Get offset for object co-ordinate system
@@ -186,14 +186,14 @@ function getZeroCoords(thing)
   while(true)
   {
     thing=thing.offsetParent;
-    
-    if(thing==null)/* || (thing.nodeName.toLowerCase()!="td" && 
+
+    if(thing==null)/* || (thing.nodeName.toLowerCase()!="td" &&
       thing.nodeName.toLowerCase()!='th' && thing.nodeName.toLowerCase()!="table"
       && (!isIE || thing.className!="layoutgriditem")))*/
     {
       return out;
     }
-    
+
     out.left+=thing.offsetLeft;
     out.top+=thing.offsetTop;
   }
@@ -229,20 +229,20 @@ function dropboxFix2(id,idPrefix)
     {
       var img2=document.getElementById(dragboxArray[i]+"img");
       moveMatch(db,img2,0,0);
-      db.style.visibility="visible";      
+      db.style.visibility="visible";
       if(db.isEnabled) db.onmousedown=dragboxMouseDown;
       db.homeLeft=db.style.left;
       db.homeTop=db.style.top;
       db.isShown=true;
     }
   }
-  
+
   var img=document.getElementById(idPrefix+id+"img");
   var box=document.getElementById(idPrefix+id+"box");
   moveMatch(box,img,0,2);
   box.style.visibility="visible";
   resolvePageXY(box);
-  
+
   if(box.valueField.value!='')
   {
     var db=document.getElementById(idPrefix+box.valueField.value);
@@ -250,21 +250,21 @@ function dropboxFix2(id,idPrefix)
     dragboxPlace(db,box);
   }
 }
-	
+
 // Adds pageX and pageY to the element
 function resolvePageXY(e)
 {
-  e.pageX=e.offsetLeft;  
+  e.pageX=e.offsetLeft;
   e.pageY=e.offsetTop;
-  
+
   var parent=e.offsetParent;
   while(parent!=null)
   {
     e.pageX+=parent.offsetLeft;
     e.pageY+=parent.offsetTop;
     parent=parent.offsetParent;
-  }  
-  
+  }
+
   e.pageX2=e.pageX+e.offsetWidth;
   e.pageY2=e.pageY+e.offsetHeight;
 }
@@ -287,7 +287,7 @@ function resolveDragbox(e)
   while(target!=null)
   {
     if(target.className.indexOf("dragbox")==0 &&
-      (target.className=="dragbox" || target.className.indexOf("dragbox ")==0)) 
+      (target.className=="dragbox" || target.className.indexOf("dragbox ")==0))
       return target;
     target=target.parentNode;
   }
@@ -300,43 +300,43 @@ function dragboxMouseDown(e)
 {
   e=fixEvent(e);
   dbMoving=resolveDragbox(e);
-  
+
   dragboxLeavingHome(dbMoving);
-  
+
   dbMoving.pageX=e.mPageX;
   dbMoving.pageY=e.mPageY;
   dbMoving.style.zIndex=100;
-  
+
   dragboxUnplace(dbMoving,false);
-  
+
   // Get current dropbox locations
   for(var i=0;i<dropboxArray.length;i++)
   {
     resolvePageXY(dropboxArray[i]);
   }
-  
+
   document.onmouseup=dragboxMouseUp;
   document.onmousemove=dragboxMouseMove;
 }
-	
+
 function dragboxMouseMove(e)
 {
   e=fixEvent(e);
-  // Handle IE thing where it gets stuck on if you go out of 
+  // Handle IE thing where it gets stuck on if you go out of
   // the window and let go there
   if(isIE && e.button==0)
-    return dragboxMouseUp(e);    
+    return dragboxMouseUp(e);
   if(!dbMoving) return;
-  
-  
+
+
   var deltaX=e.mPageX-dbMoving.pageX, deltaY=e.mPageY-dbMoving.pageY;
 
   dbMoving.style.left=(Number(dbMoving.style.left.replace("px","")) + deltaX) + "px";
   dbMoving.style.top=(Number(dbMoving.style.top.replace("px","")) + deltaY) + "px";
-  
+
   dbMoving.pageX=e.mPageX;
-  dbMoving.pageY=e.mPageY;    
-  
+  dbMoving.pageY=e.mPageY;
+
   clearSelection();
   return true;
 }
@@ -364,7 +364,7 @@ function intersects(e1,e2)
   if(e1.pageY>e2.pageY2) return 0;
   var yStart = Math.max(e1.pageY,e2.pageY);
   var yEnd = Math.min(e1.pageY2,e2.pageY2);
-  
+
   // Return product of overlaps
   return (xEnd-xStart) * (yEnd-yStart);
 }
@@ -373,7 +373,7 @@ function dragboxMouseUp(e)
 {
   if(!dbMoving) return;
   e=fixEvent(e);
-  
+
   // See if it hit something
   resolvePageXY(dbMoving);
   var found=null,bestIntersect=0,thisIntersect;
@@ -396,14 +396,14 @@ function dragboxMouseUp(e)
     {
       dragboxUnplace(found.draggedItem,true);
     }
-    
-    dragboxPlace(dbMoving,found);    
+
+    dragboxPlace(dbMoving,found);
   }
   else
   {
     dragboxUnplace(dbMoving,true);
   }
-    
+
   dragboxReleaseCapture();
 }
 
@@ -450,60 +450,60 @@ function dragboxPlace(dragbox,dropbox)
   dragboxLeavingHome(dragbox);
 
   // Place in middle of dropbox
-  var 
+  var
     middleX=(dropbox.pageX+dropbox.pageX2)/2,
     middleY=(dropbox.pageY+dropbox.pageY2)/2;
   var
     deltaX=middleX - (dragbox.pageX+dragbox.offsetWidth/2),
     deltaY=middleY - (dragbox.pageY+dragbox.offsetHeight/2);
-  
+
   dragbox.style.left=(Number(dragbox.style.left.replace("px","")) + deltaX +1 ) + "px";
-  dragbox.style.top=(Number(dragbox.style.top.replace("px","")) + deltaY +1 ) + "px";  
+  dragbox.style.top=(Number(dragbox.style.top.replace("px","")) + deltaY +1 ) + "px";
   dragbox.inDropbox=dropbox;
   // Remove border (the +1 we added above was to account for this)
   // and put it on dropbox if needed
   dropbox.oldBorderColor=getBorderColor(dropbox);
   var newBorder=getBorderColor(dragbox);
   dragbox.style.border="none";
-  
+
   dropbox.style.borderLeftColor=newBorder;
   dropbox.style.borderRightColor=newBorder;
   dropbox.style.borderTopColor=newBorder;
   dropbox.style.borderBottomColor=newBorder;
   dropbox.filledBorder=newBorder;
-  
-    
+
+
   dragbox.atHome=false;
-    
+
   dropbox.draggedItem=dragbox;
   dropbox.valueField.value=dragbox.valueId;
 }
 
 function dragboxUnplace(dragbox,resetPosition)
 {
-  if(dragbox.inDropbox) 
+  if(dragbox.inDropbox)
   {
     var dropbox=dragbox.inDropbox;
 	  dragbox.inDropbox=null;
-	  
+
 	  dropbox.draggedItem=null;
 	  dropbox.valueField.value="";
-	  
+
 	  dragbox.style.border="1px solid black";
-	  
+
 	  dropbox.style.borderLeftColor=dropbox.oldBorderColor;
 	  dropbox.style.borderRightColor=dropbox.oldBorderColor;
 	  dropbox.style.borderTopColor=dropbox.oldBorderColor;
 	  dropbox.style.borderBottomColor=dropbox.oldBorderColor;
     dropbox.filledBorder=false;
-	  
+
 	  if(!resetPosition)
 	  {
   	  dragbox.style.left=(Number(dragbox.style.left.replace("px","")) - 1 ) + "px";
-  	  dragbox.style.top=(Number(dragbox.style.top.replace("px","")) - 1) + "px";    
+  	  dragbox.style.top=(Number(dragbox.style.top.replace("px","")) - 1) + "px";
   	}
 	}
-  
+
   if(resetPosition)
   {
 	  if(dragbox.isInfinite)
@@ -516,7 +516,7 @@ function dragboxUnplace(dragbox,resetPosition)
       dragbox.style.top=dragbox.homeTop;
     }
   }
-  
-  
+
+
 }
 

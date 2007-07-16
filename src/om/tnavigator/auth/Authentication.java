@@ -29,7 +29,7 @@ public interface Authentication
 {
 	/**
 	 * Obtains details for the user and checks that they are authenticated.
-	 * If getUncheckedUserDetails would have returned valid data, but 
+	 * If getUncheckedUserDetails would have returned valid data, but
 	 * getUserDetails discovers that this is correct, the situation should be
 	 * changed so that in future (e.g. after a redirect) getUncheckedUserDetails
 	 * will return null. Or to put that another way: if the authentication cookie
@@ -46,7 +46,7 @@ public interface Authentication
   public UserDetails getUserDetails(
   		HttpServletRequest request,HttpServletResponse response,
 		boolean bRequireLogin) throws IOException;
-  
+
   /**
    * Obtain basic details for the user without checking that they are
    * authenticated. Should be a fast operation compared to getUserDetails,
@@ -57,7 +57,7 @@ public interface Authentication
    */
   public UncheckedUserDetails getUncheckedUserDetails(
   		HttpServletRequest request);
-  
+
   /**
    * Set up this user's browser with a cookie that will mark them out as
    * one of the test users.
@@ -65,21 +65,21 @@ public interface Authentication
    * @param suffix Test user ID
    */
   public void becomeTestUser(HttpServletResponse response,String suffix);
-  
+
   /** Close the authentication system when it will not be used again */
   public void close();
-  
-  /** 
+
+  /**
    * Sends redirect to login page.
    * @param request HTTP request (will come back here later)
    * @param response HTTP response
    * @throws IOException Any error in sending redirect
    */
-  public void redirect(HttpServletRequest request,HttpServletResponse response) throws IOException;  
+  public void redirect(HttpServletRequest request,HttpServletResponse response) throws IOException;
 
   /** Constant used for 'submit confirmation' email */
   public final static int EMAIL_CONFIRMSUBMIT=1;
-  
+
   /**
    * Sends email to a user. Email will only be sent according to the defined
    * EMAIL_xx types.
@@ -92,7 +92,7 @@ public interface Authentication
    */
   public String sendMail(String username,String personID,String email,int emailType)
     throws IOException;
-  
+
   /**
    * Obtains text used to offer the chance for local users to log in when accessing
    * a test that is world-visible so doesn't require them to log in. (The
@@ -103,19 +103,19 @@ public interface Authentication
    * @throws IOException If there is any problem
    */
   public String getLoginOfferXHTML(HttpServletRequest request) throws IOException;
-  
+
   /**
    * Add performance information for status page (if any) to the map. Map
    * names should match tokens on the status page.
    * @param m Performance map
    */
   public void obtainPerformanceInfo(Map<String,Object> m);
-  
+
   /**
    * Handle a user request inside the /!auth/ path. Should only be used to offer
    * necessary login screens and suchlike.
    * @param subPath Path after /!auth/
-   * @param request 
+   * @param request
    * @param response
    * @return True if request URL is handled, false if it's not
    * @throws Exception Exceptions will be displayed as server errors

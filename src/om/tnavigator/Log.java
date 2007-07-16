@@ -83,7 +83,7 @@ public class Log
 	public final static SimpleDateFormat DATETIMEFORMAT=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	/* For some reason the default time zone is GMT, probably best to use local */
-	static 
+	static
 	{
 		DATETIMEFORMAT.setTimeZone(TimeZone.getTimeZone("Europe/London"));
 		DATEFORMAT.setTimeZone(TimeZone.getTimeZone("Europe/London"));
@@ -99,7 +99,7 @@ public class Log
 
 	/** Number of recent log entries to keep track at (for display as status etc) */
 	private final static int RECENTENTRYCOUNT=10;
-	
+
 	/** List of recent log entries */
 	private LinkedList<String> llRecentEntries=new LinkedList<String>();
 
@@ -117,9 +117,9 @@ public class Log
 		this.sComponent=sComponent;
 		this.bShowDebug=bShowDebug;
 
-		if(!fFolder.exists()) 
+		if(!fFolder.exists())
 		{
-			if(!fFolder.mkdirs()) 
+			if(!fFolder.mkdirs())
 				throw new IOException("Failed to create log folder. Check that web server has permission to create folder "+fFolder);
 		}
 	}
@@ -192,7 +192,7 @@ public class Log
 		if(pwCurrentLog!=null) pwCurrentLog.close();
 		bClosed=true;
 	}
-	
+
 	/**
 	 * Logs an item.
 	 * @param sSeverity Severity code (use a SEVERITY_xxx constant)
@@ -268,7 +268,7 @@ public class Log
 		if(tException!=null)
 		{
 			sbEntry.append("<exception>");
-			
+
 			sbEntry.append(XML.escape(getOmExceptionString(tException))+"\n");
 
 			sbEntry.append("</exception>");
@@ -288,7 +288,7 @@ public class Log
 		// Always store in list of recent entries
 		llRecentEntries.addFirst(sEntry);
 		if(llRecentEntries.size() > RECENTENTRYCOUNT)
-			llRecentEntries.removeLast();		
+			llRecentEntries.removeLast();
 
 		// Print entry to file
 		pwCurrentLog.print(sEntry);
@@ -299,7 +299,7 @@ public class Log
 		// Make sure log thread is running
 		if(lt==null) lt=new LogThread();
 	}
-	
+
 	/**
 	 * Wrapper wround Exceptions.getString().
 	 * @param tException
@@ -464,7 +464,7 @@ public class Log
 
 	/**
 	 * @return XML document listing recent problems that were logged (errors/warnings)
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public synchronized Document getRecentProblems() throws IOException
 	{
@@ -482,7 +482,7 @@ public class Log
 
 	/**
 	 * @return XML document listing recent entries that were logged (anything logged)
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public synchronized Document getRecentEntries() throws IOException
 	{
@@ -623,7 +623,7 @@ public class Log
 
 	// Useful utility methods for formatting output
 	/**
-	 * Convert a string array to a string 
+	 * Convert a string array to a string
 	 * @param ao an array of objects.
 	 * @return a string of the form [object 1][object 2].
 	 */
@@ -635,7 +635,7 @@ public class Log
 		return sb.toString();
 	}
 	/**
-	 * Convert an integer array to a string 
+	 * Convert an integer array to a string
 	 * @param ai an array of integers.
 	 * @return a string of the form [int 1][int 2].
 	 */
@@ -648,7 +648,7 @@ public class Log
 	}
 	/**
 	 * Convert a two-dimensional integer array to a string
-	 * @param aai an array of array of integers. 
+	 * @param aai an array of array of integers.
 	 * @return A string of the form {[1][2]}{[3][4]}.
 	 */
 	public static String formatArray(int[][] aai) {

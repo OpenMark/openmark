@@ -2,7 +2,7 @@
 <body>
 Implementation of standard Om questions.
 <p/>
-Most Om questions should be 
+Most Om questions should be
 subclasses of {@link om.stdquestion.StandardQuestion}. This includes support for the XML format,
 question components ({@link om.stdquestion.QComponent}) and various other things.
 <p/>
@@ -10,13 +10,13 @@ It is possible to create Om questions that don't use this infrastructure
 by making your question implement only the interface in the 'question' package,
 but that should be needed only in rare cases as it's a lot more work.
 <p/>
-StandardQuestion provides a way to define questions in an XML format that is documented here. 
+StandardQuestion provides a way to define questions in an XML format that is documented here.
 <h2>Format of question.xml</h2>
 <h3>Example</h3>
 Please see the question author's guide for an example and tutorial information. This file
 is the definitive reference, not a tutorial.
 <h3>Header</h3>
-<pre>&lt;question class="samples.q1.MinusDivision" plainmode="no" 
+<pre>&lt;question class="samples.q1.MinusDivision" plainmode="no"
   resources="/samples/resources/"></pre>
 <table border="1">
 <tr><th>Attribute</th><th>Meaning</th><th>Required?</th></tr>
@@ -42,7 +42,7 @@ above example).</td>
 <pre>&lt;title>Dividing negative numbers&lt;/title></pre>
 <p>
 The &lt;title> tag is optional. It is used to define a brief title for the question. We
-recommend that you include a &lt;title> in every question. 
+recommend that you include a &lt;title> in every question.
 </p>
 <p>
 While some tests may not display question titles, including a title allows for more consistent
@@ -69,7 +69,7 @@ has been defined, its XML tag can be used further down in the file.
 &lt;/scoring>
 </pre>
 <p>
-The &lt;scoring> tag is optional. It defines the maximum number of marks available from the question. 
+The &lt;scoring> tag is optional. It defines the maximum number of marks available from the question.
 If you don't include it then the question makes no contribution to an overall test score.
 </p>
 <p>
@@ -87,32 +87,32 @@ generally there will be only a single &lt;marks> entry.
 &lt;layout>
  &lt;row height="340"/>
  &lt;column width="296"/>
- &lt;column width="296"/>  
+ &lt;column width="296"/>
 &lt;/layout>
 </pre>
 <p>
-The &lt;layout> tag is required. It defines the visual organisation of the question into a grid, into 
+The &lt;layout> tag is required. It defines the visual organisation of the question into a grid, into
 which boxes (the &lt;box> component tag, see below) can be slotted.
 </p>
 <p>
 The above example has one row and two columns (a 2x1 grid). If you wanted to add a second row, you would
-add only one extra &lt;row/> tag; this would make a 2x2 grid. In other words, column tags and row tags are 
-independent; you don't need to add columns within each row. The &lt;layout> defines a grid, not its 
+add only one extra &lt;row/> tag; this would make a 2x2 grid. In other words, column tags and row tags are
+independent; you don't need to add columns within each row. The &lt;layout> defines a grid, not its
 contents, and is not similar to HTML table structures.
 </p>
 <p>
 Specified widths and heights are in pixels. Each grid row or column can be a different size. The first
-height controls the topmost row, and the first width controls the leftmost column. Between rows and 
+height controls the topmost row, and the first width controls the leftmost column. Between rows and
 columns there is an 8 pixel margin.
 </p>
 <ul>
-<li> The total width, including all margins, must currently be 600 pixels 
+<li> The total width, including all margins, must currently be 600 pixels
 or under (we recommend using 600 pixels, even if you don't need it). In this case, 296+296+8 (the margin
 between) = 600. Questions wider than 600 pixels will not be displayed correctly.</li>
-<li> There is no 
-restriction on height. We currently recommend setting height 
+<li> There is no
+restriction on height. We currently recommend setting height
 so that your question fits, with a comfortable margin.</li>
-</ul> 
+</ul>
 <h3>Remainder of file</h3>
 <p>
 The remainder of the file consists of question components that produce the content of the question.
@@ -121,9 +121,9 @@ Around these other components you can also include text.
 </p>
 <p>
 Please note that this is <em>not</em> directly related to HTML. None of the tags are exactly the same as in HTML
-(although some are similar). You cannot add HTML directly. Instead, only the question components generate HTML, 
+(although some are similar). You cannot add HTML directly. Instead, only the question components generate HTML,
 which has already been tested in target browsers and for accessibility.
-</p>  
+</p>
 <p>
 A list of standard components is below. This shows the XML tag that is used for the component, and links to
 the corresponding Javadoc page. The javadoc page is useful for two main purposes:
@@ -131,16 +131,16 @@ the corresponding Javadoc page. The javadoc page is useful for two main purposes
 <ul>
 <li>Documentation at the top of the page lists any attributes that the component accepts inside its XML tag</li>
 <li>Standard Javadoc documentation shows methods of the component, some of which might be useful to question
-authors. You can call these from question code if you obtain the component object using 
-{@link om.stdquestion.StandardQuestion#getComponent(String)} or one of the convenience methods (getText(), 
+authors. You can call these from question code if you obtain the component object using
+{@link om.stdquestion.StandardQuestion#getComponent(String)} or one of the convenience methods (getText(),
 getEditField(), etc.)</li>
 <li>If you need to set the properties (XML attributes) from code, you can usually do so even if there is
 no specific method for setting them. Most components
-define string constants for their property names. For example, you could do 
+define string constants for their property names. For example, you could do
 <tt>getCheckbox("chk").setBoolean(CheckboxComponent.PROPERTY_CHECKED,true);</tt>, if checkboxes didn't include
 a more convenient <tt>getCheckbox("chk").setChecked(true);</tt> method.
 </ul>
- 
+
 <h3>XML tag index</h3>
 
 

@@ -101,10 +101,10 @@ public abstract class XSL
 		transform(t,new DOMSource(dSource),new DOMResult(dResult));
 		return dResult;
 	}
-	
+
 	/**
 	 * Transforms one DOM into a string. (Note: You need to use this version
-	 * if you are relying on any disable-output-escaping. This code cannot 
+	 * if you are relying on any disable-output-escaping. This code cannot
 	 * run in an applet unless the applet is signed, due to a Xalan bug in the
 	 * way it loads resources.)
 	 * @param t Transformer to use
@@ -164,7 +164,7 @@ public abstract class XSL
 			throw new XMLException("Error performing XSL transformation ("+findLocation(e)+"): "+e.getMessage(),e);
 		}
 	}
-	
+
 	/**
 	 * Evaluate an XPath expression against a document using xsl:value-of, and return the resulting
 	 * string.

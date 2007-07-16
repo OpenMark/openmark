@@ -23,9 +23,9 @@ import om.stdquestion.QComponent;
 import org.w3c.dom.Element;
 
 
-/** 
+/**
 Represents ordinary text (and arbitrary contained components). These components
-are automatically generated inside various other components whenever authors 
+are automatically generated inside various other components whenever authors
 enter text there.
 <h2>XML usage</h2>
 &lt;t&gt;Here's some text&lt;/t&gt;
@@ -44,13 +44,13 @@ public class TextComponent extends QComponent
 	{
 		return "t";
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		getQDocument().buildInsideWithText(this,eThis);
-	}	
-	
+	}
+
 	/**
 	 * Sets the text to a new value. Note that calling this method gets rid of
 	 * any children of this text component.
@@ -59,9 +59,9 @@ public class TextComponent extends QComponent
 	public void setText(String s)
 	{
 		removeChildren();
-		addChild(s);		
+		addChild(s);
 	}
-	
+
 	/**
 	 * Gets the string which represents the text of a text component.
 	 * Note that this does not look in further components inside the text component.

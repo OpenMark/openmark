@@ -40,12 +40,12 @@ import util.xml.XML;
 
 class StatusPages
 {
-	private NavigatorServlet ns;	
+	private NavigatorServlet ns;
 	StatusPages(NavigatorServlet ns)
 	{
 		this.ns=ns;
 	}
-	
+
 	void handle(String sSuffix,HttpServletRequest request,HttpServletResponse response)
 		throws Exception
 	{
@@ -54,40 +54,40 @@ class StatusPages
 			ns.sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
 				false,false,null, "Forbidden", "This page may only be accessed within the internal network.", null);
 		}
-		
-	  if(sSuffix.equals("")) 
+
+	  if(sSuffix.equals(""))
 	  		handleStatusHome(request,response);
-	  else if(sSuffix.startsWith("stats-")) 
+	  else if(sSuffix.startsWith("stats-"))
 	  		handleStatusStats(sSuffix.substring("stats-".length()),request,response);
-	  else if(sSuffix.startsWith("log-")) 
+	  else if(sSuffix.startsWith("log-"))
 	  		handleStatusLog(sSuffix.substring("log-".length()),request,response);
-	  else if(sSuffix.equals("check")) 
+	  else if(sSuffix.equals("check"))
 	  		handleStatusCheck(request,response);
-	  else 
+	  else
 		  	ns.sendError(null,request,response,HttpServletResponse.SC_NOT_FOUND,
 		  		false,false,null, "Not found", "The requested URL does not correspond to a status page.", null);
 	}
-	
+
 	private final static int MB=1024*1024;
 	private final static int FREEMEMORYREQ=3*MB;
-	
+
 	/**
-	 * Produces automated system status check page, usually requested once a 
+	 * Produces automated system status check page, usually requested once a
 	 * minute or so to check it's working. Returns a status code 200 and string
 	 * beginning 'OK.' if it's OK, and 500 with other text if it's not.
 	 * <p>
 	 * Defined error codes:
 	 * <dl>
-	 * <dd>TNFAIL1</dd><dt>Low on memory, probable memory leak. Check and 
-	 *   restart Tomcat if necessary</dt>  
+	 * <dd>TNFAIL1</dd><dt>Low on memory, probable memory leak. Check and
+	 *   restart Tomcat if necessary</dt>
 	 * <dd>TNFAIL2</dd><dt>Failure to contact database. Check database is
-	 *   working (by accessing it in Query Analyzer or something) and accessible 
-	 *   to the server (check firewall permissions). 
-	 *   Restart of webapp is also worth trying, but unlikely to help.</dt>  
+	 *   working (by accessing it in Query Analyzer or something) and accessible
+	 *   to the server (check firewall permissions).
+	 *   Restart of webapp is also worth trying, but unlikely to help.</dt>
 	 * <dd>TNFAIL3</dd><dt>Failure to contact question engines. Check at least
 	 *   one question engine is working and accessible.
 	 *   Restart of webapp is also worth trying, but unlikely to help.</dt>
-	 * </dl>  
+	 * </dl>
 	 * @param request
 	 * @param response
 	 * @throws Exception
@@ -98,11 +98,11 @@ class StatusPages
 		response.setContentType("text/plain");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter pw=response.getWriter();
-		
+
 		try
 		{
 			String sInfo="";
-			
+
 			// 1. Check free memory
 			Runtime r=Runtime.getRuntime();
 			if(r.freeMemory() < FREEMEMORYREQ)
@@ -116,13 +116,13 @@ class StatusPages
 						throw new Exception("TNFAIL1. Memory low ("+
 							((r.totalMemory()-r.freeMemory())/MB)+"MB used; "+(r.freeMemory()/MB)+"MB free)");
 					}
-				}				
+				}
 			}
 			sInfo+="Memory used "+((r.totalMemory()-r.freeMemory())/MB)+"MB; free "+(r.freeMemory()/MB)+"MB. ";
-			
+
 			// 2. Check database connection
 			long lStart=System.currentTimeMillis();
-			DatabaseAccess.Transaction dat=ns.getDatabaseAccess().newTransaction();		
+			DatabaseAccess.Transaction dat=ns.getDatabaseAccess().newTransaction();
 			try
 			{
 				ns.getOmQueries().checkDatabaseConnection(dat);
@@ -135,9 +135,9 @@ class StatusPages
 			{
 				dat.finish();
 			}
-			long lTime=System.currentTimeMillis()-lStart; 
+			long lTime=System.currentTimeMillis()-lStart;
 			sInfo+="DB time "+lTime+"ms. ";
-			
+
 			// 3. Check question engines
 			try
 			{
@@ -147,13 +147,13 @@ class StatusPages
 			{
 				throw new Exception("TNFAIL3. Question engine error ("+t.getMessage()+")");
 			}
-			
+
 			// Add version
 			sInfo+=OmVersion.getVersion()+" ("+OmVersion.getBuildDate()+").";
-	
+
 			// OK then, set status to OK (default, but anyway)
 			response.setStatus(HttpServletResponse.SC_OK);
-			pw.println("OK. "+sInfo);						
+			pw.println("OK. "+sInfo);
 		}
 		catch(Throwable t)
 		{
@@ -165,7 +165,7 @@ class StatusPages
 			pw.close();
 		}
 	}
-	
+
 	private void handleStatusLog(String sDate,HttpServletRequest request,HttpServletResponse response)
 		throws Exception
 	{
@@ -188,26 +188,26 @@ class StatusPages
 			URL uThis=ns.getNavigatorConfig().getThisTN();
 			mReplace.put("MACHINE",uThis.getHost().replaceAll(".open.ac.uk","")+uThis.getPath());
 			sStart=XML.replaceTokens(sStart,"%%",mReplace);
-			
+
 			new LogBuilder(fLog,sStart,request,response);
 		}
 	}
-	
+
 	static class LogBuilder implements LogProcessorHandler
 	{
 		private PrintWriter pw=null;
 		private Element eParent=null;
-		
+
 		private String sStart;
-		
-		LogBuilder(File f,String sStart,HttpServletRequest request,HttpServletResponse response) throws IOException 
+
+		LogBuilder(File f,String sStart,HttpServletRequest request,HttpServletResponse response) throws IOException
 		{
 			XHTML.setContentType(request,response);
 			pw=response.getWriter();
 			this.sStart=sStart; // Don't write this now, in case there's an error
-			new LogProcessor(f,this);			
+			new LogProcessor(f,this);
 		}
-		
+
 		LogBuilder(Document d,Element eParent)
 		{
 			this.eParent=eParent;
@@ -224,18 +224,18 @@ class StatusPages
 				}
 			}
 		}
-	
+
 		public void start(Element e) throws SAXException
 		{
 			pw.print(sStart);
 		}
-	
+
 		public void finish() throws SAXException
 		{
 			pw.print("</body></html>");
 			pw.close();
 		}
-	
+
 		public void entry(Element e) throws SAXException
 		{
 			try
@@ -244,10 +244,10 @@ class StatusPages
 					"<div class='f'><div class='t'>"+e.getAttribute("time")+"</div>"+
 					"<div>"+e.getAttribute("category")+"</div></div>"+
 					"<div class='m'>"+XHTML.escape(XML.getText(e),XHTML.ESCAPE_TEXT)+"</div>"+
-					(XML.hasChild(e,"exception") ? 
+					(XML.hasChild(e,"exception") ?
 						"<pre>"+XHTML.escape(XML.getText(XML.getChild(e,"exception")),XHTML.ESCAPE_TEXT)+"</pre>" : "")+
 					"</div>";
-				
+
 				if(pw!=null)
 				{
 					pw.println(sLine);
@@ -265,7 +265,7 @@ class StatusPages
 			}
 		}
 	}
-	
+
 	private void handleStatusStats(String sDate,HttpServletRequest request,HttpServletResponse response)
 		throws Exception
 	{
@@ -278,15 +278,15 @@ class StatusPages
 		mReplace.put("ACCESS",ns.getAccessCSSAppend(request));
 		URL uThis=ns.getNavigatorConfig().getThisTN();
 		mReplace.put("MACHINE",uThis.getHost().replaceAll(".open.ac.uk","")+uThis.getPath());
-		
+
 		StatsBuilder sb=new StatsBuilder(fLog,ns.getLog());
 		sb.fillMap(mReplace);
-		
+
 		XML.replaceTokens(d,mReplace);
-		
+
 		XHTML.output(d,request,response,"en");
 	}
-	
+
 	/**
 	 * main method for testing.
 	 * @param args
@@ -302,14 +302,14 @@ class StatusPages
 		st.finish();
 		System.out.println(st.mean()+","+st.median()+","+st.percentile(95));
 	}
-	
+
 	static class StatTracker
 	{
 		private final static int BUFFERSIZE=16384; // 64KB
 		private int[] aiBuffer=new int[BUFFERSIZE];
 		private int iSize=0;
 		private boolean bFinished=false;
-		
+
 		void add(int iStat)
 		{
 			assert !bFinished;
@@ -317,21 +317,21 @@ class StatusPages
 			{
 				int[] aiNew=new int[aiBuffer.length+BUFFERSIZE];
 				System.arraycopy(aiBuffer,0,aiNew,0,iSize);
-				aiBuffer=aiNew;				
+				aiBuffer=aiNew;
 			}
 			aiBuffer[iSize++]=iStat;
 		}
-		
+
 		void finish()
 		{
 			int[] aiNew=new int[iSize];
 			System.arraycopy(aiBuffer,0,aiNew,0,iSize);
 			aiBuffer=aiNew;
-			
+
 			Arrays.sort(aiBuffer);
 			bFinished=true;
 		}
-		
+
 		int mean()
 		{
 			assert bFinished;
@@ -342,18 +342,18 @@ class StatusPages
 			}
 			return iTotal / aiBuffer.length;
 		}
-		
+
 		int median()
 		{
 			return percentile(50);
 		}
-		
+
 		int percentile(int iPercent)
 		{
 			assert bFinished;
 			return aiBuffer[ (iPercent * aiBuffer.length) / 100 ];
 		}
-		
+
 	}
 
 	static class StatsBuilder implements LogProcessorHandler
@@ -363,23 +363,23 @@ class StatusPages
 		private String sCurrentMinute="",sMaxMinuteR="",sMaxMinuteTR="";
 		private int iCMRequests,iCMTestRequests;
 		private int iMaxMRequests=0,iMaxMTestRequests=0;
-		
+
 		private StatTracker stTotal=new StatTracker(),stQE=new StatTracker(),stDB=new StatTracker();
-		
+
 		//private Log l; //temp
-		StatsBuilder(File f,Log l) throws IOException 
+		StatsBuilder(File f,Log l) throws IOException
 		{
 			//this.l=l;
-			new LogProcessor(f,this);			
+			new LogProcessor(f,this);
 		}
-		
+
 		private static Pattern REQUEST=Pattern.compile(
 				"^(.*?),\\[total=([0-9]+),qe=([0-9]+),db=([0-9]+)\\],\\[(?:ind=([0-9]+),seq=([0-9]+)|\\?)\\],(.*)$");
 		private static Pattern REQUEST_TESTPATH=Pattern.compile(
 				"^/[^/]+/$");
-		
+
 		public void entry(Element e) throws SAXException
-		{			
+		{
 			if("Request".equals(e.getAttribute("category")))
 			{
 				Matcher m=REQUEST.matcher(XML.getText(e));
@@ -389,12 +389,12 @@ class StatusPages
 					String sMinute=e.getAttribute("time").substring(0,5);
 					if(!sMinute.equals(sCurrentMinute))
 					{
-						if(iCMRequests > iMaxMRequests) 
+						if(iCMRequests > iMaxMRequests)
 						{
 							iMaxMRequests=iCMRequests;
 							sMaxMinuteR=sCurrentMinute;
 						}
-						if(iCMTestRequests > iMaxMTestRequests) 
+						if(iCMTestRequests > iMaxMTestRequests)
 						{
 							iMaxMTestRequests=iCMTestRequests;
 							sMaxMinuteTR=sCurrentMinute;
@@ -403,23 +403,23 @@ class StatusPages
 						iCMTestRequests=0;
 						sCurrentMinute=sMinute;
 					}
-					
+
 					iRequests++;
 					iCMRequests++;
-					
+
 					String sOUCU=m.group(1);
-					int 
+					int
 						iTotalTime=Integer.parseInt(m.group(2)),
 						iQETime=Integer.parseInt(m.group(3)),
 						iDBTime=Integer.parseInt(m.group(4));
-					String 
+					String
 						sPath=m.group(7);
-					
+
 					if(!sOUCU.matches("\\?+"))
 					{
 						// Logged-in request
 						sOUCUs.add(sOUCU);
-						
+
 						if(REQUEST_TESTPATH.matcher(sPath).matches())
 						{
 							iTestRequests++;
@@ -430,7 +430,7 @@ class StatusPages
 							//l.logDebug("STATS",sOUCU+" "+iTotalTime);
 						}
 					}
-					
+
 				}
 			}
 		}
@@ -445,7 +445,7 @@ class StatusPages
 			stDB.finish();
 			stQE.finish();
 		}
-		
+
 		void fillMap(Map<String,String> mReplace)
 		{
 			mReplace.put("USERS",""+sOUCUs.size());
@@ -462,7 +462,7 @@ class StatusPages
 				sbOUCUs.append(sOUCU);
 			}
 			mReplace.put("OUCUS",sbOUCUs.toString());
-			
+
 			mReplace.put("PERFTOTALMEAN",""+stTotal.mean());
 			mReplace.put("PERFTOTALMEDIAN",""+stTotal.median());
 			mReplace.put("PERFTOTAL95",""+stTotal.percentile(95));
@@ -470,35 +470,35 @@ class StatusPages
 			mReplace.put("PERFQEMEAN",""+stQE.mean());
 			mReplace.put("PERFQEMEDIAN",""+stQE.median());
 			mReplace.put("PERFQE95",""+stQE.percentile(95));
-			
+
 			mReplace.put("PERFDBMEAN",""+stDB.mean());
 			mReplace.put("PERFDBMEDIAN",""+stDB.median());
 			mReplace.put("PERFDB95",""+stDB.percentile(95));
-			
+
 			mReplace.put("LOADMAXMINUTER",sMaxMinuteR);
 			mReplace.put("LOADMAXMINUTETR",sMaxMinuteTR);
 			mReplace.put("LOADMAXRPM",""+iMaxMRequests);
-			mReplace.put("LOADMAXTRPM",""+iMaxMTestRequests);			
+			mReplace.put("LOADMAXTRPM",""+iMaxMTestRequests);
 		}
 	}
-	
+
 	private void handleStatusHome(HttpServletRequest request,HttpServletResponse response)
 	throws Exception
-	{		
+	{
 		Document d=XML.parse(new FileInputStream(
 		  ns.getServletContext().getRealPath("WEB-INF/templates/status.xhtml")));
-	
+
 		// Basic status
-		
+
 		Map<String,Object> mReplace=new HashMap<String,Object>();
-		mReplace.put("ACCESS",ns.getAccessCSSAppend(request));		
+		mReplace.put("ACCESS",ns.getAccessCSSAppend(request));
 		ns.obtainPerformanceInfo(mReplace);
 		XML.replaceTokens(d,mReplace);
-		
+
 		// QE performance
 		XML.find(d,"id","qeperformance").appendChild(
 			d.importNode((Node)mReplace.get("_qeperformance"),true));
-		
+
 		// Logs
 		Log l=ns.getLog();
 		Element eLogs=XML.find(d,"id","logs");
@@ -533,11 +533,11 @@ class StatusPages
 			XML.createText(eA,"Stats");
 			XML.createText(eLI,")");
 		}
-		
+
 		// Recent entries and problems
 		new LogBuilder(l.getRecentEntries(),XML.find(d,"id","recententries"));
 		new LogBuilder(l.getRecentProblems(),XML.find(d,"id","recentproblems"));
-		
+
 		XHTML.output(d,request,response,"en");
 	}
 

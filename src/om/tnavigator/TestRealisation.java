@@ -34,26 +34,26 @@ import org.w3c.dom.Element;
 import util.xml.XML;
 
 /**
- * This class stores the structure of a test, as realised for a particular 
- * user. That means that, in section which pick questions at random, 
+ * This class stores the structure of a test, as realised for a particular
+ * user. That means that, in section which pick questions at random,
  * the particular questions used have been chosen.
  */
 public class TestRealisation {
 	// Random seed for session.
 	private long randomSeed;
-	
+
 	// If not -1, this indicates a fixed variant has been selected.
 	private int fixedVariant=-1;
 
 	// ID of in-progress test deployment.
 	private String testId = null;
-	
+
 	// Database id for the test. tests.ti.
 	private int dbTi;
 
 	// The top level test group of the test.
 	private TestGroup rootTestGroup;
-	
+
 	// Test items, linearised.
 	private TestLeaf[] testLeavesInOrder;
 
@@ -82,7 +82,7 @@ public class TestRealisation {
 		return new TestRealisation(testGroup, testGroup.getLeafItems(),
 				lRandomSeed, iFixedVariant, testId, dbTi);
 	}
-	
+
 	/**
 	 * @param question
 	 * @param lRandomSeed
@@ -101,7 +101,7 @@ public class TestRealisation {
 
 		return new TestRealisation(null, leaves, lRandomSeed, iFixedVariant, testId, dbTi);
 	}
-	
+
 	/**
 	 * @param tg the tg to set
 	 */
@@ -176,7 +176,7 @@ public class TestRealisation {
 	 * Compute and return the score for this test attempt. The process of computing
 	 * the score fills in the score for each qustion and section, so sometimes
 	 * this method is called to precompute all that, and the result is discarded.
-	 * 
+	 *
 	 * @param rt Used for storing performance information.
 	 * @param ns The servlet we are computing the answer for.
 	 * @param da Database access.
@@ -241,7 +241,7 @@ public class TestRealisation {
 								iRequiredMajor==0 ? TestQuestion.VERSION_UNSPECIFIED : iRequiredMajor);
 					}
 					questionVersions.put(sQuestion, qv);
-					
+
 					scores = new HashMap<String, Double>();
 					questionScores.put(sQuestion, scores);
 				}

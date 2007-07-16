@@ -30,83 +30,83 @@ import om.tnavigator.auth.UserDetails;
 public class UserSession
 {
 	private NavigatorServlet ns;
-	
+
 	/** Cookie (key of map too, but duplicated here) */
 	String sCookie;
-	
+
 	/** Question session ID for question engine */
 	OmServiceBalancer.OmServiceSession oss=null;
-	
+
 	/** Sequence used to check you don't do things out of order */
 	String sSequence;
-	
+
 	/** Time of session start */
 	long lSessionStart=System.currentTimeMillis();
-	
+
 	/** Time of last action in session */
 	private long lastActionTime = System.currentTimeMillis();
-	
+
 	// Current test deployment.
 	private TestDeployment tdDeployment = null;
-	
+
 	/** Current test definition (null for single question) */
 	private TestDefinition testDefinition = null;
-	
+
 	// The test realisation, that is, exactly what sections
 	// and questions make up the test for this user, given
 	// the random choices.
 	private TestRealisation testRealisation = null;
-	
+
 	/** Index within test items */
 	private int testPosition;
-	
+
 	/** User login details */
 	UserDetails ud=null;
-	
+
 	/** OUCU (real or fake) */
 	String sOUCU;
-	
-	/** 
-	 * Hash of cookies that determine ud and without which the session 
+
+	/**
+	 * Hash of cookies that determine ud and without which the session
 	 * should be dumped
 	 */
 	int iAuthHash=0;
-	
+
 	/** Whether they have admin access */
 	public boolean bAdmin=false;
-	
+
 	/** Whether they can also view reports */
 	public boolean bAllowReports=false;
-	
+
 	/** Map of String (filename) -> Resource */
 	Map<String,Resource> mResources=new HashMap<String,Resource>();
-	
+
 	/** CSS */
 	String sCSS="";
-	
+
 	/** Progress info */
 	String sProgressInfo="";
-	
+
 	/** Database ID for test, question, sequence */
 	private int dbTi;
 	int iDBqi;
 	int iDBseq;
-	
+
 	/** True if they have finished the test */
 	private boolean bFinished;
-	
+
 	/** The version of the test navigator software that started this attempt. */
 	String navigatorVersion;
 
-	/** 
+	/**
 	 * Set true only for specific requests that are permitted after the forbid
 	 * date (up to the forbid-extension date)
 	 */
 	boolean bAllowAfterForbid;
-	
-	/** 
+
+	/**
 	 * True if their browser has been checked and found OK, or they have
-	 * decided to ignore the warning. 
+	 * decided to ignore the warning.
 	 */
 	boolean bCheckedBrowser;
 
@@ -115,19 +115,19 @@ public class UserSession
 	 * for them, this is set to OUCU-testID.
 	 */
 	String sCheckedOUCUKey;
-	
+
 	/** Index increments whenever there is a new CSS version */
 	int iCSSIndex=0;
-	
-	/** 
+
+	/**
 	 * Very hacky way to store the situation when confirm emails are sent
 	 * or not. 1=sent, -1=error
 	 */
 	int iEmailSent=0;
-	
+
 	// A place where any extra information can be stored in the session.
 	private Map<String,Object> extraSessionInfo = new HashMap<String, Object>();
-	
+
 	/**
 	 * @param owner
 	 */
@@ -155,7 +155,7 @@ public class UserSession
 	{
 		return getTestDeployment().isSingleQuestion();
 	}
-	
+
 	/**
 	 * Load a test deployment file into this session.
 	 * @param testId thid id of the test deployment to load.
@@ -311,7 +311,7 @@ public class UserSession
 	 * @param key the key identifying this piece of information
 	 * @param dataType the class of the expected type. Used to determine T.
 	 * @return the requested value, assuring that it is of type dataType.
-	 * @throws OmException 
+	 * @throws OmException
 	 */
 	public <T> T retrive(String key, Class<T> dataType) throws OmException
 	{
@@ -336,7 +336,7 @@ public class UserSession
 	 * @param finished whether the student had finished their attempt.
 	 * @param randomSeed the random seed to use for this attempt.
 	 * @param fixedVariant the fixed variant to use, or -1 for none.
-	 * @throws OmException 
+	 * @throws OmException
 	 */
 	public void realiseTest(String testID, boolean finished, long randomSeed, int fixedVariant) throws OmException {
 		if(isSingle())

@@ -45,12 +45,12 @@ import om.graph.World;
  * @author ag
  */
 public class ArcItem extends GraphItem {
-    
+
     public ArcItem(World world)
     throws GraphFormatException {
         super(world);
     }
-    
+
     public ArcItem(World world, GraphScalar x, GraphScalar y, GraphScalar w, GraphScalar h, float start, float extent)
     throws GraphFormatException {
         super(world);
@@ -63,26 +63,26 @@ public class ArcItem extends GraphItem {
         setLineWidth(1);
         setLineColour(world.convertColour("fg"));
     }
-    
+
     /** Centre */
     private GraphPoint gpCentre=GraphPoint.ZERO;
-    
+
     /** Width and height */
     private GraphPoint gpSize = GraphPoint.ONE;
-    
+
     /** Start and Arc angle */
     private float start = 0.0f;
     private float extent = 0.0f;
-    
+
     /** Colours */
     private Color cFill = null, cLine = null;
-    
+
     /** Outline thickness */
     private int iLineWidth = -1;
-    
+
     public void init() throws GraphFormatException {
     }
-    
+
     public void paint(Graphics2D g2) {
         // Work out the corner points and convert to pixels
         Point2D.Float p1 = (Point2D.Float) gpCentre.offset(new GraphPoint(-gpSize.getX().getWorldPosition()/2, -gpSize.getY().getWorldPosition()/2)).convertFloat(getWorld());
@@ -115,17 +115,17 @@ public class ArcItem extends GraphItem {
                     Arc2D.PIE);
             Area aOuter=new Area(eWhole);
             aOuter.subtract(new Area(ePartial));
-            
+
             g2.setColor(cLine);
             g2.fill(aOuter);
-            
+
             if(cFill!=null) {
                 g2.setColor(cFill);
                 g2.fill(ePartial);
             }
         }
     }
-    
+
     /**
      * Sets centre of ellipse, X co-ordinate.
      * @param gsX Co-ordinate
@@ -133,7 +133,7 @@ public class ArcItem extends GraphItem {
     public void setX(GraphScalar gsX) {
         gpCentre = new GraphPoint(gsX, gpCentre.getY());
     }
-    
+
     /**
      * Sets centre of ellipse, Y co-ordinate.
      * @param gsY Co-ordinate
@@ -141,7 +141,7 @@ public class ArcItem extends GraphItem {
     public void setY(GraphScalar gsY) {
         gpCentre = new GraphPoint(gpCentre.getX(), gsY);
     }
-    
+
     /**
      * Sets the start angle for the arc.
      * @param x angle
@@ -149,7 +149,7 @@ public class ArcItem extends GraphItem {
     public void setStart(float x) {
         start = x;
     }
-    
+
     /**
      * Sets the extent angle for the arc.
      * @param x Co-ordinate
@@ -157,7 +157,7 @@ public class ArcItem extends GraphItem {
     public void setExtent(float x) {
         extent = x;
     }
-    
+
     /**
      * Sets width (horizontal diameter) of ellipse.
      * Height defaults to the same value.
@@ -180,7 +180,7 @@ public class ArcItem extends GraphItem {
         else
             gpSize = new GraphPoint(gpSize.getX(), gsH);
     }
-    
+
     /**
      * Sets fill colour.
      * <p>
@@ -190,7 +190,7 @@ public class ArcItem extends GraphItem {
     public void setFillColour(Color c) {
         cFill=c;
     }
-    
+
     /**
      * Sets outline colour. Calling this (except with null) also turns on the
      * line in the first place.
@@ -203,7 +203,7 @@ public class ArcItem extends GraphItem {
         if (c!=null && iLineWidth==-1)
             iLineWidth=1;
     }
-    
+
     /**
      * Sets line width in pixels. Also turns on outline if it wasn't already,
      * setting its colour to the colour constant 'fg'.

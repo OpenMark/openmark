@@ -12,17 +12,17 @@ import util.xml.XMLException;
  * input score of X out of Y on fromAxis in the input should contribute
  * a score of (X*newMax/Y) out of newMax on axis toAxis in the output.
  */
-class RemappingPart	
+class RemappingPart
 {
 	/** Axis that marks came from (null if default) */
 	private String fromAxis = null;
-	
+
 	/** New total marks range */
 	private double newMax;
-	
+
 	/** Axis that marks go to */
 	private String toAxis = null;
-	
+
 	/**
 	 * @param fromAxis
 	 * @param newMax
@@ -70,7 +70,7 @@ class RemappingPart
 			throw new OmFormatException("<rescore> - Must have a marks= attribute");
 		}
 	}
-	
+
 	/**
 	 * @return the fromAxis
 	 */
@@ -96,12 +96,12 @@ class RemappingPart
 	}
 
 	/**
-	 * Adds the mark contribution from this rescore to the new value. 
-	 * @param newScore New partial score we're building up 
+	 * Adds the mark contribution from this rescore to the new value.
+	 * @param newScore New partial score we're building up
 	 * @param baseScore Base (source)
 	 * @throws OmFormatException if the baseScore does not contain the score for the fromAxis.
 	 */
-	void rescore(CombinedScore newScore, CombinedScore baseScore) throws OmFormatException 
+	void rescore(CombinedScore newScore, CombinedScore baseScore) throws OmFormatException
 	{
 		newScore.add(toAxis, baseScore.getScore(fromAxis)*newMax/baseScore.getMax(fromAxis),
 				newMax);

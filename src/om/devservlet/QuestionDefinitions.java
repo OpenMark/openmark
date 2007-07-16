@@ -28,38 +28,38 @@ import util.misc.IO;
 
 /**
  * Manages the list of questions available in the web application's
- * questions/ subfolder. Caches data for 30 seconds only so you can 
+ * questions/ subfolder. Caches data for 30 seconds only so you can
  * safely change it.
  */
 public class QuestionDefinitions
 {
 	/** Amount of time to cache data */
 	final static int CACHEMILLISECONDS=30*1000;
-	
+
 	/** Map of String (id) -> QuestionDefinition */
 	private Map<String,QuestionDefinition> mCache=new HashMap<String,QuestionDefinition>();
 
 	/** Folder where question definitions are kept */
 	private File fFolder;
-	
+
 	/** Ant home */
 	private File fAntHome;
-	
+
 	/** JDK home */
 	private String sJDKHome;
 
-	
+
 	/**
 	 * Constructs for a given servlet.
 	 * @param sc Servlet to create for
-	 * @throws OmException 
+	 * @throws OmException
 	 */
 	public QuestionDefinitions(ServletContext sc) throws OmException
 	{
 		fFolder=new File(sc.getRealPath("questions"));
-		if(!fFolder.exists()) 
+		if(!fFolder.exists())
 		{
-			if(!	fFolder.mkdir()) 
+			if(!	fFolder.mkdir())
 			{
 				throw new OmDeveloperException(
 					"Unable to create 'questions' folder within Om webapp. Ensure that " +
@@ -85,19 +85,19 @@ public class QuestionDefinitions
 				"jdk-home context parameter not set");
 	}
 
-	
+
 	/** @return Questions folder, surprisingly enough */
 	File getQuestionsFolder() { return fFolder; }
-	
+
 	/** @return JDK home folder for compiling */
 	String getJDKHome() { return sJDKHome; }
-	
+
 	String[] getAntCommand()
 	{
 		String os=System.getProperty("os.name");
 		if(os.indexOf("Windows")!=-1)
 		{
-			return 
+			return
 				new String[] {
 					"cmd","/c",new File(fAntHome,"bin/ant.bat").getAbsolutePath(),
 					"-buildfile","questionbuild.ant"
@@ -105,14 +105,14 @@ public class QuestionDefinitions
 		}
 		else
 		{
-			return 
+			return
 				new String[] {
 					new File(fAntHome,"bin/ant").getAbsolutePath(),
 					"-buildfile","questionbuild.ant"
 					};
 		}
 	}
-	
+
 	/**
 	 * Gets question ID from the definition file.
 	 * @param f Definition file
@@ -120,11 +120,11 @@ public class QuestionDefinitions
 	 */
 	static String getNameFromFile(File f)
 	{
-		return f.getName().replaceAll(".xml","");	
+		return f.getName().replaceAll(".xml","");
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Obtains a question definition.
 	 * @param sID ID of question definition (= filename before .xml)
@@ -137,13 +137,13 @@ public class QuestionDefinitions
 		// See if it's cached
 		QuestionDefinition qd=mCache.get(sID);
 		if(qd!=null && !qd.isOutdated()) return qd;
-		
+
 		// Load the file
 		qd=new QuestionDefinition(this,new File(fFolder,sID+".xml"));
 		mCache.put(sID,qd);
 		return qd;
 	}
-	
+
 	/**
 	 * Gets list of all currently-available question definitions.
 	 * @return Array of each definition
@@ -161,7 +161,7 @@ public class QuestionDefinitions
 			String sID=getNameFromFile(af[i]);
 			l.add(getQuestionDefinition(sID));
 		}
-		
+
 		return l.toArray(new QuestionDefinition[0]);
 	}
 

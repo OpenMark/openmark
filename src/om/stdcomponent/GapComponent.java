@@ -26,9 +26,9 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
+/**
 A gap between lines of text or components (like {@link BreakComponent} but with
-some blank space too). May not contain anything. 
+some blank space too). May not contain anything.
 <h2>XML usage</h2>
 &lt;gap/&gt;
 <h2>Properties</h2>
@@ -46,22 +46,22 @@ public class GapComponent extends QComponent
 	{
 		return "gap";
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null) throw new OmFormatException(
-			"<gap> may not contain other content"); 
+			"<gap> may not contain other content");
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
-	{		
-		if(bPlain)		
+	{
+		if(bPlain)
 		{
 			Element eDiv=qc.createElement("div");
 			qc.addInlineXHTML(eDiv);
-			XML.createChild(eDiv,"br");			
+			XML.createChild(eDiv,"br");
 		}
 		else
 		{

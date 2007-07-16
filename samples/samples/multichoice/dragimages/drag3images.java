@@ -29,7 +29,7 @@ public class drag3images extends SimpleQuestion1
 	{
 		getComponent("one").setDisplay(false);
 		getComponent("two").setDisplay(false);
-		
+
 		int		i;
 		int 	numCorrect = 0;
 		String	respon;
@@ -48,7 +48,7 @@ public class drag3images extends SimpleQuestion1
 				}
 			}
 			else {
-				answerLine += "empty";	
+				answerLine += "empty";
 			}
 			if (i < (RIGHTANSWERS.length-1)) {
 				answerLine += ", ";
@@ -60,7 +60,7 @@ public class drag3images extends SimpleQuestion1
 
 		if (numCorrect == 3)
 			return(true);
-		
+
 		if (numCorrect == 1) getComponent("one").setDisplay(true);
 		else if (numCorrect == 2) getComponent("two").setDisplay(true);
 

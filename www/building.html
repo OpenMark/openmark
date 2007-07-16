@@ -30,7 +30,7 @@ typically running on a Tomcat install on their own machine, to build and test
 questions. It is strictly a development environment and can only handle requests
 from one user at a time.</li>
 <li><strong>Question engine</strong><br />
-This runs question code and provides a Web service to the test navigator. 
+This runs question code and provides a Web service to the test navigator.
 It has no user interface.</li>
 <li><strong>Test navigator</strong><br />
 This handles authentication, database storage, and all user interaction. Actual
@@ -55,7 +55,7 @@ doesn't tell you how to install them.
 
 <ul>
 <li><a href="http://java.sun.com/javase/downloads/"><strong>Java JDK 5.0+</strong>. We use Java 6.</a></li>
-<li>A working Java application server such as <a href="http://tomcat.apache.org"><strong>Apache Tomcat</strong></a> running on 
+<li>A working Java application server such as <a href="http://tomcat.apache.org"><strong>Apache Tomcat</strong></a> running on
 any operating system. <small>(Due to a bug in Mac OS X 10.3, users of this platform must be running 10.4+)</small></li>
 <li><a href="http://ant.apache.org/"><strong>Apache Ant</strong></a> build system (included in most IDEs). We used 1.7.0.</li>
 <li>A working <a href="http://www.postgresql.org/"><strong>PostgreSQL</strong></a> or <strong>Microsoft SQL Server</strong> database server.</li>
@@ -65,9 +65,9 @@ any operating system. <small>(Due to a bug in Mac OS X 10.3, users of this platf
 
 <h3>Database servers</h3>
 
-<p>Postgres and SQL Server are the only supported databases at present. It is 
+<p>Postgres and SQL Server are the only supported databases at present. It is
 possible to add support for other database servers. We will not be doing this
-ourselves but would appreciate contributions in this regard. See the 
+ourselves but would appreciate contributions in this regard. See the
 <tt>om.tnavigator.db</tt> package within the code.</p>
 
 <p>You do not need a database to run the developer servlet. Only the test
@@ -76,8 +76,8 @@ navigator requires access to it.</p>
 <h3>Fonts</h3>
 
 <p>Verdana and Times New Roman are included as standard on Windows and OS X,
-but users of other operating systems may need to obtain a copy of these fonts and install them in 
-the lib/fonts folder within your Java runtime. 
+but users of other operating systems may need to obtain a copy of these fonts and install them in
+the lib/fonts folder within your Java runtime.
 (<a href="http://java.sun.com/j2se/1.4.2/docs/guide/intl/font.html">Information
 about fonts in Java.</a>)</p>
 
@@ -93,7 +93,7 @@ needing a dev.java.net account.
 
 <p>
 Releases and developement snapshots are tagges according to the
-<a href="versionpolicy.html">version number policy</a>. If you are interested 
+<a href="versionpolicy.html">version number policy</a>. If you are interested
 in developing the OpenMark system, you should check out trunk, as described below.
 If you want to deplay a stable system, check out the latest stable version instead.
 If you want to help with testing, check out the latest development snapshot.
@@ -102,8 +102,8 @@ If you want to help with testing, check out the latest development snapshot.
 <ul>
 <li>Command-line checkout:<br />
 <tt>svn checkout https://openmark.dev.java.net/svn/openmark/trunk openmark --username guest</tt></li>
-<li>We recommend the Eclipse IDE. If you are using this, install the 
-<a href="http://subclipse.tigris.org/">Subclipse plugin</a>. You can then check 
+<li>We recommend the Eclipse IDE. If you are using this, install the
+<a href="http://subclipse.tigris.org/">Subclipse plugin</a>. You can then check
 out as follows:
 <ul>
 <li>File / New / Project; Checkout projects from SVN; enter the URL
@@ -124,7 +124,7 @@ to tell SubVersion about your proxy.</small>
 
 <h2>4 About Apache Ant</h2>
 
-<p>Apache Ant is a build system - sort of like <tt>make</tt>, but works in 
+<p>Apache Ant is a build system - sort of like <tt>make</tt>, but works in
 a different way. Using Ant you can define XML scripts that build a piece of
 software (or do something else). We use Ant to build OpenMark.</p>
 
@@ -147,7 +147,7 @@ and clicking 'Run as / Ant script'.</li>
 
 <h3>Setting properties</h3>
 
-<p>If you're using Eclipse, you can choose extra options such as setting 
+<p>If you're using Eclipse, you can choose extra options such as setting
 properties without having to alter <tt>build.xml</tt> itself. Choose 'Run as /
 Ant script...' and use the tabbed dialog. Other IDEs are likely to have similar
 options.</p>
@@ -157,7 +157,7 @@ here is a snippet of the included file:</p>
 
 <pre>
 &lt;!--
-  Modify Axis home. Should point to an Axis 1.4 install on the build 
+  Modify Axis home. Should point to an Axis 1.4 install on the build
   machine. Used to obtain Axis lib files.
   -->
 &lt;property name="axishome" value=""/>
@@ -187,8 +187,8 @@ location. It's OK to just set them up in your own folder for the purpose of buil
 
 <p>
 OpenMark builds using an Ant build script <tt>build.xml</tt> which contains properties
-for the location of each prerequisite. You need to edit these properties, 
-either by editing <tt>build.xml</tt> directly or by using facilities in your IDE to 
+for the location of each prerequisite. You need to edit these properties,
+either by editing <tt>build.xml</tt> directly or by using facilities in your IDE to
 set them up, once you've downloaded the prerequisites.
 </p>
 
@@ -235,7 +235,7 @@ only with JAF 1.1.</li>
 <li>Unpack the software and place it somewhere (anywhere). I put
 it in <tt>/Users/sam/javalibs/jaf-1.1</tt>.
 <li>Set the <tt>build.xml</tt> property <tt>jafhome</tt> to the above folder.</li>
-<li>If you use an IDE, add <tt>activation.jar</tt> from the 
+<li>If you use an IDE, add <tt>activation.jar</tt> from the
 <tt>jaf-1.1</tt> folder to the build path.</li>
 </ol>
 
@@ -249,7 +249,7 @@ only with Java Mail 1.4.</li>
 <li>Unpack the software and place it somewhere (anywhere). I put
 it in <tt>/Users/sam/javalibs/javamail-1.4</tt>.
 <li>Set the <tt>build.xml</tt> property <tt>javamailhome</tt> to the above folder.</li>
-<li>If you use an IDE, add <tt>mail.jar</tt> from the 
+<li>If you use an IDE, add <tt>mail.jar</tt> from the
 <tt>javamail-1.4</tt> folder to the build path.</li>
 </ol>
 
@@ -262,7 +262,7 @@ You may also need to set the following build options as Ant properties.
 <ul>
 <li><tt>build</tt><br />
 Folder in which the build output is placed, along with intermediate files. Note
-that this folder is <strong>completely deleted</strong> every time you build, so 
+that this folder is <strong>completely deleted</strong> every time you build, so
 be very careful! The default is <tt>/tmp/om-build</tt>.</li>
 <li><tt>javadoc</tt><br />
 Folder for javadoc. Javadoc only gets built when you build the 'javadoc' ant
@@ -272,8 +272,8 @@ default is a <tt>javadoc</tt> folder inside the build folder.</li>
 </ul>
 
 <p>
-See comments in <tt>build.xml</tt> for details of other options which basically 
-affect how the developer servlet is set up. The defaults should work correctly 
+See comments in <tt>build.xml</tt> for details of other options which basically
+affect how the developer servlet is set up. The defaults should work correctly
 when running the developer servlet on your own machine and you can change them
 later in the developer servlet's <tt>web.xml</tt> anyway.
 </p>
@@ -333,7 +333,7 @@ BUILD SUCCESSFUL
 Total time: 19 seconds
 </pre>
 
-<p>That's it; the system is now built. You can find the resulting webapps, 
+<p>That's it; the system is now built. You can find the resulting webapps,
 assuming you didn't change the default build folder, in <tt>/tmp/om-build/webapps</tt>.
 They are available in both unpacked and packed .war formats.</p>
 
@@ -364,15 +364,15 @@ the OpenMark source tree. In order to test that the developer servlet is working
 we will set it up to build one of these questions.</p>
 
 <ol>
-<li>Under 'Source tree', enter the absolute path to your copy of the 
+<li>Under 'Source tree', enter the absolute path to your copy of the
 <tt>samples</tt> folder. In my system, this is <tt>/Users/sam/Documents/workspace/openmark-svn/samples</tt>.</li>
-<li>Under 'Extra package', enter <tt>samples.shared</tt>. (Some questions use shared 
-classes from this package; entering it here means those shared classes are built 
+<li>Under 'Extra package', enter <tt>samples.shared</tt>. (Some questions use shared
+classes from this package; entering it here means those shared classes are built
 into each question).</li>
 <li>By 'Package', enter the package name of a sample question, such as <tt>samples.numeric.singleentry</tt>.</li>
 <li>Click Create.</li>
 </ol>
-  
+
 <p>
 This will create an XML file defining all the information needed to build the
 question package, and the question should appear in the list up above.
@@ -380,14 +380,14 @@ question package, and the question should appear in the list up above.
 
 <ul><li>If you instead get an error like
 <tt>java.io.FileNotFoundException:</tt>...<tt>/om/questions/samples.numeric.singleentry.xml (Permission denied)</tt>,
-then your application server does not have permission to write to the <tt>questions</tt> 
+then your application server does not have permission to write to the <tt>questions</tt>
 folder within the developer servlet web application. Change permissions of this
 folder so that the application server can write to it (for example by using the
 Unix commands <tt>chown</tt> and <tt>chmod</tt>) then try again.</li></ul>
 
 <h3>Building and running a question</h3>
 
-<p>Click Build next to the question in the list. You should see output like the 
+<p>Click Build next to the question in the list. You should see output like the
 following:</p>
 
 <pre>
@@ -425,7 +425,7 @@ question with various accessibility options for testing.
 <h2>9 Install and test question engine and test navigator</h2>
 
 <p>The question engine is a Web service that runs questions. The test navigator
-provides a user interface, manages access permissions, and stores information 
+provides a user interface, manages access permissions, and stores information
 in a database.</p>
 
 <h3>Basic installation</h3>
@@ -452,25 +452,25 @@ match your database settings (Postgres/SQL Server plugin, server address, databa
 username, and password).</li></ul></li>
 <li>Set up the question engine URL.<ul><li>
 Under <tt>&lt;questionengines></tt>, correct the URL of the question engine
-if necessary. It should be the address of the question engine webapp followed by 
+if necessary. It should be the address of the question engine webapp followed by
 <tt>/services/Om</tt>. The default is correct for a default Tomcat install.</li></ul></li>
 <li>Set up the test navigator's own URL.<ul><li>
 Under <tt>&lt;testnavigators></tt>, again correct the URL of the test navigator
-if necessary. This should be the address of the test navigator webapp. 
+if necessary. This should be the address of the test navigator webapp.
 Again, the default is correct for a default Tomcat install.</li></ul></li>
 <li>Enter email details.<ul><li>
 <tt>&lt;smtpserver></tt> should point to an SMTP server that the webapp can use
 to send mail.</li>
 <li>The <tt>&lt;alertmail></tt> section should have a <tt>&lt;from></tt> address that the SMTP
 server will accept as valid, and you should put your own address in <tt>&lt;to></tt>.</li>
-<li>The server will use these details to send you email if an error message 
+<li>The server will use these details to send you email if an error message
 occurs.</li></ul></li>
 </ol>
 
 <p>You probably don't need to change any of the other settings right away.
 (By the way, be careful! This page tells you how to set up a system to make
 sure it works, not how to secure it for production use on assessed tests.)</p>
- 
+
 <p>When you're done, save <tt>navigator.xml</tt> and restart the test navigator
 webapp.</p>
 
@@ -479,12 +479,12 @@ webapp.</p>
 <p>To make life easier, a sample test is preinstalled. It's a test that helps
 students for an Open University course determine whether they understand
 simple diagrams. (Please note that the version of this test that we took to
-use as a sample may not have been completely finished - it is included as an 
+use as a sample may not have been completely finished - it is included as an
 example only and doesn't necessarily reflect the final product.)</p>
 
 <p>The test navigator doesn't have a home page; instead you need to directly
 access the test. The URL you go to includes the name of the test's 'deploy file'
-inside the <tt>testbank</tt> folder. In this case, that is <tt>mu120.module5.deploy.xml</tt> 
+inside the <tt>testbank</tt> folder. In this case, that is <tt>mu120.module5.deploy.xml</tt>
 so the URL to visit, if you are using Tomcat with default configuration, is
 <a href="http://localhost:8080/om-tn/mu120.module5/">http://localhost:8080/om-tn/mu120.module5/</a>.</p>
 
@@ -492,14 +492,14 @@ so the URL to visit, if you are using Tomcat with default configuration, is
 
 <ul>
 <li>If instead you get an error like: <tt>Error creating log file</tt> then you
-need to ensure that the server has write access to the <tt>logs</tt> folder 
+need to ensure that the server has write access to the <tt>logs</tt> folder
 inside the webapp, for example using the Unix commands <tt>chown</tt> and <tt>chmod</tt>.</li>
 <li>After you fix this and begin the test you might get another error, this time from the question
-engine: <tt>om.OmException: Failed to save question file</tt>. This means you 
+engine: <tt>om.OmException: Failed to save question file</tt>. This means you
 need to give the same permissions to the <tt>questioncache</tt> folder inside the
 question engine webapp. (The question engine obtains copies of questions
 from the test navigator, but caches them in its own folder.)</li>
-</ul> 
+</ul>
 
 <h2>10 Building javadoc</h2>
 
@@ -539,7 +539,7 @@ if users close their browser and come back later, etc.</li>
 </ul>
 
 <p>
-For that you could try pestering us in the forums here and maybe we will 
+For that you could try pestering us in the forums here and maybe we will
 improve the documentation!
 </p>
 

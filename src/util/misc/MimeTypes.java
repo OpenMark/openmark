@@ -25,16 +25,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Implement our own mapping of extensions to mime-types. */
-public class MimeTypes 
+public class MimeTypes
 {
 	/** Map from extension (after .) to MIME type */
 	private static Map<String,String> mTypes=null;
-	
+
 	/** Pattern matches a valid non-comment line in mime.types. Captures are
 	 * $1 = MIME type, $2 = whitespace-separated list of extensions */
 	private final static Pattern TYPESLINE=Pattern.compile(
 		"(?!#)(\\S+)((?:\\s+(?:\\S+))+)");
-	
+
 	/**
 	 * Given a file or path name, return the mime-type
 	 * @param sPath The path/file name
@@ -55,10 +55,10 @@ public class MimeTypes
 					// Read line at time until EOF
 					String sLine=br.readLine();
 					if(sLine==null) break;
-					
+
 					// Ignore comments, blank lines, etc.
 					Matcher m=TYPESLINE.matcher(sLine);
-					if(!m.matches()) continue;					
+					if(!m.matches()) continue;
 					String sType=m.group(1);
 					String[] asExtensions=m.group(2).split("\\s+");
 					for(int iExtension=0;iExtension<asExtensions.length;iExtension++)
@@ -76,21 +76,21 @@ public class MimeTypes
 				throw new Error("Unexpected error reading mime.types",t);
 			}
 		}
-		
+
 		String sExtension="";
 		int iDot=sPath.lastIndexOf('.');
 		if(iDot!=-1)
 		{
 			sExtension=sPath.substring(iDot+1).toLowerCase();
 		}
-		
+
 		String sType=mTypes.get(sExtension);
 		if(sType!=null)
 			return sType;
 		else
 			return "application/octet-stream";
 	}
-	
+
 	/**
 	 * main method for testing.
 	 * @param args

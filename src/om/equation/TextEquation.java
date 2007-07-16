@@ -35,7 +35,7 @@ import util.xml.XSL;
 public class TextEquation
 {
 	private static Transformer t;
-	
+
 	private static boolean hasMboxParent(Element e)
 	{
 		Node nParent=e.getParentNode();
@@ -44,9 +44,9 @@ public class TextEquation
 		if(eParent.getTagName().equals("mbox")) return true;
 		return hasMboxParent(eParent);
 	}
-	
+
 	/**
-	 * Turns equation into simple XHTML, using italic for letters. 
+	 * Turns equation into simple XHTML, using italic for letters.
 	 * @param sEquation Input equation
 	 * @param dOutput Output document in which equation will be created
 	 * @return Element ready for adding to output document
@@ -57,9 +57,9 @@ public class TextEquation
 	{
 		return process(sEquation,dOutput,true);
 	}
-	
+
 	/**
-	 * Turns equation into simple XHTML. 
+	 * Turns equation into simple XHTML.
 	 * @param sEquation Input equation
 	 * @param dOutput Output document in which equation will be created
 	 * @param bItalic True if italic should be used for letters
@@ -74,7 +74,7 @@ public class TextEquation
 			EquationFormat ef=new EquationFormat(new StringReader(sEquation));
 			Element eEquation=ef.equation().createDOM(XML.createDocument());
 			eEquation.getOwnerDocument().appendChild(eEquation);
-			
+
 			NodeList nl=eEquation.getOwnerDocument().getElementsByTagName("int_text");
 			for(int i=0;i<nl.getLength();i++)
 			{
@@ -83,7 +83,7 @@ public class TextEquation
 				if(!hasMboxParent(e))
 					XML.setText(e,Text.fixupText(XML.getText(e),e.getPreviousSibling()==null));
 			}
-			
+
 			Document dResult;
 			synchronized(TextEquation.class)
 			{
@@ -92,7 +92,7 @@ public class TextEquation
 					t=XSL.newTransformer(
 						TextEquation.class.getResourceAsStream("TextEquation.xsl"));
 				}
-				
+
 				t.setParameter("ITALIC",bItalic?"y":"n");
 				dResult=XSL.transform(t,eEquation.getOwnerDocument());
 			}
@@ -105,9 +105,9 @@ public class TextEquation
 		catch(IOException e)
 		{
 			throw new OmUnexpectedException(e);
-		}		
+		}
 	}
-	
+
 	/**
 	 * Test method.
 	 * @param args
@@ -115,18 +115,18 @@ public class TextEquation
 	 */
 	public static void main(String[] args) throws Exception
 	{
-//		test("N_0");		
-//		test("–λ");		
-//		test("-N_0");		
-//		test("\\ln(–λ)");		
-//		test("\\ln N_0");		
-//		test("-\\ln λ");		
-//		test("\\ln N");		
-	test("N+3");		
-//		test("-\\ln N_0");		
-//		test("\\ln λ");		
-//		test("λ");		
-//		test("\\ln(-N_0)");		
+//		test("N_0");
+//		test("–λ");
+//		test("-N_0");
+//		test("\\ln(–λ)");
+//		test("\\ln N_0");
+//		test("-\\ln λ");
+//		test("\\ln N");
+	test("N+3");
+//		test("-\\ln N_0");
+//		test("\\ln λ");
+//		test("λ");
+//		test("\\ln(-N_0)");
 		/*
 		<dragbox id="a1"><eq>N_0</eq></dragbox>
 		<dragbox id="a2"><eq>–λ</eq></dragbox>
@@ -152,7 +152,7 @@ public class TextEquation
 		System.out.println(e.getAttribute("alt"));
 		System.out.println("XHTML:");
 		System.out.println(XML.saveString(e));
-		
+
 		e=TextEquation.process(sEq,d,false);
 		System.out.println("Alt:");
 		System.out.println(e.getAttribute("alt"));

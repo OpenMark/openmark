@@ -29,24 +29,24 @@ import javax.net.ssl.*;
 public class HTTPS
 {
 	/** Synch for SSL certs */
-	private static Object oSSLSynch=new Object();	
+	private static Object oSSLSynch=new Object();
 
 	/** SSL context that doesn't use certs */
 	private static SSLContext scSSLNoCerts=null;
-	
+
 	/**
 	 * Allows SSL connections to consider all certificates valid. You do need to also allow different
 	 * server names too (if they might be wrong).
 	 * @param uc Connection to ignore certs on (if not HTTPS, does nothing)
 	 */
-	public static void considerCertificatesValid(URLConnection uc) 
+	public static void considerCertificatesValid(URLConnection uc)
 	{
 		if(!(uc instanceof HttpsURLConnection)) return;
-	
+
 		try
 		{
 			synchronized(oSSLSynch)
-			{		
+			{
 				if(scSSLNoCerts==null)
 				{
 					scSSLNoCerts=SSLContext.getInstance("TLS");
@@ -55,18 +55,18 @@ public class HTTPS
 						public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
 						{
 						}
-		
+
 						public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException
 						{
 						}
-		
+
 						public X509Certificate[] getAcceptedIssuers()
 						{
 							return new X509Certificate[0];
 						}
 					}},null);
 				}
-				
+
 				SSLSocketFactory ssf=scSSLNoCerts.getSocketFactory();
 				((HttpsURLConnection)uc).setSSLSocketFactory(ssf);
 			}
@@ -88,13 +88,13 @@ public class HTTPS
 	public static void allowDifferentServerNames(URLConnection uc)
 	{
 		if(!(uc instanceof HttpsURLConnection)) return;
-		
+
 		((HttpsURLConnection)uc).setHostnameVerifier(new HostnameVerifier()
 			{
 				public boolean verify(String arg0, SSLSession arg1)
 				{
 					return true;
-				}				
+				}
 			});
 	}
 }

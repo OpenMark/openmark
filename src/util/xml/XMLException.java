@@ -20,7 +20,7 @@ package util.xml;
 import util.misc.CausedIOException;
 
 
-/** 
+/**
  * Exception thrown by the XML utilities. Extends IOException since this is
  * likely to be cause by data format errors, which are to do with I/O.
  */
@@ -33,7 +33,7 @@ public class XMLException extends CausedIOException
 	{
 		super(s, null);
 	}
-	
+
 	/**
 	 * @param s Error message
 	 * @param e Exception that caused error
@@ -47,6 +47,6 @@ public class XMLException extends CausedIOException
 	 */
 	public XMLException(Exception e)
 	{
-		super(e);		
+		super(e);
 	}
 }

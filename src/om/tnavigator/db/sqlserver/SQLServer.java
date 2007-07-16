@@ -54,17 +54,17 @@ public class SQLServer extends OmQueries
 		rs.next();
 		return rs.getInt(1);
 	}
-	
+
 	@Override
 	public ResultSet queryUnfinishedSessions(DatabaseAccess.Transaction dat,String oucu,String deploy) throws SQLException
 	{
-		return dat.query( 
+		return dat.query(
 			"SELECT TOP 1 ti,rseed,finished,variant,testposition,navigatorversion " +
 			"FROM " + getPrefix() + "tests " +
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(deploy)+" " +
 			"ORDER BY attempt DESC;");
 	}
-	
+
 	@Override
 	protected String currentDateFunction()
 	{
@@ -77,7 +77,7 @@ public class SQLServer extends OmQueries
 	{
 		dat.query("SELECT @@version");
 	}
-	
+
 	@Override
 	protected String unicode(String quotedString)
 	{
@@ -88,7 +88,7 @@ public class SQLServer extends OmQueries
 	{
 		return "GETDATE()";
 	}
-	
+
 	@Override
 	protected void upgradeDatabaseTo131(DatabaseAccess.Transaction dat) throws SQLException
 	{

@@ -26,7 +26,7 @@ public abstract class IO
 {
 	/** Size of buffer used in copying */
 	private final static int COPYBUFFER_LENGTH=32768;
-	
+
 	/**
 	 * Copies from an input stream (until EOF) to output stream.
 	 * @param is Input stream (will be closed at end)
@@ -34,7 +34,7 @@ public abstract class IO
 	 * @param bCloseOutput If true, will close output stream at end
 	 * @throws IOException If there's any I/O error in process
 	 */
-	public static void copy(InputStream is,OutputStream os,boolean bCloseOutput) 
+	public static void copy(InputStream is,OutputStream os,boolean bCloseOutput)
 		throws IOException
 	{
 		byte[] abBuffer=new byte[COPYBUFFER_LENGTH];
@@ -63,7 +63,7 @@ public abstract class IO
 		}
 		is.close(); // Was at EOF anyway
 	}
-	
+
 	/**
 	 * Loads from an input stream (assumed to be UTF-8) into a string.
 	 * @param is Input stream to read from (will be closed at end)
@@ -74,7 +74,7 @@ public abstract class IO
 	{
 		return new String(loadBytes(is),"UTF-8");
 	}
-	
+
 	/**
 	 * Loads from an input stream into a byte array.
 	 * @param is Input stream to read from (will be closed at end)
@@ -87,8 +87,8 @@ public abstract class IO
 		copy(is,baos,true);
 		return baos.toByteArray();
 	}
-	
-  
+
+
 	/**
 	 * Safely lists files in a given folder, without crashing your program with
 	 * NullPointerExceptions.
@@ -100,10 +100,10 @@ public abstract class IO
 		File[] af=fFolder.listFiles();
 		if(af==null) af=new File[0];
 		return af;
-	}	
-	
+	}
+
 	/**
-	 * Loads a resource relative to a specific class into a byte array. 
+	 * Loads a resource relative to a specific class into a byte array.
 	 * @param c Class (resource must come from same classloader)
 	 * @param sName Name of resource (relative path to class)
 	 * @return Byte array containing file in memory
@@ -116,7 +116,7 @@ public abstract class IO
 	}
 
 	/**
-	 * Loads a resource from the classloader (e.g. the .jar file) into a byte array. 
+	 * Loads a resource from the classloader (e.g. the .jar file) into a byte array.
 	 * @param cl Classloader resource comes from
 	 * @param sPath Path of resource (must begin with /)
 	 * @return Byte array containing file in memory
@@ -128,7 +128,7 @@ public abstract class IO
 			"Resource must be absolute path: "+sPath);
 		sPath=sPath.substring(1);
 		URL u=cl.getResource(sPath);
-		if(u==null) throw new FileNotFoundException("Resource not found: "+sPath); 
+		if(u==null) throw new FileNotFoundException("Resource not found: "+sPath);
 		URLConnection uc=u.openConnection();
 		uc.connect();
 		int iLength=uc.getContentLength();
@@ -155,5 +155,5 @@ public abstract class IO
 			return baos.toByteArray();
 		}
 	}
-	
+
 }

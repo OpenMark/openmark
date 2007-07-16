@@ -28,7 +28,7 @@ public class Solubility extends SimpleQuestion1
 	private int mass;
 	private double temperature;
 	private int nCorrect;
-    
+
 	protected void init() throws OmException
 	{
 	  mass = 5 + (int)(Math.random()*6);
@@ -45,23 +45,23 @@ public class Solubility extends SimpleQuestion1
 		setPlaceholder("MASS",Integer.toString(mass));
 		setPlaceholder("4MASS",Integer.toString(4*mass));
 		setPlaceholder("ANS", Integer.toString(4*mass-5));
-		
+
    	getResults().setQuestionLine("What is the solubility of potassium chlorate at " +
     								 						 Double.toString(temperature) + " �C?");
 	}
-  
+
 	protected boolean isRight(int iAttempt) throws OmDeveloperException
 	{
 		//ensure all messages are turned off
 		getComponent("unitsWrong").setDisplay(false);
-		
+
 		double dbl;
 		String answer, answer2;
 
 		nCorrect = 0;
-	    
+
 		answer = (getEditField("input").getValue().trim());
-	
+
 		getResults().appendActionSummary("Correct ans:" + (4*mass-5) + " Attempt " + iAttempt + ": " + answer);
 
 		answer = replace(answer,"g"," g");
@@ -75,22 +75,22 @@ public class Solubility extends SimpleQuestion1
 		catch (NoSuchElementException nsee) {
 			dbl = 0;
 		}
-	    
+
 		answer2 = replace(answer, " ", "");	// knock out spaces
 		answer2 = replace(answer2, "per", "/");
 		answer2 = replace(answer2, "of", "");	// to cope with 100gofwater
-	    
+
 		//add a terminating space - required by match...
 		answer2 = answer2 + " ";
-    
+
 		if (range(dbl, ((4 * mass) - 5), 1.1))
 			++nCorrect;
-	  
+
 		Match m1 = new Match("g");
-    
+
 		if (m1.match(answer2))
 			nCorrect += 2;
-	    
+
 		if ((nCorrect == 3) || (nCorrect == 6)) {
 			return(true);
 		}
@@ -102,7 +102,7 @@ public class Solubility extends SimpleQuestion1
 		}
 		return false;
 	}
-	
+
 	public static String replace(String sSource, String sSearch, String sReplace) // courtesy Sam
 	{
 	  StringBuffer sbOutput=new StringBuffer();
@@ -129,6 +129,6 @@ public class Solubility extends SimpleQuestion1
 	  else
 	   	return false ;
 	}
-	
+
 }
 

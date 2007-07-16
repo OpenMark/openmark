@@ -29,11 +29,11 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
- * Base class for simple questions that have an input box and an answer box 
- * (simultaneously visible) and match certain other 'standard' requirements 
- * in their XML. 
- * <p> 
+/**
+ * Base class for simple questions that have an input box and an answer box
+ * (simultaneously visible) and match certain other 'standard' requirements
+ * in their XML.
+ * <p>
  * Specifically, the XML must contain the following component IDs:
  * <ul>
  * <li>inputbox - box that contains controls into which user enters their
@@ -48,25 +48,25 @@ import util.xml.XML;
  * <li>feedback - component within answerbox, shown only if getFeedbackID()
  *   returns something other than null.
  * </ul>
- * There should be examples matching this pattern in the documentation. 
+ * There should be examples matching this pattern in the documentation.
  */
 public abstract class SimpleQuestion1 extends StandardQuestion
 {
   /** Which question attempt the user is on */
   private int iAttempt=1;
-  
+
   /** Maximum number of attempts allowed (after that it tells you the answer) */
   private int iMaxAttempts=3;
-  
+
   /** If true, question ends when you click OK */
   private boolean bEndNext=false;
-  
+
   /** ID used for feedback */
   private String sFeedbackID;
-  
+
   /** Max marks, or 0 if no scoring */
   private int iMaxMarks=0;
-  
+
   @Override
   public Rendering init(Document d,InitParams ip) throws OmException
 	{
@@ -75,7 +75,7 @@ public abstract class SimpleQuestion1 extends StandardQuestion
 			r.setProgressInfo("You have only one attempt.");
 		else
 			r.setProgressInfo("You have "+iMaxAttempts+" attempts.");
-		
+
 		try
 		{
 			Element eScoring=XML.getChild(d.getDocumentElement(),"scoring");
@@ -83,12 +83,12 @@ public abstract class SimpleQuestion1 extends StandardQuestion
 		}
 		catch(Exception e)
 		{
-			// Ignore, leave iMaxMarks at 0			
+			// Ignore, leave iMaxMarks at 0
 		}
-		
+
 		return r;
 	}
-  
+
   /**
    * Set the maximum number of attempts permitted. After that it will tell you
    * the answer. The default is 3.
@@ -98,7 +98,7 @@ public abstract class SimpleQuestion1 extends StandardQuestion
   {
   	this.iMaxAttempts=iMaxAttempts;
   }
-  
+
   /**
    * Callback that Om calls when the user clicks the 'Submit' button to enter
    * their answer. Calls checkAnswer for further processing.
@@ -108,7 +108,7 @@ public abstract class SimpleQuestion1 extends StandardQuestion
   {
 		checkAnswer(false);
   }
-  
+
   /**
    * Callback that Om calls when the user clicks the 'Give Up' button to enter
    * their answer. Calls checkAnswer for further processing.
@@ -129,7 +129,7 @@ public abstract class SimpleQuestion1 extends StandardQuestion
    */
   public void actionOK() throws OmException
   {
-  	if(bEndNext) 
+  	if(bEndNext)
   		end();
   	else
   	{
@@ -138,13 +138,13 @@ public abstract class SimpleQuestion1 extends StandardQuestion
 				setProgressInfo("This is your last attempt.");
 			else
 				setProgressInfo("You have "+iAttemptsLeft+" attempts left.");
-  		
+
   		getComponent("answerbox").setDisplay(false);
   		getComponent("inputbox").setBoolean(BoxComponent.PROPERTY_PLAINHIDE,false);
   		getComponent("inputbox").setEnabled(true);
   	}
   }
-  
+
   /**
    * Handles the framework around checking the user's answer.
    * @param bPass True if the user passed rather than submitting an answer
@@ -158,21 +158,21 @@ public abstract class SimpleQuestion1 extends StandardQuestion
 		getComponent("answerbox").setDisplay(true);
 
 		sFeedbackID=null;
-		
+
 		// Get the three basic states
 		boolean bRight=false;
 		if(!bPass)
 		{
-			bRight=isRight(iAttempt); 
+			bRight=isRight(iAttempt);
 		}
 		boolean bWrong=!bRight && !bPass;
-		
+
 		// OK now show/hide the basic 'you were wrong' bit
 		getComponent("wrong").setDisplay(bWrong);
 		getComponent("still").setDisplay(bWrong && iAttempt>1);
 		getComponent("right").setDisplay(bRight);
 		getComponent("pass").setDisplay(bPass);
-		
+
 		// Now handle feedback
 		QComponent qcFeedback=getComponent("feedback");
 		if(bWrong)
@@ -188,11 +188,11 @@ public abstract class SimpleQuestion1 extends StandardQuestion
 				}
 			}
 		}
-		else qcFeedback.setDisplay(false);		
-		
+		else qcFeedback.setDisplay(false);
+
 		// Should we end next time?
 		bEndNext=bRight||(iAttempt==iMaxAttempts)||bPass;
-				
+
 		// If so, show answer and update score
 		getComponent("answer").setDisplay(bEndNext);
 		if(bEndNext)
@@ -213,7 +213,7 @@ public abstract class SimpleQuestion1 extends StandardQuestion
 
 		// Give overriders a chance
 		doAdditionalAnswerProcessing(bRight,bWrong,bPass,iAttempt);
-		
+
 		// Increment feedback level
 		iAttempt++;
 
@@ -226,7 +226,7 @@ public abstract class SimpleQuestion1 extends StandardQuestion
 	 * <p>
 	 * This is a simple right/wrong flag. To provide feedback as to how they were
 	 * wrong, you should call setFeedbackID() [probably only for wrong answers
-	 * and certain attempts]. 
+	 * and certain attempts].
 	 * @param attempt Question attempt (1 for first, 2 for second, etc.)
 	 * @return True if the user is right; false if they are wrong.
 	 * @throws OmDeveloperException
@@ -237,8 +237,8 @@ public abstract class SimpleQuestion1 extends StandardQuestion
    * Override this method to change the scoring. The method should call
    * getResults().setScore.
    * <p>
-   * Default scoring is out of 3 points: 3 for correct answer first time, 
-   * 2 second time, 1 third time, 0 for fail or pass.  
+   * Default scoring is out of 3 points: 3 for correct answer first time,
+   * 2 second time, 1 third time, 0 for fail or pass.
    * @param bRight True if user was right (rather than passing/failing)
    * @param bPass True if user passed on question
    * @param iAttempt Attempt number (1 = first attempt)
@@ -250,23 +250,23 @@ public abstract class SimpleQuestion1 extends StandardQuestion
   	if(!bRight) getResults().setScore(0,bPass ? Results.ATTEMPTS_PASS : Results.ATTEMPTS_WRONG);
   	else getResults().setScore(Math.max(0,iMaxMarks+1-iAttempt),iAttempt);
   }
-  
+
   /**
-   * Sets the feedback ID for current question attempt. Should be called from 
-   * within isRight(). 
+   * Sets the feedback ID for current question attempt. Should be called from
+   * within isRight().
    * <p>
    * Feedback works as follows:
    * <ul>
    * <li>You must have a component with id 'feedback'. This component will
    *   be hidden if this method returns null, and shown otherwise.</li>
    * <li>If you return "" then no further action is taken. Otherwise you must
-   *   have multiple components with IDs, directly inside the 'feedback' 
+   *   have multiple components with IDs, directly inside the 'feedback'
    *   component. These will all be hidden except the one named by the
-   *   return value. Components which don't have IDs will be unaffected.</li> 
+   *   return value. Components which don't have IDs will be unaffected.</li>
    * </ul>
-   * @param sID ID of component to use for feedback. May be null if there is 
-   *   no feedback this time, or an empty string to display just the 'feedback' 
-   *   component without messing with its children 
+   * @param sID ID of component to use for feedback. May be null if there is
+   *   no feedback this time, or an empty string to display just the 'feedback'
+   *   component without messing with its children
    */
   protected void setFeedbackID(String sID)
   {
@@ -286,5 +286,5 @@ public abstract class SimpleQuestion1 extends StandardQuestion
 		boolean bRight,boolean bWrong,boolean bPass,int attempt) throws OmDeveloperException
 	{
 		// Default does nothing
-	}    
+	}
 }

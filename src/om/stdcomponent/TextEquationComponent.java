@@ -26,16 +26,16 @@ import org.w3c.dom.*;
 
 import util.xml.XML;
 
-/** 
-Represents simple equations that can be produced as XHTML. Uses the same 
+/**
+Represents simple equations that can be produced as XHTML. Uses the same
 LaTeX-like format as {@link EquationComponent}, so not sensitive to whitespace,
 but does not support any advanced formatting. (You can use superscript and subscript
-and the usual variable names etc., but none of the fancy formatting tags - fractions 
-or sigmas or square roots or anything like that.) 
+and the usual variable names etc., but none of the fancy formatting tags - fractions
+or sigmas or square roots or anything like that.)
 <p>
 Doesn't always need an alt property because it generates one itself. x^2 gives 'x to the power 2',
-while \log_10 2 gives 'log subscript 10 2'. In the latter case you might wish to override the 
-alt property to make it say something more sensible.  
+while \log_10 2 gives 'log subscript 10 2'. In the latter case you might wish to override the
+alt property to make it say something more sensible.
 <h2>XML usage</h2>
 &lt;eq&gt;z^2=x^2+y^2&lt;/eq&gt;
 <h2>Properties</h2>
@@ -60,16 +60,16 @@ public class TextEquationComponent extends QComponent
 	public final static String PROPERTY_ITALIC="italic";
 	/** Boolean property: if false, prevent word-wraps in the middle of the equation */
 	public final static String PROPERTY_WRAP="wrap";
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "eq";
 	}
-	
+
 	/** Actual content of required equation */
 	private String sEquation;
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
@@ -82,7 +82,7 @@ public class TextEquationComponent extends QComponent
 		setBoolean(PROPERTY_WRAP,true);
 		defineString(PROPERTY_ALT);
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
@@ -97,36 +97,36 @@ public class TextEquationComponent extends QComponent
 			else if(n instanceof Text)
 			{
 				sbText.append(n.getNodeValue());
-			}			
+			}
 		}
 		sEquation=sbText.toString();
 	}
-	
+
 	/** @return Text of equation */
 	public String getEquation() { return sEquation; }
-	
-	/** 
+
+	/**
 	 * Sets the equation to a different value.
 	 * @param sEquation New value for equation content
 	 */
 	public void setEquation(String sEquation)
-	{ 
+	{
 		this.sEquation=sEquation;
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		// Get actual current value of string
 		String sCurrent=getQuestion().applyPlaceholders(sEquation);
-		
+
 		// Convert equation to XHTML
 		Element eContent=TextEquation.process(sCurrent,qc.getOutputDocument(),getBoolean(PROPERTY_ITALIC));
 
 		// Get text equivalent
 		String sAlt=eContent.getAttribute("alt");
 		if(isPropertySet(PROPERTY_ALT)) sAlt=getString(PROPERTY_ALT);
-		
+
 		eContent.removeAttribute("alt");
 		qc.addTextEquivalent(sAlt);
 
@@ -142,12 +142,12 @@ public class TextEquationComponent extends QComponent
 			else
 			{
 				if(getQuestion().getZoom()>1.0)
-				{					
+				{
 					// This needs to be changed here and in CSS if size is not 14px.
 					eContent.setAttribute("style","font-size: "+Math.round(getQuestion().getZoom()*14)+"px");
 				}
 			}
-			
+
 			// Prevent wrapping, if requested.
 			if (!getBoolean(PROPERTY_WRAP))
 			{
@@ -159,12 +159,12 @@ public class TextEquationComponent extends QComponent
 		else
 		{
 			// We have to use the alt text for plain mode - screenreaders cannot
-			// even cope with <sup> and <sub>!! 
+			// even cope with <sup> and <sub>!!
 			Element eSpan=qc.createElement("span");
 			XML.createText(eSpan,sAlt);
 			qc.addInlineXHTML(eSpan);
 		}
-		
+
 	}
-	
+
 }

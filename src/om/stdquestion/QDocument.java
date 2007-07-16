@@ -34,18 +34,18 @@ public class QDocument
 	/**
 	 * Prefix used for items that aren't values nor actions.
 	 */
-	public final static String OM_PREFIX="om_"; 
-	
-	/** 
-	 * Prefix used on item form names for items that represent values that 
+	public final static String OM_PREFIX="om_";
+
+	/**
+	 * Prefix used on item form names for items that represent values that
 	 * should be updated in components. (Most forms return many values.)
 	 * Items using this prefix are automatically passed to the component with
 	 * ID that follows; if a single item uses multiple values it should use
-	 * a different prefix (e.g. plain old OM_PREFIX). 
+	 * a different prefix (e.g. plain old OM_PREFIX).
 	 */
 	public final static String VALUE_PREFIX="omval_";
-	
-	/** 
+
+	/**
 	 * Prefix used on item form names for items that represent actions that
 	 * should be taken. (Most forms return only one action.)
 	 */
@@ -55,51 +55,51 @@ public class QDocument
 	 * Token to be placed before all XHTML IDs.
 	 */
 	public final static String ID_PREFIX = "%%IDPREFIX%%";
-	
+
 	/** Component manager */
 	private QComponentManager qcm;
-	
+
 	/** Owner question */
 	private StandardQuestion sqOwner;
-	
+
 	/** Root component */
 	private QComponent qcRoot;
-	
+
 	/** Map to speed finding of components */
 	private Map<String,QComponent> mFoundIDs=new HashMap<String,QComponent>();
-	
+
 	/** CSS for question */
 	private String sCSS=null;
-	
+
 	/** JS for question */
 	private String sJS=null;
 
 	/** List of group names (String) */
 	private List<String> lGroups=new LinkedList<String>();
-	
+
 	/** Map of sequence numbers associated with elements (Element -> Integer) */
 	private Map<Element,Integer> mSequences=new HashMap<Element,Integer>();
-	
-	/** 
+
+	/**
 	 * Constructs based on a given XML document.
 	 * @param sqOwner Owning question
 	 * @param d Document that this maps
 	 * @param qcm Manager with list of components
-	 * @throws OmException 
+	 * @throws OmException
 	 */
 	public QDocument(StandardQuestion sqOwner,Document d,QComponentManager qcm) throws OmException
-	{		
+	{
 		this.qcm=qcm;
 		this.sqOwner=sqOwner;
-		
+
 		// Attach sequence numbers to all elements
 		fillSequences(d.getDocumentElement(),0);
-		
+
 		// Build component tree
 		qcRoot=new RootComponent();
 		qcRoot.init(null,this,d.getDocumentElement(),true);
 		mSequences=null;
-		
+
 		if(sqOwner.isPlainMode())
 		{
 			sCSS=""; sJS="";
@@ -114,19 +114,19 @@ public class QDocument
 			for(Iterator i=lAll.iterator();i.hasNext();)
 			{
 				QComponent qc=(QComponent)i.next();
-				boolean bFirst=!sClassesDone.contains(qc.getClass());			
+				boolean bFirst=!sClassesDone.contains(qc.getClass());
 				if(bFirst) sClassesDone.add(qc.getClass());
-				String sThis=qc.getCSS(bFirst);			
+				String sThis=qc.getCSS(bFirst);
 				if(sThis!=null) sbCSS.append(sThis);
 				sThis=qc.getJS(bFirst);
-				if(sThis!=null) sbJS.append(sThis);			
+				if(sThis!=null) sbJS.append(sThis);
 			}
 			sCSS=sbCSS.toString();
 			sJS=sbJS.toString();
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Attaches a sequence number to each XML element in the document, for
 	 * use in generating IDs that change only based on XML changes, not
 	 * on program code changes.
@@ -143,7 +143,7 @@ public class QDocument
 		}
 		return iIndex;
 	}
-	
+
 	/**
 	 * Obtain unique sequence for given element from document. Valid only during
 	 * component init.
@@ -154,14 +154,14 @@ public class QDocument
 	{
 		return mSequences.get(e);
 	}
-	
+
 	/**
 	 * Unrolls the tree into a list of all components.
 	 * @param qcParent Parent component
 	 * @param c Collection that will receive parent and all its children
 	 * @throws OmDeveloperException
 	 */
-	private void unrollTree(QComponent qcParent,Collection<QComponent> c) 
+	private void unrollTree(QComponent qcParent,Collection<QComponent> c)
 		throws OmDeveloperException
 	{
 		c.add(qcParent);
@@ -171,13 +171,13 @@ public class QDocument
 			unrollTree(acChildren[iChild],c);
 		}
 	}
-	
+
 	/**
 	 * Adds all components within the parent tag to the list of children. Does
-	 * not include text nodes.  
+	 * not include text nodes.
 	 * @param qcParent Parent component that will own newly-created children
 	 * @param eParent Parent XML element
-	 * @throws OmException Any errors creating components 
+	 * @throws OmException Any errors creating components
 	 */
 	public void buildInside(QComponent qcParent,Element eParent) throws OmException
 	{
@@ -189,13 +189,13 @@ public class QDocument
 			}
 		}
 	}
-	
+
 	/**
-	 * Adds all components within the parent tag to the list of children, 
-	 * including text nodes.  
+	 * Adds all components within the parent tag to the list of children,
+	 * including text nodes.
 	 * @param qcParent Parent component that will own newly-created children
 	 * @param eParent Parent XML element
-	 * @throws OmException Any errors creating components 
+	 * @throws OmException Any errors creating components
 	 */
 	public void buildInsideWithText(QComponent qcParent,Element eParent) throws OmException
 	{
@@ -217,7 +217,7 @@ public class QDocument
 				// there are multiple nodes for one string (e.g. if there's CDATA
 				// in the middle or something)
 				sbText.append(n.getNodeValue());
-			}			
+			}
 		}
 		if(sbText.length()>0)
 		{
@@ -225,14 +225,14 @@ public class QDocument
 			sbText.setLength(0);
 		}
 	}
-	
+
 	/**
 	 * Adds all components within the parent tag to the list of children,
-	 * except ignoring all tags named.  
+	 * except ignoring all tags named.
 	 * @param qcParent Parent component that will own newly-created children
 	 * @param eParent Parent XML element
 	 * @param asExcludeTags Tags to exclude
-	 * @throws OmException Any errors creating components 
+	 * @throws OmException Any errors creating components
 	 */
 	public void buildInsideExcept(QComponent qcParent,Element eParent,
 		String[] asExcludeTags) throws OmException
@@ -244,7 +244,7 @@ public class QDocument
 				Element e=(Element)n;
 				for(int i=0;i<asExcludeTags.length;i++)
 				{
-					if(e.getTagName().equals(asExcludeTags[i])) 
+					if(e.getTagName().equals(asExcludeTags[i]))
 						continue nodeloop;
 				}
 				qcParent.addChild(build(qcParent,e,null));
@@ -260,24 +260,24 @@ public class QDocument
 	 *   being created; set it to override the component name if the
 	 *   component is implicit (has no parent element)
 	 * @return QComponent that was created
-	 * @throws OmException Any errors creating component 
+	 * @throws OmException Any errors creating component
 	 */
 	public QComponent build(QComponent qcParent,Element e,String sTagName) throws OmException
 	{
 		// Create component
 		QComponent qc=qcm.create(sTagName!=null ? sTagName : e.getTagName());
-		
+
 		// Initialise it (this will recursively call build/buildInside again
 		// as necessary)
 		qc.init(qcParent,this,e,sTagName!=null);
-		
+
 		return qc;
 	}
-	
+
 	/**
-	 * Searches the tree for the component with given ID. 
+	 * Searches the tree for the component with given ID.
 	 * <p>
-	 * Works for both user-set IDs and self-assigned ones (though question 
+	 * Works for both user-set IDs and self-assigned ones (though question
 	 * authors probably shouldn't rely on the latter).
 	 * <p>
 	 * This is efficient so call it lots if you want to; don't bother caching
@@ -289,9 +289,9 @@ public class QDocument
 	public QComponent find(String sID) throws OmDeveloperException
 	{
 		// If it's in the cache, just return it
-		if(mFoundIDs.containsKey(sID)) 
+		if(mFoundIDs.containsKey(sID))
 			return mFoundIDs.get(sID);
-		
+
 		// Look through tree for it
 		QComponent qcFound=qcRoot.findSubComponent(sID);
 		if(qcFound!=null)
@@ -299,10 +299,10 @@ public class QDocument
 			mFoundIDs.put(sID,qcFound);
 			return qcFound;
 		}
-		
+
 		throw new OmDeveloperException("Can't find component id: "+sID);
 	}
-	
+
 	/**
 	 * Searches the tree for components of a given class. Returns an array of
 	 * the components, in document order. You may cast the array to one of the
@@ -317,7 +317,7 @@ public class QDocument
 		qcRoot.listSubComponents(c,l);
 		return l;
 	}
-	
+
 	/**
 	 * Renders question components into output.
 	 * @param r Output for rendering
@@ -328,11 +328,11 @@ public class QDocument
 	{
 		// Create blank QContent
 		QContent qc=new QContent(XML.createDocument());
-		
+
 		boolean bPlain=getQuestion().isPlainMode();
-		
+
 		// First time round, we set the CSS and JS - except in plain mode which doesn't have 'em
-		if(bInit && !bPlain) 
+		if(bInit && !bPlain)
 		{
 			r.setCSS(sCSS);
 			try
@@ -342,51 +342,51 @@ public class QDocument
 			catch(UnsupportedEncodingException e)
 			{
 				throw new OmUnexpectedException(e);
-			}			
+			}
 		}
 
 		// Actually get output from all components
 		qcRoot.produceOutput(qc,bInit,bPlain);
-		
+
 		// Set output in QContent to the Rendering object
-		r.setXHTML(qc.getXHTML());		
+		r.setXHTML(qc.getXHTML());
 		Resource[] ar=qc.getResources();
 	  for(int iResource=0;iResource<ar.length;iResource++)
 		{
 			r.addResource(ar[iResource]);
 		}
 	}
-	
+
 	/**
 	 * Handles a received action, calling into the given question if specified.
-	 * @param ap Parameters of received action 
+	 * @param ap Parameters of received action
 	 * @throws OmException If there's any problem
 	 */
 	public void action(ActionParams ap) throws OmException
-	{		
+	{
 		String[] asParams=ap.getParameterList();
-		
+
 		// Send the specific value sets to their components
 		for(int iParam=0;iParam<asParams.length;iParam++)
 		{
 			if(asParams[iParam].startsWith(VALUE_PREFIX))
 				find(asParams[iParam].substring(VALUE_PREFIX.length())).formSetValue(
-					ap.getParameter(asParams[iParam]),ap);			
+					ap.getParameter(asParams[iParam]),ap);
 		}
-		
+
 		// Tell all components that values were set (this allows components that
 		// either receive something or nothing, like checkboxes, to work)
 		informFormValuesSet(qcRoot,ap);
-		
+
 		// Pass on action calls
 		for(int iParam=0;iParam<asParams.length;iParam++)
 		{
 			if(asParams[iParam].startsWith(ACTION_PREFIX))
 				find(asParams[iParam].substring(ACTION_PREFIX.length())).formCallAction(
-					ap.getParameter(asParams[iParam]),ap);			
+					ap.getParameter(asParams[iParam]),ap);
 		}
 	}
-	
+
 	/**
 	 * Calls the formAllValuesSet() method on all components recursively.
 	 * @param qc Root component to begin with
@@ -395,28 +395,28 @@ public class QDocument
 	private void informFormValuesSet(QComponent qc,ActionParams ap) throws OmException
 	{
 		qc.formAllValuesSet(ap);
-		
+
 		QComponent[] acChildren=qc.getComponentChildren();
 		for(int iChild=0;iChild<acChildren.length;iChild++)
 		{
 			informFormValuesSet(acChildren[iChild],ap);
-		}		
+		}
 	}
-	
+
 	/** @return Question that owns this document */
 	public StandardQuestion getQuestion()
 	{
 		return sqOwner;
 	}
-	
-	/** 
+
+	/**
 	 * Informs document that a component (and any children it may have) has
 	 * been removed.
 	 * @param qc Removed component
 	 */
 	public void informRemoved(QComponent qc)
 	{
-		// Remove any entries from the cached ID map 
+		// Remove any entries from the cached ID map
 		for(Iterator i=mFoundIDs.entrySet().iterator();i.hasNext();)
 		{
 			Map.Entry me=(Map.Entry)i.next();
@@ -424,8 +424,8 @@ public class QDocument
 			{
 				i.remove();
 			}
-		}		
-		
+		}
+
 		// Recurse to children
 		QComponent[] aqc=qc.getComponentChildren();
 		for(int i=0;i<aqc.length;i++)
@@ -433,7 +433,7 @@ public class QDocument
 			informRemoved(aqc[i]);
 		}
 	}
-	
+
 	/**
 	 * Given a 'group' name, turns it into a number. The first group is assigned
 	 * 0, second is assigned 1, etc.

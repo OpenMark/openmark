@@ -20,15 +20,15 @@ package om;
 /** Class used for parts of code that aren't implemented */
 public class OmTodoException extends OmException
 {
-	/** The to-do exception needs no parameters */ 
+	/** The to-do exception needs no parameters */
 	public OmTodoException()
 	{
 		super("TODO: attempt to use area of code that hasn't been written");
 	}
-	
-	/** 
-	 * @param sText Text of exception (included after a to-do indicator) 
-	 */ 
+
+	/**
+	 * @param sText Text of exception (included after a to-do indicator)
+	 */
 	public OmTodoException(String sText)
 	{
 		super("TODO: "+sText);

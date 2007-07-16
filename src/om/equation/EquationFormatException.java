@@ -28,17 +28,17 @@ public class EquationFormatException extends OmDeveloperException
 		super("Error in <equation> format:\n"+
 			i+" - "+sError);
 	}
-	
+
 	private static String displayException(ParseException pe,String sEquation)
 	{
 		// Find error location
-		int iColumn=-1,iLine=-1;		
+		int iColumn=-1,iLine=-1;
 		if(pe.currentToken!=null && pe.currentToken.next!=null)
 		{
 			iColumn=pe.currentToken.next.beginColumn;
 			iLine=pe.currentToken.next.beginLine;
 		}
-		
+
 		String sReturn="Error in <equation>:\n\n"+sEquation+"\n";
 		if(iLine==1 && iColumn>=1 && iColumn<=sEquation.length());
 		{
@@ -46,11 +46,11 @@ public class EquationFormatException extends OmDeveloperException
 			  sReturn+=" ";
 			sReturn+="^\n";
 		}
-		
+
  		sReturn+="\n"+pe.getMessage();
 		return sReturn;
 	}
-	
+
 	EquationFormatException(ParseException pe,String sEquation)
 	{
 		super(displayException(pe,sEquation));

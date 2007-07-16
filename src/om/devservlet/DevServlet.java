@@ -37,8 +37,8 @@ import util.misc.*;
 import util.xml.XHTML;
 import util.xml.XML;
 
-/** 
- * Servlet used to build and test questions on a developer machine. Not suitable 
+/**
+ * Servlet used to build and test questions on a developer machine. Not suitable
  * for any production or public demonstration use. Only supports one instance
  * of one question at a time.
  */
@@ -47,22 +47,22 @@ public class DevServlet extends HttpServlet
 	private final static int NUM_EXTRA_PACKAGE_SLOTS = 3;
 	/** In-progress question (null if none) */
 	private Question qInProgress=null;
-	
+
 	/** Classloader for in-progress question */
 	private ClosableClassLoader cclInProgress=null;
-	
+
 	/** ID of in-progress question */
 	private String sInProgressID=null;
 
 	/** Map of String (filename) -> Resource */
 	private Map<String,Resource> mResources=new HashMap<String,Resource>();
-	
+
 	/** CSS */
 	private String sCSS=null;
-	
+
 	/** List of question definitions */
 	private QuestionDefinitions qdQuestions;
-	
+
 	/** Clear/reset question data */
 	private void resetQuestion()
 	{
@@ -78,7 +78,7 @@ public class DevServlet extends HttpServlet
 				// Ignore errors on close
 			}
 			mResources.clear();
-			
+
 			// Not all questions are laoded using ClosableClassLoaders; some are.
 			// This needs more examination to figure it out.
 			cclInProgress.close();
@@ -88,7 +88,7 @@ public class DevServlet extends HttpServlet
 			sCSS=null;
 		}
 	}
-	
+
 	@Override
 	public void init() throws ServletException
 	{
@@ -105,7 +105,7 @@ public class DevServlet extends HttpServlet
 				"headless mode. Add the following option to the Java command line that " +
 				"launches it: -Djava.awt.headless=true");
 		}
-		
+
 		try
 		{
 			qdQuestions=new QuestionDefinitions(getServletContext());
@@ -113,7 +113,7 @@ public class DevServlet extends HttpServlet
 		catch(OmException oe)
 		{
 			throw new ServletException(oe);
-		}		
+		}
 	}
 
 	@Override
@@ -122,18 +122,18 @@ public class DevServlet extends HttpServlet
 	{
 		handle(false,request,response);
 	}
-	
+
 	@Override
 	protected void doPost(HttpServletRequest request,HttpServletResponse response)
 		throws ServletException,IOException
 	{
 		handle(true,request,response);
 	}
-	
+
 	private void sendError(HttpServletRequest request,HttpServletResponse response,
 		int iCode,
 		String sTitle,
-		String sMessage, Throwable tException) 
+		String sMessage, Throwable tException)
 	{
 		try
 		{
@@ -154,7 +154,7 @@ public class DevServlet extends HttpServlet
 						: "")+
 				"<a href='../../'>[List]</a> "+
 				"</p>"+
-				(tException!=null ? 
+				(tException!=null ?
 					"<pre>"+XHTML.escape(Exceptions.getString(
 						tException,new String[]{"om"}),XHTML.ESCAPE_TEXT)+"</pre>": "")+
 				"</body>" +
@@ -166,7 +166,7 @@ public class DevServlet extends HttpServlet
 			// Ignore exception, they must have closed browser or something
 		}
 	}
-	
+
 	private void handleFront(boolean bPost,HttpServletRequest request,HttpServletResponse response)
 	  throws Exception
 	{
@@ -188,16 +188,16 @@ public class DevServlet extends HttpServlet
 				"  <package>"+request.getParameter("package")+"</package>\n" +
 				extraPackages +
 				"</questiondefinition>\n");
-			w.close();	
+			w.close();
 			response.sendRedirect(".");
 		}
-		
+
 		QuestionDefinition[] aqd=qdQuestions.getQuestionDefinitions();
 
 		String extraPackagesHtml = "";
 		for (int i = 0; i<NUM_EXTRA_PACKAGE_SLOTS; ++i) {
 			extraPackagesHtml += "<input type='text' name='extra" + i + "' size='65' value='" +
-				((aqd.length>0 && aqd[aqd.length-1].getAdditionalPackageRoots().length>i) ? 
+				((aqd.length>0 && aqd[aqd.length-1].getAdditionalPackageRoots().length>i) ?
 					aqd[aqd.length-1].getAdditionalPackageRoots()[i] : "") + "'/><br />";
 		}
 
@@ -232,7 +232,7 @@ public class DevServlet extends HttpServlet
 				((aqd.length>0) ? aqd[aqd.length-1].getPackage().replaceAll("\\.[^.]$",".") : "")+
 				"'/></span></div>"+
 			"<div><span>Source tree</span><span class='fields'><input type='text' name='source' size='65' value='" +
-				((aqd.length>0) ? aqd[aqd.length-1].getSourceFolder().getAbsolutePath() : "")+ 
+				((aqd.length>0) ? aqd[aqd.length-1].getSourceFolder().getAbsolutePath() : "")+
 				"'/></span></div>"+
 			"<div><span>Extra package (optional)</span><span class='fields'>" + extraPackagesHtml + "</span></div>"+
 			"<div><input type='submit' name='action' id='submit' value='Create'/></div>"+
@@ -241,13 +241,13 @@ public class DevServlet extends HttpServlet
 			"</form>"+
 			"</body>"+
 			"</xhtml>");
-		
+
 		// Find the root element and chuck in a line for each question
 		Element eParent=XML.find(d,"id","questions");
 		for(int iQuestion=0;iQuestion<aqd.length;iQuestion++)
 		{
 			String encodedName = URLEncoder.encode(aqd[iQuestion].getID(), "UTF-8");
-			Element 
+			Element
 				eQ=XML.createChild(eParent,"li");
 			XML.createText(eQ," "+aqd[iQuestion].getID()+" ");
 			if(aqd[iQuestion].hasJar())
@@ -267,30 +267,30 @@ public class DevServlet extends HttpServlet
 			XML.createText(eRemove,"(Remove)");
 		}
 
-		XHTML.output(d,request,response,"en");		
+		XHTML.output(d,request,response,"en");
 	}
-	
+
 	private void handleBuild(String sRemainingPath,
 		HttpServletRequest request,HttpServletResponse response) throws Exception
 	{
 		resetQuestion();
-		
+
 		String sQuestion=sRemainingPath.replaceAll("^([^/]*)/?.*$","$1");
 		String sAfter=sRemainingPath.replaceAll("^[^/]*/?(.*)$","$1");
-		
+
 		if(!sAfter.equals(""))
 		{
 			sendError(request,response,
 				HttpServletResponse.SC_NOT_FOUND,"Not found","Don't know how to handle request: "+sRemainingPath, null);
 			return;
 		}
-		
+
 		response.setContentType("text/html");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter pw=response.getWriter();
 		boolean bSuccess=qdQuestions.getQuestionDefinition(sQuestion).build(pw);
 		if(bSuccess)
-		{			
+		{
 			pw.println(
 				"<script type='text/javascript'>\n" +
 				"var re=/^(.*)\\/build\\/(.*)$/;\n"+
@@ -305,13 +305,13 @@ public class DevServlet extends HttpServlet
 		pw.println("</body></html>");
 		pw.close();
 	}
-	
+
 	private void handleRemove(String sRemainingPath,
 			HttpServletRequest request,HttpServletResponse response) throws Exception
 	{
 		String sQuestion=sRemainingPath.replaceAll("^([^/]*)/?.*$","$1");
 		String sAfter=sRemainingPath.replaceAll("^[^/]*/?(.*)$","$1");
-		
+
 		if(!sAfter.equals(""))
 		{
 			sendError(request,response,
@@ -340,7 +340,7 @@ public class DevServlet extends HttpServlet
 	}
 
 	private InitParams ipInProgress;
-	
+
 	private void handleRun(boolean bPost,String sRemainingPath,
 		HttpServletRequest request,HttpServletResponse response) throws Exception
 	{
@@ -363,7 +363,7 @@ public class DevServlet extends HttpServlet
 			for(int i=0;i<afExisting.length;i++)
 			{
 				if(afExisting[i].isFile())
-					afExisting[i].delete();				
+					afExisting[i].delete();
 			}
 			File fResources=new File(fSave,"resources");
 			if(!fResources.exists()) fResources.mkdir();
@@ -371,14 +371,14 @@ public class DevServlet extends HttpServlet
 			for(int i=0;i<afExisting.length;i++)
 			{
 				if(afExisting[i].isFile())
-					afExisting[i].delete();				
+					afExisting[i].delete();
 			}
-			
-			// Save last xhtml			
+
+			// Save last xhtml
 			FileOutputStream fos=new FileOutputStream(new File(fSave,"question.html"));
 			fos.write(sLastXHTML.getBytes("UTF-8"));
 			fos.close();
-			
+
 			// Save CSS
 			if(sCSS!=null)
 			{
@@ -386,7 +386,7 @@ public class DevServlet extends HttpServlet
 				fos.write(sCSS.getBytes("UTF-8"));
 				fos.close();
 			}
-			
+
 			// Save resources
 			for(Iterator i=mResources.entrySet().iterator();i.hasNext();)
 			{
@@ -394,8 +394,8 @@ public class DevServlet extends HttpServlet
 				fos=new FileOutputStream(new File(fResources,(String)me.getKey()));
 				fos.write( ((Resource) me.getValue()).getContent());
 				fos.close();
-			}			
-			
+			}
+
 			response.setContentType("text/plain");
 			PrintWriter pw=response.getWriter();
 			pw.println(
@@ -404,7 +404,7 @@ public class DevServlet extends HttpServlet
 			pw.close();
 			return;
 		}
-		
+
 		// Different question
 		if(!bPost)
 		{
@@ -414,7 +414,7 @@ public class DevServlet extends HttpServlet
 				iVariant=Integer.parseInt(sAfter.substring(1));
 				sAfter="";
 			}
-			if(sAfter.equals("")) 
+			if(sAfter.equals(""))
 			{
 				resetQuestion();
 				QuestionDefinition qd=qdQuestions.getQuestionDefinition(sQuestion);
@@ -422,27 +422,27 @@ public class DevServlet extends HttpServlet
 				qInProgress=rr.q;
 				cclInProgress=rr.ccl;
 				sInProgressID=sQuestion;
-				
+
 				String sAccess=request.getParameter("access");
 				boolean bPlain="plain".equals(sAccess);
 				double dZoom="big".equals(sAccess) ? 2.0 : 1.0;
 				String sFG="bw".equals(sAccess) ? "#00ff00" : null;
 				String sBG="bw".equals(sAccess) ? "#000000" : null;
-				
+
 				ipInProgress=new InitParams(System.currentTimeMillis(),
 					sFG,sBG,dZoom,bPlain,cclInProgress,iVariant);
 				Rendering r=qInProgress.init(rr.dMeta,ipInProgress);
-				
+
 				// Add resources
 				Resource[] arResources=r.getResources();
 				for(int i=0;i<arResources.length;i++)
 				{
 					mResources.put(arResources[i].getFilename(),arResources[i]);
 				}
-				
-				// Set style					
+
+				// Set style
 				sCSS=r.getCSS();
-				
+
 				// Serve XHTML
 				serveXHTML(sQuestion,r,request,response,qInProgress);
 			}
@@ -493,7 +493,7 @@ public class DevServlet extends HttpServlet
 					"POST not allowed","You cannot POST to any URL other than the question.", null);
 				return;
 			}
-		  
+
 		  ActionParams ap=new ActionParams();
 		  for(Enumeration e=request.getParameterNames();e.hasMoreElements();)
 		  {
@@ -501,9 +501,9 @@ public class DevServlet extends HttpServlet
 		  	ap.setParameter(sName,request.getParameter(sName));
 		  }
 		  if(ipInProgress.isPlainMode()) ap.setParameter("plain","yes");
-		  
+
 		  ActionRendering ar=qInProgress.action(ap);
-		  
+
 		  if(ar.isSessionEnd())
 		  {
 				response.setContentType("text/html");
@@ -521,10 +521,10 @@ public class DevServlet extends HttpServlet
 				{
 					mResources.put(arResources[i].getFilename(),arResources[i]);
 				}
-				
-				// Set style					
+
+				// Set style
 				if(ar.getCSS()!=null) sCSS=ar.getCSS();
-				
+
 				// Serve XHTML
 				serveXHTML(sQuestion,ar,request,response,qInProgress);
 		  }
@@ -533,15 +533,15 @@ public class DevServlet extends HttpServlet
 
 	byte[] abTempCSS=null;
 
-	
+
 	private void handle(boolean bPost,
-		HttpServletRequest request,HttpServletResponse response) 
+		HttpServletRequest request,HttpServletResponse response)
 	{
 		try
 		{
 			// Vitally important, otherwise any input with unicode gets screwed up
 			request.setCharacterEncoding("UTF-8");
-			
+
 			String sPath=request.getPathInfo();
 			if(sPath==null || sPath.equals("") || sPath.equals("/"))
 			{
@@ -565,7 +565,7 @@ public class DevServlet extends HttpServlet
 			else
 			{
 				sendError(request,response,HttpServletResponse.SC_NOT_FOUND,
-					"Not found","The URL you requested is not provided by this server.", null);				
+					"Not found","The URL you requested is not provided by this server.", null);
 			}
 		}
 		catch(Throwable t)
@@ -574,10 +574,10 @@ public class DevServlet extends HttpServlet
 				HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"Error handling request","An exception occurred.", t);
 		}
 	}
-	
+
 	/** Remember last xhtml sent so we can save it */
 	private String sLastXHTML;
-	
+
 	private void serveXHTML(String sQuestion,Rendering r,
 		HttpServletRequest request,HttpServletResponse response,Question q)
 	  throws IOException
@@ -588,7 +588,7 @@ public class DevServlet extends HttpServlet
 			"<head>" +
 			"<title>Question: "+sQuestion+"</title>"+
 			"<link rel='stylesheet' href='style.css' type='text/css'/>"+
-			((new File("c:/hack.css")).exists() 
+			((new File("c:/hack.css")).exists()
 				? "<link rel='stylesheet' href='file:///c:/hack.css' type='text/css'/>"
 				: "")+
 			"<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>"+
@@ -602,7 +602,7 @@ public class DevServlet extends HttpServlet
   		  	  "<a href='./v3'>3</a> <a href='./v4'>4</a> " +
 			  	"<a href='./?access=plain'>Plain</a> <a href='./?access=bw'>Colour</a> " +
 			  	"<a href='./?access=big'>Big</a>" +
-			  	
+
 			  	"</small>] " +
 			  "[<a href='../../build/"+sQuestion+"/'>Rebuild</a>] " +
 			  "[<a href='../../'>List</a>] <small>[<a href='./?save'>Save</a>]</small>" +
@@ -610,12 +610,12 @@ public class DevServlet extends HttpServlet
 			"<form method='post' action='./' id='question' autocomplete='off' class='om'/>"+
 			"<pre id='results' style='clear:both'/>"+
 			"<pre id='log'/>"+
-			((new File("c:/hack.js")).exists() 
+			((new File("c:/hack.js")).exists()
 				? "<script type='text/javascript' src='file:///c:/hack.js'/>"
 				: "")+
 			"</body>"+
 			"</xhtml>");
-		
+
 		// Get question top-level element and clone it into new document
 		Element eQuestion=(Element)d.importNode(r.getXHTML(),true);
 		Element eDiv=XML.find(d,"id","question");
@@ -625,7 +625,7 @@ public class DevServlet extends HttpServlet
 			eDiv.setAttribute("style","width:"+Math.round(dZoom * 600)+"px;");
 		}
 		eDiv.appendChild(eQuestion);
-		
+
 		StringBuffer sbResults=new StringBuffer();
 		if(r instanceof ActionRendering)
 		{
@@ -649,21 +649,21 @@ public class DevServlet extends HttpServlet
 				sbResults.append(
 					"\nActions\n-------\n\n"+XHTML.escape(rResults.getActionSummary()==null?"":rResults.getActionSummary(),XHTML.ESCAPE_TEXT));
 				XML.createText(XML.find(d,"id","results"),sbResults.toString());
-			}			
+			}
 		}
-		
+
 		if(q instanceof StandardQuestion)
 		{
-			StandardQuestion sq=(StandardQuestion)q;			
+			StandardQuestion sq=(StandardQuestion)q;
 			XML.createText(XML.find(d,"id","log"),sq.eatLog());
 		}
-		
+
 		// Fix up the replacement variables
 		Map<String,String> mReplace=new HashMap<String,String>(getLabelReplaceMap());
 		mReplace.put("RESOURCES","resources");
 		mReplace.put("IDPREFIX","");
 		XML.replaceTokens(eQuestion,mReplace);
-	
+
 		// Update document root
 		d.getDocumentElement().setAttribute("class",UserAgent.getBrowserString(request));
 
@@ -671,14 +671,14 @@ public class DevServlet extends HttpServlet
 		StringWriter sw=new StringWriter();
 		XHTML.saveFullDocument(d,sw,false,"en");
 		sLastXHTML=sw.toString();
-				
+
 		// Whew! Now send to user
-		XHTML.output(d,request,response,"en");		
+		XHTML.output(d,request,response,"en");
 	}
-	
+
 	/** Cache label replacement (Map of String (labelset id) -> Map ) */
 	private Map<String,Map<String,String> > mLabelReplace=new HashMap<String,Map<String, String> >();
-	
+
 	/**
 	 * Returns the map of label replacements appropriate for the current session.
 	 * @param us Session
@@ -688,11 +688,11 @@ public class DevServlet extends HttpServlet
 	private Map<String, String> getLabelReplaceMap() throws IOException
 	{
 		String sKey="!default";
-		
+
 		// Get from cache
 		Map<String, String> mLabels=mLabelReplace.get(sKey);
 		if(mLabels!=null) return mLabels;
-		
+
 		// Load from file
 		Map<String, String> m=new HashMap<String, String>();
 		File f=new File(getServletContext().getRealPath("WEB-INF/labels/"+sKey+".xml"));
@@ -706,10 +706,10 @@ public class DevServlet extends HttpServlet
 					XML.getRequiredAttribute(aeLabels[i],"id"),
 					XML.getText(aeLabels[i]));
 		}
-		
+
 		// Cache and return
 		mLabelReplace.put(sKey,m);
 		return m;
 	}
-	
+
 }

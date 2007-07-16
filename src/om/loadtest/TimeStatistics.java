@@ -24,10 +24,10 @@ public class TimeStatistics
 {
 	/** Size of array */
 	private int iSize=0;
-	
+
 	/** Array of times */
 	private int[] aiTimes=new int[1024];
-	
+
 	/**
 	 * Adds a new value.
 	 * @param iTime Time (milliseconds)
@@ -37,12 +37,12 @@ public class TimeStatistics
 		if(iSize>=aiTimes.length)
 		{
 			int[] aiNew=new int[aiTimes.length*2];
-			System.arraycopy(aiTimes,0,aiNew,0,aiTimes.length);				
+			System.arraycopy(aiTimes,0,aiNew,0,aiTimes.length);
 			aiTimes=aiNew;
 		}
 		aiTimes[iSize++]=iTime;
 	}
-	
+
 	/**
 	 * Adds a new value.
 	 * @param lTime Time (milliseconds)
@@ -51,11 +51,11 @@ public class TimeStatistics
 	{
 		add((int)lTime);
 	}
-	
-	/** 
+
+	/**
 	 * @return An array of 21 values. value 0 is minimum; 20 is maximum;
 	 *   and 10 is the median. Others are at corresponding 5% points.
-	 */ 
+	 */
 	public synchronized int[] getMedians()
 	{
 		Arrays.sort(aiTimes,0,iSize);
@@ -63,23 +63,23 @@ public class TimeStatistics
 		int[] aiResults=new int[PORTIONS+1];
 		for(int i=0;i<PORTIONS;i++)
 		{
-			aiResults[i]=aiTimes[(iSize*i) / PORTIONS];				
+			aiResults[i]=aiTimes[(iSize*i) / PORTIONS];
 		}
 		aiResults[PORTIONS]=aiTimes[iSize-1];
 		return aiResults;
 	}
-	
+
 	/** @return Mean time */
 	public synchronized double getMean()
 	{
 		double dTotal=0.0;
-		for(int i=0;i<iSize;i++)				
+		for(int i=0;i<iSize;i++)
 		{
 			dTotal+=aiTimes[i];
 		}
 		return dTotal/iSize;
 	}
-	
+
 	/** @return Tab-separated: mean followed by 20 medians */
 	@Override
 	public String toString()

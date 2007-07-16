@@ -35,19 +35,19 @@ public abstract class OmVersion
 			return "Err|0000-00-00 00:00:00";
 		}
 	}
-	
+
 	/** @return Version identifier for this version of the system, e.g. "M12" or "1.0" */
 	public static String getVersion()
 	{
 		return loadVersion().split("\\|")[0];
 	}
-	
+
 	/** @return Build date for this version of the system, e.g. "2005-10-06 14:45:22" */
 	public static String getBuildDate()
 	{
 		return loadVersion().split("\\|")[1];
 	}
-	
+
 	/**
 	 * @param v1 The first version.
 	 * @param v2 The second version.

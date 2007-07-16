@@ -24,8 +24,8 @@ import om.stdquestion.QContent;
 
 import org.w3c.dom.Element;
 
-/** 
-Emphasises the contained text (by default rendered as bold). 
+/**
+Emphasises the contained text (by default rendered as bold).
 <h2>XML usage</h2>
 &lt;emphasis type="italic"&gt;...&lt;/emphasis&gt;
 <h2>Properties</h2>
@@ -40,19 +40,19 @@ Emphasises the contained text (by default rendered as bold).
 public class EmphasisComponent extends QComponent
 {
 
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "emphasis";
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
@@ -60,10 +60,10 @@ public class EmphasisComponent extends QComponent
 		eEm.setAttribute("class",getString(PROPERTY_TYPE));
 		qc.addInlineXHTML(eEm);
 		qc.setParent(eEm);
-		
+
 		produceChildOutput(qc,bInit,bPlain);
-		
-		qc.unsetParent();		
+
+		qc.unsetParent();
 	}
 	/** Specifies style of emphasis */
 	public final static String PROPERTY_TYPE="type";

@@ -39,11 +39,11 @@ public class TestDeployment
 {
 	// The folder the deploy file came from.
 	private File testBank;
-	
+
 	private String sDefinition,sQuestion;
 	private Document dDeploy;
 	private Element eDates,eAccess;
-	
+
 	/** Batch number (null if test is not set up for CMA transfer) */
 	private String sBatch=null;
 	/** Course code (null if course is not set up for CMA) */
@@ -52,7 +52,7 @@ public class TestDeployment
 	private String[] asAssignmentNum;
 	/** Array of question counts in each assignment (null if test not set up for CMA) */
 	private int[] aiAssignmentCount;
-	
+
 	/** Type of test */
 	private int iType;
 	/** Test is not assessed (default) */
@@ -61,20 +61,20 @@ public class TestDeployment
 	public final static int TYPE_ASSESSED_REQUIRED=2;
 	/** Test is assessed but students have the option to defer etc. */
 	public final static int TYPE_ASSESSED_OPTIONAL=3;
-	
+
 	/** True if the test should send out confirm emails */
 	private boolean bSubmitEmail;
-	
+
 	/**
 	 * Constructs test definition and checks format.
 	 * @param f File to use
 	 * @throws OmException Failure loading file or parsing XML
 	 * @throws OmFormatException Anything wrong with the specific format
 	 */
-	public TestDeployment(File f) throws OmException 
-	{		
+	public TestDeployment(File f) throws OmException
+	{
 		String sErrorIdentifier=f.getName();
-		
+
 		try
 		{
 			// Parse XML
@@ -84,21 +84,21 @@ public class TestDeployment
 		{
 			throw new OmException("Error loading/parsing "+sErrorIdentifier,ioe);
 		}
-		
+
 		testBank = f.getParentFile();
-		
+
 		try
 		{
-			// Get basic stuff from the XML so we don't need to throw exceptions 
+			// Get basic stuff from the XML so we don't need to throw exceptions
 			// later if it's absent
 			Element eRoot=dDeploy.getDocumentElement();
 			if(XML.hasChild(eRoot,"question"))
-				sQuestion=XML.getText(eRoot,"question");			
+				sQuestion=XML.getText(eRoot,"question");
 			else
-				sDefinition=XML.getText(eRoot,"definition");			
+				sDefinition=XML.getText(eRoot,"definition");
 			eDates=XML.getChild(eRoot,"dates");
 			eAccess=XML.getChild(eRoot,"access");
-			
+
 			if(XML.hasChild(eRoot,"assessed"))
 			{
 				Element eAssessed=XML.getChild(eRoot,"assessed");
@@ -111,13 +111,13 @@ public class TestDeployment
 			{
 				iType=TYPE_NOTASSESSED;
 			}
-			
+
 			if(XML.hasChild(eRoot,"email"))
 			{
 				Element eEmail=XML.getChild(eRoot,"email");
 				bSubmitEmail="yes".equals(eEmail.getAttribute("submit"));
 			}
-			
+
 			if(XML.hasChild(eRoot,"cma"))
 			{
 				Element eCMA=XML.getChild(eRoot,"cma");
@@ -138,7 +138,7 @@ public class TestDeployment
 				int iExpectedNext=1;
 				for(int i=0;i<aeAssignments.length;i++)
 				{
-					int 
+					int
 						iFrom=Integer.parseInt(
 							XML.getRequiredAttribute(aeAssignments[i],"from")),
 						iTo=Integer.parseInt(
@@ -165,34 +165,34 @@ public class TestDeployment
 			throw new OmFormatException("Error processing "+sErrorIdentifier,xe);
 		}
 	}
-	
+
 	/** @return One of the TYPE_xx constants */
 	int getType()
 	{
 		return iType;
 	}
-	
+
 	String getDefinition()
 	{
-		if(sDefinition==null) 
+		if(sDefinition==null)
 			throw new OmUnexpectedException("Can't get definition, single only");
 		return sDefinition;
 	}
-	
+
 	String getQuestion()
 	{
-		if(sQuestion==null) 
+		if(sQuestion==null)
 			throw new OmUnexpectedException("Can't get question, test only");
 		return sQuestion;
 	}
-	
+
 	/** @return True if deployment is for use in single-question mode (only) */
 	public boolean isSingleQuestion()
 	{
 		return sQuestion!=null;
 	}
-	
-	
+
+
 	boolean isWorldAccess() throws OmFormatException
 	{
 		try
@@ -208,7 +208,7 @@ public class TestDeployment
 	/**
 	 * Checks whether test is accessible by 'systest' users.
 	 * @return True if it is, false otherwise
-	 * @throws OmFormatException If there's something wrong with the file 
+	 * @throws OmFormatException If there's something wrong with the file
 	 */
 	boolean isSysTestAccess() throws OmFormatException
 	{
@@ -226,13 +226,13 @@ public class TestDeployment
 	 * Checks access to test. (Does not check dates! And don't call this if
 	 * isWorldAccess() returns true.)
 	 * @param ud User details from SAMS
-	 * @return True if a user has access to the test, false otherwise. 
-	 * @throws OmFormatException If there's something wrong with the file 
+	 * @return True if a user has access to the test, false otherwise.
+	 * @throws OmFormatException If there's something wrong with the file
 	 */
 	boolean hasAccess(UserDetails ud) throws OmFormatException
 	{
 		if(ud.isSysTest()) return isSysTestAccess();
-		
+
 		try
 		{
 			Element eParent=XML.getChild(eAccess,"users");
@@ -240,14 +240,14 @@ public class TestDeployment
 			while(true)
 			{
 				if(getAccessTag(ud,eParent) != null) return true;
-				
+
 				// Don't loop if we've done admins or there aren't any
-				if(bAdmins || !XML.hasChild(eAccess,"admins")) 
+				if(bAdmins || !XML.hasChild(eAccess,"admins"))
 					break;
 				bAdmins=true;
 				eParent=XML.getChild(eAccess,"admins");
 			}
-			
+
 			// If none of the authids matched then their name ain't down and they
 			// ain't coming in
 			return false;
@@ -255,12 +255,12 @@ public class TestDeployment
 		catch(XMLException xe)
 		{
 			throw new OmFormatException("Error in test deployment file",xe);
-		}		
+		}
 	}
-	
+
 	/**
 	 * @param ud SAMS login details
-	 * @return True if user has admin access to test 
+	 * @return True if user has admin access to test
 	 * @throws OmFormatException
 	 */
 	boolean isAdmin(UserDetails ud) throws OmFormatException
@@ -279,7 +279,7 @@ public class TestDeployment
 
 	/**
 	 * @param ud SAMS login details
-	 * @return True if user can access reports 
+	 * @return True if user can access reports
 	 * @throws OmFormatException
 	 */
 	boolean allowReports(UserDetails ud) throws OmFormatException
@@ -289,7 +289,7 @@ public class TestDeployment
 		{
 			Element eTag=getAccessTag(ud,XML.getChild(eAccess,"admins"));
 			if(eTag==null) return false;
-			
+
 			return "yes".equals(eTag.getAttribute("reports"));
 		}
 		catch(XMLException e)
@@ -298,14 +298,14 @@ public class TestDeployment
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/**
 	 * Checks access statements under the specified tag to see if they match the
 	 * user.
 	 * @param ud Details of user
 	 * @param eParent Tag
 	 * @return True if user has access via this tag, false otherwise
-	 * @throws OmFormatException If there's something wrong with the file 
+	 * @throws OmFormatException If there's something wrong with the file
 	 */
 	private Element getAccessTag(UserDetails ud,Element eParent) throws OmFormatException
 	{
@@ -315,15 +315,15 @@ public class TestDeployment
 		{
 			Element eOption=aeOptions[iOption];
 			String sTag=eOption.getTagName();
-			if(sTag.equals("oucu") || sTag.equals("username")) 
+			if(sTag.equals("oucu") || sTag.equals("username"))
 				// OUCU is what the OU calls usernames, left in for backwards compatibility
 			{
-				if(XML.getText(eOption).equals(ud.getUsername())) 
+				if(XML.getText(eOption).equals(ud.getUsername()))
 					return eOption;
 			}
 			else if(sTag.equals("authid"))
 			{
-				if(ud.hasAuthID(XML.getText(eOption))) 
+				if(ud.hasAuthID(XML.getText(eOption)))
 					return eOption;
 			}
 			else throw new OmFormatException(
@@ -331,44 +331,44 @@ public class TestDeployment
 		}
 		return null;
 	}
-	
+
 	/** @return True if it's after/on the open date for the test (always returns
-	 *   true if the open date was set to 'yes') */ 
+	 *   true if the open date was set to 'yes') */
 	boolean isAfterOpen() throws OmFormatException
 	{
 		return isAfterDate("open","00:00:00",true,"yes",-1);
 	}
-	
-	/** 
+
+	/**
 	 * @return True if it's after/on the close date for the test, i.e. results
-	 *   don't count any more (always returns false if there is no close date) 
-	 */ 
+	 *   don't count any more (always returns false if there is no close date)
+	 */
 	boolean isAfterClose() throws OmFormatException
 	{
 		return isAfterDate("close","23:59:59",false,null,-1) || isAfterForbid();
 	}
-	
-	/** 
+
+	/**
 	 * @return True if it's after/on the forbid date for the test, i.e. students
-	 *   literally can't take the test any more 
-	 *   (always returns false if there is no forbid date) 
-	 */ 
+	 *   literally can't take the test any more
+	 *   (always returns false if there is no forbid date)
+	 */
 	boolean isAfterForbid() throws OmFormatException
 	{
 		return isAfterDate("forbid","23:59:59",false,null,-1);
 	}
 
-	/** 
+	/**
 	 * After the forbid date there is a 4 hour extension during which you can
 	 * submit the test but can't do anything else.
 	 * @return True if it's after/on the forbid extension
-	 *   (always returns false if there is no forbid date) 
-	 */ 
+	 *   (always returns false if there is no forbid date)
+	 */
 	boolean isAfterForbidExtension() throws OmFormatException
 	{
 		return isAfterDate("forbid","23:59:59",false,null,System.currentTimeMillis()-4*60*60*1000);
 	}
-	
+
 	/**
 	 * @return True if feedback is permitted (always returns true if there is
 	 *   no feedback date)
@@ -377,39 +377,39 @@ public class TestDeployment
 	{
 		return isAfterDate("feedback","00:00:00",true,null,-1);
 	}
-	
+
 	/** Initial date-time pattern match for validation */
 	private static final Pattern DATETIME=Pattern.compile("^[0-9]{4}-[0-9]{2}-[0-9]{2}(?: ([0-9:]+))?$");
 	/** Matches time including seconds */
 	private static final Pattern FULLTIME=Pattern.compile("^[0-9]{2}:[0-9]{2}:[0-9]{2}$");
 	/** Matches time without seconds */
 	private static final Pattern PARTTIME=Pattern.compile("^[0-9]{2}:[0-9]{2}$");
-	
+
 	/**
 	 * @param sTag Date tag to compare
 	 * @param sDefaultTime Default time for that tag if only date is specified
 	 * @param bDefault Default result if entire tag is absent
 	 * @param sDefaultMarker If non-null, require this string in order to use
-	 *   default result (otherwise, will give default result if no date was 
+	 *   default result (otherwise, will give default result if no date was
 	 *   specified)
 	 * @param lNow Time in milliseconds, -1 to use current
 	 * @return True if the date has been passed, false if it hasn't
 	 * @throws OmFormatException
 	 */
 	private boolean isAfterDate(String sTag,String sDefaultTime,boolean bDefault,String sDefaultMarker,
-			long lNow) 
+			long lNow)
 	  throws OmFormatException
 	{
 		if(lNow==-1) lNow=System.currentTimeMillis();
 		// If it's not there, give default
-		if(!XML.hasChild(eDates,sTag)) 
+		if(!XML.hasChild(eDates,sTag))
 		{
 			if(sDefaultMarker==null)
 				return bDefault;
 			else
 				throw new OmFormatException("Error in test deployment file: <dates> <"+sTag+"> is required");
 		}
-		
+
 		try
 		{
 			if(sDefaultMarker!=null && XML.getText(eDates,sTag).equals(sDefaultMarker))
@@ -419,7 +419,7 @@ public class TestDeployment
 		{
 			throw new OmUnexpectedException(e);
 		}
-		
+
 		// So is 'now' after that date?
 		return (new Date(lNow)).after(getActualDate(sTag,sDefaultTime));
 	}
@@ -430,7 +430,7 @@ public class TestDeployment
 	 * @return Java date object
 	 * @throws OmFormatException
 	 */
-	private Date getActualDate(String sTag,String sDefaultTime) 
+	private Date getActualDate(String sTag,String sDefaultTime)
 	  throws OmFormatException
 	{
 		String sDate;
@@ -439,12 +439,12 @@ public class TestDeployment
 			// Get the date text
 			sDate=XML.getText(eDates,sTag);
 		}
-		catch(XMLException xe) 
+		catch(XMLException xe)
 		{
 			// Shouldn't happen because we just checked hasChild
 			throw new OmUnexpectedException(xe);
 		}
-		
+
 		// Check it with regex
 		Matcher m=DATETIME.matcher(sDate);
 		if(!m.matches()) throw new OmFormatException("Invalid date: "+sDate);
@@ -467,7 +467,7 @@ public class TestDeployment
 				throw new OmFormatException("Invalid time: "+sDate);
 			}
 		}
-		
+
 		try
 		{
 			// OK, we now have a full date and time string, let's parse it
@@ -483,10 +483,10 @@ public class TestDeployment
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
-	 * @throws OmFormatException 
+	 * @throws OmFormatException
 	 */
 	public String displayFeedbackDate() throws OmFormatException
 	{
@@ -497,12 +497,12 @@ public class TestDeployment
 	/** @return True if a close date was specified */
 	public boolean hasCloseDate()
 	{
-		return XML.hasChild(eDates,"close") || XML.hasChild(eDates,"forbid"); 
+		return XML.hasChild(eDates,"close") || XML.hasChild(eDates,"forbid");
 	}
-	
+
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
-	 * @throws OmFormatException 
+	 * @throws OmFormatException
 	 */
 	public String displayCloseDate() throws OmFormatException
 	{
@@ -518,7 +518,7 @@ public class TestDeployment
 	}
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
-	 * @throws OmFormatException 
+	 * @throws OmFormatException
 	 */
 	public String displayForbidDate() throws OmFormatException
 	{
@@ -527,20 +527,20 @@ public class TestDeployment
 	}
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
-	 * @throws OmFormatException 
+	 * @throws OmFormatException
 	 */
 	public String displayOpenDate() throws OmFormatException
 	{
 		SimpleDateFormat sdf=new SimpleDateFormat("dd MMMM yyyy");
 		return sdf.format(getActualDate("open","00:00:00"));
-	}	
-	
+	}
+
 	/** @return True if this deployment is set up for CMA conversion */
 	public boolean hasCMAData()
 	{
 		return sBatch!=null;
 	}
-	
+
 	/** @return True if a submit confirm email should be sent, false otherwise */
 	public boolean requiresSubmitEmail()
 	{
@@ -558,7 +558,7 @@ public class TestDeployment
 	}
 
 	// Information required to support legacy OU systems
-	
+
 	/** @return CMA batch code */
 	public String getBatch() { return sBatch; }
 	/** @return OU course code */

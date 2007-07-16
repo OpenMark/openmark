@@ -32,47 +32,47 @@ import util.misc.IO;
 import util.xml.XML;
 import util.xml.XMLException;
 
-/** 
- * Standard Om question with question components defined in initial XML. 
+/**
+ * Standard Om question with question components defined in initial XML.
  */
 public abstract class StandardQuestion implements Question
 {
 	/** Component tree */
 	private QDocument qd;
-	
+
 	/** Current action rendering (if we are inside an action() call) */
 	private ActionRendering arCurrent=null;
-	
+
 	/** Map of all currently-set placeholders */
 	private Map<String,String> mPlaceholders=new HashMap<String,String>();
 
 	/** Set just to make sure that all callbacks are checked before they're called */
 	private Set<String> sCheckedCallbacks=new HashSet<String>();
-	
+
 	/** Question results */
-	private Results rResults=new Results(); 
-	
+	private Results rResults=new Results();
+
 	/** Stores text that has been logged for debugging */
 	private StringBuffer sbDebug=new StringBuffer();
-	
+
 	/** Copy of init parameters */
 	private InitParams ip;
-	
+
 	/** Path to resources within question classloader */
 	private String sResourcePath;
-	
+
 	/** If not null, this indicates that a fixed variant is in use */
 	private NotSoRandom nsr=null;
-	
 
-	
+
+
 	// Interface implementation and related
 	///////////////////////////////////////
-		
+
 	public Rendering init(Document d,InitParams initParams) throws OmException
 	{
 		this.ip=initParams;
-		
+
 		// Initialise available components and add question-specific components
 		QComponentManager qcm=new QComponentManager(initParams);
 		Element[] aeDefines=
@@ -96,7 +96,7 @@ public abstract class StandardQuestion implements Question
 					"<define-component>: "+sClassName+" cannot be found");
 			}
 		}
-		
+
 		// Set resource classpath location
 		if(d.getDocumentElement().hasAttribute("resources"))
 		{
@@ -111,30 +111,30 @@ public abstract class StandardQuestion implements Question
 		{
 			sResourcePath=null;
 		}
-		
+
 		// Set not-so-random number if variant has been fixed
 		if(initParams.hasFixedVariant())
 			nsr=new NotSoRandom(initParams.getFixedVariant());
-		
+
 		// Build component tree
 		qd=new QDocument(this,d,qcm);
-		
-		// Return 
+
+		// Return
 		Rendering r=new Rendering();
-		
+
 		// User-overridable init
 		init();
-		
+
 		// Render current state to XHTML
 		qd.render(r,true);
-		
+
 		fixPlaceholders(r);
-		
+
 		return r;
 	}
-	
+
 	/**
-	 * Loads a question resource into memory. 
+	 * Loads a question resource into memory.
 	 * @param sName Name of resource (may be relative path including /; may not
 	 *   be absolute path beginning /)
 	 * @return Byte array containing entire resource
@@ -151,41 +151,41 @@ public abstract class StandardQuestion implements Question
 			return IO.loadResource(getClass(),sName);
 		}
 	}
-	
+
 	public synchronized ActionRendering action(ActionParams ap) throws OmException
 	{
 		arCurrent=new ActionRendering();
 
-		// Pass to document 		
+		// Pass to document
 		qd.action(ap);
-		
+
 		// Render current state
 		if(!arCurrent.isSessionEnd())
 			qd.render(arCurrent,false);
-		
+
 		fixPlaceholders(arCurrent);
-		
+
 		ActionRendering ar=arCurrent;
-		arCurrent=null;		
+		arCurrent=null;
 		return ar;
 	}
 
-	/** 
+	/**
 	 * Override if desired to handle question completion. Called whether a
 	 * question completes successfully or is cancelled.
 	 */
 	public void close()
 	{
 	}
-	
+
 	/**
 	 * NO LONGER IN USE (marked final so it gives an error if your question
 	 * overrides it)
-	 */	
+	 */
 	protected final void init(InitParams initParams) throws OmException
 	{
 	}
-	
+
 	/**
 	 * Override to set up the question if necessary.
 	 * @throws OmException For any error
@@ -193,7 +193,7 @@ public abstract class StandardQuestion implements Question
 	protected void init() throws OmException
 	{
 	}
-	
+
 	/**
 	 * Fix placeholders just before returning output.
 	 * @param r Output about to be returned
@@ -202,9 +202,9 @@ public abstract class StandardQuestion implements Question
 	{
 		XML.replaceTokens(r.getXHTML(),"__",mPlaceholders);
 	}
-	
+
 	/**
-	 * Calls a particular callback function. The function must previously have 
+	 * Calls a particular callback function. The function must previously have
 	 * been checked using checkCallback().
 	 * @param sCallback Name of callback
 	 * @throws OmException If the callback throws an exception or there was
@@ -215,7 +215,7 @@ public abstract class StandardQuestion implements Question
 		if(!sCheckedCallbacks.contains(sCallback))
 			throw new OmDeveloperException(
 				"Error running callback "+sCallback+"(): checkCallback was not called");
-		
+
 		try
 		{
 			Method m=getClass().getMethod(sCallback,new Class[0]);
@@ -233,11 +233,11 @@ public abstract class StandardQuestion implements Question
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/**
 	 * Checks that a callback method is present and correctly defined.
 	 * <p>
-	 * Having checked it, you can call it using callback().  
+	 * Having checked it, you can call it using callback().
 	 * @param sCallback Name of callback method
 	 * @throws OmDeveloperException If the method doesn't exist or is defined
 	 *   incorrectly
@@ -247,8 +247,8 @@ public abstract class StandardQuestion implements Question
 		try
 		{
 			Method m=getClass().getMethod(sCallback,new Class[0]);
-			
-			if(m.getReturnType()!=void.class) 
+
+			if(m.getReturnType()!=void.class)
 				throw new OmDeveloperException(
 					"Callback method "+sCallback+"() must return void");
 			if(!Modifier.isPublic(m.getModifiers()))
@@ -260,34 +260,34 @@ public abstract class StandardQuestion implements Question
 			if(Modifier.isAbstract(m.getModifiers()))
 				throw new OmDeveloperException(
 					"Callback method "+sCallback+"() may not be abstract");
-			
+
 			sCheckedCallbacks.add(sCallback);
 		}
 		catch(NoSuchMethodException e)
 		{
 			throw new OmDeveloperException(
 				"Callback method "+sCallback+"() does not exist");
-		}		
+		}
 	}
 
 	// System methods intended for subclasses
 	/////////////////////////////////////////
 
-	/** 
+	/**
 	 * Causes the question to end. (Call from within action processing; you can't
 	 * end a question in the init() call.) Control
 	 * returns from this method as usual, although you probably shouldn't do
 	 * anything else afterwards.
-	 */ 
+	 */
 	protected void end() throws OmDeveloperException
 	{
 		if(arCurrent==null) throw new OmDeveloperException(
 			"Cannot call end() when not within action()");
 		arCurrent.setSessionEnd();
 	}
-	
+
 	/**
-	 * Returns a Results object, which you can use to set up the 
+	 * Returns a Results object, which you can use to set up the
 	 * results or summary of the question. Changing things in the Results
 	 * object does not actually cause results to be sent to the test navigator.
 	 * You should call sendResults() once they are final.
@@ -297,9 +297,9 @@ public abstract class StandardQuestion implements Question
 	{
 		return rResults;
 	}
-	
+
 	/**
-	 * Causes the information in the Results object to be sent to the test 
+	 * Causes the information in the Results object to be sent to the test
 	 * navigator and stored. You should call this only once per question; it
 	 * doesn't have to be right at the end of the question (although it can be).
 	 * @throws OmDeveloperException
@@ -311,23 +311,23 @@ public abstract class StandardQuestion implements Question
 		arCurrent.sendResults(rResults);
 	}
 
-	/** 
-	 * Sets the progress information text, which is displayed outside the 
-	 * question to give the user an idea of their progress through this 
+	/**
+	 * Sets the progress information text, which is displayed outside the
+	 * question to give the user an idea of their progress through this
 	 * question (e.g. 'You have 3 attempts left'.)
 	 * <p>
-	 * If you don't call this, the progress info remains the same as it was 
+	 * If you don't call this, the progress info remains the same as it was
 	 * before (blank, if you never set it).
-	 * @param sProgressInfo Progress string 
+	 * @param sProgressInfo Progress string
 	 */
 	protected void setProgressInfo(String sProgressInfo) throws OmDeveloperException
 	{
 		if(arCurrent==null) throw new OmDeveloperException(
 			"Cannot call setProgressInfo() when not within action()");
-		arCurrent.setProgressInfo(sProgressInfo);		
+		arCurrent.setProgressInfo(sProgressInfo);
 	}
-	
-	
+
+
 	/** @return the debug display log, and clear it. */
 	public String eatLog()
 	{
@@ -335,7 +335,7 @@ public abstract class StandardQuestion implements Question
 		sbDebug.setLength(0);
 		return sReturn;
 	}
-	
+
 	/**
 	 * Logs a string to the debug display log (used only in development servlet).
 	 * @param s String to log
@@ -344,19 +344,19 @@ public abstract class StandardQuestion implements Question
 	{
 		sbDebug.append(s+"\n");
 	}
-	
+
 	/**
 	 * Sets the value of a placeholder.
 	 * <p>
-	 * Placeholders are anything that ends up in the XHTML output with __ either 
+	 * Placeholders are anything that ends up in the XHTML output with __ either
 	 * side e.g. __A__. When you set the value of a placeholder, it is replaced
 	 * everywhere it occurs with the given value. Values stay set so you don't
 	 * need to re-set them every time there is an action call.
 	 * <p>
 	 * Placeholders work in attributes as well as in text. They do not work in
 	 * tag names.
-	 * <p> 
-	 * Placeholder values are set in the DOM not in the final XHTML string, so 
+	 * <p>
+	 * Placeholder values are set in the DOM not in the final XHTML string, so
 	 * there is no need to escape special characters with ampersands or similar.
 	 * @param sPlaceholder Name of placeholder (part between __ signs, e.g. "A")
 	 * @param sValue Value to replace placeholder with (e.g. "3.14")
@@ -365,7 +365,7 @@ public abstract class StandardQuestion implements Question
 	{
 		mPlaceholders.put(sPlaceholder,sValue);
 	}
-	
+
 	/**
 	 * Applys placeholders to a string. Mostly useful for components that need to
 	 * handle strings in some other way than simply outputting XHTML (e.g. include
@@ -377,25 +377,25 @@ public abstract class StandardQuestion implements Question
 	{
 		return XML.replaceTokens(sValue,"__",mPlaceholders);
 	}
-	
+
 	// Utility and helper methods
 	/////////////////////////////
-	
+
 	/**
 	 * Obtains a random number generator for the question, based on the random
 	 * seed specifed by the test navigator but modified uniquely for this class
 	 * (so that if two questions in the test need a random number between 1 and 5,
-	 * they will have a chance of getting different ones).  
-	 * @return Random number generator 
-	 */ 
+	 * they will have a chance of getting different ones).
+	 * @return Random number generator
+	 */
 	public Random getRandom()
 	{
-		return getRandom(getClass().getName());		
+		return getRandom(getClass().getName());
 	}
-	
+
 	/**
 	 * Obtains a random number generator based on the seed specified by the test
-	 * navigator but modified uniquely for this group. Use this variant when 
+	 * navigator but modified uniquely for this group. Use this variant when
 	 * several questions need the same sequence of random numbers (for example
 	 * they are about properties of an element and you want it to be the same
 	 * element). As long as you use the same group name for the questions, they
@@ -409,36 +409,36 @@ public abstract class StandardQuestion implements Question
 		long lHash=sGroup.hashCode();
 		return new Random(ip.getRandomSeed() ^ lHash);
 	}
-	
+
 	/** Special 'random' number generator that actually always returns the same int */
 	private class NotSoRandom extends Random
 	{
 		/** Number to return */
 		private int iNumber;
-		
+
 		/** How many times we've returned it */
 		private int iCount=0;
-		
+
 		/** How many times we'll fix the int before reverting to randomness */
 		private final static int FIXLIMIT=10;
-		
-		/** @param iNumber Number to return */ 
+
+		/** @param iNumber Number to return */
 		private NotSoRandom(int iNumber)
 		{
 			super(iNumber); // Just to 'fix' the other stuff
 			this.iNumber=iNumber;
 		}
-		
+
 		/**
 		 * Get the fixed number (note: all other members actually work randomly).
-		 * After returning the fixed number FIXLIMIT times, this reverts to 
+		 * After returning the fixed number FIXLIMIT times, this reverts to
 		 * ordinary random generator behaviour.
 		 * @param iRange the bound on the number to be returned
 		 * @return the fixed number.
 		 */
 		@Override
-		public int nextInt(int iRange) 
-		{ 
+		public int nextInt(int iRange)
+		{
 			if(iCount<FIXLIMIT)
 			{
 				iCount++;
@@ -448,9 +448,9 @@ public abstract class StandardQuestion implements Question
 			{
 				return super.nextInt(iRange);
 			}
-		}		
+		}
 	}
-	
+
 	/**
 	 * @param sID ID of desired component
 	 * @return Component object
@@ -460,7 +460,7 @@ public abstract class StandardQuestion implements Question
 	{
 		return qd.find(sID);
 	}
-	
+
 	/**
 	 * @param sID ID of editfield component
 	 * @return Component object
@@ -556,7 +556,7 @@ public abstract class StandardQuestion implements Question
 		{
 			throw new OmDeveloperException("Component is not a <canvas>: "+sID);
 		}
-	} 
+	}
 	/**
 	 * @param sID ID of text component
 	 * @return Component object
@@ -572,7 +572,7 @@ public abstract class StandardQuestion implements Question
 		{
 			throw new OmDeveloperException("Component is not a <t>: "+sID);
 		}
-	} 
+	}
 	/**
 	 * @param sID ID of JME component
 	 * @return Component object
@@ -588,7 +588,7 @@ public abstract class StandardQuestion implements Question
 		{
 			throw new OmDeveloperException("Component is not a <jme>: "+sID);
 		}
-	} 
+	}
 	/**
 	 * @param sID ID of component
 	 * @return Component object
@@ -604,8 +604,8 @@ public abstract class StandardQuestion implements Question
 		{
 			throw new OmDeveloperException("Component is not a <dropdown>: "+sID);
 		}
-	} 
-	
+	}
+
 	/**
 	 * @param sID ID of component
 	 * @return Component object
@@ -621,8 +621,8 @@ public abstract class StandardQuestion implements Question
 		{
 			throw new OmDeveloperException("Component is not an <image>: "+sID);
 		}
-	} 
-	
+	}
+
 	/**
 	 * @param sID ID of component
 	 * @return Component object
@@ -638,48 +638,48 @@ public abstract class StandardQuestion implements Question
 		{
 			throw new OmDeveloperException("Component is not an <flash>: " + sID);
 		}
-	} 
-	
+	}
+
 	// Accessibility information
 	////////////////////////////
-	
+
 	/** @return True if colour has been fixed for accessibility reasons */
 	public boolean isFixedColour()
 	{
 		return ip.getFixedColourFG()!=null;
 	}
-	
-	/** @return Fixed foreground colour in #rrggbb format */ 
+
+	/** @return Fixed foreground colour in #rrggbb format */
 	public String getFixedColourFG()
 	{
 		return ip.getFixedColourFG();
 	}
-	
-	/** @return Fixed background colour in #rrggbb format */ 
+
+	/** @return Fixed background colour in #rrggbb format */
 	public String getFixedColourBG()
 	{
 		return ip.getFixedColourBG();
 	}
 
-	/** @return Fixed background colour in #rrggbb format */ 
+	/** @return Fixed background colour in #rrggbb format */
 	public String getDisabledColourBG()
 	{
 		return ip.getFixedColourBG();
 	}
-	/** @return Fixed background colour in #rrggbb format */ 
+	/** @return Fixed background colour in #rrggbb format */
 	public String getDisabledColourFG()
 	{
 		return ip.getFixedColourBG();
 	}
 
-	
-	
+
+
 	/** @return Zoom scale factor for accessibility */
 	public double getZoom()
 	{
 		return ip.getZoom();
 	}
-	
+
 	/** @return True if in 'plain mode' for accessibility */
 	public boolean isPlainMode()
 	{

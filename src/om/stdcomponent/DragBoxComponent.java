@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
+/**
 A component that can be dropped onto DropBoxComponents.
 <h2>XML usage</h2>
 &lt;dragbox/&gt;
@@ -43,7 +43,7 @@ A component that can be dropped onto DropBoxComponents.
 </table>
 <h2>Sizing</h2>
 <p>Drag boxes are automatically made the same size as the largest box in the
-group (so they all have identical size with each other and with the dropbox). 
+group (so they all have identical size with each other and with the dropbox).
 There is no way to control their size other than by changing their contents.</p>
 */
 public class DragBoxComponent extends QComponent
@@ -52,13 +52,13 @@ public class DragBoxComponent extends QComponent
 	public final static String PROPERTY_INFINITE="infinite";
 	/** Optional label that appears in small text inside the box at the right. If included, must be a single character */
 	public final static String PROPERTYREGEXP_SIDELABEL=".";
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "dragbox";
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
@@ -66,17 +66,17 @@ public class DragBoxComponent extends QComponent
 		defineString(DropBoxComponent.PROPERTY_GROUP,DropBoxComponent.PROPERTYREGEXP_GROUP);
 		defineBoolean(PROPERTY_INFINITE);
 		defineString(DropBoxComponent.PROPERTY_SIDELABEL,PROPERTYREGEXP_SIDELABEL);
-		
+
 		setString(DropBoxComponent.PROPERTY_GROUP,"");
 		setBoolean(PROPERTY_INFINITE,false);
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		getQDocument().buildInsideWithText(this,eThis);
 	}
-	
+
 	/**
 	 * Produce plain version of content to go inside a dropbox. This is the
 	 * text equivalent of everything inside it.
@@ -94,30 +94,30 @@ public class DragBoxComponent extends QComponent
 			qc.addTextEquivalent(
 				"("+getString(DropBoxComponent.PROPERTY_SIDELABEL)+")");
 		}
-		return qc.endTextMode();		
+		return qc.endTextMode();
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		// In plain mode we don't do anything at all since dragbox content appears
 		// within dropboxes instead.
 		if(bPlain) return;
-		
+
 		// Add image (initially invisible)
 		Element eImg=qc.createElement("img");
 		eImg.setAttribute("class","dragboximg");
 		eImg.setAttribute("src","%%RESOURCES%%/clear.gif");
 		eImg.setAttribute("id",QDocument.ID_PREFIX+getID()+"img");
 		qc.addInlineXHTML(eImg);
-		
+
 
 		// Add a space (needed for IE)
 		qc.addInlineXHTML(qc.getOutputDocument().createTextNode(" "));
-		
+
 		// Add actual content container
 		Element eContainer=qc.createElement("div");
-		eContainer.setAttribute("class","dragbox" + 
+		eContainer.setAttribute("class","dragbox" +
 			(isEnabled() ? "" : " transparent")+
 			(isPropertySet(DropBoxComponent.PROPERTY_SIDELABEL) ? " withsidelabel": ""));
 		eContainer.setAttribute("id",QDocument.ID_PREFIX+getID());
@@ -125,7 +125,7 @@ public class DragBoxComponent extends QComponent
 			"background:"+convertHash(getGroupColour())+";");
 		//qc.addInlineXHTML(eContainer);
 		qc.addTopLevelXHTML(eContainer);
-		
+
 		Element eInner=XML.createChild(eContainer,"div");
 		eInner.setAttribute("class","dragboxinner");
 		eInner.setAttribute("id",QDocument.ID_PREFIX+getID()+"inner");
@@ -134,12 +134,12 @@ public class DragBoxComponent extends QComponent
 //		Element ePane=XML.createChild(eContainer,"div");
 //		ePane.setAttribute("class","dragboxpane");
 //		ePane.setAttribute("id",getID()+"pane");
-		
-		// Produce content		
+
+		// Produce content
 		qc.setParent(eInner);
 		produceChildOutput(qc,bInit,bPlain);
 		qc.unsetParent();
-		
+
 		if(isPropertySet(DropBoxComponent.PROPERTY_SIDELABEL))
 		{
 			String sSideLabel=getString(DropBoxComponent.PROPERTY_SIDELABEL);
@@ -148,7 +148,7 @@ public class DragBoxComponent extends QComponent
 			eSideLabel.appendChild(
 					qc.getOutputDocument().createTextNode(sSideLabel));
 		}
-		
+
 		// Add JS
 		String sGroup=getString(DropBoxComponent.PROPERTY_GROUP);
 		Element eScript=qc.createElement("script");
@@ -158,13 +158,13 @@ public class DragBoxComponent extends QComponent
 			(getBoolean(PROPERTY_INFINITE) ? "true" : "false")+");");
 		qc.addTopLevelXHTML(eScript);
 	}
-	
+
 	private String getGroupColour() throws OmDeveloperException
 	{
 		String sGroup=getString(DropBoxComponent.PROPERTY_GROUP);
 		return 	"innerbg"+(getQDocument().getGroupIndex(sGroup)%4);
 	}
-	
+
 	/** Return correct background colour */
 	@Override
 	protected Color getChildBackground(QComponent qcChild)
@@ -177,5 +177,5 @@ public class DragBoxComponent extends QComponent
 		{
 			throw new OmUnexpectedException(e);
 		}
-	}	
+	}
 }

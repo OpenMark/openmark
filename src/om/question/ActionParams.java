@@ -22,15 +22,15 @@ import java.util.TreeMap;
 
 import om.OmDeveloperException;
 
-/** 
- * Parameters provided when the user makes an action (e.g. clicks a button)  
+/**
+ * Parameters provided when the user makes an action (e.g. clicks a button)
  * on the question.
  */
 public class ActionParams
 {
 	/** Map of parameters (sorted so getParameterList works more nicely) */
 	private Map<String, String> mParameters=new TreeMap<String, String>();
-	
+
 	/**
 	 * Add parameter into map.
 	 * @param sName Parameter name
@@ -39,8 +39,8 @@ public class ActionParams
 	public void setParameter(String sName,String sValue)
 	{
 		mParameters.put(sName,sValue);
-	} 
-	
+	}
+
 	/**
 	 * Obtains a parameter value.
 	 * @param sName Name of parameter
@@ -54,16 +54,16 @@ public class ActionParams
 			"Parameter does not exist: "+sName+".");
 		return sValue;
 	}
-	
+
 	/**
-	 * @param sName Name of parameter 
+	 * @param sName Name of parameter
 	 * @return True if parameter exists.
 	 */
 	public boolean hasParameter(String sName)
 	{
 		return mParameters.containsKey(sName);
 	}
-	
+
 	/**
 	 * @return Sorted list of all parameter names.
 	 */

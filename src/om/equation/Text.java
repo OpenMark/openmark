@@ -32,7 +32,7 @@ import util.xml.XML;
 public class Text extends Item
 {
 	/** Shared font render context */
-	public static FontRenderContext frc; 
+	public static FontRenderContext frc;
 	static
 	{
 		BufferedImage biTemp=new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB);
@@ -41,28 +41,28 @@ public class Text extends Item
 
 	/** Runs of text w/ same font */
 	private LinkedList<Run> lRuns=new LinkedList<Run>();
-	
+
 	/** Original text input */
 	private String sOriginalText;
-	
+
 	/** True if this text block is first in its parent */
 	private boolean bFirst;
-	
-	/** 
+
+	/**
 	 * @return Original text of input (used for handling parameters in software
-	 *   rather than as text items) 
+	 *   rather than as text items)
 	 */
 	public String getOriginalText()
 	{
 		return sOriginalText;
 	}
-	
+
 	private static class Run
 	{
 		String sText;
 		int iStyle;
 	}
-	
+
 	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
@@ -71,9 +71,9 @@ public class Text extends Item
 
 		Run rBefore=null;
 		int iChangeGap=0;
-		
+
 		for(Iterator i=lRuns.iterator();i.hasNext();)
-		{			
+		{
 			Run r=(Run)i.next();
 			Font fThis=r.iStyle==Font.ITALIC ? fItalic : fPlain;
 
@@ -88,11 +88,11 @@ public class Text extends Item
 			// Space at left of this one, at left end or after change of style
 			if(rBefore==null || bChangeStyle)
 				iX+=Fonts.getLeftOverlap(fThis,r.sText.charAt(0));
-			
+
 			Font f=getFont(r.iStyle);
-			g2.setFont(f);			
+			g2.setFont(f);
 			g2.drawString(r.sText,iX,iY+iBaseline);
-			
+
 			// Note: This hack is needed because Java (1.4, 1.5) does not render the
 			// diagonal stroke on italic Times New Roman z at below 26px.
 			if(r.sText.equals("z") && r.iStyle==Font.ITALIC && getFontFamily().equals("Times New Roman"))
@@ -115,11 +115,11 @@ public class Text extends Item
 				case 9:
 					g2.setStroke(new BasicStroke(0.5f));
 					g2.drawLine(iX+3,iY+iBaseline-5,iX-1,iY+iBaseline-1);
-					break;					
+					break;
 				default:
 					if(f.getSize()<=26)
 					{
-					  float fFactor=f.getSize() / 13.0f; 
+					  float fFactor=f.getSize() / 13.0f;
 						g2.setStroke(new BasicStroke(0.6f*fFactor));
 						g2.drawLine(
 							Math.round(iX+(4*fFactor)),
@@ -130,29 +130,29 @@ public class Text extends Item
 					break;
 				}
 			}
-			
+
 			// Actual claimed size
 			iX+=Math.round(getFont(r.iStyle).getStringBounds(r.sText,frc).getWidth());
-			
+
 			if(r.sText.length()>0)
 			{
 				iChangeGap=Fonts.getRightOverlap(fThis,r.sText.charAt(r.sText.length()-1));
 			}
-			
-			rBefore=r;			
+
+			rBefore=r;
 		}
 
 	}
-	
-	/** 
+
+	/**
 	 * Character used to indicate spaces. This should ideally be a thinner space
 	 * but Java 1.4 won't render them.
 	 */
 	private final static char SPACE='\u0020';
-	
+
 	private static void fixupSignOperator(StringBuffer sbText,char c,boolean bFirst)
 	{
-		// Sign operators attach to next thing at start of context or start of 
+		// Sign operators attach to next thing at start of context or start of
 		// whole expression (bFirst), otherwise have
 		// spaces either side
 		int iPos=0;
@@ -160,7 +160,7 @@ public class Text extends Item
 		{
 			iPos=sbText.indexOf(""+c,iPos);
 			if(iPos==-1) return; // Not found
-			
+
 			if((iPos==0 && bFirst) || (iPos>0 && isContextStart(sbText.charAt(iPos-1))))
 			{
 				// Only add space on left
@@ -174,13 +174,13 @@ public class Text extends Item
 				iPos++;
 				sbText.insert(iPos+1,SPACE);
 				iPos++;
-			} 
-			
-			iPos++;			
+			}
+
+			iPos++;
 		}
-			
+
 	}
-	
+
 	private static void fixupOperator(StringBuffer sbText,char c)
 	{
 		// Operators get spaces either side
@@ -189,7 +189,7 @@ public class Text extends Item
 		{
 			iPos=sbText.indexOf(""+c,iPos);
 			if(iPos==-1) return; // Not found
-			
+
 			// Add space to left and right
 //			if(iPos>0)
 //			{
@@ -198,23 +198,23 @@ public class Text extends Item
 //			}
 			sbText.insert(iPos+1,SPACE);
 			iPos++;
-			
-			iPos++;			
-		}			
+
+			iPos++;
+		}
 	}
-	
+
 	private static void trimSpaces(StringBuffer sbText,boolean bFirst)
 	{
 		// We want spaces at start and end for operators so keep those - unless it's
 		// first in a run
-		if(bFirst) 
+		if(bFirst)
 		{
 			while(sbText.length()>0 && Character.isWhitespace(sbText.charAt(0)))
 			{
 				sbText.deleteCharAt(0);
 			}
 		}
-		
+
 		// But get rid of any doubles
 		for(int iPos=0;iPos<sbText.length();iPos++)
 		{
@@ -225,25 +225,25 @@ public class Text extends Item
 					sbText.deleteCharAt(iPos+1);
 				}
 			}
-		}			
+		}
 	}
-	
-	/** 
-	 * Characters after which we're assumed to have entered a new context 
+
+	/**
+	 * Characters after which we're assumed to have entered a new context
 	 * and therefore treat signs as signs, not anything else.
 	 */
 	private final static String CONTEXTSTART="(,+-\u00f7\u00d7=\u2248";
-	
+
 	private static boolean isContextStart(char c)
 	{
 		return CONTEXTSTART.indexOf(c)!=-1;
 	}
-	
+
 	static String fixupText(String sText,boolean bFirst)
 	{
 		// Get rid of user-typed whitespace
 		sText=sText.replaceAll(" ","");
-		
+
 		// Add whitespace around operators
 		StringBuffer sb=new StringBuffer(sText);
 		fixupSignOperator(sb,'-',bFirst);
@@ -253,14 +253,14 @@ public class Text extends Item
 		fixupOperator(sb,'=');
 		fixupOperator(sb,'\u2248');
 		trimSpaces(sb,bFirst);
-		
+
 		sText=sb.toString();
-		
+
 		// Fix up characters that people can't be arsed to type properly
 		sText=sText.replaceAll("-","\u2212"); // Minus
 		sText=sText.replaceAll("(\"|'')","\u2033"); // Double prime
 		sText=sText.replaceAll("'","\u2032"); // Prime
-		
+
 		return sText;
 	}
 
@@ -269,8 +269,8 @@ public class Text extends Item
 	{
 		String sText=XML.getText(e);
 		sOriginalText=sText;
-		bFirst=e.getPreviousSibling()==null;	
-		
+		bFirst=e.getPreviousSibling()==null;
+
 		if(Fonts.isBrokenMacOS) 	sText=sText.replaceAll("[^\\x00-\\xff]","?");
 
 		// See if there's an mbox ancestor
@@ -291,7 +291,7 @@ public class Text extends Item
 			buildRuns(sText);
 		}
 	}
-	
+
 	private static boolean isItalic(char c)
 	{
 		if(!Character.isLetter(c)) return false;
@@ -300,11 +300,11 @@ public class Text extends Item
 		else
 			return true;
 	}
-	
+
 	private void buildRuns(String sText)
 	{
 		if(sText.length()==0) return;
-		
+
 		Run r=new Run();
 		char cFirst=sText.charAt(0);
 		if(cFirst=='z')
@@ -313,7 +313,7 @@ public class Text extends Item
 			r.sText="z";
 			lRuns.add(r);
 			buildRuns(sText.substring(1));
-		}		
+		}
 		else if(isItalic(cFirst))
 		{
 			int iCut=1;
@@ -331,9 +331,9 @@ public class Text extends Item
 			r.sText=sText.substring(0,iCut);
 			lRuns.add(r);
 			buildRuns(sText.substring(iCut));
-		}		
+		}
 	}
-	
+
 	@Override
 	protected void internalPrepare()
 	{
@@ -351,21 +351,21 @@ public class Text extends Item
 			iDescent=Math.max(
 				Fonts.getMaxDescent(r.iStyle==Font.ITALIC ? fItalic : fPlain,r.sText),iDescent);
 		}
-		
+
 		iBaseline=iAscent;
 		iHeight=iBaseline+iDescent;
-		
+
 		iWidth=0;
 		Run rBefore=null;
-		int iChangeGap=0;		
+		int iChangeGap=0;
 
 		for(Iterator i=lRuns.iterator();i.hasNext();)
 		{
 			Run r=(Run)i.next();
 			Font fThis=r.iStyle==Font.ITALIC ? fItalic : fPlain;
-			
+
 			boolean bChangeStyle=rBefore!=null && rBefore.iStyle!=r.iStyle;
-			
+
 			// Space at right of last run, after change of style
 			if(bChangeStyle)
 			{
@@ -375,21 +375,21 @@ public class Text extends Item
 			// Space at left of this one, at left end or after change of style
 			if(rBefore==null || bChangeStyle)
 				iWidth+=Fonts.getLeftOverlap(fThis,r.sText.charAt(0));
-			
+
 			// Actual claimed size
 			iWidth+=Math.round(fThis.getStringBounds(r.sText,frc).getWidth());
-			
+
 			// Space to right (only used if we change style)
 			if(r.sText.length()>0)
 			{
 				iChangeGap=Fonts.getRightOverlap(fThis,r.sText.charAt(r.sText.length()-1));
 			}
-			
+
 			rBefore=r;
 		}
 		// Use last right offset at end, but not for advance width
 		iAdvanceWidth=iWidth;
-		
+
 		iWidth+=iChangeGap;
 
 		// Calculate final slope
@@ -399,7 +399,7 @@ public class Text extends Item
 			fEndSlope=fItalic.getItalicAngle();
 			iAdvanceWidth+=Fonts.getItalicRightOverlap(fItalic,
 				rLast.sText.charAt(rLast.sText.length()-1));
-		}		
+		}
 	}
 
 	/**

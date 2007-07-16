@@ -19,14 +19,14 @@ package om.graph;
 
 import java.awt.Graphics2D;
 
-/** 
+/**
  * Superclass for all graph items. In addition to the obvious requirements
  * of this class, other restrictions apply to graph items:
  * <ul>
- * <li> For a tag &lt;tagName&gt;, the class must be called TagNameItem - 
+ * <li> For a tag &lt;tagName&gt;, the class must be called TagNameItem -
  *   case here is rigid and required</li>
  * <li> Class must have a public no-argument constructor</li>
- * <li> Class must have set methods matching each attribute name e.g. 
+ * <li> Class must have set methods matching each attribute name e.g.
  *   myattribute requires setMyAttribute(...) - any case is permitted</li>
  * <li> Permitted types for attributes are String, double, int, boolean,
  *   GraphScalar, GraphRange, Color, and Font</li>
@@ -36,13 +36,13 @@ public abstract class GraphItem
 {
 	/** Owning World */
 	private World wOwner;
-	
+
 	/** ID */
 	private String sID=null;
-	
+
 	/** True if init has been called */
 	private boolean bInited=false;
-	
+
 	/**
 	 * Use when constructing items manually in code.
 	 * @param w World object for item
@@ -51,39 +51,39 @@ public abstract class GraphItem
 	{
 		setWorld(w);
 	}
-	
+
 	/** @return Owner World object */
-	public World getWorld() 
-	{ 
-		return wOwner; 
-	}
-	
-	/** @param w Owning World object */ 
-	public void setWorld(World w) 
+	public World getWorld()
 	{
-		this.wOwner=w; 
-	} 
-	
+		return wOwner;
+	}
+
+	/** @param w Owning World object */
+	public void setWorld(World w)
+	{
+		this.wOwner=w;
+	}
+
 	/** @return ID or null if this item doesn't have one */
 	public String getID()
 	{
 		return sID;
 	}
-	
+
 	/**
 	 * @param sID New ID for item
-	 */  
+	 */
 	public void setID(String sID)
 	{
 		this.sID=sID;
 	}
-	
+
 	/**
-	 * Paints the graph item. 
+	 * Paints the graph item.
 	 * @param g2 Target graphics context
 	 */
 	public abstract void paint(Graphics2D g2);
-	
+
 	/** Internal method used by World which calls init if needed. */
 	final void checkInit() throws GraphFormatException
 	{
@@ -93,11 +93,11 @@ public abstract class GraphItem
 			bInited=true;
 		}
 	}
-	
+
 	/**
 	 * Init method, for overriding. Called after all attributes are set,
 	 * and before first paint.
-	 * @throws GraphFormatException 
+	 * @throws GraphFormatException
 	 */
 	public void init() throws GraphFormatException
 	{

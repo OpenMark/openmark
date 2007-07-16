@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package om.tnavigator.reports.std;
 
@@ -23,7 +23,7 @@ import om.tnavigator.scores.CombinedScore;
  */
 public class MoodleFormatReport implements OmTestReport, OmReport {
 	private NavigatorServlet ns;
-	
+
 	/**
 	 * Create an instance of this report.
 	 * @param ns the navigator servlet we belong to.
@@ -45,14 +45,14 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 	public String getReadableReportName() {
 		return "Results for import into the Moodle gradebook";
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.OmTestReport#isApplicable(om.tnavigator.TestDeployment)
 	 */
 	public boolean isApplicable(TestDeployment td) {
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.OmReport#getUrlReportName()
 	 */
@@ -63,14 +63,14 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 	private class MoodleTabularReport extends TabularReportBase {
 		private String testId;
 		private TestDefinition def;
-		
+
 		MoodleTabularReport(String testId, TestDeployment deploy) throws OmException {
 			this.testId = testId;
 			this.def = deploy.getTestDefinition();
 			batchid = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 			title = testId + " results for export to Moodle";
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see om.tnavigator.reports.TabularReportBase#generateReport(om.tnavigator.reports.TabularReportWriter)
 		 */
@@ -82,10 +82,10 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 				dat = ns.getDatabaseAccess().newTransaction();
 			} catch (SQLException e1) {
 				throw new OmUnexpectedException("Cannot connect to the database");
-			}		
+			}
 			try
 			{
-				// Get list of people who did the test. 
+				// Get list of people who did the test.
 				// Show:
 				// * Each person only once
 				// * Only the most recent finished attempt, or most recent unfinished attempt
@@ -99,7 +99,7 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 				{
 					int isFinished=rs.getInt(4);
 					int isAdmin=rs.getInt(5);
-					
+
 					if (isAdmin != 1 && isFinished == 1)
 					{
 						// Complete attempt, so get score and send it.
@@ -120,7 +120,7 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 						TestRealisation testRealisation = TestRealisation.realiseTest(
 								def, randomSeed, fixedVariant, testId, ti
 						);
-						
+
 						// Use it to get the score.
 						CombinedScore score = testRealisation.getScore(new NavigatorServlet.RequestTimings(), ns, ns.getDatabaseAccess(), ns.getOmQueries());
 
@@ -147,7 +147,7 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 			{
 				dat.finish();
 			}
-			
+
 		}
 
 		/* (non-Javadoc)
@@ -162,7 +162,7 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 			return columns;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.OmTestReport#handleTestReport(om.tnavigator.UserSession, java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -179,7 +179,7 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 	public void handleReport(String suffix, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String testId = request.getParameter("test");
 		TestDeployment deploy = new TestDeployment(ns.pathForTestDeployment(testId));
-		
+
 		MoodleTabularReport report = new MoodleTabularReport(testId, deploy);
 		report.handleReport(request, response);
 	}

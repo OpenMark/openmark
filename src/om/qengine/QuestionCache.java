@@ -33,29 +33,29 @@ import util.misc.ClosableClassLoader;
 import util.misc.IO;
 import util.xml.XML;
 
-/** 
+/**
  * Provides access to questions.
  * <p>
- * Note that all methods in here take a 'question key' parameter ({@link om.qengine.QuestionCache.QuestionKey}); 
- * this is a combination of the question ID and version.  
+ * Note that all methods in here take a 'question key' parameter ({@link om.qengine.QuestionCache.QuestionKey});
+ * this is a combination of the question ID and version.
  */
 public class QuestionCache
 {
 	/** Map of String (question key) -> QuestionStuff */
 	private Map<QuestionKey, QuestionStuff> mActiveQuestions1=new HashMap<QuestionKey, QuestionStuff>();
-	
+
 	/** Map of Question -> String (question key) */
 	private Map<Question, QuestionKey> mActiveQuestions2=new HashMap<Question, QuestionKey>();
-	
+
 	/** Folder where questions are cached */
 	private File fFolder;
-	
+
 	QuestionCache(File f)
 	{
 		if(!f.exists()) f.mkdirs();
 		this.fFolder=f;
 	}
-	
+
 	/** Holds stuff related to a particular question (ID) */
 	private static class QuestionStuff
 	{
@@ -64,7 +64,7 @@ public class QuestionCache
 		Document dMeta;
 		List<Question> lActive=new LinkedList<Question>();
 	}
-	
+
 	/**
 	 * Questions are referenced in the cache by their ID and version. A question
 	 * key combines both these, with a full stop between.
@@ -72,9 +72,9 @@ public class QuestionCache
 	static class QuestionKey
 	{
 		private String sQuestionID,sVersion;
-		
+
 		/**
-		 * @param sQuestionID ID of question 
+		 * @param sQuestionID ID of question
 		 * @param sVersion Version string
 		 */
 		QuestionKey(String sQuestionID,String sVersion)
@@ -83,12 +83,12 @@ public class QuestionCache
 			this.sVersion=sVersion;
 		}
 
-		// Hashcode and equals so it can be used in maps 
+		// Hashcode and equals so it can be used in maps
 		@Override
 		public int hashCode()
 		{
 			return (sQuestionID+sVersion).hashCode();
-		}		
+		}
 		@Override
 		public boolean equals(Object obj)
 		{
@@ -115,11 +115,11 @@ public class QuestionCache
 		 */
 		public String getURLPart()
 		{
-			return sQuestionID+"."+sVersion;			
+			return sQuestionID+"."+sVersion;
 		}
-			
+
 	}
-	
+
 	/**
 	 * Returns metadata for a particular question ID. Must not be called unless
 	 * it is certain that the question is loaded (i.e. after newQuestion, before
@@ -131,9 +131,9 @@ public class QuestionCache
 	synchronized Document getMetadata(QuestionKey qk) throws OmException
 	{
 		checkNotShutdown();
-		// Find question ID in first map 
+		// Find question ID in first map
 		QuestionStuff qs=mActiveQuestions1.get(qk);
-		if(qs==null) 
+		if(qs==null)
 		{
 			// TODO Make it so it can cache the metadata somehow
 			// Load question temporarily just for metadata
@@ -155,7 +155,7 @@ public class QuestionCache
 		}
 		return qs.dMeta;
 	}
-	
+
 	/**
 	 * @param qk Question key
 	 * @return File that does/would correspond to that question
@@ -164,24 +164,24 @@ public class QuestionCache
 	{
 		return new File(fFolder,qk.getFileName());
 	}
-	
+
 	/**
 	 * Checks whether a question is in the cache.
 	 * @param qk Question key
-	 * @return True if it's in the cache, false if it needs to be obtained 
+	 * @return True if it's in the cache, false if it needs to be obtained
 	 *   and saved
 	 */
 	synchronized boolean containsQuestion(QuestionKey qk)
 	{
 		if(mActiveQuestions1==null) return false; // If shutdown
-		
+
 		// If it's loaded in memory, we've got it, return true to save time
 		if(mActiveQuestions1.containsKey(qk)) return true;
-		
+
 		// Otherwise see if it exixsts
 		return getFile(qk).exists();
 	}
-	
+
 	/**
 	 * Saves a newly-retrieved question into the cache so that it can be loaded
 	 * with {@link #newQuestion(String)}.
@@ -204,13 +204,13 @@ public class QuestionCache
 			throw new OmException("Failed to save question file",ioe);
 		}
 	}
-	
+
 	static class QuestionInstance
 	{
 		Question q;
 		ClosableClassLoader ccl;
 	}
-	
+
 	/**
 	 * Returns new instance of a question with the given question ID. Question
 	 * has not yet been initialised, only constructed.
@@ -221,23 +221,23 @@ public class QuestionCache
 	 * @throws OmException If various problems with the .jar occur
 	 */
 	synchronized QuestionInstance newQuestion(QuestionKey qk) throws OmException
-	{		
+	{
 		checkNotShutdown();
-		// Find question ID in first map 
+		// Find question ID in first map
 		QuestionStuff qs=mActiveQuestions1.get(qk);
 		if(qs==null)
 		{
 			qs=new QuestionStuff();
 			mActiveQuestions1.put(qk,qs);
 		}
-		
+
 		// If we don't already have the class loaded, we need to load it
 		if(qs.c==null)
 		{
 			File fJar=getFile(qk);
 			if(!fJar.exists()) throw new OmException("Question '"+qk+
 				"' does not exist");
-			
+
 			// Get new classloader
 			try
 			{
@@ -248,7 +248,7 @@ public class QuestionCache
 				throw new OmException(
 					"Failed to start question classloader for: "+fJar,ioe);
 			}
-			
+
 			boolean bSuccess=false;
 			try
 			{
@@ -267,7 +267,7 @@ public class QuestionCache
 					throw new OmDeveloperException(
 						"Failed to load or parse question.xml in: "+fJar,ioe);
 				}
-				
+
 				// Find classname
 				Element eRoot=qs.dMeta.getDocumentElement();
 				if(!eRoot.getTagName().equals("question"))
@@ -277,7 +277,7 @@ public class QuestionCache
 					throw new OmDeveloperException(
 						"Expecting class= attribute on root of question.xml in: "+fJar);
 				String sClass=eRoot.getAttribute("class");
-				
+
 				// Load class
 				try
 				{
@@ -287,7 +287,7 @@ public class QuestionCache
 				{
 					throw new OmDeveloperException("Failed to find "+sClass+" in: "+fJar);
 				}
-				
+
 				bSuccess=true;
 			}
 			finally
@@ -295,7 +295,7 @@ public class QuestionCache
 				if(!bSuccess) qs.ccl.close();
 			}
 		}
-		
+
 		// Instantiate question
 		Question q;
 		boolean bSuccess=false;
@@ -334,23 +334,23 @@ public class QuestionCache
 				qs.ccl.close();
 			}
 		}
-		
+
 		// Add question to both directional maps
 		qs.lActive.add(q);
 		mActiveQuestions2.put(q,qk);
-		
+
 		// Return question
 		QuestionInstance qi=new QuestionInstance();
 		qi.q=q;
 		qi.ccl=qs.ccl;
 		return qi;
 	}
-	
+
 	/**
 	 * Puts a question back in the bank once it's finished with. Call this
 	 * after you're sure there are no other references to the question. All
-	 * questions <strong>must</strong> be closed if newQuestion returned 
-	 * successfully, otherwise it won't unload the jar file.  
+	 * questions <strong>must</strong> be closed if newQuestion returned
+	 * successfully, otherwise it won't unload the jar file.
 	 * @param q Question to return to the bank.
 	 * @throws OmException If the data structures are inconsistent
 	 */
@@ -367,14 +367,14 @@ public class QuestionCache
 		if(!qs.lActive.remove(q))
 			throw new OmException("Question maps inconsistent (missing question)");
 		if(!qs.lActive.isEmpty()) return; // If it wasn't the last, we're done
-		
+
 		// Remove the whole question class entry from the jarfile
 		mActiveQuestions1.remove(qk);
-		
+
 		// OK, that jar file can now be closed
 		qs.ccl.close();
 	}
-	
+
 	/** Abandon all questions and close all classloaders */
 	synchronized void shutdown()
 	{
@@ -387,7 +387,7 @@ public class QuestionCache
 		mActiveQuestions1=null;
 		mActiveQuestions2=null;
 	}
-	
+
 	/** @throws OmException If the question cache was shut down */
 	private void checkNotShutdown() throws OmException
 	{

@@ -26,23 +26,23 @@ import util.misc.NullOKComparator;
 /**
  * The score for a question, section or an entire test. In OpenMark, a score
  * can ba a collection of different numerical marks each against a different
- * axis. Axes are identified by strings, with the default axis being the 
+ * axis. Axes are identified by strings, with the default axis being the
  * one identified by the empty string. This class records the actual score
  * and the maximum possible on each axis.
- * 
+ *
  * In mathematical language, a score is a point in the vector space over the
  * field of doubles with basis the set of all strings, and this class actually
  * stores two points score and max, with 0 &lt;= score &lt;= max in product order.
  */
 public class CombinedScore
 {
-	// Map from String (axis name/null for default) to score out of maximum. 
+	// Map from String (axis name/null for default) to score out of maximum.
 	private Map<String, ScoreOnAxis> scores = new HashMap<String, ScoreOnAxis>();
-	
+
 	/**
 	 * Make a new CombinedScore from a map of scores and an array of maximums.
-	 * @param rawScores 
-	 * @param maximums 
+	 * @param rawScores
+	 * @param maximums
 	 * @return the new CombinedScore.
 	 */
 	public static CombinedScore fromArrays(Map<String, Double> rawScores, Score[] maximums) {
@@ -50,13 +50,13 @@ public class CombinedScore
 		for(int iAxis=0; iAxis < maximums.length; iAxis++)
 		{
 			Double part = rawScores.get(maximums[iAxis].getAxis());
-			if (part == null) part = 0.0; 
+			if (part == null) part = 0.0;
 			score.scores.put(maximums[iAxis].getAxis(),
 					new ScoreOnAxis(part, maximums[iAxis].getMarks()));
 		}
 		return score;
 	}
-	
+
 	/**
 	 * @param baseScore
 	 * @return a Combined score with the same axes and maximums as baseScore,
@@ -70,7 +70,7 @@ public class CombinedScore
 		}
 		return score;
 	}
-	
+
 	/**
 	 * @param baseScore
 	 * @return a Combined score with the same axes and maximums as baseScore,
@@ -85,13 +85,13 @@ public class CombinedScore
 		}
 		return score;
 	}
-	
+
 	/**
 	 * @param baseScore
-	 * @param maximums 
+	 * @param maximums
 	 * @return a Combined score where the scores are taken from the scores of baseScore,
 	 * band the maximums are taken from the scores of maximums.
-	 * @throws OmFormatException 
+	 * @throws OmFormatException
 	 */
 	public static CombinedScore scoreOutOfMax(CombinedScore baseScore, CombinedScore maximums)
 			throws OmFormatException {
@@ -104,7 +104,7 @@ public class CombinedScore
 		}
 		return score;
 	}
-	
+
 	/**
 	 * Gets score on an axis.
 	 * @param axis Axis name; null for default axis.
@@ -115,24 +115,24 @@ public class CombinedScore
 	{
 		ScoreOnAxis part = scores.get(axis);
 		if (part == null) throw new OmFormatException("No score for axis: "+axis);
-		
+
 		return part.score;
 	}
-	
+
 	/**
 	 * Gets maximum available marks on an axis.
 	 * @param axis Axis name; null for default axis
-	 * @return Maximum marks on that axis 
+	 * @return Maximum marks on that axis
 	 * @throws OmFormatException If there is no score against this axis in this score.
 	 */
 	public double getMax(String axis) throws OmFormatException
 	{
 		ScoreOnAxis part = scores.get(axis);
 		if(part == null) throw new OmFormatException("No score for axis: "+axis);
-		
+
 		return part.max;
 	}
-	
+
 	/**
 	 * @param axis Axis name; null for default axis.
 	 * @return True if we have a score on that axis
@@ -141,7 +141,7 @@ public class CombinedScore
 	{
 		return scores.containsKey(axis);
 	}
-	
+
 	/**
 	 * @return the set of axes we have scores against.
 	 */
@@ -150,7 +150,7 @@ public class CombinedScore
 	}
 
 	/**
-	 * @return List of all axis names (including null for default) in 
+	 * @return List of all axis names (including null for default) in
 	 * order, default axis first, then the normal String order.
 	 */
 	public String[] getAxesOrdered()
@@ -160,14 +160,14 @@ public class CombinedScore
 		Arrays.sort(asAxes,new NullOKComparator<String>()); // Null axis comes first,
 		return asAxes;
 	}
-	
+
 	/**
 	 * @return the set of all contributions on all axes.
 	 */
 	Set<Map.Entry<String, ScoreOnAxis>> getParts() {
 		return scores.entrySet();
 	}
-	
+
 	/**
 	 * Sets score on an axis.
 	 * @param axis Axis name
@@ -179,7 +179,7 @@ public class CombinedScore
 		ScoreOnAxis newPart=new ScoreOnAxis(score, max);
 		scores.put(axis,newPart);
 	}
-	
+
 	/**
 	 * Add a bit more score to a particular axis.
 	 * @param axis
@@ -194,7 +194,7 @@ public class CombinedScore
 			score.add(otherScore);
 		}
 	}
-	
+
 	/**
 	 * Add a bit more score to a particular axis.
 	 * @param axis
@@ -210,7 +210,7 @@ public class CombinedScore
 			score.add(otherScore, otherMax);
 		}
 	}
-	
+
 	/**
 	 * Adds another score to this one.
 	 * @param otherScore Score to add
@@ -222,7 +222,7 @@ public class CombinedScore
 			add(me.getKey(), me.getValue());
 		}
 	}
-	
+
 	@Override
 	protected Object clone()
 	{
@@ -240,7 +240,7 @@ public class CombinedScore
 		StringBuffer sb = new StringBuffer();
 		sb.append("[");
 		boolean first = true;
-		
+
 		for(Map.Entry<String,ScoreOnAxis> me : scores.entrySet())
 		{
 			String name=me.getKey();
@@ -248,11 +248,11 @@ public class CombinedScore
 			ScoreOnAxis part = me.getValue();
 			if(first)
 				first = false;
-			else 
+			else
 				sb.append("; ");
 			sb.append(name + "=" + part.score + " (of " + part.max + ")");
 		}
-		
+
 		sb.append("]");
 		return sb.toString();
 	}

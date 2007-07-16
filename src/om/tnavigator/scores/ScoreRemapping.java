@@ -29,7 +29,7 @@ import util.xml.XML;
 /**
  * A mapping of scores to scores. The output scores on each axis is computed by
  * combining a multiples of the scores on some or all of the input axes.
- * 
+ *
  * That is, in mathematical terms, a score remapping is a linear map from the space of
  * scores to the space of scores, that preserves the positive space s >= 0 in the product order.
  */
@@ -38,7 +38,7 @@ public class ScoreRemapping
 	// Details of how the scores on the new axes are calculated from the scores
 	// on the old axes. If empty, we are the identity transform.
 	private Set<RemappingPart> components;
-	
+
 	/**
 	 * Constructs item.
 	 * @param eThis XML tag for this item (that may contain &lt;rescore&gt; tags)
@@ -53,7 +53,7 @@ public class ScoreRemapping
 			components.add(RemappingPart.fromXML(rescoreElements[i]));
 		}
 	}
-	
+
 	/**
 	 * Computes a new score be remapping a base score.
 	 * @param baseScore Current score
@@ -64,13 +64,13 @@ public class ScoreRemapping
 	{
 		// If no changes, we return the existing score unmolested, axes and all
 		if (components.isEmpty()) return (CombinedScore)baseScore.clone();
-	
+
 		// OK, time to remap.
 		CombinedScore newScore = new CombinedScore();
 		for (RemappingPart component : components)
 		{
 			component.rescore(newScore,baseScore);
 		}
-		return newScore;		
+		return newScore;
 	}
 }

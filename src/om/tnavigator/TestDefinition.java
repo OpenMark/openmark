@@ -40,20 +40,20 @@ public class TestDefinition
 	  bQuestionNames,bEndSummary;
 	private int iNavLocation;
 	private String sLabelSet="";
-	
+
 	private Element eConfirmParagraphs;
 	private String sConfirmButton,sConfirmTitle;
-	
+
 	static final int NAVLOCATION_BOTTOM=0,NAVLOCATION_LEFT=1,NAVLOCATION_WIDE=2;
-	
-	
+
+
 	/**
 	 * Constructs test definition and checks format.
 	 * @param f File to use
 	 * @throws OmException Failure loading file or parsing XML
 	 * @throws OmFormatException Anything wrong with the specific format
 	 */
-	TestDefinition(File f) throws OmException 
+	TestDefinition(File f) throws OmException
 	{
 		try
 		{
@@ -64,15 +64,15 @@ public class TestDefinition
 		{
 			throw new OmException("Error loading/parsing test definition: "+f,ioe);
 		}
-		
+
 		try
 		{
-			// Get basic stuff from the XML so we don't need to throw exceptions 
+			// Get basic stuff from the XML so we don't need to throw exceptions
 			// later if it's absent
 			sName=XML.getText(dTest.getDocumentElement(),"title");
 			eContent=XML.getChild(dTest.getDocumentElement(),"content");
 			eFinal=XML.getChild(dTest.getDocumentElement(),"final");
-			
+
 			if(XML.hasChild(dTest.getDocumentElement(),"confirm"))
 			{
 				Element eConfirm=XML.getChild(dTest.getDocumentElement(),"confirm");
@@ -99,7 +99,7 @@ public class TestDefinition
 				sConfirmButton="Submit test";
 			if(sConfirmTitle==null)
 				sConfirmTitle="Are you ready to submit the test?";
-			
+
 			Element eOptions=XML.getChild(dTest.getDocumentElement(),"options");
 			bNavigation="yes".equals(eOptions.getAttribute("navigation"));
 			bRedoQuestion="yes".equals(eOptions.getAttribute("redoquestion"));
@@ -120,22 +120,22 @@ public class TestDefinition
 				iNavLocation=NAVLOCATION_WIDE;
 			else
 				iNavLocation=NAVLOCATION_BOTTOM;
-			
+
 			if(eOptions.hasAttribute("labelset")) sLabelSet=eOptions.getAttribute("labelset");
-				
+
 		}
 		catch(XMLException xe)
 		{
 			throw new OmFormatException("Error processing test definition: "+f,xe);
 		}
 	}
-	
+
 	/** @return Name of test */
 	String getName()
 	{
 		return sName;
 	}
-	
+
 	/**
 	 * Obtain resolved list of questions/pages in test for this user.
 	 * @param lRandomSeed Random seed for user
@@ -150,7 +150,7 @@ public class TestDefinition
 		tg.numberQuestions();
 		return tg;
 	}
-	
+
 	/**
 	 * Recursively add this element and any children to tree of items
 	 * @param r Random number generator
@@ -171,7 +171,7 @@ public class TestDefinition
 		}
 
 		// OK, it's some type of group
-		TestGroup g=new TestGroup(iParent,eThis);		
+		TestGroup g=new TestGroup(iParent,eThis);
 		if(sParentTag.equals("content") || sParentTag.equals("group") || sParentTag.equals("section"))
 		{
 			// Add each child in turn
@@ -181,7 +181,7 @@ public class TestDefinition
 				String sTagName=aeChildren[i].getTagName();
 				if(!sTagName.equals("title") && !sTagName.equals("rescore"))
 					g.add(getTestItem(r,aeChildren[i],g));
-			}			
+			}
 		}
 		else if(sParentTag.equals("random"))
 		{
@@ -199,7 +199,7 @@ public class TestDefinition
 				else
 				{
 					iChoose=Integer.parseInt(sChoose);
-					if(iChoose > aeChildren.length) 
+					if(iChoose > aeChildren.length)
 						throw new OmFormatException("<random> Can't choose "+iChoose+" from "+aeChildren.length);
 				}
 			}
@@ -207,11 +207,11 @@ public class TestDefinition
 			{
 				throw new OmFormatException("<random> Invalid value for choose= (expected number): "+sChoose);
 			}
-			
+
 			List<Element> lPicks=new LinkedList<Element>(Arrays.asList(aeChildren));
 			for(int i=0;i<iChoose;i++)
 			{
-				g.add(getTestItem(r,					
+				g.add(getTestItem(r,
 					lPicks.remove(r.nextInt(lPicks.size())),g));
 			}
 		}
@@ -219,72 +219,72 @@ public class TestDefinition
 			throw new OmFormatException("Unexpected tag in <questions>: '"+sParentTag+"'");
 		return g;
 	}
-	
+
 	boolean isNavigationAllowed()
 	{
 		return bNavigation;
 	}
-	
+
 	boolean isRedoQuestionAllowed()
 	{
 		return bRedoQuestion;
 	}
-	
+
 	boolean isAutomaticRedoQuestionAllowed()
 	{
 		return bRedoQuestionAuto;
 	}
-	
+
 	boolean isRedoTestAllowed()
 	{
 		return bRedoTest;
 	}
-	
+
 	boolean isSummaryAllowed()
 	{
 		return bFreeSummary;
 	}
-	
+
 	boolean areQuestionsNamed()
 	{
 		return bQuestionNames;
 	}
-	
+
 	boolean doesSummaryIncludeScores()
 	{
 		return bSummaryScores;
 	}
-	
+
 	boolean doesSummaryIncludeAttempts()
 	{
 		return bSummaryAttempts;
 	}
-	
+
 	boolean doesSummaryIncludeQuestions()
 	{
 		return bSummaryQuestions;
 	}
-	
+
 	boolean isStopAllowed()
 	{
 		return bFreeStop;
 	}
-	
+
 	boolean isSummaryIncludedAtEndCheck()
 	{
 		return bEndSummary;
 	}
-	
+
 	int getNavLocation()
 	{
 		return iNavLocation;
 	}
-	
+
 	Element getFinalPage()
 	{
 		return eFinal;
 	}
-	
+
 	Element getConfirmParagraphs()
 	{
 		return eConfirmParagraphs;
@@ -297,7 +297,7 @@ public class TestDefinition
 	{
 		return sConfirmTitle;
 	}
-	
+
 	String getLabelSet()
 	{
 		return sLabelSet;

@@ -40,7 +40,7 @@ public class SecondDerivative extends SimpleQuestion1
 	String numberD;
 	String[] numbersE = {"12", "18", "12", "12", "18"};
 	String numberE;
-  
+
 	/** Selected question */
 	private int iVariant;
 
@@ -48,11 +48,11 @@ public class SecondDerivative extends SimpleQuestion1
 	{
 		Random r = getRandom();
 		iVariant = r.nextInt(numbersA.length);
-	
+
 		numberC = numbersC[iVariant];
 		numberD = numbersD[iVariant];
 		numberE = numbersE[iVariant];
-  	
+
 		String strNumA = numbersA[iVariant];
 		String strNumB = numbersB[iVariant];
 
@@ -62,22 +62,22 @@ public class SecondDerivative extends SimpleQuestion1
 		setPlaceholder("D",numbersD[iVariant]);
 		setPlaceholder("E",numbersE[iVariant]);
 
-		getResults().setQuestionLine("What is the second derivative of " + 
-									 							 "z = " + strNumA + "t^3 + " + strNumB + "t^2 " + 
+		getResults().setQuestionLine("What is the second derivative of " +
+									 							 "z = " + strNumA + "t^3 + " + strNumB + "t^2 " +
 									 							 "- 2t + 3 with respect to t?");
 	}
-  
+
 	protected boolean isRight(int iAttempt) throws OmDeveloperException
 	{
 		getComponent("wrongDerivative").setDisplay(false);
-  	
+
 		String sInput = Helper.removeMultSignsAndWhitespace(getAdvancedField("input").getValue());
-		
+
 		getResults().setAnswerLine(sInput);
 		getResults().appendActionSummary("Attempt "+iAttempt+": "+sInput);
-		
+
 		boolean correct = false;
-			
+
 		String answer1 = numberE + "t+" + numberD;
 		String answer2 = numberD + "+" + numberE + "t";
 
@@ -121,7 +121,7 @@ public class SecondDerivative extends SimpleQuestion1
 			{
 				setFeedbackID("default");
 			}
-		}    
+		}
 
 		return correct;
 	}

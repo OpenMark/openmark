@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-/** 
+/**
  * Information a Question provides in order that it may be rendered as XHTML
  * for the user's browser.
  */
@@ -33,13 +33,13 @@ public class Rendering
 
   /** CSS stylesheet */
   private String sCSS=null;
-  
+
   /** Progress information */
   private String sProgressInfo=null;
-  
+
 	/** List of returned resources (QResource) */
 	private List<Resource> lResources=new LinkedList<Resource>();
-	
+
 	/**
 	 * @param eXHTML Root element for question
 	 */
@@ -47,15 +47,15 @@ public class Rendering
 	{
 		this.eXHTML=eXHTML;
 	}
-	
+
 	/** @return XHTML content; null only in QActionRendering */
 	public Element getXHTML() { return eXHTML; }
-	
+
 	/**
-	 * Call to set CSS stylesheet. 
+	 * Call to set CSS stylesheet.
 	 * <p>
-	 * In QActionRendering: This overrides any stylesheet that was 
-	 * previously set. You do not need to call this if you want to continue 
+	 * In QActionRendering: This overrides any stylesheet that was
+	 * previously set. You do not need to call this if you want to continue
 	 * using the same stylesheet.
 	 * @param sCSS CSS stylesheet contents
 	 */
@@ -63,15 +63,15 @@ public class Rendering
 	{
 		this.sCSS=sCSS;
 	}
-	
+
 	/** @return CSS content or null if not set */
 	public String getCSS() { return sCSS; }
-	
+
 	/**
 	 * Adds a new resource.
 	 * <p>
 	 * In QActionRendering: The new resource is added to any existing ones, or
-	 * replaces them if the name is identical. You do not need to re-add 
+	 * replaces them if the name is identical. You do not need to re-add
 	 * resources each time.
 	 * @param qr
 	 */
@@ -79,14 +79,14 @@ public class Rendering
 	{
 		lResources.add(qr);
 	}
-	
+
 	/** @return All resources added to question */
-	public Resource[] getResources() 
-	{ 
+	public Resource[] getResources()
+	{
 		return lResources.toArray(new Resource[0]);
 	}
-	
-	/** 
+
+	/**
 	 * @param sProgressInfo Brief information on progress through question that
 	 *   will be displayed alongside the question (for example, number of attempts
 	 *   remaining). Progress information is retained between actions if it is
@@ -96,7 +96,7 @@ public class Rendering
 	{
 		this.sProgressInfo=sProgressInfo;
 	}
-	
+
 	/** @return Progress information or null if no change */
 	public String getProgressInfo() { return sProgressInfo; }
 }

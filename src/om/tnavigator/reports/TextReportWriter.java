@@ -31,8 +31,8 @@ public abstract class TextReportWriter extends TabularReportWriter
 	private final String cellSeparator;
 	private final String cellWrapperOpen;
 	private final String cellWrapperClose;
-	private boolean rowStarted=false; 
-	
+	private boolean rowStarted=false;
+
 	/**
 	 * @param pw the print writer we will be writing to.
 	 * @param columns a list of column definitions.
@@ -51,7 +51,7 @@ public abstract class TextReportWriter extends TabularReportWriter
 		this.cellWrapperOpen=cellWrapperOpen;
 		this.cellWrapperClose=cellWrapperClose;
 	}
-	
+
 	/**
 	 * @param pw the print writer we will be writing to.
 	 * @param columns a list of column definitions.
@@ -62,7 +62,7 @@ public abstract class TextReportWriter extends TabularReportWriter
 	{
 		this(pw,columns,"\r\n",cellSeparator,"\"","\"");
 	}
-	
+
 	private void endLine()
 	{
 		pw.print(rowSeparator);
@@ -80,7 +80,7 @@ public abstract class TextReportWriter extends TabularReportWriter
 		pw.print(cellWrapperClose);
 		rowStarted=true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.TabularReportWriter#sendHead()
 	 */
@@ -93,7 +93,7 @@ public abstract class TextReportWriter extends TabularReportWriter
 		}
 		endLine();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.TabularReportWriter#sendRow(java.util.Map)
 	 */
@@ -106,7 +106,7 @@ public abstract class TextReportWriter extends TabularReportWriter
 		}
 		endLine();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.TabularReportWriter#sendTail()
 	 */

@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
 
 
 /**
- * Test items that (may) contribut a score towards the test. 
+ * Test items that (may) contribut a score towards the test.
  * Handles remapping of the raw scores returned by this test item
  * into the scores that this this item should report to the outside world.
  */
@@ -33,7 +33,7 @@ abstract class TestMarkedItem extends TestItem
 {
 	/** Each rescore tag */
 	private ScoreRemapping scoreRemapping;
-	
+
 	/**
 	 * Constructs item.
 	 * @param iParent Parent or null if none
@@ -45,20 +45,20 @@ abstract class TestMarkedItem extends TestItem
 		super(iParent,eThis);
 		scoreRemapping = new ScoreRemapping(eThis);
 	}
-	
+
 	/**
-	 * Uses the details from &lt;rescore&gt; elements to adjust the score 
-	 * calculated thus far, returning a new score. 
+	 * Uses the details from &lt;rescore&gt; elements to adjust the score
+	 * calculated thus far, returning a new score.
 	 * @param ps Current score
 	 */
 	CombinedScore rescore(CombinedScore ps) throws OmFormatException
 	{
-		return scoreRemapping.remap(ps);	
+		return scoreRemapping.remap(ps);
 	}
-	
+
 	/**
 	 * @param sOnly If non-null, counts only the final score contribution from
-	 *   the given ID'd question 
+	 *   the given ID'd question
 	 * @param bMax If true, forces all questions that are counted (usually just
 	 *   sOnly) to have max contribution
 	 * @return The calculated score resulting from this item

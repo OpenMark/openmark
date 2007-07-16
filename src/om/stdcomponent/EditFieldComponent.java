@@ -27,9 +27,9 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
+/**
 Standard XHTML edit field for entering a single line or multiple lines of plain text. Can estimate
-its own size for inclusion within {@link EquationComponent}s.  Default is one line. 
+its own size for inclusion within {@link EquationComponent}s.  Default is one line.
 <h2>XML usage</h2>
 &lt;editfield/&gt;
 <h2>Properties</h2>
@@ -48,9 +48,9 @@ its own size for inclusion within {@link EquationComponent}s.  Default is one li
 This component also supports the forcewidth and forceheight properties that
 are required as part of size approximation.
 <br/>
-The "value" attribute cannot include carriage returns in the xml file.  
+The "value" attribute cannot include carriage returns in the xml file.
 If you want to include these in an initial value then you can use
-setValue(String) in the "init" function (java code).  
+setValue(String) in the "init" function (java code).
 <br/>
 eg. getEditField("input1").setValue("1\n2\n3");
 */
@@ -75,7 +75,7 @@ public class EditFieldComponent extends QComponent implements Labelable
 
 	/** If true, none of parents do anything particular - needed for some IE-specific stylin'. */
 	private boolean bNonScaryParents;
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
@@ -89,29 +89,29 @@ public class EditFieldComponent extends QComponent implements Labelable
 
 		defineInteger(PROPERTY_FORCEWIDTH);
 		defineInteger(PROPERTY_FORCEHEIGHT);
-		
+
 		setString(PROPERTY_VALUE,"");
 		setInteger(PROPERTY_COLS,20);
 		setInteger(PROPERTY_ROWS,1);
 	}
-	
+
 	@Override
 	public Dimension getApproximatePixelSize() throws OmDeveloperException
 	{
 		return new Dimension(6*getInteger(PROPERTY_COLS)+26,11*getInteger(PROPERTY_ROWS)+11);
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		if(eThis.getFirstChild()!=null) throw new OmFormatException(
 			"<editfield> may not contain other content");
-		
-		// Check whether there are any parents that might do scary things (i.e. anything other than 
+
+		// Check whether there are any parents that might do scary things (i.e. anything other than
 		// TextComponent, Indent, etc.)
 		bNonScaryParents=true;
 		QComponent[] aqc=getAncestors();
-		for(int i=0;i<aqc.length;i++)			
+		for(int i=0;i<aqc.length;i++)
 		{
 			if(aqc[i] instanceof BoxComponent) break;
 			if(!(aqc[i] instanceof TextComponent || aqc[i] instanceof IndentComponent ||
@@ -122,7 +122,7 @@ public class EditFieldComponent extends QComponent implements Labelable
 			}
 		}
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
@@ -143,15 +143,15 @@ public class EditFieldComponent extends QComponent implements Labelable
 			eInput.setAttribute("rows",""+getInteger(PROPERTY_ROWS));
 			XML.createText(eInput,getString(PROPERTY_VALUE));
 		}
-		else 
+		else
 			throw new OmFormatException(
-			"<editfield> rows must be in the range 1 to 30"); 
+			"<editfield> rows must be in the range 1 to 30");
 
-		eInput.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());		
+		eInput.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 		eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 
 		if(!isEnabled()) eInput.setAttribute("readonly","yes");
-		
+
 		if(!(bGotLabel || isPropertySet(PROPERTY_LABEL)))
 		{
 			throw new OmFormatException("<editfield> "+getID()+": Requires <label> or label=");
@@ -188,15 +188,15 @@ public class EditFieldComponent extends QComponent implements Labelable
 			else
 				eInput.setAttribute("class","editfielddisabled");
 		}
-		
+
 		qc.addInlineXHTML(eInput);
 		if(isEnabled()) qc.informFocusable(eInput.getAttribute("id"),bPlain);
 		qc.addTextEquivalent("[Editfield: "+getValue()+"]");
 	}
-	
+
 	/** Maximum length of single line */
 	private final static int MAXCHARS_SINGLELINE=100;
-	
+
 	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
@@ -204,9 +204,9 @@ public class EditFieldComponent extends QComponent implements Labelable
 		if(getInteger(PROPERTY_ROWS)==1) sValue=trim(sValue,MAXCHARS_SINGLELINE);
 		setString(PROPERTY_VALUE,sValue);
 	}
-	
-	/** @return Current value of edit field. For single-line editfield, 
-	 * value is trimmed to be no more than 100 characters. 
+
+	/** @return Current value of edit field. For single-line editfield,
+	 * value is trimmed to be no more than 100 characters.
 	 */
 	public String getValue()
 	{
@@ -219,9 +219,9 @@ public class EditFieldComponent extends QComponent implements Labelable
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/** @param sValue New value for edit field */
-	public void setValue(String sValue) 
+	public void setValue(String sValue)
 	{
 		try
 		{

@@ -23,8 +23,8 @@ import om.stdquestion.QContent;
 
 import org.w3c.dom.Element;
 
-/** 
-Indents contained text or components. 
+/**
+Indents contained text or components.
 <h2>XML usage</h2>
 &lt;indent&gt;...&lt;/indent&gt;
 <h2>Properties</h2>
@@ -42,13 +42,13 @@ public class IndentComponent extends QComponent
 	{
 		return "indent";
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
@@ -56,9 +56,9 @@ public class IndentComponent extends QComponent
 		eDiv.setAttribute("class","indent");
 		qc.addInlineXHTML(eDiv);
 		qc.setParent(eDiv);
-		
+
 		produceChildOutput(qc,bInit,bPlain);
-		
-		qc.unsetParent();		
+
+		qc.unsetParent();
 	}
 }

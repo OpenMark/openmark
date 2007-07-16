@@ -27,17 +27,17 @@ import om.tnavigator.auth.UserDetails;
 public class SimpleUser implements UserDetails
 {
 	final static SimpleUser NOTLOGGEDIN=new SimpleUser(null,null,null);
-	
+
 	private String cookie,username,email;
 	private Set<String> groups=new HashSet<String>();
-	
+
 	SimpleUser(String cookie,String username,String email)
 	{
 		this.cookie=cookie;
 		this.username=username;
 		this.email=email;
 	}
-	
+
 	void addGroup(String group)
 	{
 		groups.add(group);
@@ -69,7 +69,7 @@ public class SimpleUser implements UserDetails
 		return username;
 	}
 
-	public boolean hasAuthID(String sAuthId)	
+	public boolean hasAuthID(String sAuthId)
 	{
 		return groups.contains(sAuthId);
 	}

@@ -35,12 +35,12 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	final static int VERSION_UNSPECIFIED=-1;
 	private String sID;
 	private int iVersion=VERSION_UNSPECIFIED;
-	
+
 	private String sSection;
 	private int iNumber;
 	private boolean bDone=false;
 	CombinedScore actualScore=null;
-	
+
 	TestQuestion(TestItem iParent,Element eQuestion) throws OmFormatException
 	{
 		super(iParent,eQuestion);
@@ -52,7 +52,7 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 		{
 			throw new OmFormatException("<question>: Missing id= attribute");
 		}
-		
+
 		try
 		{
 			String sVersion=eQuestion.getAttribute("version");
@@ -63,24 +63,24 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 			throw new OmFormatException("<question>: version= must be an integer");
 		}
 	}
-	
+
 	/** @return Required question ID */
 	String getID()
 	{
 		return sID;
 	}
-	
+
 	/** @return Required question version or VERSION_UNSPECIFIED for latest */
 	int getVersion()
 	{
-		return iVersion;			
+		return iVersion;
 	}
-	
+
 	public boolean isDone()
 	{
 		return bDone;
 	}
-	
+
 	/**
 	 * Marks question as done/equivalent (or not)
 	 * @param bDone True if question has been done
@@ -90,34 +90,34 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 		this.bDone=bDone;
 	}
 
-	/** 
-	 * Sets the number for this question (called by TestGroup). 
+	/**
+	 * Sets the number for this question (called by TestGroup).
 	 * @param i Question number
 	 */
 	void setNumber(int i)
 	{
 		iNumber=i;
 	}
-	
+
 	/** @return Number to display for this question */
 	int getNumber()
 	{
 		return iNumber;
 	}
-	
+
 	public void setSection(String s)
 	{
 		sSection=s;
 	}
-	
+
 	public String getSection()
 	{
 		return sSection;
 	}
-	
+
 	/** Array of questions on which this depends */
 	private TestQuestion[] atqDepends = null;
-	
+
 	public boolean isAvailable()
 	{
 		for(int i=0;i<atqDepends.length;i++)
@@ -126,11 +126,11 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 		}
 		return true;
 	}
-	
-	
-	/** 
+
+
+	/**
 	 * Resolves the dependencies list down to actual questions.
-	 * @param tgRoot Root to look up dependencies in. 
+	 * @param tgRoot Root to look up dependencies in.
 	 */
 	void resolveDepends(TestGroup tgRoot)
 	{
@@ -141,13 +141,13 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 			String sThisDepends=ti.getDepends();
 			if(sThisDepends!=null)
 			{
-				tgRoot.listQuestionsUnderID(sThisDepends,l);				
+				tgRoot.listQuestionsUnderID(sThisDepends,l);
 			}
 			ti=ti.getParent();
 		}
 		atqDepends=l.toArray(new TestQuestion[0]);
 	}
-	
+
 	/**
 	 * Call to fill in user's actual score on this question.
 	 * @param score Score (use null to clear)
@@ -156,7 +156,7 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	{
 		this.actualScore = score;
 	}
-	
+
 	/**
 	 * @return True if a score has been set
 	 */
@@ -164,12 +164,12 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	{
 		return actualScore != null;
 	}
-	
+
 	@Override
 	CombinedScore getFinalScore(String sOnly,boolean bMax) throws OmFormatException
 	{
 		CombinedScore score=rescore(actualScore);
-		
+
 		if(sOnly!=null && !sOnly.equals(sID))
 		{
 			score = CombinedScore.zeroScore(score);
@@ -178,11 +178,11 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 		{
 			score = CombinedScore.maxScore(score);
 		}
-		
+
 		return score;
 	}
-	
-	/** 
+
+	/**
 	 * @return contribution from this question towards final score of a test group
 	 */
 	CombinedScore getScoreContribution(TestGroup testGroup) throws OmFormatException

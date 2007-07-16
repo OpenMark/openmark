@@ -24,7 +24,7 @@ import om.stdquestion.QContent;
 
 import org.w3c.dom.Element;
 
-/** 
+/**
 Conditionally displays content depending on settings.
 <h2>XML usage</h2>
 &lt;if plain="yes"&gt;...&lt;/if&gt;
@@ -34,7 +34,7 @@ Conditionally displays content depending on settings.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates all children</td></tr>
-<tr><td>plain</td><td>(boolean)</td><td>If set, requires plain mode to be 
+<tr><td>plain</td><td>(boolean)</td><td>If set, requires plain mode to be
   either on (yes) or off (no), otherwise contents will not be shown</td></tr>
 </table>
 */
@@ -42,31 +42,31 @@ public class IfComponent extends QComponent
 {
 	/** If set, requires plain mode to be either on (yes) or off (no), otherwise contents will not be shown */
 	public static String PROPERTY_PLAIN="plain";
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "if";
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
 		defineBoolean(PROPERTY_PLAIN);
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		if(isPropertySet(PROPERTY_PLAIN) && bPlain!=getBoolean(PROPERTY_PLAIN)) return;
-		
+
 		produceChildOutput(qc,bInit,bPlain);
 	}
 }

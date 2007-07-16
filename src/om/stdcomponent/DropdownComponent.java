@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
+/**
 A component that produces a dropdown box with several available options.
 <h2>XML usage</h2>
 &lt;dropdown&gt;
@@ -57,23 +57,23 @@ public class DropdownComponent extends QComponent
 		String sValue;
 		String sDisplay;
 	}
-	
-	/** List of Option */ 
-	private List<Option> lOptions=new LinkedList<Option>(); 
-	
+
+	/** List of Option */
+	private List<Option> lOptions=new LinkedList<Option>();
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "dropdown";
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
 		defineString(PROPERTY_SELECTED);
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
@@ -88,12 +88,12 @@ public class DropdownComponent extends QComponent
 				aeOptions[i].getAttribute("value"),aeOptions[i].getAttribute("display"));
 		}
 	}
-	
+
 	/**
 	 * Adds an option to the dropdown.
 	 * @param sValue Value for option
 	 * @param sDisplay Display text of option
-	 * @throws OmException 
+	 * @throws OmException
 	 */
 	public void addOption(String sValue,String sDisplay) throws OmException
 	{
@@ -105,7 +105,7 @@ public class DropdownComponent extends QComponent
 		if(!isPropertySet(PROPERTY_SELECTED))
 			setString(PROPERTY_SELECTED,o.sValue);
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
@@ -114,23 +114,23 @@ public class DropdownComponent extends QComponent
 		qc.addInlineXHTML(eSelect);
 		eSelect.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 		eSelect.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
-		
+
 		// Create all options
 		String sSelectedValue=null;
 		for(Iterator i=lOptions.iterator();i.hasNext();)
 		{
 			Option o=(Option)i.next();
-			
+
 			Element eOption=XML.createChild(eSelect,"option");
-			if(getString(PROPERTY_SELECTED).equals(o.sValue)) 
+			if(getString(PROPERTY_SELECTED).equals(o.sValue))
 			{
 				eOption.setAttribute("selected","selected");
 				sSelectedValue=o.sDisplay;
 			}
 			XML.createText(eOption,o.sDisplay);
 		}
-		
-		if(isEnabled()) 
+
+		if(isEnabled())
 		{
 			qc.informFocusable(QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID(),bPlain);
 		}
@@ -141,7 +141,7 @@ public class DropdownComponent extends QComponent
 
 		qc.addTextEquivalent("["+sSelectedValue+"]");
 	}
-	
+
 	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
@@ -154,10 +154,10 @@ public class DropdownComponent extends QComponent
 				return;
 			}
 		}
-		
-		throw new OmException("Unexpected dropdown value: "+sValue);			
+
+		throw new OmException("Unexpected dropdown value: "+sValue);
 	}
-	
+
 	/** @return ID of dragbox that's placed in box (null if none) */
 	public String getSelected()
 	{
@@ -170,9 +170,9 @@ public class DropdownComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/** @param sValue ID of dragbox that should be placed in box */
-	public void setSelected(String sValue) 
+	public void setSelected(String sValue)
 	{
 		try
 		{
@@ -183,7 +183,7 @@ public class DropdownComponent extends QComponent
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	@Override
 	public String setString(String sName,String sValue) throws OmDeveloperException
 	{

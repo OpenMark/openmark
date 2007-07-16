@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package om.tnavigator.reports.std;
 
@@ -24,7 +24,7 @@ import util.xml.XML;
  */
 public class UserTestReport implements OmTestReport {
 	NavigatorServlet ns;
-	
+
 	/**
 	 * Create an instance of this report.
 	 * @param ns the navigator servlet we belong to.
@@ -53,7 +53,7 @@ public class UserTestReport implements OmTestReport {
 	public boolean isApplicable(TestDeployment td) {
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.OmTestReport#handleTestReport(om.tnavigator.UserSession, java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -62,23 +62,23 @@ public class UserTestReport implements OmTestReport {
 			throws Exception {
 		// Build result
 		StringBuffer sb=new StringBuffer("<div class='basicpage userreport report'>");
-		
+
 		SimpleDateFormat sdf=new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
-		
+
 		// Query from database for PIs and questions
-		DatabaseAccess.Transaction dat=ns.getDatabaseAccess().newTransaction();		
+		DatabaseAccess.Transaction dat=ns.getDatabaseAccess().newTransaction();
 		try
 		{
 			// Get session info
 			Map<Integer, String> mSessionInfo=new HashMap<Integer, String>();
 			ResultSet rs=ns.getOmQueries().queryUserReportSessions(dat,us.getTestId(),sUser);
-			while(rs.next()) 
+			while(rs.next())
 			{
 				int iTAttempt=rs.getInt(1);
 				Timestamp tsDate=rs.getTimestamp(2);
 				String sIP=rs.getString(3);
 				String sUserAgent=rs.getString(4);
-				
+
 				String sOutput=mSessionInfo.get(iTAttempt);
 				if(sOutput==null) sOutput=
 					"<div class='sessions'>" +
@@ -91,13 +91,13 @@ public class UserTestReport implements OmTestReport {
 					XHTML.escape(sUserAgent, XHTML.ESCAPE_TEXT)+"</td></tr></table></div>";
 				mSessionInfo.put(iTAttempt,sOutput);
 			}
-			
+
 			rs=ns.getOmQueries().queryUserReportTest(dat,us.getTestId(),sUser);
-			
+
 			int iCurrentTAttempt=0;
 			String sCurrentQuestion=null;
 			int iCurrentQAttempt=0;
-			
+
 			boolean bInTest=false,bInQuestion=false;
 			while(rs.next())
 			{
@@ -116,7 +116,7 @@ public class UserTestReport implements OmTestReport {
 				Timestamp tsFinished=rs.getTimestamp(13);
 				Timestamp tsMinAction=rs.getTimestamp(14);
 				Timestamp tsMaxAction=rs.getTimestamp(15);
-				
+
 				if(iTAttempt!=iCurrentTAttempt)
 				{
 					iCurrentTAttempt=iTAttempt;
@@ -126,21 +126,21 @@ public class UserTestReport implements OmTestReport {
 						bInQuestion=false;
 					}
 					if(bInTest) sb.append("</div>");
-					
+
 					sb.append("<div class='tattempt'><h3>Test attempt "+iCurrentTAttempt+
 						" ("+(iFinished==0?"Unfinished":"Finished on "+(tsFinished==null ? "[date not available] " : sdf.format(tsFinished))
 								)+")</h3>");
 					bInTest=true;
-					
+
 					String sSessionInfo=mSessionInfo.get(iTAttempt);
 					if(sSessionInfo!=null) sb.append(sSessionInfo);
 				}
-				
+
 				if(!sQuestion.equals(sCurrentQuestion) || iQAttempt!=iCurrentQAttempt)
 				{
 					iCurrentQAttempt=iQAttempt;
 					if(bInQuestion) sb.append("</div></div>");
-					
+
 					sb.append("<div class='qattempt'><h4>#"+iQNumber+" ("+sQuestion+") attempt "+
 						iCurrentQAttempt+"</h4>"+
 		  		  "<div class='started'>Access time: <em>"+sdf.format(tsDate)+"</em></div>"+
@@ -161,13 +161,13 @@ public class UserTestReport implements OmTestReport {
 		  		sb.append("</em></div><div class='scores'><span class='t'>Score:</span>");
 					bInQuestion=true;
 				}
-				
+
 				if(sAxis!=null)
 		  	{
 					sb.append("<div><span class='axis'>"+
 		  		  (sAxis.equals("") ? "Default" : sAxis)+
 		  		  ": </span><span class='val'>"+sAxisScore+"</span></div>");
-		  	}				
+		  	}
 			}
 			if(bInQuestion) sb.append("</div></div>");
 			if(bInTest) sb.append("</div>");
@@ -176,9 +176,9 @@ public class UserTestReport implements OmTestReport {
 		{
 			dat.finish();
 		}
-	
+
 		sb.append("<p><a href='reports!'>Back to reports home</a></p>");
 		sb.append("</div>");
-		ns.serveTestContent(us,"Reports: "+sUser,"",null,null,sb.toString(),false, request, response, true);		
+		ns.serveTestContent(us,"Reports: "+sUser,"",null,null,sb.toString(),false, request, response, true);
 	}
 }

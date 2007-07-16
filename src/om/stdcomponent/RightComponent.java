@@ -23,8 +23,8 @@ import om.stdquestion.QContent;
 
 import org.w3c.dom.Element;
 
-/** 
-Right-aligns contained text or components.  
+/**
+Right-aligns contained text or components.
 <h2>XML usage</h2>
 &lt;right&gt;...&lt;/right&gt;
 <h2>Properties</h2>
@@ -42,13 +42,13 @@ public class RightComponent extends QComponent
 	{
 		return "right";
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
@@ -56,9 +56,9 @@ public class RightComponent extends QComponent
 		if(!bPlain) eDiv.setAttribute("class","right");
 		qc.addInlineXHTML(eDiv);
 		qc.setParent(eDiv);
-		
+
 		produceChildOutput(qc,bInit,bPlain);
-		
-		qc.unsetParent();		
+
+		qc.unsetParent();
 	}
 }

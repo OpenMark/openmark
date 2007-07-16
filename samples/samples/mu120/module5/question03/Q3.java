@@ -31,34 +31,34 @@ import om.stdcomponent.CanvasComponent;
 import samples.shared.Helper;
 
 public class Q3 extends SimpleQuestion2 {
-    
+
     private static final double tolerance = 1E-6;
-    
+
     double dAns;
-    
+
     // BarChart data
     String xCaption = "Number of children per household";
     String [] xLabels = {"0", "1", "2", "3", "4", "5"};
     String yCaption = "Number of households";
     String [] yLabels = {"0", "", "", "", "", "", "", "", "40"};
     int [] yValues = {35, 20, 25, 15, 5, 0};
-    
+
     protected void init() throws OmException {
-        
+
         Random r = getRandom();
         int X;
         do { // avoid the question that asks for a bar of height one division
             X= r.nextInt(5);
         } while (X == 5);
         int Y = yValues [X];
-        
+
         dAns = Y;
-        
+
         setPlaceholder("X", "" + X);
         setPlaceholder("CHILD(REN)", (X==1) ? "child" : "children");
         setPlaceholder("Y", "" + Y);
         setPlaceholder("Y/5", "" + (Y/5));
-        
+
         BarChart bc = new BarChart(xCaption, xLabels, yCaption, yLabels, yValues);
         CanvasComponent cc = (CanvasComponent) getComponent("barchart");
         Graphics g = cc.getGraphics().create();
@@ -67,26 +67,26 @@ public class Q3 extends SimpleQuestion2 {
         g.dispose();
         getComponent("inputbox").setDisplay(true);
         //cc.markChanged();
-        
+
         // store question information
         getResults().setQuestionLine("How many households have " + X + " children?");
         getResults().setAnswerLine(""+Y);
     }
-    
+
     protected boolean isRight(int iAttempt) throws OmDeveloperException {
-        
+
         String response = (getEditField("response").getValue().trim());
         double dbl = Helper.inputNumber(response);
-        
+
         // store response information
         getResults().appendActionSummary("Attempt " + iAttempt + ": " + response);
-        
+
         // correct answer (can be wrong way round) ?
         if (Helper.range(dbl, dAns, tolerance))
             return true;
-        
+
         // wrong answer handled from here on .....
-        
+
         if (iAttempt < 3) {
             if (Double.isNaN(dbl))
                 getComponent("nonumber").setDisplay(true);
@@ -97,7 +97,7 @@ public class Q3 extends SimpleQuestion2 {
                     setFeedbackID("toolarge");
             }
         }
-        
+
         // feeback, given attempt 1, 2, or 3
         switch (iAttempt) {
             case 1:
@@ -109,8 +109,8 @@ public class Q3 extends SimpleQuestion2 {
             case 3:
                 break;
         }
-        
+
         return false;
     }
-    
+
 }

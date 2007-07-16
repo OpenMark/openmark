@@ -24,12 +24,12 @@ import om.stdquestion.StandardQuestion;
 
 public class TestAudio extends StandardQuestion
 {
-	private static final String 
+	private static final String
 		HIDARI="hidari",PANYA="panya",KISSATEN="kissaten",TOSHOKAN="toshokan",
 		DEPAATO="depaato",MIGI="migi";
-	
-	private String sJunction,sPlace;	
-	
+
+	private String sJunction,sPlace;
+
 	protected void init() throws OmException
 	{
 		Random r=getRandom();
@@ -43,11 +43,11 @@ public class TestAudio extends StandardQuestion
 			sJunction=HIDARI;
 			sPlace=r.nextBoolean() ? KISSATEN : PANYA;
 		}
-		
+
 		setPlaceholder("JUNCTION",sJunction);
 		setPlaceholder("PLACE",sPlace);
 	}
-	
+
 	public void actionOK() throws OmException
 	{
 		end();
@@ -62,26 +62,26 @@ public class TestAudio extends StandardQuestion
 		}
 		else beginPart2();
 	}
-	
+
 	private void beginPart2() throws OmException
 	{
 		getComponent("hereL").setDisplay(false);
 		getComponent("hereR").setDisplay(false);
 		getComponent("audio1").setDisplay(false);
 		getComponent("part1").setDisplay(false);
-		
+
 		getComponent("part2").setDisplay(true);
 		if(sJunction==MIGI)
 		{
 			getComponent("audio2r").setDisplay(true);
 			getComponent("hereD").setDisplay(true);
-			getComponent("hereT").setDisplay(true);			
+			getComponent("hereT").setDisplay(true);
 		}
 		else
 		{
 			getComponent("audio2l").setDisplay(true);
 			getComponent("hereK").setDisplay(true);
-			getComponent("hereP").setDisplay(true);			
+			getComponent("hereP").setDisplay(true);
 		}
 	}
 
@@ -94,51 +94,51 @@ public class TestAudio extends StandardQuestion
 		}
 		else beginPart2();
 	}
-	
+
 	public void actionDepaato() throws OmException
 	{
 		getComponent("right1").setDisplay(false);
-		if(sPlace!=DEPAATO) 
+		if(sPlace!=DEPAATO)
 		{
 			getComponent("hereD").setEnabled(false);
 			getComponent("wrong2").setDisplay(true);
 		}
 		else beginFinal();
 	}
-	
+
 	public void actionToshokan() throws OmException
 	{
 		getComponent("right1").setDisplay(false);
-		if(sPlace!=TOSHOKAN) 
+		if(sPlace!=TOSHOKAN)
 		{
 			getComponent("hereT").setEnabled(false);
 			getComponent("wrong2").setDisplay(true);
 		}
 		else beginFinal();
 	}
-	
+
 	public void actionKissaten() throws OmException
 	{
 		getComponent("right1").setDisplay(false);
-		if(sPlace!=KISSATEN) 
+		if(sPlace!=KISSATEN)
 		{
 			getComponent("hereK").setEnabled(false);
 			getComponent("wrong2").setDisplay(true);
 		}
 		else beginFinal();
 	}
-	
+
 	public void actionPanya() throws OmException
 	{
 		getComponent("right1").setDisplay(false);
-		if(sPlace!=PANYA) 
+		if(sPlace!=PANYA)
 		{
 			getComponent("hereP").setEnabled(false);
 			getComponent("wrong2").setDisplay(true);
 		}
 		else beginFinal();
 	}
-	
+
 	private void beginFinal() throws OmException
 	{
 		getComponent("part2").setDisplay(false);
@@ -147,10 +147,10 @@ public class TestAudio extends StandardQuestion
 		getComponent("hereK").setEnabled(false);
 		getComponent("hereD").setEnabled(false);
 		getComponent("audio2l").setEnabled(false);
-		getComponent("audio2r").setEnabled(false);		
-		
+		getComponent("audio2r").setEnabled(false);
+
 		getComponent("part3").setDisplay(true);
-		
+
 	}
-	
+
 }

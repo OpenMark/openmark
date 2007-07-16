@@ -22,30 +22,30 @@ import java.io.*;
 /** Exception-related utilities (static class) */
 public abstract class Exceptions
 {
-	/** 
+	/**
 	 * Strings used to indicate start of an exception trace within the message of another
 	 * exception.
-	 */ 
+	 */
 	public final static String BEGIN="[[BEGINEXCEPTION]]";
-	/** 
+	/**
 	 * Strings used to indicate end of an exception trace within the message of another
 	 * exception.
-	 */ 
+	 */
 	public final static String END="[[ENDEXCEPTION]]";
-	
+
 	/**
-	 * Converts an exception (including class, message, and trace) into a nice 
-	 * string to display to user. Automatically trims unwanted crap such as Axis 
-	 * fault details and similar. 
+	 * Converts an exception (including class, message, and trace) into a nice
+	 * string to display to user. Automatically trims unwanted crap such as Axis
+	 * fault details and similar.
 	 * <p>
 	 * If Web service places a string to be displayed here (e.g. a stack trace)
-	 * in the Axis fault string (which corresponds to the message of the 
-	 * exception that you threw inside the actual service) beginning with a 
+	 * in the Axis fault string (which corresponds to the message of the
+	 * exception that you threw inside the actual service) beginning with a
 	 * [[BEGINEXCEPTION]] and ending with [[ENDEXCEPTION]] then that will
 	 * be used instead as the complete thing to display.
 	 * @param tException Exception to display
 	 * @param asPrefixes Array of package prefixes you're actually interested
-	 *   in; trace lines in these packages and subpackages will always be 
+	 *   in; trace lines in these packages and subpackages will always be
 	 *   displayed, while others are subject to possible removal. Do not include
 	 *   the final . (e.g. "om", not "om.")
 	 * @return String describing exception
@@ -53,13 +53,13 @@ public abstract class Exceptions
 	public static String getString(Throwable tException,String[] asPrefixes)
 	{
 		String NL=System.getProperty("line.separator");
-		
+
 		StringWriter sw=new StringWriter();
 		PrintWriter pw=new PrintWriter(sw);
 		tException.printStackTrace(pw);
 		pw.close();
 		String sResult=sw.toString();
-		
+
 		// Check for a fixed exception name
 		String sIncludedException=null;
 		int iBegin=sResult.indexOf(BEGIN);
@@ -128,7 +128,7 @@ public abstract class Exceptions
 						break;
 					}
 				}
-				
+
 				if(bPrefix)
 				{
 					bInitialStage=false;
@@ -187,7 +187,7 @@ public abstract class Exceptions
 		{
 			return "Exception occurred while processing exception string (basically impossible): "+ioe;
 		}
-		
+
 		if(sIncludedException!=null)
 		{
 			// Include a few lines just before the Axis invoke call, if present
@@ -202,13 +202,13 @@ public abstract class Exceptions
 					break;
 				}
 			}
-			
+
 			if(iLastInvoke!=-1)
 			{
 				sIncludedException+="\n\nAxis client call:\n\n";
 				for(int i=iLastInvoke+1;i<iLastInvoke+9 && i<asLines.length;i++)
 				{
-					sIncludedException+=asLines[i].replaceAll("^\\s*at ","")+"\n";					
+					sIncludedException+=asLines[i].replaceAll("^\\s*at ","")+"\n";
 				}
 			}
 			return sIncludedException;
@@ -222,11 +222,11 @@ public abstract class Exceptions
 	 * @param args
 	 */
 	public static void main(String[] args)
-	{		
+	{
 		String sTest="	at org.apache.axis.client.Call.invoke(Call.java:1804)\n";
 		System.out.println(sTest.matches(
 				".*org\\.apache\\.axis\\.client\\.Call\\.invoke\\(.*"
 				));
 	}
-	
+
 }

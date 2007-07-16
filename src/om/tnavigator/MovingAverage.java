@@ -17,7 +17,7 @@
  */
 package om.tnavigator;
 
-/** Class provides a moving average that tracks a buffer of N integers */ 	
+/** Class provides a moving average that tracks a buffer of N integers */
 public class MovingAverage
 {
 	/** Values in buffer */
@@ -26,15 +26,15 @@ public class MovingAverage
 	private int iCursor=0;
 	/** Number of entries so far */
 	private int iEntries=0;
-	
-	/** 
+
+	/**
 	 * @param iSize Buffer size (number of integers to remember)
 	 */
 	public MovingAverage(int iSize)
 	{
 		aiValues=new int[iSize];
 	}
-	
+
 	/**
 	 * Adds new value to buffer (discarding the oldest one if necessary)
 	 * @param iValue New value
@@ -45,7 +45,7 @@ public class MovingAverage
 		iCursor%=aiValues.length;
 		iEntries++;
 	}
-	
+
 	/**
 	 * Adds new value to buffer (discarding the oldest one if necessary)
 	 * @param lValue New value (will be converted to an int first)
@@ -54,7 +54,7 @@ public class MovingAverage
 	{
 		add((int)lValue);
 	}
-	
+
 	/**
 	 * Obtains average value of entries so far. If there are no entries, returns
 	 * 0.0.
@@ -69,7 +69,7 @@ public class MovingAverage
 			dTotal+=aiValues[i];
 		}
 		if(i==0) return 0.0;
-		
+
 		return dTotal/i;
 	}
 }

@@ -35,17 +35,17 @@ public class FunctionItem extends GraphItem
 
 	/** Range within which to calculate function */
 	private GraphRange gr=null;
-	
+
 	/** Actual function */
 	private Function f=null;
-	
+
 	/** Line thickness */
 	private double dLineWidth=1.0;
-	
+
 	/** Colour of line */
 	private Color cLine=null;
-	
-	
+
+
 	/** Interface callers must provide */
 	public static interface Function
 	{
@@ -57,13 +57,13 @@ public class FunctionItem extends GraphItem
 		 */
 		public double f(double x);
 	}
-	
+
 	@Override
 	public void init() throws GraphFormatException
 	{
 		if(cLine==null) cLine=getWorld().convertColour("fg");
 	}
-	
+
 	/**
 	 * Set the actual function implementation.
 	 * @param f Function implementor (may be null to prevent drawing)
@@ -72,33 +72,33 @@ public class FunctionItem extends GraphItem
 	{
 		this.f=f;
 	}
-	
+
 	@Override
 	public void paint(Graphics2D g2)
 	{
 		if(f==null) return;
-		
-		int 
+
+		int
 			iX1=getWorld().convertX(gr.getMin()),
 			iX2=getWorld().convertX(gr.getMax());
 		int iMinX=Math.min(iX1,iX2),iMaxX=Math.max(iX1,iX2);
-		
-		GeneralPath gpPath=new GeneralPath();		
+
+		GeneralPath gpPath=new GeneralPath();
 		for(int iX=iMinX;iX<=iMaxX;iX++)
 		{
-			double dX=getWorld().convertXBack(iX);			
+			double dX=getWorld().convertXBack(iX);
 			float fY=getWorld().convertYFloat(f.f(dX));
 			if(iX==iMinX)
 				gpPath.moveTo(iX,fY);
 			else
 				gpPath.lineTo(iX,fY);
 		}
-		
+
 		g2.setColor(cLine);
 		g2.setStroke(new BasicStroke((float)dLineWidth));
 		g2.draw(gpPath);
 	}
-	
+
 	/**
 	 * Sets function colour.
 	 * <p>
@@ -109,17 +109,17 @@ public class FunctionItem extends GraphItem
 	{
 		cLine=c;
 	}
-	
+
 	/**
-	 * Sets line width in pixels. 
+	 * Sets line width in pixels.
 	 * @param d Line width
-	 * @throws GraphFormatException 
+	 * @throws GraphFormatException
 	 */
 	public void setLineWidth(double d) throws GraphFormatException
 	{
 		dLineWidth=d;
 	}
-	
+
 	/**
 	 * @param d New maximum extent of function
 	 */
@@ -127,12 +127,12 @@ public class FunctionItem extends GraphItem
 	{
 		gr=new GraphRange(gr.getMin(),d);
 	}
-	
+
 	/**
 	 * @param d New minimum extent of function
 	 */
 	public void setMinX(double d)
 	{
 		gr=new GraphRange(d,gr.getMax());
-	}		
+	}
 }

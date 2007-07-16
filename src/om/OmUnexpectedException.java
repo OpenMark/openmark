@@ -17,7 +17,7 @@
  */
 package om;
 
-/** 
+/**
  * For throwing when an exception occurs that was not expected by the developer.
  */
 public class OmUnexpectedException extends RuntimeException
@@ -29,7 +29,7 @@ public class OmUnexpectedException extends RuntimeException
 	{
 		super("An unexpected error occurred.",t);
 	}
-	
+
 	/**
 	 * @param s Description of error
 	 */
@@ -37,7 +37,7 @@ public class OmUnexpectedException extends RuntimeException
 	{
 		super("An unexpected error occurred: "+s);
 	}
-	
+
 	/**
 	 * @param s Description of error
 	 * @param t Exception that wasn't expected to happen

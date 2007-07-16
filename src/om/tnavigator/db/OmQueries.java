@@ -24,9 +24,9 @@ import java.sql.SQLException;
 import util.misc.IO;
 import util.misc.Strings;
 
-/** 
+/**
  * Used to obtain a version of the SQL queries used in Om for a given database.
- * This base class provides (fairly) standard SQL versions. Needs to be 
+ * This base class provides (fairly) standard SQL versions. Needs to be
  * overridden for each supported database.
  */
 public abstract class OmQueries
@@ -48,7 +48,7 @@ public abstract class OmQueries
 	 * @param username Username
 	 * @param password Password
 	 * @return JDB string
-	 * @throws ClassNotFoundException 
+	 * @throws ClassNotFoundException
 	 */
 	public abstract String getURL(String server,String database,String username,String password)
 	  throws ClassNotFoundException;
@@ -63,14 +63,14 @@ public abstract class OmQueries
 	public ResultSet querySummary(DatabaseAccess.Transaction dat,int ti) throws SQLException
 	{
 		return dat.query(
-			"SELECT tq.questionnumber,q.finished,r.questionline,r.answerline,tq.question,r.attempts,tq.sectionname "+ 
+			"SELECT tq.questionnumber,q.finished,r.questionline,r.answerline,tq.question,r.attempts,tq.sectionname "+
 			"FROM " + getPrefix() + "testquestions tq " +
 			"LEFT JOIN " + getPrefix() + "questions q ON tq.question=q.question AND tq.ti=q.ti " +
 			"LEFT JOIN " + getPrefix() + "results r ON q.qi=r.qi " +
 			"WHERE tq.ti="+ti+" " +
 			"ORDER BY tq.questionnumber, q.attempt DESC");
 	}
-	
+
 	/**
 	 * Get a user's most recent attempt at a test.
 	 * @param dat the transaction within which the query should be executed.
@@ -81,13 +81,13 @@ public abstract class OmQueries
 	 */
 	public ResultSet queryUnfinishedSessions(DatabaseAccess.Transaction dat,String oucu,String testID) throws SQLException
 	{
-		return dat.query( 
+		return dat.query(
 			"SELECT ti,rseed,finished,variant,testposition,navigatorversion " +
 			"FROM " + getPrefix() + "tests " +
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(testID)+" " +
 			"ORDER BY attempt DESC LIMIT 1");
 	}
-	
+
 	/**
 	 * Get a user's scores on a test attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -98,14 +98,14 @@ public abstract class OmQueries
 	public ResultSet queryScores(DatabaseAccess.Transaction dat,int ti) throws SQLException
 	{
 		return dat.query(
-			"SELECT tq.question,q.majorversion,q.minorversion,q.attempt,s.axis,s.score,tq.requiredversion "+ 
+			"SELECT tq.question,q.majorversion,q.minorversion,q.attempt,s.axis,s.score,tq.requiredversion "+
 			"FROM " + getPrefix() + "testquestions tq " +
 			"LEFT JOIN " + getPrefix() + "questions q ON tq.question=q.question AND tq.ti=q.ti " +
 			"LEFT JOIN " + getPrefix() + "scores s ON s.qi=q.qi " +
 			"WHERE tq.ti="+ti+" " +
-			"ORDER BY tq.question,SIGN(q.finished) DESC,q.attempt DESC;");	
+			"ORDER BY tq.question,SIGN(q.finished) DESC,q.attempt DESC;");
 	}
-	
+
 	/**
 	 * Get the number of question attempts a user has had within a test attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -119,9 +119,9 @@ public abstract class OmQueries
 		return dat.query(
 			"SELECT COUNT(qi) " +
 			"FROM " + getPrefix() + "questions " +
-			"WHERE ti="+ti+";");	
+			"WHERE ti="+ti+";");
 	}
-	
+
 	/**
 	 * Let the list of questions a user has completed within a test attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -135,11 +135,11 @@ public abstract class OmQueries
 		return dat.query(
 			"SELECT DISTINCT q.question " +
 			"FROM " + getPrefix() + "questions q " +
-			"WHERE q.ti="+ti+" AND q.finished>=1");	
+			"WHERE q.ti="+ti+" AND q.finished>=1");
 	}
-	
+
 	/**
-	 * Get the list of info pages a user has seen within a test attempt. 
+	 * Get the list of info pages a user has seen within a test attempt.
 	 * @param dat the transaction within which the query should be executed.
 	 * @param ti test instance id.
 	 * @return the requested data.
@@ -151,9 +151,9 @@ public abstract class OmQueries
 		return dat.query(
 			"SELECT testposition " +
 			"FROM " + getPrefix() + "infopages " +
-			"WHERE ti="+ti+";");	
+			"WHERE ti="+ti+";");
 	}
-	
+
 	/**
 	 * Get the number of attempts that a user has made at a question in a test attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -168,9 +168,9 @@ public abstract class OmQueries
 		return dat.query(
 			"SELECT MAX(attempt) " +
 			"FROM " + getPrefix() + "questions " +
-			"WHERE ti="+ti+" AND question="+Strings.sqlQuote(questionID)+";");	
+			"WHERE ti="+ti+" AND question="+Strings.sqlQuote(questionID)+";");
 	}
-	
+
 	/**
 	 * Get the number of attempts a user has made at a test.
 	 * @param dat the transaction within which the query should be executed.
@@ -187,7 +187,7 @@ public abstract class OmQueries
 			"FROM " + getPrefix() + "tests " +
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(testID)+";");
 	}
-	
+
 	/**
 	 * Get the current state of all questions in a test attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -200,7 +200,7 @@ public abstract class OmQueries
 		throws SQLException
 	{
 		return dat.query(
-			"SELECT q.qi, MAX(a.seq), q.finished,q.attempt,q.majorversion,q.minorversion "+ 
+			"SELECT q.qi, MAX(a.seq), q.finished,q.attempt,q.majorversion,q.minorversion "+
 			"FROM " + getPrefix() + "questions q "+
 			"LEFT JOIN " + getPrefix() + "actions a ON q.qi=a.qi "+
 			"WHERE q.ti="+ti+" AND q.question="+Strings.sqlQuote(questionID)+" "+
@@ -211,7 +211,7 @@ public abstract class OmQueries
 	}
 
 	/**
-	 * Get all the parameter for all actions in a question attempt. 
+	 * Get all the parameter for all actions in a question attempt.
 	 * @param dat the transaction within which the query should be executed.
 	 * @param qi question instance id.
 	 * @return the requested data.
@@ -226,7 +226,7 @@ public abstract class OmQueries
 			"WHERE qi="+qi+" "+
 			"ORDER BY seq");
 	}
-	
+
 	/**
 	 * Get the results of a particular attempt on a question.
 	 * @param dat the transaction within which the query should be executed.
@@ -242,7 +242,7 @@ public abstract class OmQueries
 			"FROM " + getPrefix() + "results " +
 			"WHERE qi="+qi	);
 	}
-	
+
 	/**
 	 * Check that a database connection is working.
 	 * @param dat the transaction within which the query should be executed.
@@ -250,7 +250,7 @@ public abstract class OmQueries
 	 */
 	public abstract void checkDatabaseConnection(DatabaseAccess.Transaction dat)
 		throws SQLException;
-	
+
 	/**
 	 * Get a list of all the people who have attempted a particular test.
 	 * @param dat the transaction within which the query should be executed.
@@ -268,7 +268,7 @@ public abstract class OmQueries
 			"AND (SELECT COUNT(*) FROM " + getPrefix() + "questions q WHERE q.ti=t.ti AND finished>0)>0 "+
 			"ORDER BY finished DESC,pi,clock DESC");
 	}
-	
+
 	/**
 	 * Get a list of all the questions attempts for all questions in a test.
 	 * @param dat the transaction within which the query should be executed.
@@ -281,7 +281,7 @@ public abstract class OmQueries
 	{
 		return dat.query(
 			"SELECT q.question, sum(s.score),count(s.score),max(q.majorversion),tq.questionnumber " +
-			"FROM " + getPrefix() + "tests t " +				
+			"FROM " + getPrefix() + "tests t " +
 			"LEFT JOIN " + getPrefix() + "testquestions tq ON t.ti=tq.ti "+
 			"LEFT JOIN " + getPrefix() + "questions q ON t.ti=q.ti AND q.question=tq.question " +
 			"LEFT JOIN " + getPrefix() + "scores s ON q.qi=s.qi " +
@@ -290,7 +290,7 @@ public abstract class OmQueries
 			"GROUP BY q.question,tq.questionnumber " +
 			"ORDER BY tq.questionnumber");
 	}
-	
+
 	/**
 	 * Get a report of all users' interactions with a particular question in a test.
 	 * @param dat the transaction within which the query should be executed.
@@ -312,7 +312,7 @@ public abstract class OmQueries
 			"WHERE t.deploy="+Strings.sqlQuote(testID)+" AND q.question="+Strings.sqlQuote(questionID)+" AND q.finished>0 " +
 			"ORDER BY t.pi,q.attempt");
   }
-	
+
 	/**
 	 * Get a list of a user's sessions where they interacted with a particular test.
 	 * @param dat the transaction within which the query should be executed.
@@ -331,7 +331,7 @@ public abstract class OmQueries
 			"WHERE t.deploy="+Strings.sqlQuote(testID)+" AND t.pi="+Strings.sqlQuote(pi)+" " +
 			"ORDER BY t.attempt,si.clock");
 	}
-	
+
 	/**
 	 * Get the results of a user's attempt on a test.
 	 * @param dat the transaction within which the query should be executed.
@@ -355,7 +355,7 @@ public abstract class OmQueries
 			"WHERE t.deploy="+Strings.sqlQuote(testID)+" AND t.pi="+Strings.sqlQuote(pi)+" AND q.finished>0 " +
 			"ORDER BY t.attempt,tq.questionnumber,q.clock");
 	}
-	
+
 	/**
 	 * Store a user's action within an question attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -363,12 +363,12 @@ public abstract class OmQueries
 	 * @param seq action sequence number, starts at 1.
 	 * @throws SQLException
 	 */
-	public void insertAction(DatabaseAccess.Transaction dat,int qi,int seq) 
+	public void insertAction(DatabaseAccess.Transaction dat,int qi,int seq)
 	  throws SQLException
 	{
 		dat.update("INSERT INTO " + getPrefix() + "actions VALUES ("+qi+","+seq+",DEFAULT);");
 	}
-	
+
 	/**
 	 * Store a parameter of an action.
 	 * @param dat the transaction within which the query should be executed.
@@ -384,7 +384,7 @@ public abstract class OmQueries
 		dat.update("INSERT INTO " + getPrefix() + "params VALUES ("+qi+","+seq+
 			","+Strings.sqlQuote(name)+","+unicode(Strings.sqlQuote(value))+");");
 	}
-	
+
 	/**
 	 * Store the results of a question attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -407,7 +407,7 @@ public abstract class OmQueries
 			","+unicode(Strings.sqlQuote(actionSummary))+
 			","+attempts+");");
 	}
-	
+
 	/**
 	 * Store a score for a question attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -438,7 +438,7 @@ public abstract class OmQueries
 			","+Strings.sqlQuote(name)+
 			","+unicode(Strings.sqlQuote(value))+");");
 	}
-	
+
 	/**
 	 * Create a new attempt at a question within a test attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -454,7 +454,7 @@ public abstract class OmQueries
 			"INSERT INTO " + getPrefix() + "questions (ti,question,attempt,finished,clock,majorversion,minorversion) " +
 			"VALUES ("+ti+","+Strings.sqlQuote(questionID)+","+attempt+",0,DEFAULT,0,0);");
 	}
-	
+
 	/**
 	 * Add a new row to the testquestions table.
 	 * @param dat the transaction within which the query should be executed.
@@ -476,7 +476,7 @@ public abstract class OmQueries
 			(sectionName==null? "NULL" : Strings.sqlQuote(sectionName))+
 			");");
 	}
-	
+
 	/**
 	 * Create a new test attempt within the database.
 	 * @param dat the transaction within which the query should be executed.
@@ -502,7 +502,7 @@ public abstract class OmQueries
 			(admin?"1":"0")+","+Strings.sqlQuote(pi)+
 			","+	(fixedVariant==-1 ? "NULL" : fixedVariant+"")+	",0,'"+navigatorVersion+"');");
 	}
-	
+
 	/**
 	 * Mark that an info page has been seen within a test attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -515,7 +515,7 @@ public abstract class OmQueries
 	{
 		dat.update("INSERT INTO " + getPrefix() + "infopages (ti,testposition) VALUES ("+ti+","+index+");");
 	}
-	
+
 	/**
 	 * Add a new session to the sessioninfo table.
 	 * @param dat the transaction within which the query should be executed.
@@ -531,7 +531,7 @@ public abstract class OmQueries
 			"INSERT INTO " + getPrefix() + "sessioninfo(ti,ip,useragent) VALUES("+ti+","+Strings.sqlQuote(ip)+","+
 			Strings.sqlQuote(agent)+");");
 	}
-	
+
 	/**
 	 * Mark a question instance as finished.
 	 * @param dat the transaction within which the query should be executed.
@@ -556,7 +556,7 @@ public abstract class OmQueries
 	{
 		dat.update("UPDATE " + getPrefix() + "tests SET finished=1,finishedclock="+currentDateFunction()+" WHERE ti="+ti+";");
 	}
-	
+
 	/**
 	 * Update the test variant (used for testing).
 	 * @param dat the transaction within which the query should be executed.
@@ -569,7 +569,7 @@ public abstract class OmQueries
 	{
 		dat.update("UPDATE " + getPrefix() + "tests SET variant="+variant+" WHERE ti="+ti+";");
 	}
-	
+
 	/**
 	 * Update the testpostition in the tests table.
 	 * @param dat the transaction within which the query should be executed.
@@ -582,7 +582,7 @@ public abstract class OmQueries
 	{
 		dat.update("UPDATE " + getPrefix() + "tests SET testposition="+position+" WHERE ti="+ti);
 	}
-	
+
 	/**
 	 * Update the majorversion and minorversion in the questions table.
 	 * @param dat the transaction within which the query should be executed.
@@ -599,7 +599,7 @@ public abstract class OmQueries
 			"SET majorversion="+major+", minorversion="+minor+" " +
 			"WHERE qi="+qi);
 	}
-	
+
 	protected boolean tableExists(DatabaseAccess.Transaction dat,String table)
 	  throws SQLException
 	{
@@ -622,7 +622,7 @@ public abstract class OmQueries
 	{
 		return "current_timestamp";
 	}
-	
+
 	/**
 	 * @param quotedString String surrounded in quotes and quoted as appropriate
 	 *   for normal SQL.
@@ -654,13 +654,13 @@ public abstract class OmQueries
 	public String getPrefix() {
 		return prefix;
 	}
-	
-	/** 
+
+	/**
 	 * Checks that database tables are present. If not, initialises tables
 	 * using createdb.sql from the same package as the database class.
 	 * @param dat the transaction within which the query should be executed.
 	 * @throws SQLException If there is an error in setting up tables
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void checkTables(DatabaseAccess.Transaction dat) throws SQLException,IOException
 	{
@@ -677,13 +677,13 @@ public abstract class OmQueries
 			upgradeDatabaseTo131(dat);
 		}
 	}
-	
+
 	private void createDatabaseTables(DatabaseAccess.Transaction dat) throws SQLException,IOException
 	{
 		// Get statements
 		String sStatements=
 			IO.loadString(getClass().getResourceAsStream("createdb.sql"));
-		
+
 		// Remove comments
 		sStatements="!!!LINE!!!"+sStatements.replaceAll("\n","!!!LINE!!!")+"!!!LINE!!!";
 		sStatements=sStatements.replaceAll("!!!LINE!!!--.*?(?=!!!LINE!!!)","");
@@ -694,7 +694,7 @@ public abstract class OmQueries
 		sStatements=sStatements.replaceAll("prefix_",getPrefix());
 
 		// Split on ; and process each line
-		String[] asStatements=sStatements.split(";");			
+		String[] asStatements=sStatements.split(";");
 		for(int i=0;i<asStatements.length;i++)
 		{
 			String sStatement=asStatements[i].replaceAll("\\s+"," ").trim()+";";
@@ -707,9 +707,9 @@ public abstract class OmQueries
 			{
 				throw new SQLException("SQL statement:\n\n"+sStatement+"\n\n"+se.getMessage());
 			}
-		}		
+		}
 	}
-	
+
 	protected void upgradeDatabaseTo131(DatabaseAccess.Transaction dat) throws SQLException
 	{
 		dat.update("ALTER TABLE " + getPrefix() + "tests ADD COLUMN navigatorversion CHAR(16)");

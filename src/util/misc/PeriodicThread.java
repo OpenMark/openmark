@@ -24,12 +24,12 @@ public abstract class PeriodicThread extends Thread
 {
 	/** Delay between runs */
 	private int iDelay;
-	
+
 	/** Control flags */
 	private boolean bQuit,bHasQuit;
-	
-	/** 
-	 * Starts thread. 
+
+	/**
+	 * Starts thread.
 	 * @param iDelay Delay between runs
 	 */
 	protected PeriodicThread(int iDelay)
@@ -37,13 +37,13 @@ public abstract class PeriodicThread extends Thread
 		this.iDelay=iDelay;
 		start();
 	}
-	
-	/** 
-	 * Method that gets called each time around 
-	 * the loop 
+
+	/**
+	 * Method that gets called each time around
+	 * the loop
 	 */
 	protected abstract void tick();
-	
+
 	/** Run method can't be overridden */
 	@Override
 	public final void run()
@@ -58,7 +58,7 @@ public abstract class PeriodicThread extends Thread
 					notifyAll();
 					return;
 				}
-				
+
 				try
 				{
 					wait(iDelay);
@@ -66,7 +66,7 @@ public abstract class PeriodicThread extends Thread
 				catch(InterruptedException ie)
 				{
 				}
-				
+
 				if(bQuit)
 				{
 					bHasQuit=true;
@@ -74,7 +74,7 @@ public abstract class PeriodicThread extends Thread
 					return;
 				}
 			}
-			
+
 			try
 			{
 				tick();
@@ -93,7 +93,7 @@ public abstract class PeriodicThread extends Thread
 	protected void error(Throwable t)
 	{
 	}
-	
+
 	/**
 	 * Closes the thread and waits until it has exited.
 	 */
@@ -112,6 +112,6 @@ public abstract class PeriodicThread extends Thread
 			}
 		}
 	}
-	
-	
+
+
 }

@@ -33,7 +33,7 @@ public class QComponentManager
 	/** Map of String (tag name) -> Class (QComponent subclass) */
 	private Map<String,Class<? extends QComponent> > mComponents=
 			new HashMap<String,Class<? extends QComponent> >();
-	
+
 	/**
 	 * Constructs with standard components plus anything from jar files specified
 	 * in InitParams.
@@ -43,14 +43,14 @@ public class QComponentManager
 	QComponentManager(InitParams ip) throws OmDeveloperException
 	{
 		ComponentRegistry.fill(this);
-		
+
 		// TODO Use InitParams
 	}
-	
+
 	/**
 	 * Registers a given class that provides QComponents for a tag name.
 	 * @param cComponent Java class to create objects from
-	 * @throws OmDeveloperException 
+	 * @throws OmDeveloperException
 	 * @throws IllegalArgumentException If the tag name is already in use
 	 */
 	public void register(Class<?> cComponent) throws OmDeveloperException
@@ -59,37 +59,37 @@ public class QComponentManager
 		try
 		{
 			Method m=cComponent.getMethod("getTagName",new Class[]{});
-			sTagName=(String)m.invoke(null);			
+			sTagName=(String)m.invoke(null);
 		}
 		catch(ClassCastException cce)
 		{
 			throw new OmDeveloperException(cComponent.getName()+
-				".getTagName() did not return a String"); 
+				".getTagName() did not return a String");
 		}
 		catch(NoSuchMethodException e)
 		{
 			throw new OmDeveloperException(cComponent.getName()+
-				"does not contain public String getTagName() method"); 
+				"does not contain public String getTagName() method");
 		}
 		catch(IllegalAccessException e)
 		{
 			throw new OmDeveloperException(cComponent.getName()+
-				".getTagName() method could not be accessed"); 
+				".getTagName() method could not be accessed");
 		}
 		catch(InvocationTargetException e)
 		{
 			throw new OmDeveloperException(cComponent.getName()+
 				".getTagName() method threw an exception");
 		}
-		
+
 		if(mComponents.containsKey(sTagName))
 			throw new OmDeveloperException("Attempt to re-register component <"+sTagName+">");
-		
+
 		if(!QComponent.class.isAssignableFrom(cComponent))
 			throw new OmDeveloperException("Class "+cComponent+" cannot be " +
 				"registered as a component because it isn't a QComponent subclass");
-		
-		mComponents.put(sTagName,cComponent.asSubclass(QComponent.class));		
+
+		mComponents.put(sTagName,cComponent.asSubclass(QComponent.class));
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class QComponentManager
 				"Creating component <"+sTagName+"> ("+c+") was prohibited via Java " +
 				"access permissions. Check that the component class is public and " +
 				"that it contains a public empty constructor");
-		}		
+		}
 	}
 
 }

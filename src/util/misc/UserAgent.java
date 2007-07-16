@@ -35,9 +35,9 @@ public class UserAgent
 
 	/**
 	 * @param request the request to analyse the user-agent header of.
-	 * @return A string identifying the browser that made the request, 
+	 * @return A string identifying the browser that made the request,
 	 *   of the form gecko-1-8 or ie-5[space]ie-5-5, or
-	 *   empty string if unknown 
+	 *   empty string if unknown
 	 */
 	public static String getBrowserString(HttpServletRequest request)
 	{
@@ -47,7 +47,7 @@ public class UserAgent
 			return "khtml";
 		if(sAgent.indexOf("Opera")!=-1)
 			return "opera";
-			
+
 		// Check version of our two supported browsers
 		Matcher mGecko=GECKOVERSION.matcher(sAgent);
 		if(mGecko.matches())
@@ -59,7 +59,7 @@ public class UserAgent
 		{
 			return "winie-"+mIE.group(1); // Major verison only
 		}
-		
+
 		return "";
 	}
 }

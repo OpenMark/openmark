@@ -34,64 +34,64 @@ public class NavigatorConfig
 {
 	/** Om services */
 	private URL[] omServices;
-	
+
 	/** URL of this navigator */
 	private URL thisTN;
-	
+
 	/** URLs of other test navigators */
 	private String[] otherNavigators;
-	
+
 	/** Database server machine e.g. "codd" */
 	private String dbServer;
-	
+
 	/** DB username */
 	private String dbUsername;
-	
+
 	/** DB password */
 	private String dbPassword;
-	
+
 	/** Database name e.g. "oms-dev" */
 	private String dbName;
-	
+
 	/** Database prefix e.g. "nav_" */
 	private String dbPrefix;
 
 	/** Set of InetAddress; Trusted IP addresses for question engines */
 	private Set<InetAddress> trustedQEs=new HashSet<InetAddress>();
-	
+
 	/** Set of InetAddress; Trusted IP addresses for other test navigators */
 	private Set<InetAddress> trustedTNs=new HashSet<InetAddress>();
-	
+
 	/** Debug flags */
 	private Set<String> debugFlags=new HashSet<String>();
-	
+
 	/** Sending server alerts */
 	private String[] alertMailTo,alertMailCC;
 	/** Source for server alerts */
 	private String alertMailFrom;
-	
+
 	/** Class of authentication plugin */
 	private String authClass;
-	
+
 	/** Class of database plugin */
 	private String dbClass;
-	
+
 	/** Extra report plugins */
 	private String[] extraReports;
-	
+
 	/** Parameters for auth */
 	private Map authParams=null;
-	
+
 	String getAuthClass()
 	{
 		return authClass;
 	}
-	
+
 	String getDBClass()
 	{
 		return dbClass;
 	}
-	
+
 	String getDBPrefix()
 	{
 		return dbPrefix;
@@ -108,7 +108,7 @@ public class NavigatorConfig
 		}
 		return m;
 	}
-	
+
 	/**
 	 * Get a parameter from the <authentication> section of navigator.xml.
 	 * @param name as in, <param name=''>.
@@ -139,13 +139,13 @@ public class NavigatorConfig
 		else
 			throw new IOException("getAuthParam does not support type: "+type.getName());
 	}
-	
+
 	/** IP addresses that are trusted for server status */
 	private String[] trustedAddresses;
-	
+
 	/** IP addresses from which you can run system reports. */
 	private String[] secureAddresses;
-	
+
 	/**
 	 * Initialises config.
 	 * @param fConfig Config file
@@ -155,7 +155,7 @@ public class NavigatorConfig
 	{
 		Document dConfig=XML.parse(fConfig);
 		Element eRoot=dConfig.getDocumentElement();
-		
+
 		Element eDB=XML.getChild(eRoot,"database");
 		dbClass=XML.getRequiredAttribute(eDB,"plugin");
 		dbServer=XML.getText(eDB,"server");
@@ -163,11 +163,11 @@ public class NavigatorConfig
 		dbPrefix=XML.getText(eDB,"prefix");
 		dbUsername=XML.getText(eDB,"username");
 		dbPassword=XML.getText(eDB,"password");
-		
+
 		Element eAuth=XML.getChild(eRoot,"authentication");
 		authClass=XML.getRequiredAttribute(eAuth,"plugin");
 		authParams=getParams(eAuth);
-		
+
 		trustedAddresses=XML.getTextFromChildren(XML.getChild(eRoot,"trustedaddresses"),"address");
 		for(int i=0;i<trustedAddresses.length;i++)
 		{
@@ -175,7 +175,7 @@ public class NavigatorConfig
 				throw new IOException(
 					"navigator.xml: <trustedaddresses> <address> not in valid format: "+trustedAddresses[i]);
 		}
-		
+
 		secureAddresses=XML.getTextFromChildren(XML.getChild(eRoot,"secureaddresses"),"address");
 		for(int i=0;i<secureAddresses.length;i++)
 		{
@@ -183,9 +183,9 @@ public class NavigatorConfig
 				throw new IOException(
 					"navigator.xml: <secureaddresses> <address> not in valid format: "+secureAddresses[i]);
 		}
-		
+
 		Mail.setSMTPHost(XML.getText(eRoot,"smtpserver"));
-		
+
 		Element eQE=XML.getChild(eRoot,"questionengines");
 		String[] asURLs=XML.getTextFromChildren(eQE,"url");
 		omServices=new URL[asURLs.length];
@@ -197,12 +197,12 @@ public class NavigatorConfig
 		}
 		if(omServices.length==0) throw new IOException(
 			"navigator.xml: requires at leat one <url> inside <questionengines>");
-		
+
 		Element eTN=XML.getChild(eRoot,"testnavigators");
 		Element[] aeTN=XML.getChildren(eTN,"url");
 		if(aeTN.length==0) throw new IOException(
 			"navigator.xml: requires at least one <url> inside <testnavigators>");
-		List<String> lNavigators=new LinkedList<String>();		
+		List<String> lNavigators=new LinkedList<String>();
 		boolean bGotThis=false;
 		for(int i=0;i<aeTN.length;i++)
 		{
@@ -221,7 +221,7 @@ public class NavigatorConfig
 		if(!bGotThis) throw new IOException(
 			"navigator.xml: requires one <url this='yes'> inside <testnavigators>");
 		otherNavigators=lNavigators.toArray(new String[lNavigators.size()]);
-		
+
 		if(XML.hasChild(eRoot,"extrareports"))
 		{
 			extraReports=XML.getTextFromChildren(XML.getChild(eRoot,"extrareports"),"report");
@@ -230,7 +230,7 @@ public class NavigatorConfig
 		{
 			extraReports = new String[0];
 		}
-		
+
 		if(XML.hasChild(eRoot,"debugflags"))
 		{
 			Element[] aeFlags=XML.getChildren(XML.getChild(eRoot,"debugflags"));
@@ -239,7 +239,7 @@ public class NavigatorConfig
 				debugFlags.add(aeFlags[i].getTagName());
 			}
 		}
-		
+
 		if(XML.hasChild(eRoot,"alertmail"))
 		{
 			Element eAlertMail=XML.getChild(eRoot,"alertmail");
@@ -249,46 +249,46 @@ public class NavigatorConfig
 		}
 		else
 		{
-			alertMailTo=alertMailCC=new String[0];			
+			alertMailTo=alertMailCC=new String[0];
 		}
 	}
-	
+
 	/** @return Full JDBC URL of database including username and password */
 	String getDatabaseURL(OmQueries oq) throws ClassNotFoundException
 	{
 		return oq.getURL(dbServer,dbName,dbUsername,dbPassword);
 	}
-	
+
 	/**
 	 * @return Array of trusted IP addresses in the form 0.1.2.3 or 0.1.2.* or
 	 *    0.1.26-49.*
 	 */
-	public String[] getTrustedAddresses() 
+	public String[] getTrustedAddresses()
 	{
 		return trustedAddresses;
 	}
-	
+
 	/**
 	 * @return Array of trusted IP addresses in the form 0.1.2.3 or 0.1.2.* or
 	 *    0.1.26-49.*
 	 */
-	public String[] getSecureAddresses() 
+	public String[] getSecureAddresses()
 	{
 		return secureAddresses;
 	}
-	
+
 	/** @return URLs for all Om question engines */
 	public URL[] getOmServices()
-	{	
+	{
 		return omServices;
-	}	
-	
+	}
+
 	/** @return URLs (ending in /) of each other test navigator */
 	public String[] getOtherNavigators()
 	{
 		return otherNavigators;
 	}
-	
+
 	/**
 	 * @return the extraReports
 	 */
@@ -304,46 +304,46 @@ public class NavigatorConfig
 	{
 		return debugFlags.contains(sTagName);
 	}
-	
-	/** 
+
+	/**
 	 * @param ia Address under consideration
-	 * @return True if the given address belongs to a known question engine 
+	 * @return True if the given address belongs to a known question engine
 	 */
 	public boolean isTrustedQE(InetAddress ia)
 	{
 		return trustedQEs.contains(ia);
 	}
-	
-	/** 
+
+	/**
 	 * @param ia Address under consideration
-	 * @return True if the given address belongs to a known test navigator 
+	 * @return True if the given address belongs to a known test navigator
 	 */
 	public boolean isTrustedTN(InetAddress ia)
 	{
 		return trustedTNs.contains(ia);
 	}
-	
-	/** @return Real (not load-balancing) URL of this test navigator */ 
+
+	/** @return Real (not load-balancing) URL of this test navigator */
 	public URL getThisTN() { return thisTN; }
 
 	/** @return List of mail addresses to send server alerts to */
 	public String[] getAlertMailTo()
 	{
 		return alertMailTo;
-	}		
+	}
 
-	/** 
+	/**
 	 * @return Mail addresses that server alerts (and possibly student mails)
 	 * come from
 	 */
 	public String getAlertMailFrom()
 	{
 		return alertMailFrom;
-	}		
+	}
 
 	/** @return List of mail addresses to CC with server alerts */
 	public String[] getAlertMailCC()
 	{
 		return alertMailCC;
-	}			
+	}
 }

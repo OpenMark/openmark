@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 
 import util.xml.XML;
 
-/** 
+/**
 A layout grid that arranges child components in a certain number of equal-size
 columns.
 <h2>XML usage</h2>
@@ -40,8 +40,8 @@ columns.
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates children</td></tr>
 <tr><td>shuffle</td><td>(boolean)</td><td>If true, randomises order of children</td></tr>
-<tr><td>widths</td><td>(string)</td><td>Comma-separated lists of percentages 
-for each column (defaults to equal division) e.g. "30%,30%,40%". Must add up 
+<tr><td>widths</td><td>(string)</td><td>Comma-separated lists of percentages
+for each column (defaults to equal division) e.g. "30%,30%,40%". Must add up
 to 100% and specify every column.</td></tr>
 </table>
 */
@@ -52,19 +52,19 @@ public class LayoutGridComponent extends QComponent
 	{
 		return "layoutgrid";
 	}
-	
+
 	/** Int property: number of columns in grid */
 	public final static String PROPERTY_COLS="cols";
-	
+
 	/** Boolean property: whether or not to shuffle the contents */
 	public final static String PROPERTY_SHUFFLE="shuffle";
-	
+
 	/** String property: comma-separated list of percentage widths */
 	public final static String PROPERTY_WIDTHS="widths";
-	
+
 	/** Order of components */
 	private int[] aiShuffleMap;
-	
+
 	@Override
 	protected String[] getRequiredAttributes()
 	{
@@ -73,7 +73,7 @@ public class LayoutGridComponent extends QComponent
 			PROPERTY_COLS
 		};
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
@@ -83,8 +83,8 @@ public class LayoutGridComponent extends QComponent
 		defineString(PROPERTY_WIDTHS);
 		setBoolean(PROPERTY_SHUFFLE,false);
 	}
-	
-	
+
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
@@ -93,11 +93,11 @@ public class LayoutGridComponent extends QComponent
 
 		if(!bPlain)
 			eOuter.setAttribute("class","layoutgrid");
-		
+
 		int iCols=getInteger(PROPERTY_COLS);
 		boolean bShuffle=getBoolean(PROPERTY_SHUFFLE);
-		
-		// Calculate widths		
+
+		// Calculate widths
 		String[] asWidthCSS=new String[iCols];
 		if(isPropertySet(PROPERTY_WIDTHS))
 		{
@@ -113,7 +113,7 @@ public class LayoutGridComponent extends QComponent
 					if(!as[i].endsWith("%"))
 						throw new OmFormatException("<layoutgrid>: Each entry in widths= " +
 							"must end with a % sign");
-						
+
 					int iW=Integer.parseInt(as[i].substring(0,as[i].length()-1));
 					iTotal+=iW;
 					if(i==iCols-1)
@@ -123,7 +123,7 @@ public class LayoutGridComponent extends QComponent
 				}
 				if(iTotal!=100)
 					throw new OmFormatException("<layoutgrid>: Entries in widths= " +
-					"must sum to 100%");				
+					"must sum to 100%");
 			}
 			catch(NumberFormatException nfe)
 			{
@@ -135,14 +135,14 @@ public class LayoutGridComponent extends QComponent
 		{
 			int iLeftOver=100;
 			int iW=(100/iCols);
-			for(int i=0;i<iCols-1;i++)				
+			for(int i=0;i<iCols-1;i++)
 			{
 				iLeftOver-=iW;
-				asWidthCSS[i]=iW+"%";				
+				asWidthCSS[i]=iW+"%";
 			}
 			asWidthCSS[iCols-1]=(iLeftOver-1)+".99%";
 		}
-		
+
 		QComponent[] aqcChildren=getComponentChildren();
 
 		if(aiShuffleMap==null || aiShuffleMap.length!=aqcChildren.length)
@@ -153,15 +153,15 @@ public class LayoutGridComponent extends QComponent
 			{
 				aiShuffleMap[i]=i;
 			}
-			
+
 			// Shuffle it if desired
 			if(bShuffle)
 			{
-				// Get new RNG (means it's repeatable, and doesn't affect question's 
-				// other use of random numbers; does mean that two lists of same length 
+				// Get new RNG (means it's repeatable, and doesn't affect question's
+				// other use of random numbers; does mean that two lists of same length
 				// in same question will be shuffled in same way).
 				Random r=getQuestion().getRandom();
-				
+
 				int[] aiNew=new int[aiShuffleMap.length];
 				for(int iOut=0;iOut<aiNew.length;iOut++)
 				{
@@ -180,11 +180,11 @@ public class LayoutGridComponent extends QComponent
 							iCount++;
 						}
 					}
-				}				
-				aiShuffleMap=aiNew;				
+				}
+				aiShuffleMap=aiNew;
 			}
 		}
-		
+
 		Element eRow=null;
 		int iChild;
 		for(iChild=0;iChild<aqcChildren.length;iChild++)
@@ -219,11 +219,11 @@ public class LayoutGridComponent extends QComponent
 			{
 				// Exit float
 				if(!bPlain)
-					XML.createChild(eRow,"div").setAttribute("class","clear");				
+					XML.createChild(eRow,"div").setAttribute("class","clear");
 			}
 		}
 	}
-	
+
 	@Override
 	protected boolean wantsFilledChildren()
 	{

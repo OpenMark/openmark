@@ -22,8 +22,8 @@ import om.stdquestion.*;
 
 import org.w3c.dom.Element;
 
-/** 
-Indicates that the contents are a label for another control. 
+/**
+Indicates that the contents are a label for another control.
 Necessary for accessibility purposes. Should
 be used in conjunction with editfields or advancedfields.
 <h2>XML usage</h2>
@@ -41,32 +41,32 @@ public class LabelComponent extends QComponent
 {
 	/** Om component ID of thing being labelled */
 	public final static String PROPERTY_FOR="for";
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
 		return "label";
 	}
-	
+
 	@Override
 	protected String[] getRequiredAttributes()
 	{
 		return new String[] { PROPERTY_FOR };
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
 		defineString(PROPERTY_FOR,PROPERTYRESTRICTION_ID);
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
-	
+
 	/**
 	 * @param qd The question definition.
 	 * @param bPlain True if in plain mode.
@@ -78,7 +78,7 @@ public class LabelComponent extends QComponent
 	{
 		QComponent qcTarget=qd.find(sID);
 		if(qcTarget instanceof Labelable)
-		{			
+		{
 			return ((Labelable)qcTarget).getLabelTarget(bPlain);
 		}
 		else
@@ -87,16 +87,16 @@ public class LabelComponent extends QComponent
 				qcTarget.getID()+"; not a labelable component");
 		}
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eLabel=qc.getOutputDocument().createElement("label");
 		eLabel.setAttribute("for",getLabel(getQDocument(),bPlain,getString(PROPERTY_FOR)));
-		
+
 		qc.addInlineXHTML(eLabel);
-		qc.setParent(eLabel);		
-		produceChildOutput(qc,bInit,bPlain);		
-		qc.unsetParent();		
+		qc.setParent(eLabel);
+		produceChildOutput(qc,bInit,bPlain);
+		qc.unsetParent();
 	}
 }

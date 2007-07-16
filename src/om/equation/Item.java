@@ -30,29 +30,29 @@ abstract class Item
 {
 	/** Parent item */
 	private Item iParent;
-	
+
 	/** Child items */
 	private Item[] aiChildren;
-	
+
 	/** Width and height of item */
 	protected int iWidth=0,iHeight=0,iBaseline=-1,iAdvanceWidth=-1,iLeftMargin=0,iRightMargin=0;
-	
+
 	/** True if there was whitespace before this item */
 	private boolean bWhitespaceBefore;
-	
-	/** 
+
+	/**
 	 * Italic slope of end character (e.g. if the character has width 100, height
-	 * 10, and italic slope 0.5 then it is considered to extend to 100,0 but only 
+	 * 10, and italic slope 0.5 then it is considered to extend to 100,0 but only
 	 * to 95,10 (the bottom edge ends (italic slope) * (height) pixels left)
 	 */
 	protected float fEndSlope=0.0f;
-	
+
 	/** @return Child items */
 	protected Item[] getChildren() { return aiChildren; }
-	
+
 	/** @return Total width in pixels */
 	public int getWidth() { return iWidth; }
-	
+
 	/** @return Advance width in pixels (place at which next text, if compatible,
 	 *   should be drawn) */
 	public int getAdvanceWidth() { if(iAdvanceWidth==-1) return getWidth(); else return iAdvanceWidth; }
@@ -62,26 +62,26 @@ abstract class Item
 
 	/** @return Text baseline (if set, otherwise return same as height) relative to top of image */
 	public int getBaseline() { if(iBaseline==-1) return getHeight(); else return iBaseline; }
-	
+
 	/** @return Descent below baseline */
 	public int getDescent() { return getHeight()-getBaseline(); }
-	
+
 	/** @return Italic slope of end (used to move subscripts left) */
 	public float getEndSlope() { return fEndSlope; }
-	
+
 	/** @return Margin used to left of this when included in line */
 	public int getLeftMargin() { return iLeftMargin; }
 	/** @return Margin used to right of this when included in line */
 	public int getRightMargin() { return iRightMargin; }
-	
+
 	/** Zoom factor */
 	private float fZoom=1.0f;
-	
+
 	/** Single-line stroke at zoom factor */
 	private Stroke sStroke;
-	
+
 	/**
-	 * Converts a pixel distance to zoomed pixels. 
+	 * Converts a pixel distance to zoomed pixels.
 	 * @param iPixels Distance/size
 	 * @return Zoomed distance/size
 	 */
@@ -89,18 +89,18 @@ abstract class Item
 	{
 		return Math.round(iPixels*fZoom);
 	}
-	
+
 	/** @return Zoom factor */
 	public float getZoom() { return fZoom; }
-	
+
 	/** @return Default stroke (1-pixel if not zoomed) */
 	public Stroke getStroke()
 	{
 		if(sStroke==null) sStroke=new BasicStroke(fZoom);
 		return sStroke;
 	}
-	
-	
+
+
 	/**
 	 * Override to indicate that the previous item's advance width, not width,
 	 * should be used when positioning this item.
@@ -119,10 +119,10 @@ abstract class Item
 	 * @param iY Position to start rendering at.
 	 */
 	public abstract void render(Graphics2D g2,int iX,int iY);
-	
+
 	/** Debug method to fill a background colour */
 	protected void showDebug(BufferedImage biTarget,int iX,int iY)
-	{		
+	{
 		Graphics g=biTarget.getGraphics();
 		g.setColor(new Color(255,255,200));
 		g.fillRect(iX,iY,iWidth,iHeight);
@@ -135,7 +135,7 @@ abstract class Item
 	{
 		return iParent;
 	}
-	
+
 	/**
 	 * @param c A subclass of item.
 	 * @return Ancestor or this item of given class or null if none
@@ -146,17 +146,17 @@ abstract class Item
 		if(iParent!=null) return iParent.getAncestor(c);
 		return null;
 	}
-	
+
 	/** @return Root-level Item */
 	public Item getRoot()
 	{
-		if(iParent==null) 
+		if(iParent==null)
 			return this;
 		else
 			return iParent.getRoot();
 	}
-	
-	/** 
+
+	/**
 	 * @return True if there was whitespace before this item in the equation
 	 *   and it therefore shouldn't coagulate with anything before
 	 */
@@ -179,9 +179,9 @@ abstract class Item
 				return iParent.aiChildren[i-1];
 			}
 		}
-		throw new Error("?");		
+		throw new Error("?");
 	}
-	
+
 	/**
 	 * Called by ItemFactory to construct this item and all children.
 	 * @param f Factory
@@ -195,20 +195,20 @@ abstract class Item
 	{
 		this.iParent=parent;
 		this.fZoom=zoom;
-		
+
 		bWhitespaceBefore=("yes".equals(e.getAttribute("whitespacebefore")));
-		
+
 		// Construct rest of tree first
 		Element[] aeChildren=XML.getChildren(e);
 		aiChildren=new Item[aeChildren.length];
 		for(int iChild=0;iChild<aeChildren.length;iChild++)
 		{
 			aiChildren[iChild]=f.newItem(aeChildren[iChild],this,zoom);
-		}		
-		
+		}
+
 		internalInit(e);
 	}
-	
+
 	/**
 	 * Initialise based on any necessary parameters from the element. Children are
 	 * are already set up and inited; parents are set up, but not inited. Default
@@ -219,7 +219,7 @@ abstract class Item
 	protected void internalInit(Element e) throws EquationFormatException
 	{
 	}
-	
+
 	/** Called after initialising everything to prepare for rendering */
 	void prepare()
 	{
@@ -231,15 +231,15 @@ abstract class Item
 		// Prepare ourselves
 		internalPrepare();
 	}
-	
-	/** 
-	 * Override to do any internal preparation you need before method return 
-	 * values will be right. 
+
+	/**
+	 * Override to do any internal preparation you need before method return
+	 * values will be right.
 	 */
 	protected void internalPrepare()
-	{		
+	{
 	}
-	
+
 	/** Text size constant: display size (outer level) */
 	public final static int TEXTSIZE_DISPLAY=4;
 	/** Text size constant: normal size (actually same as display for most cases) */
@@ -248,10 +248,10 @@ abstract class Item
 	public final static int TEXTSIZE_SUB=2;
 	/** Text size constant: sub-subscript size */
 	public final static int TEXTSIZE_SUBSUB=1;
-	
+
 	/**
 	 * @return TEXTSIZE_xx constant (default to same as parent)
-	 */ 
+	 */
 	public int getTextSize()
 	{
 		Item i=this;
@@ -269,23 +269,23 @@ abstract class Item
 		else
 			return getParent().getChildReferenceTextSize();
 	}
-	
+
 	/** @return Textsize used as a reference by children */
 	public int getChildReferenceTextSize()
 	{
 		return getTextSize();
 	}
-	
+
 	/** Default text sizes */
 	protected int[] aiTextSize={14,12,10};
-	
+
 	/** Default font */
 	protected String sDefaultFont="Times New Roman";
-	
+
 	/**
 	 * Converts a constant to an actual pixel size. (Note that if equations are
 	 * being scaled for accessibility, the graphics context will be scaled when
-	 * drawn, so we don't need to use different sizes here.) 
+	 * drawn, so we don't need to use different sizes here.)
 	 * @param iTextSize TEXTSIZE_xxx constant
 	 * @return Actual size in pixels
 	 */
@@ -293,7 +293,7 @@ abstract class Item
 	{
 		if(getParent()!=null)
 			return getParent().convertTextSize(iTextSize);
-		
+
 		switch(iTextSize)
 		{
 		case TEXTSIZE_DISPLAY:
@@ -307,7 +307,7 @@ abstract class Item
 			throw new OmUnexpectedException("Invalid textsize constant: "+iTextSize);
 		}
 	}
-	
+
 	/**
 	 * Obtains a smaller text size, but only if we haven't run out of the range.
 	 * @param iTextSize Current size
@@ -318,7 +318,7 @@ abstract class Item
 		if(iTextSize>TEXTSIZE_SUBSUB) iTextSize--;
 		return iTextSize;
 	}
-	
+
 	/**
 	 * @param iTextSize Text size of item
 	 * @return A suitable gap for use as spacing of some sort
@@ -337,13 +337,13 @@ abstract class Item
       default: throw new OmUnexpectedException("Incorrect textsize");
 		}
 	}
-	
+
 	/** @return Suitable gap for use as spacing in this item (pre-zoomed) */
 	public int getSuitableGap()
 	{
 		return getZoomed(getSuitableGap(getTextSize()));
 	}
-	
+
 	/**
 	 * @return A font face name (default to same as parent)
 	 */
@@ -355,7 +355,7 @@ abstract class Item
 			return getParent().getFontFamily();
 	}
 
-	/** 
+	/**
 	 * @param iStyle Font style e.g. Font.PLAIN
 	 * @return Font (zoomed as appropriate)
 	 */
@@ -363,9 +363,9 @@ abstract class Item
 	{
 		return new Font(getFontFamily(),iStyle,getZoomed(convertTextSize(getTextSize())));
 	}
-	
+
 	/**
-	 * @return Foreground colour (default to same as parent) 
+	 * @return Foreground colour (default to same as parent)
 	 */
 	public Color getForeground()
 	{

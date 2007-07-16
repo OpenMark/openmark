@@ -35,7 +35,7 @@ public class TsvReportWriter extends TextReportWriter {
 	{
 		super(pw,columns,"\r\n", "\t", "", "");
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.TabularReportWriter#sendHeaders(javax.servlet.http.HttpServletResponse)
 	 */

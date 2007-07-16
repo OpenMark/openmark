@@ -33,17 +33,17 @@ public class SimpleNode implements Node {
 	protected Node[] children;
 	protected int id;
 	protected EquationFormat parser;
-	
-	// sam added:	
+
+	// sam added:
 	private final static Set<String> STANDARDFUNCTIONS=new HashSet<String>(
 		Arrays.asList(new String[]
 		{
-			// List from p. 124 of 'A Guide To LaTeX 2e' 2nd ed (tim's book) 
+			// List from p. 124 of 'A Guide To LaTeX 2e' 2nd ed (tim's book)
 			"arccos","arcsin","arctan","arg","cos","cosh","cot","coth","csc",
 			"deg","det","dim","exp","gcd","hom","inf","ker","lg","lim","liminf",
 			"limsup","ln","log","max","min","Pr","sec","sin","sinh","sup","tan","tanh"
 		}));
-	
+
 	private final static Map<String, String> STANDARDSYMBOLS;
 	private final static String[] STANDARDSYMBOLS_ARRAY=
 	{
@@ -100,8 +100,8 @@ public class SimpleNode implements Node {
 		}
 		STANDARDSYMBOLS=hm;
 	}
-	
-	
+
+
 	private String sContent=null;
 	private String sName=null;
 	private List<String[]> lAttributes=new LinkedList<String[]>();
@@ -114,13 +114,13 @@ public class SimpleNode implements Node {
 	 */
 	public void setName(String sName) { this.sName=sName; }
 	/**
-	 * @param sAttribute 
+	 * @param sAttribute
 	 * @param sName
 	 */
 	public void setAttribute(String sAttribute,String sName) {
 		lAttributes.add(new String[]{sAttribute,sName});
 	}
-	private String getName() { return sName!=null ? sName : toString(); } 
+	private String getName() { return sName!=null ? sName : toString(); }
 	/**
 	 * @param d
 	 * @return this node's name.
@@ -138,14 +138,14 @@ public class SimpleNode implements Node {
 	{
 		Element e=d.createElement(getName());
 		bIncludeWhitespace|=getName().equals("mbox");
-		
+
 		if(sContent!=null)
 			e.appendChild(d.createTextNode(sContent));
 		for(String[] as : lAttributes)
 		{
 			e.setAttribute(as[0],as[1]);
 		}
-		
+
 		String sTextNodeBuildup="";
 		boolean bWhitespaceBefore=false,bBuildupWhitespaceBefore=false;
 		for(int i=0;i<jjtGetNumChildren();i++)
@@ -156,15 +156,15 @@ public class SimpleNode implements Node {
 				bWhitespaceBefore=true;
 				continue;
 			}
-			
+
 			Element eChild=sn.createDOM(d,bIncludeWhitespace);
-			
+
 			// Replace standard functions
 			String sChildName=eChild.getTagName();
 			if(STANDARDFUNCTIONS.contains(sChildName))
 			{
 				eChild=d.createElement("mbox");
-				
+
 				String sSpacer="";
 				if(i+1 < jjtGetNumChildren())
 				{
@@ -173,10 +173,10 @@ public class SimpleNode implements Node {
 					// if there is one
 					if(snNext.getName().equals("int_whitespace") && !bIncludeWhitespace)
 					{
-						sSpacer=" ";						
+						sSpacer=" ";
 					}
 				}
-				
+
 				XML.createText(eChild,"int_text",sChildName + sSpacer);
 			}
 			else if(STANDARDSYMBOLS.containsKey(sChildName))
@@ -184,7 +184,7 @@ public class SimpleNode implements Node {
 				eChild=d.createElement("int_text");
 				XML.createText(eChild,STANDARDSYMBOLS.get(sChildName));
 			}
-			
+
 			// Coagulate text nodes that appear as siblings
 			if(sChildName.equals("int_text") || sChildName.equals("int_whitespace"))
 			{
@@ -199,29 +199,29 @@ public class SimpleNode implements Node {
 				{
 					addText(d,e,sTextNodeBuildup,bBuildupWhitespaceBefore);
 					bBuildupWhitespaceBefore=false;
-					sTextNodeBuildup="";					
+					sTextNodeBuildup="";
 				}
-				if(bWhitespaceBefore) 
+				if(bWhitespaceBefore)
 					eChild.setAttribute("whitespacebefore","yes");
 				e.appendChild(eChild);
 				bWhitespaceBefore=false;
 			}
-			
+
 			if(sn.getName().equals("int_whitespace"))
 				bWhitespaceBefore=true;
 		}
 		if(sTextNodeBuildup.length()>0)
 		{
 			addText(d,e,sTextNodeBuildup,bBuildupWhitespaceBefore);
-			sTextNodeBuildup="";					
+			sTextNodeBuildup="";
 		}
-		
+
 		return e;
 	}
 	private static void addText(Document d,Element e,String sText,boolean bWhitespaceBefore)
 	{
 		Element eText=d.createElement("int_text");
-		if(bWhitespaceBefore) 
+		if(bWhitespaceBefore)
 			eText.setAttribute("whitespacebefore","yes");
 		eText.appendChild(d.createTextNode(sText));
 		e.appendChild(eText);
@@ -248,7 +248,7 @@ public class SimpleNode implements Node {
 
 	public void jjtClose() {
 	}
-	
+
 	public void jjtSetParent(Node n) { parent = n; }
 	public Node jjtGetParent() { return parent; }
 
@@ -287,7 +287,7 @@ public class SimpleNode implements Node {
 
 	/**
 	 * Dump this node and it's children for debugging.
-	 * 
+	 *
 	 * Override this method if you want to customize how the node dumps
 	 * out its children.
 	 * @param prefix used to indent the tree structure display.

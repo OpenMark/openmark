@@ -20,7 +20,7 @@ package om.tnavigator;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-/** 
+/**
  * Implemented by code that uses LogProcessor to process each log entry in
  * turn.
  */
@@ -29,20 +29,20 @@ public interface LogProcessorHandler
 	/**
 	 * Called when the log begins. The 'log' element is passed in here.
 	 * @param e Log element (no contents apart from the attributes)
-	 * @throws SAXException 
+	 * @throws SAXException
 	 */
 	void start(Element e) throws SAXException;
 
 	/**
 	 * Called after the log has finished.
-	 * @throws SAXException 
+	 * @throws SAXException
 	 */
 	void finish() throws SAXException;
 
 	/**
 	 * Called for each log entry.
 	 * @param e Entry tag and all children
-	 * @throws SAXException 
+	 * @throws SAXException
 	 */
 	void entry(Element e) throws SAXException;
 }

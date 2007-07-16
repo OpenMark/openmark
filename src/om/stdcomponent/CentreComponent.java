@@ -23,8 +23,8 @@ import om.stdquestion.QContent;
 
 import org.w3c.dom.Element;
 
-/** 
-Centres contained text or components. 
+/**
+Centres contained text or components.
 <h2>XML usage</h2>
 &lt;centre&gt;...&lt;/centre&gt;
 <h2>Properties</h2>
@@ -42,13 +42,13 @@ public class CentreComponent extends QComponent
 	{
 		return "centre";
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		initAsText(eThis);
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
@@ -56,9 +56,9 @@ public class CentreComponent extends QComponent
 		if(!bPlain) eDiv.setAttribute("class","centre");
 		qc.addInlineXHTML(eDiv);
 		qc.setParent(eDiv);
-		
+
 		produceChildOutput(qc,bInit,bPlain);
-		
-		qc.unsetParent();		
+
+		qc.unsetParent();
 	}
 }

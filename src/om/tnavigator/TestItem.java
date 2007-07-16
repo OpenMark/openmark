@@ -27,17 +27,17 @@ class TestItem
 {
 	// The enclosing item. Surely, this will always be a TestGroup?
 	private TestItem parent;
-	
+
 	private String sDepends=null;
-	
-	TestItem(TestItem iParent,Element eThis) 
-	{ 
+
+	TestItem(TestItem iParent,Element eThis)
+	{
 		this.parent=iParent;
-		
+
 		sDepends=eThis.getAttribute("depends");
 		if(sDepends!=null && sDepends.equals("")) sDepends=null;
 	}
-	
+
 	TestItem getParent() { return parent; }
 	String getDepends() { return sDepends; }
 }

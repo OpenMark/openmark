@@ -38,7 +38,7 @@ public class q1 extends SimpleQuestion1
 									INCORRECT_HD = { 2,    2,    2,    5,  5},
 									INCORRECT_JN = { 1,    1,    1.73, 4,  3},
 									INCORRECT_JD = { 2,    2,    2,    5,  5};
-	
+
 	private static final String an[] = {"1", "1", "", "4", ""};
 	private static final String ad[] = {"2", "2", "", "5", ""};
 	private static final String bn[] = {"", "", "1", "", "3"};
@@ -60,9 +60,9 @@ public class q1 extends SimpleQuestion1
 
 	/** Selected question */
 	private int iVariant;
-	
+
 //--------------------------------------------------------------------------------------------
-	
+
 protected void init() throws OmException
 {
 	Random r = getRandom("eigen");
@@ -90,9 +90,9 @@ protected void init() throws OmException
 		cStr = "0";
 	else
 		cStr = "\\frac{" + cn[iVariant] +" }{" + cd[iVariant] + "}";
-	
+
 	e2Str = "\\frac{" + e2n[iVariant] +" }{" + e2d[iVariant] + "}";
-	
+
 	setPlaceholder("EQ", equation);
 	setPlaceholder("C", cStr);
 	setPlaceholder("E", LETTERS_E[iVariant]);
@@ -102,12 +102,12 @@ protected void init() throws OmException
 	setPlaceholder("G", LETTERS_G[iVariant]);
 	setPlaceholder("N", "" + (int) CORRECT_N[iVariant]);
 	setPlaceholder("D", "" + (int) CORRECT_D[iVariant]);
-	
+
 	// store question information
-    getResults().setQuestionLine("Variant (counting from zero): " + iVariant);	
+    getResults().setQuestionLine("Variant (counting from zero): " + iVariant);
 }
 //--------------------------------------------------------------------------------------------
-  
+
 protected boolean isRight(int iAttempt) throws OmDeveloperException
 {
 	double	dblN, dblD;
@@ -119,19 +119,19 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
 	getComponent("coefficient").setDisplay(false);
 	getComponent("total").setDisplay(false);
 
-	responN=(getEditField("numerator").getValue().trim());	
-	dblN = Helper.inputNumber(responN); 
+	responN=(getEditField("numerator").getValue().trim());
+	dblN = Helper.inputNumber(responN);
 
-	responD=(getEditField("denominator").getValue().trim());	
+	responD=(getEditField("denominator").getValue().trim());
 	dblD = Helper.inputNumber(responD);
 
 	// store response information
 	getResults().setAnswerLine(responN + "/" + responD);
     getResults().appendActionSummary("Attempt " + iAttempt + ": " + responN + "/" + responD);
-    
+
     targetN = CORRECT_N[iVariant];
 	targetD = CORRECT_D[iVariant];
-	
+
 	// Compare against the right answer
 	if ((Helper.range(dblN, targetN, tolerance)) &&
 		(Helper.range(dblD, targetD, tolerance))) {
@@ -142,16 +142,16 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
 		// Compare against the total probability
 		targetN = INCORRECT_1[iVariant];
 		targetD = INCORRECT_1[iVariant];
-	
+
 		if ((Helper.range(dblN, targetN, tolerance)) &&
 				(Helper.range(dblD, targetD, tolerance))) {
 				getComponent("total").setDisplay(true);
 			}
-		
+
 		// Compare against coefficient
 		targetN = INCORRECT_HN[iVariant];
 		targetD = INCORRECT_HD[iVariant];
-	
+
 		if ((Helper.range(dblN, targetN, lowerTolerance)) &&
 			(Helper.range(dblD, targetD, lowerTolerance))) {
 			getComponent("coefficient").setDisplay(true);
@@ -160,27 +160,27 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
 		// Compare against other coefficient
 		targetN = INCORRECT_JN[iVariant];
 		targetD = INCORRECT_JD[iVariant];
-	
+
 		if ((Helper.range(dblN, targetN, lowerTolerance)) &&
 			(Helper.range(dblD, targetD, lowerTolerance))) {
 			getComponent("coefficient").setDisplay(true);
 		}
-		
+
 		// Compare against the wrong eigenfunction
 		targetN = (double) INCORRECT_LN[iVariant];
 		targetD = (double) INCORRECT_LD[iVariant];
-	
+
 		if ((Helper.range(dblN, targetN, tolerance)) &&
 			(Helper.range(dblD, targetD, tolerance))) {
 			getComponent("wrongfunction").setDisplay(true);
 		}
-	
+
 		// Give hint on second attempt only
 		else if (iAttempt == 2) {
 			setFeedbackID("default");
 		}
 	}
-	
+
 	return false;
 }
 //--------------------------------------------------------------------------------------------

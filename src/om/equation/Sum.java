@@ -25,7 +25,7 @@ import util.misc.Fonts;
 public class Sum extends LimitsThing implements SuperSubHolder.EatsOwnSuperSub
 {
 	private final static char SIGMA='\u2211';
-	
+
 	@Override
 	protected void renderContents(Graphics2D g2,int iX,int iY,int iOffsetX)
 	{
@@ -34,7 +34,7 @@ public class Sum extends LimitsThing implements SuperSubHolder.EatsOwnSuperSub
 		g2.setFont(f);
 		g2.drawString(SIGMA+"",iX+iOffsetX+Fonts.getLeftOverlap(f,SIGMA),iY+iBaseline);
 	}
-	
+
 	/**
 	 * @param f ItemFactory to register this class with.
 	 */
@@ -43,23 +43,23 @@ public class Sum extends LimitsThing implements SuperSubHolder.EatsOwnSuperSub
 		f.addItemClass("sum",new ItemCreator()
 			{	public Item newItem()	 {	return new Sum();	}	});
 	}
-	
+
 	@Override
 	protected void internalPrepare()
 	{
 		// Cannot completely prepare because the super/sub aren't attached yet.
-		// But, because there may be none coming, we need to do additional 
+		// But, because there may be none coming, we need to do additional
 		// preparation.
-		
+
 		Font f=getBigFont();
-		int 
+		int
 			iAscent=Fonts.getAscent(f,SIGMA),
 			iDescent=Fonts.getDescent(f,SIGMA);
-		
+
 		iHeight=iAscent+iDescent;
 		iWidth=Fonts.getRightExtent(f,SIGMA)+Fonts.getLeftOverlap(f,SIGMA);
 		iBaseline=iAscent;
-		
+
 		iLeftMargin=iRightMargin=getZoomed(2);
 	}
 
@@ -68,9 +68,9 @@ public class Sum extends LimitsThing implements SuperSubHolder.EatsOwnSuperSub
 	{
 		return getTextSize()!=TEXTSIZE_DISPLAY;
 	}
-	
+
 	private Font getBigFont()
 	{
 		return new Font(getFontFamily(),Font.PLAIN,(getZoomed(convertTextSize(getTextSize()))*3)/2);
-	}		
+	}
 }

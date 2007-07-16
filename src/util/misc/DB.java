@@ -24,16 +24,16 @@ import java.sql.*;
 public abstract class DB
 {
 	/**
-	 * Run a query on a database connection, and dump the resuts to c:/lastquery.csv. 
+	 * Run a query on a database connection, and dump the resuts to c:/lastquery.csv.
 	 * @param c
 	 */
-	public static void connectDirect(Connection c) 
+	public static void connectDirect(Connection c)
 	{
 		try
 		{
-			Statement s=c.createStatement();	
+			Statement s=c.createStatement();
 			PrintStream ps=System.out;
-			
+
 			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 			while(true)
 			{
@@ -41,7 +41,7 @@ public abstract class DB
 				System.err.println("Enter SQL query:");
 				if(!c.getAutoCommit()) c.commit();
 				String sLine=br.readLine();
-				
+
 				ResultSet rs;
 				try
 				{
@@ -52,10 +52,10 @@ public abstract class DB
 					System.err.println(se.getMessage());
 					continue;
 				}
-				
+
 				File fCSV=new File("c:/lastquery.csv");
 				PrintStream psFile=new PrintStream(new FileOutputStream(fCSV),false);
-				
+
 				// Do headers
 				ResultSetMetaData rsmd=rs.getMetaData();
 				int[] aiColWidth=new int[rsmd.getColumnCount()+1];
@@ -63,20 +63,20 @@ public abstract class DB
 				{
 					String sName=rsmd.getColumnName(i);
 					aiColWidth[i]=Math.max(sName.length(),rsmd.getColumnDisplaySize(i));
-					
+
 					ps.print("| "+pad(sName,aiColWidth[i],' ')+" ");
 					psFile.print(sName+",");
 				}
 				ps.println();
 				psFile.println();
-				
+
 				// Do underline
 				for(int i=1;i<aiColWidth.length;i++)
 				{
 					ps.print("| "+pad("",aiColWidth[i],'-')+" ");
 				}
 				ps.println();
-				
+
 				// Do values
 				while(rs.next())
 				{
@@ -88,7 +88,7 @@ public abstract class DB
 					ps.println();
 					psFile.println();
 				}
-				
+
 				ps.println();
 				psFile.close();
 			}
@@ -97,8 +97,8 @@ public abstract class DB
 		{
 			t.printStackTrace();
 		}
-	}	
-	
+	}
+
 	private static String pad(String sInput,int iLength,char c)
 	{
 		if(sInput==null) sInput="";
@@ -107,7 +107,7 @@ public abstract class DB
 		if(sInput.length() > iLength) sInput=sInput.substring(0,iLength);
 		return sInput;
 	}
-	
+
 
 
 }

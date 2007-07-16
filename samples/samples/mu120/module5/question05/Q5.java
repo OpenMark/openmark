@@ -27,41 +27,41 @@ import om.stdcomponent.CanvasComponent;
 import samples.shared.Helper;
 
 public class Q5 extends SimpleQuestion2 {
-    
+
     // Graph data
-    
+
     int [] pXs = { 20, 20,  70,  70,   20,  20,  70,  70, -20, -20, -70, -70, -20, -20, -70, -70};
     int [] pYs = { 20, 70,  20,  70,  -20, -70, -20, -70,  20,  70,  20,  70, -20, -70, -20, -70};
-    
+
     int pXa, pYa;
     int pXb, pYb;
     int pXc, pYc;
     int pXd, pYd;
-    
-    
+
+
     protected void init() throws OmException {
-        
+
         Random r = getRandom();
         int p1 = r.nextInt(4);
         int p2 = 4+r.nextInt(4);
         int p3 = 8+r.nextInt(4);
         int p4 = 12+r.nextInt(4);
-        
+
         pXa = pXs [p1]; pYa = pYs [p1];
         pXb = pXs [p2]; pYb = pYs [p2];
         pXc = pXs [p3]; pYc = pYs [p3];
         pXd = pXs [p4]; pYd = pYs [p4];
-        
+
         setPlaceholder("pXA", "" + pXa);
         setPlaceholder("pXB", "" + pXb);
         setPlaceholder("pXC", "" + pXc);
         setPlaceholder("pXD", "" + pXd);
-        
+
         setPlaceholder("pYA", "" + pYa);
         setPlaceholder("pYB", "" + pYb);
         setPlaceholder("pYC", "" + pYc);
         setPlaceholder("pYD", "" + pYd);
-        
+
         // store question information
         getResults().setQuestionLine("Drag the following points on the graph at"
                 );
@@ -74,12 +74,12 @@ public class Q5 extends SimpleQuestion2 {
                 ")"
                 );
     }
-    
+
     protected boolean isRight(int iAttempt) throws OmDeveloperException {
-        
+
         CanvasComponent cc = getCanvas("graph");
         World w = cc.getWorld("w1");
-        
+
         java.awt.Point mPa = cc.getMarkerPos(0);
         java.awt.Point mPb = cc.getMarkerPos(1);
         java.awt.Point mPc = cc.getMarkerPos(2);
@@ -92,7 +92,7 @@ public class Q5 extends SimpleQuestion2 {
         int mYc = (int) Math.round(w.convertYBack(mPc.y));
         int mXd = (int) Math.round(w.convertXBack(mPd.x));
         int mYd = (int) Math.round(w.convertYBack(mPd.y));
-        
+
         // correct answer ?
         int correct = 0;
         if (Helper.range(mXa, pXa, 10) && Helper.range(mYa, pYa, 10)) {
@@ -115,7 +115,7 @@ public class Q5 extends SimpleQuestion2 {
         } else {
             setFeedbackID("pointdmisplaced");
         }
-        
+
         // store response information
         getResults().appendActionSummary("Attempt " + iAttempt + ": " +
                 "(" +
@@ -125,7 +125,7 @@ public class Q5 extends SimpleQuestion2 {
                 "(D, " + mXd + ", " + mYd + ")" +
                 ")"
                 );
-        
+
         switch (correct) {
             case 0:
                 setPlaceholder("CORRECT", "All four points are misplaced");
@@ -137,12 +137,12 @@ public class Q5 extends SimpleQuestion2 {
                 setPlaceholder("CORRECT", correct + " points are in the right place");
                 break;
         }
-        
+
         if (correct == 4)
             return true;
-        
+
         // wrong answer handled from here on .....
-        
+
         // feeback, given attempt 1, 2, or 3
         switch (iAttempt) {
             case 1:
@@ -162,8 +162,8 @@ public class Q5 extends SimpleQuestion2 {
                 cc.addMarker(w.convertX(pXd+4), w.convertY(pYd-3), "label='D'; font='bold';", "w1");
                 break;
         }
-        
+
         return false;
     }
-    
+
 } // end class

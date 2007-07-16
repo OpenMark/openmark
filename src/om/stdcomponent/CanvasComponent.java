@@ -38,55 +38,55 @@ import util.misc.IO;
 import util.xml.XML;
 import util.xml.XMLException;
 
-/** 
+/**
 Represents a Java BufferedImage so that you can draw graphics from Java code.
 Also includes graph support, but you're perfectly well able to use it for
 drawing your own graphics too.
 <h2>XML usage</h2>
 <pre>&lt;canvas alt="Fancy graph" width="200" height="200"&gt;
- &lt;world id='w1' px='10' py='10' pw='180' ph='180' 
+ &lt;world id='w1' px='10' py='10' pw='180' ph='180'
    xleft='-1.0' xright='1.0' ytop='1.0' ybottom='-1.0'&gt;
   &lt;xAxis ticks='0.2,0.1' numbers='0.5' omitNumbers='0.0' tickSide='both'/&gt;
   &lt;yAxis ticks='0.2,0.1' numbers='0.5' omitNumbers='0.0' tickSide='both'/&gt;
- &lt;/world&gt; 
+ &lt;/world&gt;
  &lt;marker x='10' y='10'/&gt;
  &lt;marker x='30' y='10' labelJS='label=x+","+y;' world='w1'/&gt;
- &lt;markerline from='0' to='1' labelJS='label=x1+','+y1;' world='w1'/&gt; 
+ &lt;markerline from='0' to='1' labelJS='label=x1+','+y1;' world='w1'/&gt;
 &lt;/canvas&gt;
 <h2>Properties</h2>
 <table border="1">
 <tr><th>Property</th><th>Values</th><th>Effect</th></tr>
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
-<tr><td>display</td><td>(boolean)</td><td>Includes in/removes from 
+<tr><td>display</td><td>(boolean)</td><td>Includes in/removes from
 output</td></tr>
-<tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates interactive 
+<tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates interactive
 features</td></tr>
-<tr><td>alt</td><td>(string)</td><td>Alternative text for those who can't read 
+<tr><td>alt</td><td>(string)</td><td>Alternative text for those who can't read
 the bitmap</td></tr>
 <tr><td>width</td><td>(int)</td><td>Width in pixels</td></tr>
 <tr><td>height</td><td>(int)</td><td>Height in pixels</td></tr>
-<tr><td>type</td><td>png / jpg</td><td>Compression format used for output 
+<tr><td>type</td><td>png / jpg</td><td>Compression format used for output
 (JPG for photos, otherwise PNG)</td></tr>
-<tr><td>antialias</td><td>(boolean)</td><td>Whether to anti-alias text and 
+<tr><td>antialias</td><td>(boolean)</td><td>Whether to anti-alias text and
 graphics (default true)</td></tr>
-<tr><td>filePath</td><td>(string)</td><td>Optional path to image file 
+<tr><td>filePath</td><td>(string)</td><td>Optional path to image file
 (relative to class) to initialise canvas with</td></tr>
-<tr><td>requirebg</td><td>(boolean)</td><td>If true, includes background image 
-even if question is being viewed in 'fixed colour' mode; otherwise does not. 
+<tr><td>requirebg</td><td>(boolean)</td><td>If true, includes background image
+even if question is being viewed in 'fixed colour' mode; otherwise does not.
 Setting requirebg='yes' also makes any graph use normal colours even if the
 question is in fixed-colour accessibility mode; be aware that this option
 is bad for accessibility.
-</td></tr> 
+</td></tr>
 <tr><td>markerimage</td><td>(string)</td><td>If specified, use a custom marker image
 instead of the standard cross-hairs.
 If you specify markerimage="arrow", you must supply images arrow15.gif, arrow23.gif,
 arrow31.gif, arrow15d.gif, arrow23d.gif, arrow31d.gif. These must be square images
-with size 15, 23 and 31 pixels respectively. The 'd' images are for the disabled state. 
-</td></tr> 
-<tr><td>markerhotspot</td><td>(string)</td><td>Specify the position of the 
+with size 15, 23 and 31 pixels respectively. The 'd' images are for the disabled state.
+</td></tr>
+<tr><td>markerhotspot</td><td>(string)</td><td>Specify the position of the
 marker hotspot within the image, in the form x,y|x,y|x,y, for the three sizes.
 If you omit this, the hotspot is in the centre of the image, that is 8,8|11,11|15,15.
-</td></tr> 
+</td></tr>
 </table>
 <h2>Contents</h2>
 <h3>Graphs</h3>
@@ -99,9 +99,9 @@ changes to the graphs you'll need to use the manual repaint() method.
 <h3>Interactive features</h3>
 <p>
 You can have any number of &lt;marker&gt; elements. These are crosshairs that
-the user can drag around on the canvas. They can be dragged anywhere on the 
-canvas (but not off it). The X/Y positions of the marker centre can be obtained 
-in code. Marker positions are always in pixel co-ordinates, at the moment, 
+the user can drag around on the canvas. They can be dragged anywhere on the
+canvas (but not off it). The X/Y positions of the marker centre can be obtained
+in code. Marker positions are always in pixel co-ordinates, at the moment,
 and not world co-ordinates.
 </p>
 <p>
@@ -112,22 +112,22 @@ Specify a 'from' and 'to' marker and it'll draw a line between the two markers
 <p>
 You can add a label to the centre of the line by specifying
 'labelJS' which contains JavaScript statements that should set a 'label' variable based
-on the x1, y1, x2, and y2 variables (see XML usage example above). JavaScript is not 
+on the x1, y1, x2, and y2 variables (see XML usage example above). JavaScript is not
 exactly like Java so be careful if you don't know it. If you make JavaScript
 errors in the attribute, they will carry through as JS errors at runtime.
 </p>
 <p>
-x1,y1,x2, and y2 are in pixel co-ordinates unless you specify 
+x1,y1,x2, and y2 are in pixel co-ordinates unless you specify
 a 'world' attribute. Then they are in world co-ordinates.
 </p>
 <p>
-Labels on markers appear above and right of the marker. They are set in the 
+Labels on markers appear above and right of the marker. They are set in the
 same way, but for obvious reasons you have x,y instead of x1,y1,x2,y2.
 <p>
 (All mentions of pixel co-ordinates above are supposed to relate to 'original-size'
 pixels, i.e. if accessibility zoom is turned on, the same numbers should work
 as if it wasn't.)
-</p> 
+</p>
 */
 public class CanvasComponent extends QComponent implements World.Context
 {
@@ -140,7 +140,7 @@ public class CanvasComponent extends QComponent implements World.Context
 	private static final String PROPERTY_REQUIREBG="requirebg";
 	private static final String PROPERTY_MARKERIMAGE="markerimage";
 	private static final String PROPERTY_MARKERHOTSPOT="markerhotspot";
-	
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
 	{
@@ -149,54 +149,54 @@ public class CanvasComponent extends QComponent implements World.Context
 
 	/** Actual image data */
 	private BufferedImage bi=null;
-	
+
 	/** Graphics context for it */
 	private Graphics2D g2=null;
-	
-	/** Random number used to ensure we don't duplicate image filenames */ 
+
+	/** Random number used to ensure we don't duplicate image filenames */
 	private String sRandom;
-	
+
 	/** Changed flag, true if we need to send a new bitmap */
 	private boolean bChanged=true;
-	
+
 	/** 'Clear' image, if there's a background in place (to save reloading each time) */
 	private BufferedImage biBackground=null;
-	
+
 	/** List of graph worlds, in paint order */
 	private List<World> lWorlds=new LinkedList<World>();
-	
+
 	/** List of markers */
 	private List<Marker> lMarkers=new LinkedList<Marker>();
-	
+
 	/** Information stored on each marker */
 	private static class Marker
 	{
 		/** X/Y co-ords */
 		int iX,iY;
-		
+
 		/** Javascript expression for label text */
 		String sLabelJS;
 
 		/** ID of world for co-ordinates in label expression */
 		String sWorld;
 	}
-	
+
 	/** List of lines */
 	private List<MarkerLine> lLines=new LinkedList<MarkerLine>();
-	
+
 	/** Information stored for line between markers */
 	private static class MarkerLine
 	{
 		/** Indices of markers */
 		int iFrom,iTo;
-		
+
 		/** Javascript expression for label text */
 		String sLabelJS;
-		
+
 		/** ID of world for co-ordinates in label expression */
 		String sWorld;
 	}
-	
+
 	@Override
 	protected String[] getRequiredAttributes()
 	{
@@ -206,12 +206,12 @@ public class CanvasComponent extends QComponent implements World.Context
 			PROPERTY_HEIGHT
 		};
 	}
-	
+
 	@Override
 	protected void defineProperties() throws OmDeveloperException
 	{
 		super.defineProperties();
-		
+
 		defineString(PROPERTY_ALT);
 		defineInteger(PROPERTY_WIDTH);
 		defineInteger(PROPERTY_HEIGHT);
@@ -229,7 +229,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		setString(PROPERTY_MARKERIMAGE,null);
 		setString(PROPERTY_MARKERHOTSPOT,"8,8|11,11|15,15");
 	}
-	
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
@@ -253,7 +253,7 @@ public class CanvasComponent extends QComponent implements World.Context
 					throw new OmFormatException(gfe.getMessage(),gfe);
 				}
 				lWorlds.add(w);
-				
+
 				// Paint it now
 				w.paint(getGraphics());
 			}
@@ -264,8 +264,8 @@ public class CanvasComponent extends QComponent implements World.Context
 				{
 					m.iX=Integer.parseInt(XML.getRequiredAttribute(e,"x"));
 					m.iY=Integer.parseInt(XML.getRequiredAttribute(e,"y"));
-					
-					m.sLabelJS=e.hasAttribute("labelJS") ? e.getAttribute("labelJS") : "";						
+
+					m.sLabelJS=e.hasAttribute("labelJS") ? e.getAttribute("labelJS") : "";
 					m.sWorld=e.hasAttribute("world") ? e.getAttribute("world") : null;
 				}
 				catch(XMLException xe)
@@ -276,7 +276,7 @@ public class CanvasComponent extends QComponent implements World.Context
 				{
 					throw new OmFormatException("<canvas>: x/y marker attribute not valid integer");
 				}
-				
+
 				lMarkers.add(m);
 			}
 			else if(sTag.equals("markerline"))
@@ -289,8 +289,8 @@ public class CanvasComponent extends QComponent implements World.Context
 					if(ml.iFrom>=lMarkers.size() || ml.iTo>=lMarkers.size())
 						throw new OmFormatException(
 							"<canvas>: from/to for markerline is out of range (remember markers start at 0)");
-					
-					ml.sLabelJS=e.hasAttribute("labelJS") ? e.getAttribute("labelJS") : "";						
+
+					ml.sLabelJS=e.hasAttribute("labelJS") ? e.getAttribute("labelJS") : "";
 					ml.sWorld=e.hasAttribute("world") ? e.getAttribute("world") : null;
 				}
 				catch(XMLException xe)
@@ -301,15 +301,15 @@ public class CanvasComponent extends QComponent implements World.Context
 				{
 					throw new OmFormatException("<canvas>: x/y marker attribute not valid integer");
 				}
-				
-				lLines.add(ml);				
+
+				lLines.add(ml);
 			}
-				
+
 			else throw new OmFormatException(
 				"<canvas>: Unexpected content (accepts <world>, <marker>): <"+sTag+">");
-		}		
+		}
 	}
-	
+
 	/**
 	 * Obtains a graphics context which you can use to draw on the image. Please
 	 * note:
@@ -318,16 +318,16 @@ public class CanvasComponent extends QComponent implements World.Context
 	 *   depending on which box the component is placed in, and the accessibility
 	 *   fixed-colour option.</li>
 	 * <li> After drawing on the image, you must call markChanged().</li>
-	 * <li> Draw using co-ordinates based on the requested pixel size: if zoom is 
+	 * <li> Draw using co-ordinates based on the requested pixel size: if zoom is
 	 *   necessary, this will have been automatically added to the context.</li>
 	 * <li> The context is shared, so if you set it to red it will stay red next
 	 *   time (i.e. make sure to set colour properly).</li>
 	 * <li> Remember to support the accessibility colour-fixing features. These
-	 *   require that you draw in appropriate colours. Use convertRGB() to 
+	 *   require that you draw in appropriate colours. Use convertRGB() to
 	 *   access standard colour constants such as 'text' and getBackground() to
 	 *   determine the background colour in force at present.</li>
 	 * <li> Unless you have set requirebg='yes', the background image will not be
-	 *   loaded when the question is in fixed-colour mode.</li>  
+	 *   loaded when the question is in fixed-colour mode.</li>
 	 * </ul>
 	 * @return Graphics context
 	 */
@@ -349,33 +349,33 @@ public class CanvasComponent extends QComponent implements World.Context
 				bAntiAlias ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 				bAntiAlias ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-			
+
 			double dZoom=getQuestion().getZoom();
-			if(dZoom!=1.0) g2.scale(dZoom,dZoom);			
+			if(dZoom!=1.0) g2.scale(dZoom,dZoom);
 		}
 		return g2;
 	}
 
 	/**
-	 * Obtains the BufferedImage this canvas represents. You should avoid this 
+	 * Obtains the BufferedImage this canvas represents. You should avoid this
 	 * method and use getGraphics() where possible. If you use this method, you
 	 * are responsible for rescaling the image (if zoom is on). Also see the
 	 * warnings in getGraphics().
 	 * @return The BufferedImage
 	 */
-	public BufferedImage getImage()  
+	public BufferedImage getImage()
 	{
 		try
 		{
 			if(bi==null)
 			{
-				int 
+				int
 					iWidth=(int)(getInteger(PROPERTY_WIDTH)*getQuestion().getZoom()),
 					iHeight=(int)(getInteger(PROPERTY_HEIGHT)*getQuestion().getZoom());
-				
+
 				// Create image
 				bi=new BufferedImage(iWidth,iHeight,BufferedImage.TYPE_INT_RGB);
-				
+
 				// Fill to background
 				Graphics g=bi.getGraphics();
 				g.setColor(getBackground());
@@ -388,7 +388,7 @@ public class CanvasComponent extends QComponent implements World.Context
 			throw new OmUnexpectedException(ode);
 		}
 	}
-	
+
 	/**
 	 * Clears the image to background colour or image. Also marks changed.
 	 * @throws OmDeveloperException If can't load the image
@@ -396,7 +396,7 @@ public class CanvasComponent extends QComponent implements World.Context
 	public void clear() throws OmDeveloperException
 	{
 		// Load image if needed
-		if(isPropertySet(PROPERTY_FILEPATH) && 
+		if(isPropertySet(PROPERTY_FILEPATH) &&
 			(!getQuestion().isFixedColour() || getBoolean(PROPERTY_REQUIREBG)))
 		{
 			if(biBackground!=null)
@@ -408,8 +408,8 @@ public class CanvasComponent extends QComponent implements World.Context
 				// Fill to background
 				Graphics g=getImage().getGraphics();
 				g.setColor(getBackground());
-				g.fillRect(0,0,bi.getWidth(),bi.getHeight());			
-	
+				g.fillRect(0,0,bi.getWidth(),bi.getHeight());
+
 				// Load file into it
 				try
 				{
@@ -421,7 +421,7 @@ public class CanvasComponent extends QComponent implements World.Context
 				{
 					throw new OmDeveloperException("Failed to load image: "+getString(PROPERTY_FILEPATH),ioe);
 				}
-				
+
 				// Cache
 				biBackground=new BufferedImage(getImage().getWidth(),getImage().getHeight(),
 					BufferedImage.TYPE_INT_RGB);
@@ -433,12 +433,12 @@ public class CanvasComponent extends QComponent implements World.Context
 			// Fill to background
 			Graphics g=getImage().getGraphics();
 			g.setColor(getBackground());
-			g.fillRect(0,0,bi.getWidth(),bi.getHeight());			
+			g.fillRect(0,0,bi.getWidth(),bi.getHeight());
 		}
-		
+
 		bChanged=true;
 	}
-	
+
 	/**
 	 * Clears the image and paints all the graph worlds. Also marks changed.
 	 * @throws OmDeveloperException If can't load the background image
@@ -452,7 +452,7 @@ public class CanvasComponent extends QComponent implements World.Context
 			w.paint(getGraphics());
 		}
 	}
-	
+
 	/**
 	 * @param sID ID of desired <world>
 	 * @return Specified World object
@@ -467,7 +467,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		}
 		throw new OmDeveloperException("<canvas>: World not found: "+sID);
 	}
-	
+
 	/**
 	 * Obtains position of the given marker.
 	 * @param iMarker Marker index, beginning at zero
@@ -479,17 +479,17 @@ public class CanvasComponent extends QComponent implements World.Context
 		if(iMarker >= lMarkers.size() || iMarker<0)
 			throw new OmDeveloperException("<canvas>: No marker "+iMarker);
 		Marker m=lMarkers.get(iMarker);
-		
+
 		return new Point(m.iX,m.iY);
 	}
-	
+
 	/** @return Number of markers */
 	public int getNumMarkers()
 	{
 		return lMarkers.size();
 	}
-	
-	/** 
+
+	/**
 	 * Adds a new marker at given co-ordinates.
 	 * @param iX X pixel co-ordinate
 	 * @param iY Y pixel co-ordinate
@@ -505,7 +505,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		m.sWorld=sWorld;
 		lMarkers.add(m);
 	}
-	
+
 	/**
 	 * Removes marker of given index. Be careful - removing this means all other
 	 * markers above this change their index, so it might do weird things to lines
@@ -516,10 +516,10 @@ public class CanvasComponent extends QComponent implements World.Context
 	{
 		lMarkers.remove(iIndex);
 	}
-	
+
 	/**
 	 * Adds a line.
-	 * @param iFromIndex Index (0-based) of one marker 
+	 * @param iFromIndex Index (0-based) of one marker
 	 * @param iToIndex Index (0-based) of other marker
 	 * @param sLabelJS JavaScript label (may be null)
 	 * @param sWorld World ID for converting co-ordinates in JS expression (may be null)
@@ -533,17 +533,17 @@ public class CanvasComponent extends QComponent implements World.Context
 		ml.sWorld=sWorld;
 		lLines.add(ml);
 	}
-	
+
 	/**
 	 * Removes the line between specified markers. Does nothing if there is
 	 * no such line.
-	 * @param iFromIndex Index (0-based) of one marker 
+	 * @param iFromIndex Index (0-based) of one marker
 	 * @param iToIndex Index (0-based) of other marker
 	 * @return True if something was deleted, false if we didn't find one
 	 */
 	public boolean removeLine(int iFromIndex,int iToIndex)
 	{
-		for(Iterator i=lLines.iterator();i.hasNext();)		
+		for(Iterator i=lLines.iterator();i.hasNext();)
 		{
 			MarkerLine ml=(MarkerLine)i.next();
 			if(ml.iFrom==iFromIndex && ml.iTo==iToIndex)
@@ -554,18 +554,18 @@ public class CanvasComponent extends QComponent implements World.Context
 		}
 		return false;
 	}
-	
-	/** 
+
+	/**
 	 * Marks the image as changed. After this is called, a new version of the
 	 * image will be sent next time. (If you don't call this, it won't. So if
-	 * your image doesn't change, that's why.) Calling this multiple times 
+	 * your image doesn't change, that's why.) Calling this multiple times
 	 * doesn't hurt.
 	 */
 	public void markChanged()
 	{
 		bChanged=true;
 	}
-	
+
 	@Override
 	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain)
 		throws OmException
@@ -579,11 +579,11 @@ public class CanvasComponent extends QComponent implements World.Context
 			qc.addInlineXHTML(eDiv);
 			XML.createText(eDiv,getString("alt"));
 			qc.addTextEquivalent(getString("alt"));
-			
+
 			// Markers are not supported in plain mode
 			return;
 		}
-		
+
 		// If image has changed, send new version
 		if(bChanged)
 		{
@@ -591,7 +591,7 @@ public class CanvasComponent extends QComponent implements World.Context
 			if(getString(PROPERTY_TYPE).equals("png")) qc.addResource(
 				getID()+"."+sRandom+".png","image/png",QContent.convertPNG(bi));
 			else if(getString(PROPERTY_TYPE).equals("jpg")) qc.addResource(
-				getID()+"."+sRandom+".jpg","image/jpeg",QContent.convertJPG(bi));				
+				getID()+"."+sRandom+".jpg","image/jpeg",QContent.convertJPG(bi));
 		}
 
 		String sFilename=getID()+"."+sRandom+"."+getString(PROPERTY_TYPE);
@@ -600,14 +600,14 @@ public class CanvasComponent extends QComponent implements World.Context
 		eEnsureSpaces.setAttribute("class","canvas");
 		qc.addInlineXHTML(eEnsureSpaces);
 		XML.createText(eEnsureSpaces," ");
-		
+
 		String sImageID=QDocument.ID_PREFIX+getID()+"_img";
-		Element eImg=XML.createChild(eEnsureSpaces,"img");			
+		Element eImg=XML.createChild(eEnsureSpaces,"img");
 		eImg.setAttribute("id",sImageID);
 		eImg.setAttribute("onmousedown","return false;"); // Prevent Firefox drag/drop
 		eImg.setAttribute("src","%%RESOURCES%%/"+sFilename);
 		eImg.setAttribute("alt",getString("alt"));
-		
+
 		// Get zoom, marker size and hotspot position.
 		double dZoom=getQuestion().getZoom();
 		int iMarkerSize;
@@ -634,7 +634,7 @@ public class CanvasComponent extends QComponent implements World.Context
 				setString(PROPERTY_MARKERIMAGE, "canvasm");
 				sMarkerPrefix="canvasm"+iMarkerSize;
 				try
-				{		
+				{
 					qc.addResource(sMarkerPrefix+".gif","image/gif",
 						IO.loadResource(CanvasComponent.class,sMarkerPrefix+".gif"));
 					qc.addResource(sMarkerPrefix+"d.gif","image/gif",
@@ -645,11 +645,11 @@ public class CanvasComponent extends QComponent implements World.Context
 					throw new OmUnexpectedException(e);
 				}
 			}
-			else 
+			else
 			{
 				sMarkerPrefix+=iMarkerSize;
 				try
-				{		
+				{
 					qc.addResource(sMarkerPrefix+".gif","image/gif",
 							getQuestion().loadResource(sMarkerPrefix+".gif"));
 					qc.addResource(sMarkerPrefix+"d.gif","image/gif",
@@ -675,17 +675,17 @@ public class CanvasComponent extends QComponent implements World.Context
 				((int)(dZoom * 4.0)) + ",'"+
 				(getQuestion().isFixedColour() ? getQuestion().getFixedColourFG() : "black")+
 				"','"+
-				(getQuestion().isFixedColour() ? getQuestion().getFixedColourBG() : 
-					convertHash(getBackground()))+				
+				(getQuestion().isFixedColour() ? getQuestion().getFixedColourBG() :
+					convertHash(getBackground()))+
 				"'," + (int)(dZoom * 10.0)+
-				"); });");			
+				"); });");
 			Element eDynamic=XML.createChild(eEnsureSpaces,"div");
 			eDynamic.setAttribute("id",QDocument.ID_PREFIX+getID()+"_dynamic");
 		}
-		
+
 		int iIndex=0;
 		for(Iterator i=lMarkers.iterator();i.hasNext();iIndex++)
-		{			
+		{
 			Marker m=(Marker)i.next();
 			Element eMarker=XML.createChild(eEnsureSpaces,"img");
 			eMarker.setAttribute("id",QDocument.ID_PREFIX+getID()+"_marker"+iIndex);
@@ -710,14 +710,14 @@ public class CanvasComponent extends QComponent implements World.Context
 			eInputY.setAttribute("value",""+(int)(m.iY*dZoom));
 			eInputY.setAttribute("name",QDocument.ID_PREFIX+"canvasmarker_"+getID()+"_"+iIndex+"y");
 			eInputY.setAttribute("id",eInputY.getAttribute("name"));
-			
+
 			if(isEnabled()) qc.informFocusable(QDocument.ID_PREFIX+getID()+"_marker"+iIndex,bPlain);
 		}
 		for(Iterator i=lLines.iterator();i.hasNext();)
 		{
 			MarkerLine ml=(MarkerLine)i.next();
 			World w=ml.sWorld==null ? null : getWorld(ml.sWorld);
-			
+
 			Element eScript=XML.createChild(eEnsureSpaces,"script");
 			eScript.setAttribute("type","text/javascript");
 			XML.createText(eScript,
@@ -726,8 +726,8 @@ public class CanvasComponent extends QComponent implements World.Context
 				getWorldFactors(w,dZoom)+
 				"); });");
 		}
-		
-		XML.createText(eEnsureSpaces," ");		
+
+		XML.createText(eEnsureSpaces," ");
 		qc.addTextEquivalent(getString("alt"));
 	}
 
@@ -752,7 +752,7 @@ public class CanvasComponent extends QComponent implements World.Context
 	}
 	private String getWorldFactors(World w,double dZoom)
 	{
-		return (w==null ? "0,0,"+dZoom+","+dZoom : 
+		return (w==null ? "0,0,"+dZoom+","+dZoom :
 			(w.convertX(0.0)*dZoom)+","+(w.convertY(0.0)*dZoom)+","+
 			((w.convertX(1.0)-w.convertX(0.0))*dZoom)+","+((w.convertY(1.0)-w.convertY(0.0))*dZoom));
 	}
@@ -761,12 +761,12 @@ public class CanvasComponent extends QComponent implements World.Context
 	protected void formAllValuesSet(ActionParams ap) throws OmException
 	{
 		if(!isEnabled()) return;
-		
+
 		// Get marker data
 		double dZoom=getQuestion().getZoom();
 		int i=0;
 		for(Iterator iMarker=lMarkers.iterator();iMarker.hasNext();i++)
-		{			
+		{
 			Marker m=(Marker)iMarker.next();
 			if(ap.hasParameter("canvasmarker_"+getID()+"_"+i+"x"))
 			{
@@ -784,7 +784,7 @@ public class CanvasComponent extends QComponent implements World.Context
 			}
 		}
 	}
-	
+
 	/** Map from colour constant (String) to #colour (String) */
   private static final Map<String, String> mColourConstants=new HashMap<String, String>();
   static
@@ -802,8 +802,8 @@ public class CanvasComponent extends QComponent implements World.Context
   		mColourConstants.put(COLOURDEFAULTS[i],COLOURDEFAULTS[i+1]);
   	}
   }
-	
-	
+
+
 	// Implementation for World.Context
 	public Color getColour(String sConstant)
 	{
@@ -824,17 +824,17 @@ public class CanvasComponent extends QComponent implements World.Context
 				else
 				{
 					String s=mColourConstants.get(sConstant);
-					if(s==null) return null;					
+					if(s==null) return null;
 					return convertRGBOnly(s);
-				}				
-			}				
+				}
+			}
 		}
 		catch(OmDeveloperException e)
 		{
 			return null;
 		}
 	}
-	
+
 	public boolean useAlternates()
 	{
 		return getQuestion().isFixedColour();
@@ -850,12 +850,12 @@ public class CanvasComponent extends QComponent implements World.Context
 		// Note that this doesn't change on zoom because the whole graph is scaled
 		return 13;
 	}
-	
+
 	@Override
 	public String setString(String sName,String sValue) throws OmDeveloperException
 	{
 		if(sName.equals(PROPERTY_FILEPATH)) biBackground=null;
 		return super.setString(sName,sValue);
 	}
-	
+
 }

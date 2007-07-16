@@ -17,7 +17,7 @@
  */
 package om;
 
-/** 
+/**
  * For throwing when an exception occurs due to a faiure to connect to a remote service.
  */
 public class OmRemoteException extends OmException
@@ -29,7 +29,7 @@ public class OmRemoteException extends OmException
 	{
 		super(sText);
 	}
-	
+
 	/**
 	 * @param sText Exception message (do not end in full stop)
 	 * @param tCause Cause

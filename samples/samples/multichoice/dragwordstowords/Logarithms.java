@@ -30,7 +30,7 @@ public class Logarithms extends SimpleQuestion1
   public int nwrong = 0;
   private final static String[] ACID_OR_BASE = {"acid", "basic"};
   private final static String[] GREATER_OR_LESS = {"greater", "less"};
-    
+
   protected void init() throws OmException
   {
     Random r = new Random();
@@ -47,18 +47,18 @@ public class Logarithms extends SimpleQuestion1
     	getComponent("answer0").setDisplay(false);
 
   }
-    
+
   protected boolean isRight(int iAttempt) throws OmDeveloperException
 	{
-     
+
   	String b1OK, b2OK, b3OK, b4OK;
   	nwrong = 0;
-	
+
     b1OK=getDropBox("mw1").getValue();
     b2OK=getDropBox("mw2").getValue();
     b3OK=getDropBox("mw3").getValue();
     b4OK=getDropBox("mw4").getValue();
- 
+
     if(iVariant == 0) // acid
     {
      	if(b1OK.equals("a1")){}
@@ -103,19 +103,19 @@ public class Logarithms extends SimpleQuestion1
     	else
     	{
     		nwrong++;
-    	} 
+    	}
     }
 
     //  store response information
     getResults().appendActionSummary("Variant:" + iVariant + " Attempt " + iAttempt + ": 1:" + b1OK + " 2:" + b2OK + " 3:" + b3OK + " 4:" + b4OK);
- 
+
    	if(nwrong == 0)
    	{
    	    return true;
    	}
-   	
+
     if(iAttempt == 2)
-  	{ 
+  	{
   		setFeedbackID("still");
   	   	if(nwrong > 1)
   	   	{
@@ -128,10 +128,10 @@ public class Logarithms extends SimpleQuestion1
   	   	}
   	}
     if(iAttempt == 3)
-  	{ 
+  	{
   		setFeedbackID("showanswer");
   	}
-  
-		return false;  
-	}  
+
+		return false;
+	}
 }

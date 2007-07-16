@@ -58,8 +58,8 @@ public class ListComponent extends QComponent
 	{
 		return "list";
 	}
-	
-	
+
+
 	/** Defines possible attributes */
 	@Override
 	protected void defineProperties() throws OmDeveloperException
@@ -68,7 +68,7 @@ public class ListComponent extends QComponent
 		defineString("type","bullet|number");
 		setString("type","bullet");
 	}
-	
+
 	private QComponent[] aListItems;
 
 	@Override
@@ -83,19 +83,19 @@ public class ListComponent extends QComponent
 				QComponent qcItem = getQDocument().build(this,e,null);
 				llItems.add(qcItem); // Store in Linked list of cells
 				addChild(qcItem);// Also store in standard child array so it can be found
-			}	
+			}
 		}
-		
+
 		aListItems = llItems.toArray(new QComponent[0]);
 	}
-	
+
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element eList;
-		if (getString("type").equals("number")) 
+		if (getString("type").equals("number"))
 			eList=qc.createElement("ol");
-		else 
+		else
 			eList=qc.createElement("ul");
 		qc.addInlineXHTML(eList);
 		for (int i=0; i<aListItems.length ;i++)
@@ -106,6 +106,6 @@ public class ListComponent extends QComponent
 			qc.unsetParent();
 		}
 	}
-	
-	
+
+
 }  // end of class

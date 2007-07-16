@@ -29,35 +29,35 @@ import org.w3c.dom.*;
 import util.xml.XML;
 import util.xml.XMLException;
 
-/** 
+/**
  * Represents a co-ordinate system for use in a graph.
  */
 public class World
 {
 	/** ID for this world */
 	private String sID;
-	
+
 	/** Pixel co-ordinates in target context */
 	private int iPixelX,iPixelY,iPixelW,iPixelH;
-	
+
 	/** World co-ordinates */
 	private double dLeftX,dRightX,dTopY,dBottomY;
-	
+
 	/** List of contained items */
 	private LinkedList<GraphItem> llItems=new LinkedList<GraphItem>();
-	
+
 	/** Default font family from context */
 	private String sFontFamily;
-	
+
 	/** Default font size from context */
 	private int iFontSize;
-	
+
 	/** Pre-built default fonts */
 	private Font fSmall,fNormal;
-	
+
 	/** Owner context */
 	private Context cContext;
-	
+
 	/** Interface creator must implement to provide information */
 	public static interface Context
 	{
@@ -67,27 +67,27 @@ public class World
 		 * @return Colour ID or null if it doesn't exist
 		 */
 		public Color getColour(String sConstant);
-		
+
 		/**
 		 * If true, alternate colours - where both a colour and a constant are
 		 * given - will use the alternate constant rather than the colour.
 		 * @return True to use alternate colours
 		 */
 		public boolean useAlternates();
-		
+
 		/**
 		 * Called to obtain default typeface.
 		 * @return Default font family name
 		 */
 		public String getFontFamily();
-		
+
 		/**
-		 * Called to obtain default font size. 
+		 * Called to obtain default font size.
 		 * @return Default font size
 		 */
 		public int getFontSize();
 	}
-	
+
 	/**
 	 * Constructs from XML.
 	 * <p>
@@ -96,7 +96,7 @@ public class World
 	 * xleft="0.0" ybottom="-1.0" xright="10.0" ytop="1.0"/&gt;
 	 * <p>
 	 * May contain all other graph items, which will be constructed and added.
-	 * @param cs Source for colour constants 
+	 * @param cs Source for colour constants
 	 * @param e &lt;world&gt; element
 	 * @throws GraphFormatException If anything's wrong with the XML
 	 */
@@ -106,37 +106,37 @@ public class World
 		if(!e.getTagName().equals("world")) throw new GraphFormatException(
 			"Expected <world> element, not <"+e.getTagName()+">");
 		this.cContext=cs;
-		
+
 		// Set up fonts from context
 		sFontFamily=cs.getFontFamily();
 		iFontSize=cs.getFontSize();
 		fNormal=new Font(sFontFamily,Font.PLAIN,iFontSize);
 		fSmall=new Font(sFontFamily,Font.PLAIN,(iFontSize*3+2)/4);
-		
+
 		// Set up attributes
 		try
 		{
 			sID=XML.getRequiredAttribute(e,"id");
-			
+
 			iPixelX=Integer.parseInt(XML.getRequiredAttribute(e,"px"));
 			iPixelY=Integer.parseInt(XML.getRequiredAttribute(e,"py"));
 			iPixelW=Integer.parseInt(XML.getRequiredAttribute(e,"pw"));
 			iPixelH=Integer.parseInt(XML.getRequiredAttribute(e,"ph"));
-			
+
 			dLeftX=Double.parseDouble(XML.getRequiredAttribute(e,"xleft"));
 			dRightX=Double.parseDouble(XML.getRequiredAttribute(e,"xright"));
 			dTopY=Double.parseDouble(XML.getRequiredAttribute(e,"ytop"));
-			dBottomY=Double.parseDouble(XML.getRequiredAttribute(e,"ybottom"));			
+			dBottomY=Double.parseDouble(XML.getRequiredAttribute(e,"ybottom"));
 		}
 		catch(NumberFormatException nfe)
 		{
-			throw new GraphFormatException("<world>: Invalid number in attribute"); 
+			throw new GraphFormatException("<world>: Invalid number in attribute");
 		}
 		catch(XMLException xe)
 		{
 			throw new GraphFormatException("<world>: Format error - "+xe.getMessage());
 		}
-		
+
 		// Construct child items
 		Element[] aeChildren=XML.getChildren(e);
 		for(int iChild=0;iChild<aeChildren.length;iChild++)
@@ -146,11 +146,11 @@ public class World
 	}
 
 	/** @return ID of world */
-	public String getID()	
+	public String getID()
 	{
 		return sID;
 	}
-	
+
 	/**
 	 * Paints the world's contents.
 	 * @param g2 Target graphics context
@@ -163,35 +163,35 @@ public class World
 			gi.paint(g2);
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Adds a new GraphItem to the end of the paint-order tree.
 	 * @param gi New item
 	 * @throws GraphFormatException If there's something wrong with it
 	 */
 	public void add(GraphItem gi) throws GraphFormatException
 	{
-		if(gi.getWorld()!=this) 
+		if(gi.getWorld()!=this)
 			throw new GraphFormatException("Graph item does not belong to this <world>");
 		gi.checkInit();
 		llItems.add(gi);
 	}
-	
+
 	/**
-	 * Adds a new GraphItem to the specified position in paint order. 
+	 * Adds a new GraphItem to the specified position in paint order.
 	 * (0 = first/bottom.)
 	 * @param gi Item to add
 	 * @param iPos New index in paint order
-	 * @throws GraphFormatException 
+	 * @throws GraphFormatException
 	 */
 	public void add(GraphItem gi,int iPos) throws GraphFormatException
 	{
-		if(gi.getWorld()!=this) 
+		if(gi.getWorld()!=this)
 			throw new GraphFormatException("Graph item does not belong to this <world>");
 		gi.checkInit();
 		llItems.add(iPos,gi);
 	}
-	
+
 	/**
 	 * Removes a GraphItem from the world.
 	 * @param gi Old item to remove
@@ -200,7 +200,7 @@ public class World
 	{
 		llItems.remove(gi);
 	}
-	
+
 	/**
 	 * Converts a graph co-ordinate to pixel co-ordinate.
 	 * @param gs X co-ordinate
@@ -222,7 +222,7 @@ public class World
 		double dProportion=	(dX-dLeftX)/(dRightX-dLeftX);
 		return (int)(dProportion*iPixelW+0.5) + iPixelX;
 	}
-	
+
 	/**
 	 * Converts a graph co-ordinate to pixel co-ordinate.
 	 * @param dX X co-ordinate
@@ -233,7 +233,7 @@ public class World
 		double dProportion=	(dX-dLeftX)/(dRightX-dLeftX);
 		return (float)((dProportion*iPixelW+0.5) + iPixelX);
 	}
-	
+
 	/**
 	 * Converts a pixel co-ordinate to world co-ordinate.
 	 * @param iX Pixel X co-ordinate
@@ -276,7 +276,7 @@ public class World
 		double dProportion=	(dY-dTopY)/(dBottomY-dTopY);
 		return (float)((dProportion*iPixelH) + iPixelY);
 	}
-	
+
 	/**
 	 * Converts a pixel co-ordinate to world co-ordinate.
 	 * @param iY Pixel Y co-ordinate
@@ -300,11 +300,11 @@ public class World
 		}
 		throw new IllegalArgumentException("<world>: Couldn't find item: "+itemId);
 	}
-	
+
 	/**
 	 * Converts a colour string using the world's colour source.
 	 * <p>
-	 * You should use this method to obtain Color objects representing the 
+	 * You should use this method to obtain Color objects representing the
 	 * graph colour constants 'fg', 'graph1', etc.
 	 * @param sValue #rgb, #rrggbb, or colour constant
 	 * @return Java Color object
@@ -322,9 +322,9 @@ public class World
 				// but we don't actually enforce that...)
 				String sAlternate=sValue.substring(iComma+1);
 				sValue=sValue.substring(0,iComma);
-				
+
 				// Use alternate if requested
-				if(cContext.useAlternates()) 
+				if(cContext.useAlternates())
 					return convertColour(sAlternate);
 			}
 			else
@@ -335,7 +335,7 @@ public class World
 					"specify a precise colour, follow it with a constant which will be used " +
 					"as backup for accessibility, e.g. '#080,fg'.");
 			}
-			
+
 			// OK it's RGB. Get rid of # and process
 			String sRGB=sValue.substring(1);
 			try
@@ -358,7 +358,7 @@ public class World
 					iB=Integer.parseInt(sRGB.substring(4,6),16);
 				}
 				else throw new GraphFormatException("<world>: Invalid RGB string: "+sValue);
-		
+
 				return new Color(iR,iG,iB);
 			}
 			catch(NumberFormatException nfe)
@@ -369,12 +369,12 @@ public class World
 		else
 		{
 			Color c=cContext.getColour(sValue);
-			if(c==null) 
+			if(c==null)
 				throw new GraphFormatException("<world>: Unknown colour constant: "+sValue);
 			return c;
-		}		
+		}
 	}
-	
+
 	/**
 	 * Constructs a GraphItem by reflection from the element.
 	 * @param e Element to construct
@@ -383,7 +383,7 @@ public class World
 	private GraphItem construct(Element e) throws GraphFormatException
 	{
 		String sTag=e.getTagName();
-		
+
 		// Find class
 		Class<? extends GraphItem> c;
 		try
@@ -397,7 +397,7 @@ public class World
 			throw new GraphFormatException(
 				"Couldn't find matching item for tag name: "+sTag);
 		}
-		
+
 		// Get constructor
 		Constructor<? extends GraphItem> cConstructor;
 		try
@@ -409,7 +409,7 @@ public class World
 			throw new GraphFormatException(
 				"Couldn't find constructor taking World parameter for: "+sTag);
 		}
-		
+
 		// Construct item
 		GraphItem giNew;
 		try
@@ -421,17 +421,17 @@ public class World
 			throw new GraphFormatException(
 				"Failed to construct graph item <"+sTag+">",t);
 		}
-		
+
 		// Set each attribute
 		NamedNodeMap nnm=e.getAttributes();
 		Method[] am=c.getMethods();
 		attrloop: for(int iAttribute=0;iAttribute<nnm.getLength();iAttribute++)
 		{
 			Attr a=(Attr)nnm.item(iAttribute);
-			String 
+			String
 				sName=a.getName(),sValue=a.getValue(),
 				sMethod="set"+sName;
-			
+
 			// Find method
 			for(int iMethod=0;iMethod<am.length;iMethod++)
 			{
@@ -440,12 +440,12 @@ public class World
 					// Check modifiers; ignore non-public, or static, methods
 					int iMod=am[iMethod].getModifiers();
 					if(!Modifier.isPublic(iMod) || Modifier.isStatic(iMod)) continue;
-					
+
 					// Ignore methods that don't take single param
 					Class[] ac=am[iMethod].getParameterTypes();
 					if(ac.length!=1) continue;
 					Class cParam=ac[0];
-					
+
 					// Ok this is the right method, now convert/validate the parameter
 					Object oParam;
 					try
@@ -477,7 +477,7 @@ public class World
 						throw new GraphFormatException(
 							"<"+sTag+">: Unexpected number value for "+sName+": "+sValue);
 					}
-					
+
 					try
 					{
 						// Woo! All done. Now call method.
@@ -491,49 +491,49 @@ public class World
 
 					// OK, onto next attribute
 					continue attrloop;
-				}				
+				}
 			}
 			throw new GraphFormatException(
-				"<"+sTag+">: Attribute "+sName+" does not exist.");					
+				"<"+sTag+">: Attribute "+sName+" does not exist.");
 		}
-		
+
 		giNew.checkInit();
 		return giNew;
 	}
-	
+
 	/** @return Left extent of world co-ordinates */
-	public double getLeftX() 
+	public double getLeftX()
 	{
 		return dLeftX;
 	}
 	/** @return Right extent of world co-ordinates */
-	public double getRightX() 
+	public double getRightX()
 	{
 		return dRightX;
 	}
 	/** @return Top extent of world co-ordinates */
-	public double getTopY() 
+	public double getTopY()
 	{
 		return dTopY;
 	}
 	/** @return Bottom extent of world co-ordinates */
-	public double getBottomY() 
+	public double getBottomY()
 	{
 		return dBottomY;
 	}
-	
+
 	/**
 	 * @param bSmall True if we want the small version
 	 * @return Default font
 	 */
 	public Font getDefaultFont(boolean bSmall)
 	{
-		if(bSmall) 
+		if(bSmall)
 			return fSmall;
 		else
 			return fNormal;
 	}
-	
+
 	/**
 	 * @param bItalic
 	 * @param bBold
@@ -559,19 +559,19 @@ public class World
 		boolean bBold=false,bItalic=false;
 		while(true)
 		{
-			if(sValue.startsWith("bold")) 
+			if(sValue.startsWith("bold"))
 			{
 				bBold=true;
 				sValue=sValue.substring("bold".length());
 				while(sValue.startsWith(" ")) sValue=sValue.substring(1);
 			}
-			else if(sValue.startsWith("italic")) 
+			else if(sValue.startsWith("italic"))
 			{
 				bItalic=true;
 				sValue=sValue.substring("italic".length());
 				while(sValue.startsWith(" ")) sValue=sValue.substring(1);
 			}
-			else break;				
+			else break;
 		}
 
 		// Size
@@ -582,14 +582,14 @@ public class World
 			iSize=Integer.parseInt(m.group(1));
 			sValue=m.group(3);
 		}
-		
+
 		// Family
 		String sFamily=sFontFamily;
 		if(sValue.length()>0)
 		{
 			sFamily=sValue;
 		}
-		
+
 		return new Font(sFamily,
 			(bItalic ? Font.ITALIC :0) | (bBold ? Font.BOLD: 0),iSize);
 	}

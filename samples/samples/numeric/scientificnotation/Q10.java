@@ -42,12 +42,12 @@ import samples.shared.Helper;
 										NUMBERS_E = { "8",  "8", "10", "10",  "8"},
 										NUMBERS_F = { "-1",  "-1", "1", "1",  "-1"};
 		private final static double[]	sqrtTest =  { 6.0, 2.0, 5.0, 3.0, 4.0};
-	  
+
 		/** Selected question */
 		private int iVariant;
-	
+
 	//--------------------------------------------------------------------------------------------
-	
+
 	protected void init() throws OmException
 	{
 		Random r = getRandom();
@@ -59,11 +59,11 @@ import samples.shared.Helper;
 		setPlaceholder("D", NUMBERS_D[iVariant]);
 		setPlaceholder("E", NUMBERS_E[iVariant]);
 		setPlaceholder("F", NUMBERS_F[iVariant]);
-	
-		getResults().setQuestionLine("What is sqrt(" + NUMBERS_A[iVariant] + " � 10^" + NUMBERS_C[iVariant] + ")/(" + NUMBERS_B[iVariant] + " � 10^{�" + NUMBERS_D[iVariant] + " � 10^5} in scientific notation");		
+
+		getResults().setQuestionLine("What is sqrt(" + NUMBERS_A[iVariant] + " � 10^" + NUMBERS_C[iVariant] + ")/(" + NUMBERS_B[iVariant] + " � 10^{�" + NUMBERS_D[iVariant] + " � 10^5} in scientific notation");
 	}
 	//--------------------------------------------------------------------------------------------
-  
+
 	protected boolean isRight(int iAttempt) throws OmDeveloperException
 	{
 		double	dbl;
@@ -80,7 +80,7 @@ import samples.shared.Helper;
 		dbl = Helper.inputScientificNumber(respon);
 		resp = Helper.scientificNotationToE(respon);
 		resp = Helper.extractNumber(resp);
-		
+
 		// Compare it against the right answer
 		NumberChecker checker = new NumberChecker(1.0e9, 1, true, null, null, false);
 

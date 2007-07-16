@@ -31,7 +31,7 @@ import util.xml.XHTML;
 public class HtmlReportWriter extends TabularReportWriter
 {
 	private int row = 0;
-	
+
 	/**
 	 * @param pw the print writer we will be writing to.
 	 * @param columns a list of column definitions.

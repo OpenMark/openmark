@@ -25,9 +25,9 @@ import om.question.Resource;
 import util.xml.XHTML;
 
 
-/** 
- * Returned data from {@link OmService#start(String,String,String,String[],String[],String[])} call. 
- * Wraps information from Rendering. 
+/**
+ * Returned data from {@link OmService#start(String,String,String,String[],String[],String[])} call.
+ * Wraps information from Rendering.
  * <p>
  * API CLASS: This class is used in SOAP returns and should probably not be
  * altered (after initial release).
@@ -36,7 +36,7 @@ public class StartReturn
 {
 	private String sQuestionSession,sXHTML,sCSS,sProgressInfo;
 	private Resource[] arResources;
-	
+
 	StartReturn(String sQuestionSession,Rendering r)
 	{
 		this.sQuestionSession=sQuestionSession;
@@ -52,12 +52,12 @@ public class StartReturn
 		sCSS=r.getCSS();
 		arResources=r.getResources();
 	}
-	
-	/** @return Question session ID. 
+
+	/** @return Question session ID.
 	 * (Not a user session ID! Used to refer to the period between a start() call
 	 * and the end of the question or stop().) */
 	public String getQuestionSession() { return sQuestionSession; }
-	/** 
+	/**
 	 * Obtains XHTML content. XHTML content must:
 	 * <ul>
 	 * <li> Be well-formed, with single root element</li>
@@ -68,28 +68,28 @@ public class StartReturn
 	 * will be replaced by the test navigator:
 	 * <table border="1">
 	 * <tr><th>Placeholder</th><th>Replacement</th></tr>
-	 * <tr><td>%%RESOURCE%%</td><td>Path [relative or absolute] at which 
-	 *   resources will become available. This should not include the 
-	 *   terminating /.<br>Example: If a resource has the name myfile.png,  
-	 *   then &lt;img src="%%RESOURCES%%/myfile.png"/&gt; should work to include 
+	 * <tr><td>%%RESOURCE%%</td><td>Path [relative or absolute] at which
+	 *   resources will become available. This should not include the
+	 *   terminating /.<br>Example: If a resource has the name myfile.png,
+	 *   then &lt;img src="%%RESOURCES%%/myfile.png"/&gt; should work to include
 	 *   that image.</td></tr>
-	 * <tr><td>%%IDPREFIX%%</td><td>must be put at the start of all id and name attributes 
+	 * <tr><td>%%IDPREFIX%%</td><td>must be put at the start of all id and name attributes
 	 * in the XHTML (and references to them in Javascript.</td></tr>
 	 * </table>
-	 * @return XHTML content as string.  
+	 * @return XHTML content as string.
 	 */
 	public String getXHTML() { return sXHTML; }
 	/** @return CSS file. Null if none is required. */
 	public String getCSS() { return sCSS; }
 	/** @return Resource files that should be made available */
 	public Resource[] getResources() { return arResources; }
-	
-	/** 
-	 * @return Short textual information of progress on question, which should 
-	 *   be displayed alongside the question. (For example, this might indicate 
+
+	/**
+	 * @return Short textual information of progress on question, which should
+	 *   be displayed alongside the question. (For example, this might indicate
 	 *   how many attempts at the question are remaining.)
 	 *   Null indicates no change from previously-returned info (or blank if this
 	 *   is the first time).
-	 */ 
+	 */
 	public String getProgressInfo() { return sProgressInfo; }
 }

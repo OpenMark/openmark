@@ -26,7 +26,7 @@ public class Integral extends LimitsThing implements SuperSubHolder.EatsOwnSuper
 {
 	private final static char INTEGRAL='\u222b';
 	private int iYOffset;
-	
+
 	@Override
 	protected void renderContents(Graphics2D g2,int iX,int iY,int iOffsetX)
 	{
@@ -35,7 +35,7 @@ public class Integral extends LimitsThing implements SuperSubHolder.EatsOwnSuper
 		g2.setFont(f);
 		g2.drawString(INTEGRAL+"",iX+iOffsetX+Fonts.getLeftOverlap(f,INTEGRAL),iY+iYOffset+iBaseline);
 	}
-	
+
 	/**
 	 * @param f ItemFactory to register this class with.
 	 */
@@ -44,25 +44,25 @@ public class Integral extends LimitsThing implements SuperSubHolder.EatsOwnSuper
 		f.addItemClass("int",new ItemCreator()
 			{	public Item newItem()	 {	return new Integral();	}	});
 	}
-	
+
 	@Override
 	protected void internalPrepare()
 	{
 		// Cannot completely prepare because the super/sub aren't attached yet.
-		// But, because there may be none coming, we need to do additional 
+		// But, because there may be none coming, we need to do additional
 		// preparation.
-		
+
 		Font f=getBigFont();
-		int 
+		int
 			iAscent=Fonts.getAscent(f,INTEGRAL),
 			iDescent=Fonts.getDescent(f,INTEGRAL);
-		
+
 		iHeight=iAscent+iDescent;
 		iWidth=Fonts.getRightExtent(f,INTEGRAL)+Fonts.getLeftOverlap(f,INTEGRAL);
 		iBaseline=
 			(getTextSize()==TEXTSIZE_DISPLAY) ? (iAscent*3)/4 : (iAscent*5)/6;
 		iYOffset=iAscent-iBaseline;
-		
+
 		iLeftMargin=iRightMargin=getZoomed(2);
 	}
 
@@ -71,7 +71,7 @@ public class Integral extends LimitsThing implements SuperSubHolder.EatsOwnSuper
 	{
 		return true;
 	}
-	
+
 	private Font getBigFont()
 	{
 		// Bigger than sigmas in display mode but not otherwise
@@ -79,5 +79,5 @@ public class Integral extends LimitsThing implements SuperSubHolder.EatsOwnSuper
 			return new Font(getFontFamily(),Font.PLAIN,(getZoomed(convertTextSize(getTextSize()))*5)/2);
 		else
 			return new Font(getFontFamily(),Font.PLAIN,(getZoomed(convertTextSize(getTextSize()))*3)/2);
-	}		
+	}
 }

@@ -29,7 +29,7 @@ public class EditBoxChoice extends SimpleQuestion1
 	private final static String[] MOLECULES = {"SnCl_2"};
 	private final static String NS[] = {"3"};
 	private final boolean[] RIGHTANSWERS = {false, false, false, true, false};
-  
+
 	private final static String[] GEOMETRIES = {
 																						  "Trigonal bipyramid",
 	  																					"Octahedron",
@@ -37,20 +37,20 @@ public class EditBoxChoice extends SimpleQuestion1
 	  																					"Trigonal planar",
 	  																					"Square planar"
  	 																					 };
-	
+
 	private final static String[] ANSWERS = {"trigonal planar"};
-	
+
 	private int iVariant;
-  
+
 	protected void init() throws OmException
 	{
 		Random r = getRandom();
 		iVariant = r.nextInt(MOLECULES.length);
-    
+
 		setPlaceholder("MOL", MOLECULES[iVariant]);
 		setPlaceholder("N", NS[iVariant]);
 		setPlaceholder("ANS", ANSWERS[iVariant]);
-		
+
 		for(int i=0; i<GEOMETRIES.length; i++)
 		{
 			setPlaceholder("GEOMETRY"+Integer.toString(i+1), GEOMETRIES[i]);
@@ -59,24 +59,24 @@ public class EditBoxChoice extends SimpleQuestion1
 		getResults().setQuestionLine("Sketch a Lewis structure for " + MOLECULES[iVariant] +
 																 ". How many repulsion axes are there and how are they arranged?");
 	}
-  
+
 	protected boolean isRight(int iAttempt) throws OmDeveloperException
 	{
 		getComponent("hint1").setDisplay(false);
 		getComponent("hint2").setDisplay(false);
 		getComponent("nWrong").setDisplay(false);
 		getComponent("geometryWrong").setDisplay(false);
-		
+
 		//question requires three inputs: 2 editfields and 1 multiple choice
 		boolean bNumberCorrect = false;
 		boolean bGeometryCorrect = true;
-		
+
 		boolean bRight = false;
-		
+
 		String sInput = Helper.removeWhitespace(getEditField("input").getValue());
-		
+
 		if(sInput.equals(NS[iVariant])) bNumberCorrect =  true;
-		
+
 		int iCount = 0;
 		StringBuffer sbAction = new StringBuffer();
 		for(int i=0; i<RIGHTANSWERS.length; i++)
@@ -92,9 +92,9 @@ public class EditBoxChoice extends SimpleQuestion1
 				bGeometryCorrect = false;
 			}
 		}
-		
+
 		getResults().setAnswerLine(sInput + ", " + iCount + " selected)");
-		getResults().appendActionSummary("Attempt " + iAttempt + ": " + sInput 
+		getResults().appendActionSummary("Attempt " + iAttempt + ": " + sInput
 																			+ ", " + sbAction.toString());
 
 		bRight = bNumberCorrect && bGeometryCorrect;
@@ -105,7 +105,7 @@ public class EditBoxChoice extends SimpleQuestion1
 		}
 		//all correct
 		if(bRight) return true;
-		
+
 		//specific feedback for the three inputs
 		if(iAttempt < 3)
 		{
@@ -115,7 +115,7 @@ public class EditBoxChoice extends SimpleQuestion1
 
 		if(iAttempt == 1) getComponent("hint1").setDisplay(true);
 		if(iAttempt == 2) getComponent("hint2").setDisplay(true);
-		
+
 		return bRight;
 	}
 

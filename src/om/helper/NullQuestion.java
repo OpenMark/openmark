@@ -24,5 +24,5 @@ import om.stdquestion.StandardQuestion;
  * this class, whereas you can't instantiate the abstract class StandardQuestion.
  */
 public class NullQuestion extends StandardQuestion
-{ 
+{
 }

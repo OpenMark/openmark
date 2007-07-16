@@ -19,27 +19,27 @@ package om.tnavigator;
 
 import java.io.*;
 
-/** 
+/**
  * Input stream used for reading logs from a file that makes .log files into
  * valid XML.
  */
 public class LogInputStream extends InputStream
-{	
+{
 	/** Actual underlying inputstream */
 	private InputStream is;
-	
+
 	/** Current position in append section (0 if none) */
 	private int iCursor=0;
-	
+
 	/** Bytes to append */
 	private byte[] abAppend={'<','/','l','o','g','>'};
 
-	/** 
-	 * Reads log from the given file, terminating it with /log to make it into 
+	/**
+	 * Reads log from the given file, terminating it with /log to make it into
 	 * proper XML.
 	 * @param f Log file
 	 * @throws IOException If file errors occur
-	 */	
+	 */
 	public LogInputStream(File f) throws IOException
 	{
 		// Use buffered input stream as this stream only ever reads anything one
@@ -53,7 +53,7 @@ public class LogInputStream extends InputStream
 	{
 		is.close();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.io.InputStream#read()
 	 */
@@ -64,14 +64,14 @@ public class LogInputStream extends InputStream
 		// out of that too
 		if(iCursor>0)
 		{
-			if(iCursor < abAppend.length) return abAppend[iCursor++];			
+			if(iCursor < abAppend.length) return abAppend[iCursor++];
 			return -1;
 		}
-		
+
 		// Read byte from file and use that if not EOF
 		int iReturn=is.read();
 		if(iReturn!=-1) return iReturn;
-		
+
 		// EOF; set cursor to second byte of append, and return first
 		iCursor=1;
 		return abAppend[0];

@@ -38,7 +38,7 @@ public class configuration extends SimpleQuestion1
 												"oxygen",
 												"fluorine",
 												"neon"};
-	
+
 	private final static String[]	SUBSHELLS = {"1s<sup>",
 												 "2s<sup>",
 												 "2p<sup>",
@@ -53,15 +53,15 @@ public class configuration extends SimpleQuestion1
 	private	int	nElectrons, onesElectrons, twosElectrons, twopElectrons;
 	private int[] populations={0,0,0,0,0,0,0,0};
 							// allow for 8 sub-shells: 1s, 2s, 2p, 3s, 3p, 4s, 4p, 3d
-	
+
 //--------------------------------------------------------------------------------------------
-	
+
 protected void init() throws OmException
 {
 	int totalElectrons;
 	Random r = getRandom();
 	iVariant=r.nextInt(ELEMENTS.length);
-	
+
 	nElectrons = iVariant + 3;
 	totalElectrons = nElectrons;
 	onesElectrons = 2;
@@ -73,7 +73,7 @@ protected void init() throws OmException
 	totalElectrons = totalElectrons - 2;	// remove 2s
 	if (totalElectrons > 0)
 		twopElectrons = totalElectrons;
-	
+
 	setPlaceholder("ELEMENT", ELEMENTS[iVariant]);
 	setPlaceholder("NUMBEROFELECTRONS","" + nElectrons);
 	setPlaceholder("TWOSELECTRONS","" + twosElectrons);
@@ -82,17 +82,17 @@ protected void init() throws OmException
 	getComponent("ptplain").setDisplay(true);
 	getComponent("ptoverlay").setDisplay(false);
 
-    getResults().setQuestionLine("What is the configuration of " + ELEMENTS[iVariant] + "?");		
+    getResults().setQuestionLine("What is the configuration of " + ELEMENTS[iVariant] + "?");
 }
 //--------------------------------------------------------------------------------------------
-  
+
 protected boolean isRight(int iAttempt) throws OmDeveloperException
 {
 	boolean	sentMsg = false, sentFewMsg = false;
 	int		i, index1, index2, sumPopulations = 0;
 	String	respon, extract;
 	String  rightAsFarAs = "";
-	
+
 	getComponent("formtogive").setDisplay(false);
 	getComponent("toomany").setDisplay(false);
 	getComponent("toofew").setDisplay(false);
@@ -109,14 +109,14 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
 	respon = respon.toLowerCase();
 	// remove all white space
 	respon = Helper.removeWhitespace(respon);
-	
+
 	// store response information
 	getResults().setAnswerLine(respon);
     getResults().appendActionSummary("Attempt " + iAttempt + ": " + respon);
 
 	// ensure all messages are off such that there are no hang-overs from previous attempts
     getComponent("formtogive").setDisplay(false);
-    
+
     if ((iAttempt == 1) && (respon.length() == 0)) {
     	getComponent("formtogive").setDisplay(true);
 		return(false);
@@ -147,7 +147,7 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
     //Compare it against the right answer
     for (i = 0; i <= 7; ++ i)
     	sumPopulations += populations[i];
-    
+
     if ((sumPopulations == nElectrons) &&
     	(populations[0] == onesElectrons) &&
        	(populations[1] == twosElectrons) &&
@@ -172,7 +172,7 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
     		getComponent("toofewin1s").setDisplay(true);
     		sentFewMsg = true;
     	}
-    	
+
      	if (populations[1] == twosElectrons) {
     		rightAsFarAs = rightAsFarAs + " 2s^" + twosElectrons;
     		sentMsg = true;
@@ -185,7 +185,7 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
     		getComponent("toofewin2s").setDisplay(true);
     		sentFewMsg = true;
     	}
-     	
+
      	if ((twopElectrons > 0) && (populations[2] == twopElectrons)) {
     		rightAsFarAs = rightAsFarAs + " 2p^" + twopElectrons;
     		sentMsg = true;
@@ -198,7 +198,7 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
     		getComponent("toofewin2p").setDisplay(true);
     		sentFewMsg = true;
     	}
-    	
+
      	if (sumPopulations > nElectrons) {
     		getComponent("toomany").setDisplay(true);
     		sentMsg = true;
@@ -216,7 +216,7 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
     	}
 
     }
-    
+
     switch (iAttempt) {
     	case 1:	if ((sumPopulations == 0) || !(sentMsg || sentFewMsg))
     				getComponent("formtogive").setDisplay(true);
@@ -229,7 +229,7 @@ protected boolean isRight(int iAttempt) throws OmDeveloperException
     	case 3: if (twopElectrons > 0) getComponent("with2p").setDisplay(true);
     			break;
     }
-    	
+
 	return(false);
 }
 //--------------------------------------------------------------------------------------------

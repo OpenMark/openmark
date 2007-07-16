@@ -36,36 +36,36 @@ import org.w3c.dom.Document;
 import util.misc.*;
 import util.xml.XML;
 
-/** 
- * Question engine Web service. This contains all public methods of the 
+/**
+ * Question engine Web service. This contains all public methods of the
  * question engine. Actual work is deferred to the {@link om.question} package.
  */
 public class OmService implements ServiceLifecycle
 {
 	/** Servlet context */
 	private ServletContext sc;
-	
+
 	/** Cache for Java question objects and jar files */
 	private QuestionCache qc;
-	
+
 	/** All current question sessions (maps String -> QuestionSession) */
 	private Map<String, QuestionSession> mQuestionSessions=new HashMap<String, QuestionSession>();
-	
+
 	/** ID to use for next session */
 	private int iNextSessionID=1;
 
 	/** Synch object used for thread */
 	private Object oThreadSynch=new Object();
-	
+
 	/** How often to check for timed-out sessions */
 	private final static long SESSIONTIMEOUTCHECK=60L*60L*1000L;
-	
+
 	/** How long sessions are allowed to lie idle */
 	private final static long SESSIONTIMEOUT=24L*60L*60L*1000L;
 
 	/** Single instance (needed only for check method) */
 	private static OmService osSingleton=null;
-	
+
 	/** Information about a single question session */
 	private static class QuestionSession
 	{
@@ -74,13 +74,13 @@ public class OmService implements ServiceLifecycle
 		long lLastUsedTime;
 		boolean bInUse;
 	}
-	
+
 	/**
 	 * Creates a new question session for the given question.
 	 * <p>
-	 * API METHOD: This method signature must not be changed in future (after 
+	 * API METHOD: This method signature must not be changed in future (after
 	 * initial release) unless careful attention is paid to simultaneous changes
-	 * of Test Navigator. In general, if additional parameters or return values 
+	 * of Test Navigator. In general, if additional parameters or return values
 	 * are added, a new method should be defined.
 	 * <h3>Obtaining question file</h3>
 	 * If the question engine already has this question in its cache, it will
@@ -89,7 +89,7 @@ public class OmService implements ServiceLifecycle
 	 * <p>
 	 * <i>questionBaseURL</i>/<i>questionID</i>.<i>questionversion</i>
 	 * <p>
-	 * For security reasons, the URL may be https: and the test navigator 
+	 * For security reasons, the URL may be https: and the test navigator
 	 * (which is likely to be the thing serving the URL) will operate an IP
 	 * whitelist, only responding to requests from question engines it has already
 	 * initiated connections to.
@@ -98,17 +98,17 @@ public class OmService implements ServiceLifecycle
 	 * include initial configuration parameters to be passed to the question.
 	 * <table border="1">
 	 * <tr><th>Name</th><th>Value</th></tr>
-	 * <tr><td>randomseed</td><td>Random number seed given to question, which 
-	 *   should be based on the current user, the test, and the number of times 
-	 *   they've started this question before. Parsed as decimal integer (up to 
-	 *   64 bit)</td></tr> 
+	 * <tr><td>randomseed</td><td>Random number seed given to question, which
+	 *   should be based on the current user, the test, and the number of times
+	 *   they've started this question before. Parsed as decimal integer (up to
+	 *   64 bit)</td></tr>
 	 * </table>
 	 * @param questionID Unique ID of question
 	 * @param questionVersion Version identifier of question (should include
 	 *   only filename-space characters, probably just digits and full stops).
-	 *   May be null, to indicate that the question may not be cached (for 
+	 *   May be null, to indicate that the question may not be cached (for
 	 *   preview usage only)
-	 * @param questionBaseURL Base URL for questions (see above) 
+	 * @param questionBaseURL Base URL for questions (see above)
 	 * @param initialParamNames Names of initial parameters
 	 * @param initialParamValues Values of initial parameters
 	 * @param cachedResources List of resources that the Test Navigator has cached
@@ -136,10 +136,10 @@ public class OmService implements ServiceLifecycle
 			boolean bPlain=false;
 			double dZoom=1.0;
 			int iFixedVariant=-1;
-			
+
 			for(int i=0;i<initialParamNames.length;i++)
 			{
-				String 
+				String
 					sName=initialParamNames[i],
 					sValue=initialParamValues[i];
 				if(sName.equals("randomseed"))
@@ -169,18 +169,18 @@ public class OmService implements ServiceLifecycle
 				}
 			}
 			if(!bGotRandomSeed) throw new OmException("Required parameter missing: randomseed");
-			
+
 			// Get question into cache
 			QuestionCache.QuestionKey qk=new QuestionCache.QuestionKey(
 				questionID,questionVersion);
 			obtainQuestion(questionBaseURL,qk);
-			
+
 			// Create and initialise question
 			QuestionCache.QuestionInstance qi=qc.newQuestion(qk);
 			Question q=qi.q;
 			InitParams ip=new InitParams(lRandomSeed,sFixedFG,sFixedBG,dZoom,bPlain,qi.ccl,iFixedVariant);
 			Rendering r=q.init(qc.getMetadata(qk),ip);
-			
+
 			// Generate session details and store in map
 			QuestionSession qs=new QuestionSession();
 			qs.q=q;
@@ -192,7 +192,7 @@ public class OmService implements ServiceLifecycle
 				qs.sSession=sSession;
 				mQuestionSessions.put(sSession,qs);
 			}
-			
+
 			return new StartReturn(sSession,r);
 		}
 		catch(Throwable t)
@@ -200,9 +200,9 @@ public class OmService implements ServiceLifecycle
 			throw handleException("start",t);
 		}
 	}
-	
+
 	/**
-	 * Obtains XML metadata about a question. Metadata currently is of the form: 
+	 * Obtains XML metadata about a question. Metadata currently is of the form:
 	 * <pre>
 	 * &lt;questionmetadata>
 	 * &lt;plainmode>yes&lt;/plainmode> (or 'no')
@@ -216,50 +216,50 @@ public class OmService implements ServiceLifecycle
 	 * This mechanism may be changed at some point because we might start storing
 	 * metadata independently of the question engine, bu for now...
 	 * <p>
-	 * API METHOD: This method signature must not be changed in future (after 
+	 * API METHOD: This method signature must not be changed in future (after
 	 * initial release) unless careful attention is paid to simultaneous changes
-	 * of Test Navigator. In general, if additional parameters or return values 
+	 * of Test Navigator. In general, if additional parameters or return values
 	 * are added, a new method should be defined.
 	 * @param questionID Unique ID of question
 	 * @param questionVersion Version identifier of question (should include
 	 *   only filename-space characters, probably just digits and full stops).
-	 *   May be null, to indicate that the question may not be cached (for 
+	 *   May be null, to indicate that the question may not be cached (for
 	 *   preview usage only)
-	 * @param questionBaseURL Base URL for questions (see above) 
+	 * @param questionBaseURL Base URL for questions (see above)
 	 * @return True if it's OK in plain mode, false if it isn't
 	 * @throws OmException Whenever something goes wrong
 	 */
 	public String getQuestionMetadata(
-		String questionID,String questionVersion,String questionBaseURL) 
+		String questionID,String questionVersion,String questionBaseURL)
 		throws OmException
 	{
 		try
 		{
 			// Initial part
 			String sResponse="<questionmetadata>";
-			
+
 			// Get question into cache
 			QuestionCache.QuestionKey qk=new QuestionCache.QuestionKey(
 				questionID,questionVersion);
 			obtainQuestion(questionBaseURL,qk);
-			
+
 			// Get question.xml from question cache
 			Document dMetadata=qc.getMetadata(qk);
-			
+
 			// Title
 			if(XML.hasChild(dMetadata.getDocumentElement(),"title"))
 				sResponse+=XML.saveString(XML.getChild(dMetadata.getDocumentElement(),"title"));
-			
+
 			// Scoring
 			if(XML.hasChild(dMetadata.getDocumentElement(),"scoring"))
 				sResponse+=XML.saveString(XML.getChild(dMetadata.getDocumentElement(),"scoring"));
-				
+
 			// Plain mode support
 			if("no".equals(dMetadata.getDocumentElement().getAttribute("plainmode")))
 				sResponse+="<plainmode>no</plainmode>";
 			else
 				sResponse+="<plainmode>yes</plainmode>";
-			
+
 			// Finish response
 			sResponse+="</questionmetadata>";
 			return sResponse;
@@ -269,8 +269,8 @@ public class OmService implements ServiceLifecycle
 			throw handleException("getQuestionMetadata",t);
 		}
 	}
-	
-	
+
+
 	private void obtainQuestion(String questionBaseURL,QuestionCache.QuestionKey qk) throws OmException
 	{
 		if(!qc.containsQuestion(qk))
@@ -290,13 +290,13 @@ public class OmService implements ServiceLifecycle
 					URL u=new URL(sContentURL);
 					HttpURLConnection huc=(HttpURLConnection)u.openConnection();
 					HTTPS.considerCertificatesValid(huc);
-					HTTPS.allowDifferentServerNames(huc);					
+					HTTPS.allowDifferentServerNames(huc);
 					abJar=IO.loadBytes(huc.getInputStream());
 				}
-				
+
 				// Put it in cache
 				qc.saveQuestion(qk,abJar);
-				
+
 			}
 			catch(MalformedURLException e)
 			{
@@ -307,21 +307,21 @@ public class OmService implements ServiceLifecycle
 			{
 				throw new OmException("Error accessing content URL: "+
 					sContentURL,e);
-			}			
+			}
 		}
 	}
 
 	/**
 	 * Stops a given question session, freeing up resources.
 	 * <p>
-	 * If a question session is not stopped after a given timeout (possibly 24 
-	 * hours) since last {@link #start(String,String,String,String[],String[],String[])} or 
-	 * {@link #process(String, String[], String[])}, the question 
-	 * engine should automatically time-out the session. 
+	 * If a question session is not stopped after a given timeout (possibly 24
+	 * hours) since last {@link #start(String,String,String,String[],String[],String[])} or
+	 * {@link #process(String, String[], String[])}, the question
+	 * engine should automatically time-out the session.
 	 * <p>
-	 * API METHOD: This method signature must not be changed in future (after 
+	 * API METHOD: This method signature must not be changed in future (after
 	 * initial release) unless careful attention is paid to simultaneous changes
-	 * of Test Navigator. In general, if additional parameters or return values 
+	 * of Test Navigator. In general, if additional parameters or return values
 	 * are added, a new method should be defined.
 	 * @param questionSession
 	 * @throws OmException
@@ -333,9 +333,9 @@ public class OmService implements ServiceLifecycle
 			synchronized(this)
 			{
 				QuestionSession qs=mQuestionSessions.get(questionSession);
-				if(qs==null) throw new OmException("Unknown question session");			
+				if(qs==null) throw new OmException("Unknown question session");
 				if(qs.bInUse) throw new OmException("Question cannot be stopped mid-call");
-				
+
 				closeSession(qs);
 			}
 		}
@@ -345,23 +345,23 @@ public class OmService implements ServiceLifecycle
 		}
 	}
 
-	/** 
-	 * Removes a given session from the internal memory 
+	/**
+	 * Removes a given session from the internal memory
 	 * @throws OmException If something goes wrong
 	 */
 	private void closeSession(QuestionSession qs) throws OmException
 	{
 		qs.q.close();
 		qc.returnQuestion(qs.q);
-		
+
 		mQuestionSessions.remove(qs.sSession);
 	}
-	
+
 	/**
 	 * Processes a user's action in a question session.
 	 * <p>
 	 * A user's action consists of a number of name-value pairs. These are generally
-	 * the form parameters from the user's submission, but other information may 
+	 * the form parameters from the user's submission, but other information may
 	 * be included here if needed.
 	 * <p>
 	 * If the action occurred in plain mode then the following
@@ -369,10 +369,10 @@ public class OmService implements ServiceLifecycle
 	 * This is because questions can accept plain-mode actions even when the question
 	 * itself was not started in plain mode (e.g. when playing through steps to
 	 * restart a question that was initially attempted in plain mode).
-	 * <p>  
-	 * API METHOD: This method signature must not be changed in future (after 
+	 * <p>
+	 * API METHOD: This method signature must not be changed in future (after
 	 * initial release) unless careful attention is paid to simultaneous changes
-	 * of Test Navigator. In general, if additional parameters or return values 
+	 * of Test Navigator. In general, if additional parameters or return values
 	 * are added, a new method should be defined.
 	 * @param questionSession Question session ID
 	 * @param names Form names in user's answer
@@ -386,7 +386,7 @@ public class OmService implements ServiceLifecycle
 	{
 		if(names==null) names=new String[0];
 		if(values==null) values=new String[0];
-		
+
 		try
 		{
 			// Get question session
@@ -399,10 +399,10 @@ public class OmService implements ServiceLifecycle
 				qs.lLastUsedTime=System.currentTimeMillis(); // In sync just because it's a long
 				qs.bInUse=true;
 			}
-	
+
 			try
 			{
-				// Build up parameter object		
+				// Build up parameter object
 				ActionParams ap=new ActionParams();
 				if(names.length!=values.length) throw new OmException(
 					"names and values must be of same length");
@@ -410,45 +410,45 @@ public class OmService implements ServiceLifecycle
 				{
 					ap.setParameter(names[i],values[i]);
 				}
-				
+
 				// Actually call question
 				ActionRendering ar=qs.q.action(ap);
-				
+
 				// Close question session if needed
 				if(ar.isSessionEnd())
 				{
 					closeSession(qs);
-				}				
-				
+				}
+
 				return new ProcessReturn(ar);
 			}
 			finally
-			{			
+			{
 				synchronized(this)
 				{
 					qs.bInUse=false;
 				}
-			}		
+			}
 		}
 		catch(Throwable t)
 		{
 			throw handleException("process",t);
 		}
 	}
-	
-	private static OmException handleException(String sMethod,Throwable t) 
+
+	private static OmException handleException(String sMethod,Throwable t)
 	{
 		return new OmException("[[BEGINEXCEPTION]]"+
 			Exceptions.getString(t,new String[] {"om"})+"[[ENDEXCEPTION]]");
 	}
-	
+
 	public void init(Object oContext) throws ServiceException
-	{		
+	{
 		System.gc();
-		
+
 		if(osSingleton!=null) throw new ServiceException("Static OmService already exists");
 		osSingleton=this;
-		
+
 		try
 		{
 			ServletEndpointContext sec=(ServletEndpointContext)oContext;
@@ -458,7 +458,7 @@ public class OmService implements ServiceLifecycle
 		catch(Throwable t)
 		{
 			throw new ServiceException(t);
-		}		
+		}
 
 		try
 		{
@@ -473,16 +473,16 @@ public class OmService implements ServiceLifecycle
 				"headless mode. Add the following option to the Java command line that " +
 				"launches it: -Djava.awt.headless=true");
 		}
-		
+
 		(new Thread(new Runnable()
 		{
 			public void run()
 			{
 				checkThread();
 			}
-		})).start();		
+		})).start();
 	}
-	
+
 	/** Thread that periodically expires unused sessions */
 	private void checkThread()
 	{
@@ -498,7 +498,7 @@ public class OmService implements ServiceLifecycle
 				catch(InterruptedException e)
 				{
 				}
-				
+
 				// Bail on exit
 				if(sc==null)
 				{
@@ -506,7 +506,7 @@ public class OmService implements ServiceLifecycle
 					return;
 				}
 			}
-				
+
 			// OK, check for any timed-out sessions
 			long lTimeout=System.currentTimeMillis() - SESSIONTIMEOUT;
 			synchronized(this)
@@ -529,23 +529,23 @@ public class OmService implements ServiceLifecycle
 						}
 					}
 				}
-			}	
-			
-		}		
+			}
+
+		}
 	}
-	
+
 	/** @return Static instance of the class; null if none's been created yet */
 	static OmService getStatic() { return osSingleton; }
 
 	public void destroy()
 	{
 		if(osSingleton==this) osSingleton=null;
-		
+
 		sc=null;
 		mQuestionSessions=null;
 		qc.shutdown();
 		qc=null;
-		
+
 		// Close thread
 		synchronized(oThreadSynch)
 		{
@@ -557,25 +557,25 @@ public class OmService implements ServiceLifecycle
 			catch(InterruptedException e)
 			{
 			}
-		}		
+		}
 		oThreadSynch=null;
-		
-		System.gc();		
+
+		System.gc();
 	}
-	
-	/** 
+
+	/**
 	 * @return An XML string with information about the question engine status.
 	 */
 	public String getEngineInfo()
 	{
 		String sMemoryUsed=Strings.formatBytes(
 			Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory());
-				
-		return 
+
+		return
 			"<engineinfo>\n" +
 			"<name>Om question engine</name>\n"+
 			"<usedmemory>"+sMemoryUsed+"</usedmemory>\n"+
 			"<activesessions>"+mQuestionSessions.size()+"</activesessions>\n"+
 			"</engineinfo>";
-	}	
+	}
 }

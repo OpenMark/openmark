@@ -32,30 +32,30 @@ public class EllipseItem extends GraphItem
 	{
 		super(w);
 	}
-	
+
 	/** Centre */
 	private GraphPoint gpCentre=GraphPoint.ZERO;
-	
+
 	/** Width and height */
 	private GraphPoint gpSize=null;
-	
+
 	/** Colours */
 	private Color cFill=null,cLine=null;
-	
+
 	/** Outline thickness */
 	private int iLineWidth=-1;
-	
+
 	@Override
 	public void init() throws GraphFormatException
 	{
 		if(gpSize==null) gpSize=GraphPoint.ONE;
 	}
-	
+
 	@Override
 	public void paint(Graphics2D g2)
 	{
 		// Work out the corner points and convert to pixels
-		Point2D.Float 
+		Point2D.Float
 			p1=gpCentre.offset(new GraphPoint(
 				-gpSize.getX().getWorldPosition()/2,
 				-gpSize.getY().getWorldPosition()/2)).convertFloat(getWorld()),
@@ -65,7 +65,7 @@ public class EllipseItem extends GraphItem
 		Ellipse2D.Float eWhole=new Ellipse2D.Float(
 			Math.min(p1.x,p2.x),Math.min(p1.y,p2.y),
 			Math.abs(p1.x-p2.x),Math.abs(p1.y-p2.y));
-		
+
 		if(iLineWidth==0)
 		{
 			if(cFill!=null)
@@ -82,18 +82,18 @@ public class EllipseItem extends GraphItem
 				);
 			Area aOuter=new Area(eWhole);
 			aOuter.subtract(new Area(ePartial));
-			
+
 			g2.setColor(cLine);
 			g2.fill(aOuter);
-			
+
 			if(cFill!=null)
 			{
 				g2.setColor(cFill);
 				g2.fill(ePartial);
-			}			
+			}
 		}
 	}
-	
+
 	/**
 	 * Sets centre of ellipse, X co-ordinate.
 	 * @param gsX Co-ordinate
@@ -103,7 +103,7 @@ public class EllipseItem extends GraphItem
 		gpCentre=gpCentre.newX(gsX);
 	}
 	/**
-	 * Sets centre of ellipse, Y co-ordinate. 
+	 * Sets centre of ellipse, Y co-ordinate.
 	 * @param gsY Co-ordinate
 	 */
 	public void setY(GraphScalar gsY)
@@ -115,26 +115,26 @@ public class EllipseItem extends GraphItem
 	 * Sets width (horizontal diameter) of ellipse. Height defaults to the
 	 * same value.
 	 * @param gsW Width
-	 * @throws GraphFormatException 
+	 * @throws GraphFormatException
 	 */
 	public void setWidth(GraphScalar gsW) throws GraphFormatException
 	{
 		if(gpSize==null)
 			gpSize=new GraphPoint(gsW,gsW);
-		else				
+		else
 			gpSize=gpSize.newX(gsW);
 	}
 	/**
 	 * Sets height (vertical diameter) of ellipse. Width defaults to the
 	 * same value.
 	 * @param gsH Height
-	 * @throws GraphFormatException 
+	 * @throws GraphFormatException
 	 */
 	public void setHeight(GraphScalar gsH) throws GraphFormatException
 	{
 		if(gpSize==null)
 			gpSize=new GraphPoint(gsH,gsH);
-		else				
+		else
 			gpSize=gpSize.newY(gsH);
 	}
 

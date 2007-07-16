@@ -59,23 +59,23 @@ public class formula extends SimpleQuestion1
 	private final static String[]	LETTERS_BNO = {"one", "one", "two", "three", "two"};
 	private final static String[]	LETTERS_BIONS = {"ion has", "ion has", "ions have", "ions have", "ions have"};
 	private final static String[]	LETTERS_BCHARGE = {"�3", "�2", "�6", "�6", "�2"};
-	
+
 	private final static String[]	LETTERS_C = {"Li^{+}", "Na^{+}", "Mg^{2+}", "Al^{3+}", "Ca^{2+}"};
 	private final static String[]	LETTERS_CPLAIN = {"Li+", "Na+", "Mg2+", "Al3+", "Ca2+"};
-	
+
 	private final static String[]	LETTERS_D = {"N^{3�}", "S^{2�}", "P^{3�}", "O^{2�}", "H^{�}"};
 	private final static String[]	LETTERS_DPLAIN = {"N3-", "S2-", "P3-", "O2-", "H-"};
 
 	/** Selected question */
 	private int iVariant;
-	
+
 //--------------------------------------------------------------------------------------------
-	
+
 protected void init() throws OmException
 {
 	Random r = getRandom("secondcomp");
 	iVariant=r.nextInt(COMPOUNDS.length);
-	
+
 	setPlaceholder("COMPOUND", COMPOUNDS[iVariant]);
 	setPlaceholder("FORMULA", FORMULAE[iVariant]);
 
@@ -89,20 +89,20 @@ protected void init() throws OmException
 
 	setPlaceholder("C", LETTERS_C[iVariant]);
 	setPlaceholder("CPLAIN", LETTERS_CPLAIN[iVariant]);
-	
+
 	setPlaceholder("D", LETTERS_D[iVariant]);
 	setPlaceholder("DPLAIN", LETTERS_DPLAIN[iVariant]);
-	
-    getResults().setQuestionLine("What is the formula of " + COMPOUNDS[iVariant]);		
+
+    getResults().setQuestionLine("What is the formula of " + COMPOUNDS[iVariant]);
 }
 //--------------------------------------------------------------------------------------------
-  
+
 protected boolean isRight(int iAttempt) throws OmDeveloperException
 {
 	String	respon;
-	
+
 	respon=(getAdvancedField("response").getValue().trim());
-	
+
 	// store response information
 	getResults().setAnswerLine(respon);
     getResults().appendActionSummary("Attempt " + iAttempt + ": " + respon);
