@@ -45,14 +45,14 @@ public class HtmlReportWriter extends TabularReportWriter
 	 * @see om.tnavigator.reports.TabularReportWriter#sendHead()
 	 */
 	@Override
-	public void printHead(String batchid, TabularReportBase report)
+	public void printHead(String batchid, String title, TabularReportBase report)
 	{
 		pw.println("<html>");
 		pw.println("\t<head>");
-		pw.println("\t\t<title>" + batchid + "</title>");
+		pw.println("\t\t<title>" + title + " batch number: " + batchid + "</title>");
 		pw.println("\t</head>");
 		pw.println("\t<body>");
-		pw.println("\t\t<h1>" + batchid + "</h1>");
+		pw.println("\t\t<h1>" + title + " batch number: " + batchid + "</h1>");
 		report.extraHtmlContent(pw);
 		pw.println("\t\t<table>");
 		pw.println("\t\t\t<thead>");
@@ -73,6 +73,7 @@ public class HtmlReportWriter extends TabularReportWriter
 	@Override
 	public void sendHeaders(HttpServletResponse response, String batchid)
 	{
+		response.setContentType("text/html;charset=UTF-8");
 	}
 
 	/* (non-Javadoc)

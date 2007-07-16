@@ -43,7 +43,7 @@ public class XmlReportWriter extends TabularReportWriter {
 	 * @see om.tnavigator.reports.TabularReportWriter#sendHead()
 	 */
 	@Override
-	public void printHead(String batchid, TabularReportBase report) {
+	public void printHead(String batchid, String title, TabularReportBase report) {
 		pw.println("<results batch=\"" + batchid + "\">");
 	}
 

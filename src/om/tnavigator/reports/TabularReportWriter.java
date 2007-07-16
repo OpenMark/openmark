@@ -52,9 +52,10 @@ public abstract class TabularReportWriter {
 	/**
 	 * Write out any content that goes before the body of the report.
 	 * @param batchid The Id of this batch.
+	 * @param title TODO
 	 * @param report The report that will be output.
 	 */
-	public abstract void printHead(String batchid, TabularReportBase report);
+	public abstract void printHead(String batchid, String title, TabularReportBase report);
 
 	/**
 	 * Write out a row of the report.

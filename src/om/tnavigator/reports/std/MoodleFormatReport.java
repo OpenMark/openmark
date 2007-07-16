@@ -4,7 +4,10 @@
 package om.tnavigator.reports.std;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +18,7 @@ import om.tnavigator.*;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.reports.*;
 import om.tnavigator.scores.CombinedScore;
+import util.misc.Strings;
 
 /**
  * This report exports test scores in the format expected by the Moodle &gt;=1.9 gradebook.
@@ -65,6 +69,8 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 		MoodleTabularReport(String testId, TestDeployment deploy) throws OmException {
 			this.testId = testId;
 			this.def = deploy.getTestDefinition();
+			batchid = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+			title = testId + " results for export to Moodle";
 		}
 		
 		/* (non-Javadoc)

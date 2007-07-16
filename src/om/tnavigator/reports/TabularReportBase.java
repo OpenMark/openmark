@@ -32,6 +32,9 @@ import om.OmUnexpectedException;
  * Base class for reports that are basically a table of data
  */
 public abstract class TabularReportBase {
+	protected String batchid;
+	protected String title;
+
 	private static enum Format {
 		/** HTML output class */
 		html(HtmlReportWriter.class, "HTML"),
@@ -100,8 +103,6 @@ public abstract class TabularReportBase {
 		}
 	}
 	
-	protected String batchid;
-
 	private TabularReportWriter setupWriter(HttpServletRequest request,
 			HttpServletResponse response, List<ColumnDefinition> columns) throws OmException {
 		String format = request.getParameter("format");
@@ -132,7 +133,7 @@ public abstract class TabularReportBase {
 		List<ColumnDefinition> columns = init(request);
 		TabularReportWriter reportWriter = setupWriter(request, response, columns);
 		reportWriter.sendHeaders(response, batchid);
-		reportWriter.printHead(batchid, this);
+		reportWriter.printHead(batchid, title, this);
 		generateReport(reportWriter);
 		reportWriter.printTail();
 	}
