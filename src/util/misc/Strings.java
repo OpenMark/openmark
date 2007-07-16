@@ -23,6 +23,15 @@ import java.util.*;
 /** Utilities related to strings and string formatting */
 public class Strings
 {
+	private static Random random;
+	
+	private static synchronized Random getRandom() {
+		if (random == null) {
+			random = new Random();
+		}
+		return random;
+	}
+	
 	/**
 	 * Makes a string comprising the toString of all the elements of collection c,
 	 * with a copy of border between each item.
@@ -162,5 +171,54 @@ public class Strings
 			return "NULL";
 		else 
 			return "'"+s.replaceAll("'","''")+"'";
+	}
+
+	/** @return A random alphanumeric character */
+	public static char randomAlNum()
+	{
+		Random r = getRandom();
+		int i = 0;
+		synchronized (r) {
+			i = r.nextInt(62);			
+		}
+
+		if(i<26)
+			return (char)(i+'A');
+		i-=26;
+		if(i<26)
+			return (char)(i+'a');
+		i-=26;
+			return (char)(i+'0');
+	}
+
+	/**
+	 * @param length the length of the string to generate.
+	 * @return an alphanumeric string of a given length.
+	 */
+	public static String randomAlNumString(int length)
+	{
+		StringBuffer sb = new StringBuffer(length);
+		for(int i = 0 ; i < length; i++)
+		{
+			sb.append(randomAlNum());
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * @param length the length of the string to generate.
+	 * @return a string of digits of a given length.
+	 */
+	public static String randomDigits(int length)
+	{
+		StringBuffer sb = new StringBuffer(length);
+		Random r = getRandom();
+		synchronized (r) {
+			for(int i = 0 ; i < length; i++)
+			{
+				sb.append(r.nextInt(10));
+			}
+		}
+		return sb.toString();
 	}
 }
