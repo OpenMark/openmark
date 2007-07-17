@@ -31,6 +31,7 @@ public class XmlReportWriter extends TabularReportWriter {
 
 	/**
 	 * Create an instance of this writer for writing the given report to the given HTTP Servlet
+	 * @param pw the place to send output.
 	 * @param report the report we will be responsible for outputting.
 	 * @param columns a list of column definitions.
 	 */
