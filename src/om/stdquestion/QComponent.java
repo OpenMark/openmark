@@ -930,9 +930,8 @@ public abstract class QComponent
 	 */
 	protected void produceChildOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
-		for(Iterator i=llChildren.iterator();i.hasNext();)
+		for (Object o : llChildren)
 		{
-			Object o=i.next();
 			if(o instanceof String)
 			{
 				qc.addInlineXHTML(qc.getOutputDocument().createTextNode((String)o));
@@ -997,48 +996,27 @@ public abstract class QComponent
 	}
 
 	/**
-	 * Calls setDisplay on this component and all its children, and
-	 * their children, and so on recursively.
+	 * Calls setDisplay on this component and all its descendants that have an
+	 * id explicitly set in the question XML, and where that ID starts with idPrefix.
+	 * For example, you might want to call this to hide all components with an id starting
+	 * with "feedback" to hide all the different bits of feedback, before selectively
+	 * redisplaying just those bits that are relevant to the answer the student just 
+	 * entered.
 	 *
-	 * @param bDisplay passed to setDisplay on each component.
+	 * @param bDisplay passed to setDisplay on each matching component.
+	 * @param idPrefix the prefix an elements id must start with for it to be affected,
+	 * 		for example "feedback". To match all children with an id, use "".
 	 */
-	public void setDisplayRecursive(boolean bDisplay)
+	public void setDisplayOnComponentsWithId(boolean bDisplay, String idPrefix)
 	{
 		try
 		{
-			setBoolean(PROPERTY_DISPLAY,bDisplay);
-			Object[] children = getChildren();
-			for (int i = 0; i < children.length; i++) {
-				if (children[i] instanceof QComponent) {
-					((QComponent) children[i]).setDisplayRecursive(bDisplay);
-				}
+			if (hasUserSetID() && getID().startsWith(idPrefix)) {
+				setBoolean(PROPERTY_DISPLAY, bDisplay);
 			}
-		}
-		catch(OmDeveloperException e)
-		{
-			throw new OmUnexpectedException(e);
-		}
-	}
-
-	/**
-	 * Calls setDisplay on this component and all its children of a particular type, and
-	 * their children, and so on recursively.
-	 *
-	 * @param bDisplay passed to setDisplay on each component.
-	 * @param componentType the type of componet to hide. For example <code>TextComponent.class</code>.
-	 */
-	public void setDisplayRecursive(boolean bDisplay, Class<? extends QComponent> componentType)
-	{
-		try
-		{
-			if (componentType.isAssignableFrom(getClass())) {
-				setBoolean(PROPERTY_DISPLAY,bDisplay);
-			}
-			Object[] children = getChildren();
+			QComponent[] children = getComponentChildren();
 			for (int i = 0; i < children.length; i++) {
-				if (children[i] instanceof QComponent) {
-					((QComponent) children[i]).setDisplayRecursive(bDisplay, componentType);
-				}
+				children[i].setDisplayOnComponentsWithId(bDisplay, idPrefix);
 			}
 		}
 		catch(OmDeveloperException e)
@@ -1114,13 +1092,12 @@ public abstract class QComponent
 	final QComponent findSubComponent(String sID)
 	{
 		if(sID.equals(mProperties.get(PROPERTY_ID))) return this;
-		for(Iterator i=llChildren.iterator();i.hasNext();)
+		for (Object o : llChildren)
 		{
-			Object o=i.next();
-			if(o instanceof QComponent)
+			if (o instanceof QComponent)
 			{
 				QComponent qc=((QComponent)o).findSubComponent(sID);
-				if(qc!=null) return qc;
+				if (qc!=null) return qc;
 			}
 		}
 		return null;
