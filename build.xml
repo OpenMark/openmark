@@ -99,10 +99,10 @@
 	<!-- Version number - loaded into ${buildversion} -->
 	<property file="version.properties"/>
 
-    <!-- URL of our dev.java.net project. -->
-    <property name="projecturl" value="https://openmark.dev.java.net/"/>
-    
-    <!-- Create fresh build folder -->
+	<!-- URL of our dev.java.net project. -->
+	<property name="projecturl" value="https://openmark.dev.java.net/"/>
+	
+	<!-- Create fresh build folder -->
 	<target name="init">
 		<tstamp>
 			<format property="newbuildstamp" pattern="yyyy-MM-dd HH:mm:ss"/>
@@ -318,19 +318,19 @@
 	<target name="all-nolibs" depends="qengine-nolibs,tnavigator-nolibs,devserver" 
 		description="Build question engine, test navigator, and devserver webapps without external libraries"/>
 	
-    <target name="bundle-source"
-        description="Bundle the source for upload to the project site.">
-        <zip destfile="${build}/openmark_${buildversion}_src.zip">
-            <fileset dir=".">
-                <exclude name="bin/**"/>
-                <exclude name="www/**"/>
-                <exclude name="deploy.xml"/>
-            </fileset>
-        </zip>
-        <echo level="info" message="To be uploaded to: ${projecturl}servlets/ProjectDocumentAdd?folderID=7783&amp;name=openmark_${buildversion}_src.zip&amp;status=Draft&amp;description=Source%20bundle%20of%20the%20${buildversion}%20development%20snapshot.&amp;type=file"/>
-    </target>   
+	<target name="bundle-source"
+		description="Bundle the source for upload to the project site.">
+		<zip destfile="${build}/openmark_${buildversion}_src.zip">
+			<fileset dir=".">
+				<exclude name="bin/**"/>
+				<exclude name="www/**"/>
+				<exclude name="deploy.xml"/>
+			</fileset>
+		</zip>
+		<echo level="info" message="To be uploaded to: ${projecturl}servlets/ProjectDocumentAdd?folderID=7783&amp;name=openmark_${buildversion}_src.zip&amp;status=Draft&amp;description=Source%20bundle%20of%20the%20${buildversion}%20development%20snapshot.&amp;type=file"/>
+	</target>   
 
-    
+	
 	<path id="axis.classpath">
 		<fileset dir="${axishome}/lib">
 			<include name="*.jar"/>
@@ -432,8 +432,6 @@
 				</fileset>
 			</classpath>
 		</javadoc>
-
 	</target>
-	
 	
 </project>
