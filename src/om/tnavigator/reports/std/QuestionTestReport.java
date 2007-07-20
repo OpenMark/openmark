@@ -4,6 +4,7 @@
 package om.tnavigator.reports.std;
 
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
@@ -87,6 +88,7 @@ public class QuestionTestReport implements OmTestReport {
 				}
 				if(rs.getInt(3)!=iCurrentAttempt)
 				{
+					Timestamp startedTime = rs.getTimestamp(4);
 					if(bInAttempt) sb.append("</div></div>");
 					String questionSummary = rs.getString(5);
 					if (questionSummary == null) questionSummary = "The question did not return this information.";
@@ -99,7 +101,7 @@ public class QuestionTestReport implements OmTestReport {
 					
 					sb.append(
 							"<div class='attempt'>"+
-							"<div class='started'>Started: <em>" + sdf.format(rs.getTimestamp(4)) + "</em></div>" +
+							"<div class='started'>Started: <em>" + sdf.format(startedTime) + "</em></div>" +
 							"<div class='question'>Question: <em>" + XML.escape(questionSummary) + "</em></div>" +
 							"<div class='answer'>Answer: <em>" + XML.escape(answerSummary) + "</em></div>" +
 							"<pre>" + XML.escape(actionSummary) + "</pre>" +
