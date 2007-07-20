@@ -503,11 +503,6 @@ em.warning
   border-top:1px dotted #acb0d5;
   padding:0.5em 0;
 }
-.report .question, .report .answer
-{
-  display:inline;
-  margin-right:1em;
-}
 .report .scores .t
 {
   display:inline;

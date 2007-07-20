@@ -54,6 +54,9 @@ public class DevServlet extends HttpServlet
 	/** ID of in-progress question */
 	private String sInProgressID=null;
 
+	/** Whether the in-progress question has sent back results. */
+	private boolean questionHasSentResults;
+
 	/** Map of String (filename) -> Resource */
 	private Map<String,Resource> mResources=new HashMap<String,Resource>();
 
@@ -87,6 +90,7 @@ public class DevServlet extends HttpServlet
 			sInProgressID=null;
 			sCSS=null;
 		}
+		questionHasSentResults = false;
 	}
 
 	@Override
@@ -509,8 +513,14 @@ public class DevServlet extends HttpServlet
 				response.setContentType("text/html");
 				response.setCharacterEncoding("UTF-8");
 				PrintWriter pw=new PrintWriter(response.getWriter());
-				pw.println("<html><head><title>Question ended</title></head>" +
-						"<body>Question ended. <a href='./'>Restart</a></body></html>");
+				pw.println("<html><head><title>Question ended</title></head><body>");
+				if (!questionHasSentResults) {
+					pw.println("<div style='border: 1px solid #888; padding: 1em; background: #fdc; font-weight: bold'>Error: The question ended without sending back any results.</div>");
+					pw.println("<p><a href='./'>Restart</a></p>");
+				} else {
+					pw.println("<p>Question ended. <a href='./'>Restart</a></p>");
+				}
+				pw.println("</body></html>");
 				pw.close();
 		  }
 		  else
@@ -632,6 +642,7 @@ public class DevServlet extends HttpServlet
 			Results rResults=((ActionRendering)r).getResults();
 			if(rResults!=null)
 			{
+				questionHasSentResults = true;
 				sbResults.append("Results\n=======\n\nScores\n------\n\n");
 				Score[] as=rResults.getScores();
 				for(int i=0;i<as.length;i++)

@@ -133,7 +133,6 @@ public class HomeTestReport implements OmTestReport {
 				if(rs.getInt(3)==0)
 				{
 					diq.sAverage="-";
-					diq.sCount="?";
 				}
 				else
 				{
@@ -141,10 +140,10 @@ public class HomeTestReport implements OmTestReport {
 					while(diq.sAverage.length()<3) diq.sAverage="0"+diq.sAverage;
 					diq.sAverage=diq.sAverage.substring(0,diq.sAverage.length()-2)+"."+
 						diq.sAverage.substring(diq.sAverage.length()-2);
-					diq.sCount=rs.getInt(3)+"";
 				}
 				diq.iMajor=rs.getInt(4);
 				diq.iNumber=rs.getInt(5);
+				diq.sCount=rs.getInt(6)+"";
 				lQuestions.add(diq);
 			}
 		}

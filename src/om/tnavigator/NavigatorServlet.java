@@ -2538,7 +2538,7 @@ public class NavigatorServlet extends HttpServlet
 	 * @param iAttempts 'Attempts' value
 	 * @return String describing value, for use in summary tables
 	 */
-	private static String getAttemptsString(int iAttempts)
+	public static String getAttemptsString(int iAttempts)
 	{
 		switch(iAttempts)
 		{

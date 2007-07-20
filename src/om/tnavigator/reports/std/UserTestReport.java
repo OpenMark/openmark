@@ -106,12 +106,16 @@ public class UserTestReport implements OmTestReport {
 				String sQuestion=rs.getString(3);
 				int iQAttempt=rs.getInt(4);
 				Timestamp tsDate=rs.getTimestamp(5);
-				String sQuestionLine=rs.getString(6);
-				String sAnswerLine=rs.getString(7);
-				String sActionSummary=rs.getString(8);
-	  		int iAttempts=rs.getInt(9);
-		  	String sAxis=rs.getString(10);
-	  		String sAxisScore=rs.getString(11);
+				String questionSummary=rs.getString(6);
+				if (questionSummary == null) questionSummary = "The question did not return this information.";
+				String answerSummary=rs.getString(7);
+				if (answerSummary == null) answerSummary = "The question did not return this information.";
+				String actionSummary=rs.getString(8);
+				if (actionSummary == null) actionSummary = "The question did not return this information.";
+				String attemptString = NavigatorServlet.getAttemptsString(rs.getInt(9));
+				if (rs.wasNull()) attemptString = "The question did not return this information.";
+				String sAxis=rs.getString(10);
+				String sAxisScore=rs.getString(11);
 				int iQNumber=rs.getInt(12);
 				Timestamp tsFinished=rs.getTimestamp(13);
 				Timestamp tsMinAction=rs.getTimestamp(14);
@@ -143,31 +147,22 @@ public class UserTestReport implements OmTestReport {
 
 					sb.append("<div class='qattempt'><h4>#"+iQNumber+" ("+sQuestion+") attempt "+
 						iCurrentQAttempt+"</h4>"+
-		  		  "<div class='started'>Access time: <em>"+sdf.format(tsDate)+"</em></div>"+
-		  		  "<div class='started'>Action times: <em>"+sdf.format(tsMinAction)+"</em> - <em>"+sdf.format(tsMaxAction)+"</em></div>"+
-		  		  "<div class='question'>Question: <em>"+XML.escape(sQuestionLine)+"</em></div>"+
-		  		  "<div class='answer'>User's answer: <em>"+XML.escape(sAnswerLine)+"</em></div>"+
-		  		  "<pre>"+XML.escape(sActionSummary)+"</pre>"+
-		  		  "<div class='attempts'>Result: <em>");
-					switch(iAttempts)
-		  		{
-		  		case -1: sb.append("Wrong"); break;
-		  		case 0 : sb.append("Pass"); break;
-		  		case 1 : sb.append("1<sup>st</sup>"); break;
-		  		case 2 : sb.append("2<sup>nd</sup>"); break;
-		  		case 3 : sb.append("3<sup>rd</sup>"); break;
-		  		default: sb.append(iAttempts+"<sup>th</sup>"); break;
-		  		}
-		  		sb.append("</em></div><div class='scores'><span class='t'>Score:</span>");
+						"<div class='started'>Access time: <em>"+sdf.format(tsDate)+"</em></div>"+
+						"<div class='started'>Action times: <em>"+sdf.format(tsMinAction)+"</em> - <em>"+sdf.format(tsMaxAction)+"</em></div>"+
+						"<div class='question'>Question: <em>"+XML.escape(questionSummary)+"</em></div>"+
+						"<div class='answer'>User's answer: <em>"+XML.escape(answerSummary)+"</em></div>"+
+						"<pre>"+XML.escape(actionSummary)+"</pre>"+
+						"<div class='attempts'>Result: <em>" + attemptString + "</em></div>" +
+						"<div class='scores'><span class='t'>Score:</span>");
 					bInQuestion=true;
 				}
 
 				if(sAxis!=null)
-		  	{
+				{
 					sb.append("<div><span class='axis'>"+
-		  		  (sAxis.equals("") ? "Default" : sAxis)+
-		  		  ": </span><span class='val'>"+sAxisScore+"</span></div>");
-		  	}
+						(sAxis.equals("") ? "Default" : sAxis)+
+						": </span><span class='val'>"+sAxisScore+"</span></div>");
+				}
 			}
 			if(bInQuestion) sb.append("</div></div>");
 			if(bInTest) sb.append("</div>");

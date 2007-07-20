@@ -280,13 +280,15 @@ public abstract class OmQueries
 		throws SQLException
 	{
 		return dat.query(
-			"SELECT q.question, sum(s.score),count(s.score),max(q.majorversion),tq.questionnumber " +
+			"SELECT q.question,sum(s.score) as scoretot,count(s.score) as numscores," +
+			"max(q.majorversion) as maxversion,tq.questionnumber,count(tq.ti) as numattempts " +
 			"FROM " + getPrefix() + "tests t " +
-			"LEFT JOIN " + getPrefix() + "testquestions tq ON t.ti=tq.ti "+
-			"LEFT JOIN " + getPrefix() + "questions q ON t.ti=q.ti AND q.question=tq.question " +
+			"JOIN " + getPrefix() + "testquestions tq ON t.ti=tq.ti "+
+			"JOIN " + getPrefix() + "questions q ON t.ti=q.ti AND q.question=tq.question " +
 			"LEFT JOIN " + getPrefix() + "scores s ON q.qi=s.qi " +
-			"WHERE s.axis='' AND s.score IS NOT NULL " +
-			"AND t.deploy="+Strings.sqlQuote(testID)+" "+
+			"WHERE t.deploy=" + Strings.sqlQuote(testID) + " " +
+			"AND q.finished <> 0" +
+			"AND ((s.axis='' AND s.score IS NOT NULL) OR s.axis IS NULL)" +
 			"GROUP BY q.question,tq.questionnumber " +
 			"ORDER BY tq.questionnumber");
 	}
@@ -350,8 +352,8 @@ public abstract class OmQueries
 			"FROM " + getPrefix() + "tests t " +
 				"INNER JOIN " + getPrefix() + "questions q ON t.ti=q.ti " +
 				"INNER JOIN " + getPrefix() + "testquestions tq ON t.ti=tq.ti AND q.question=tq.question "+
-				"INNER JOIN " + getPrefix() + "results r ON q.qi=r.qi " +
-				"LEFT OUTER JOIN " + getPrefix() + "scores s ON q.qi=s.qi " +
+				"LEFT JOIN " + getPrefix() + "results r ON q.qi=r.qi " +
+				"LEFT JOIN " + getPrefix() + "scores s ON q.qi=s.qi " +
 			"WHERE t.deploy="+Strings.sqlQuote(testID)+" AND t.pi="+Strings.sqlQuote(pi)+" AND q.finished>0 " +
 			"ORDER BY t.attempt,tq.questionnumber,q.clock");
 	}

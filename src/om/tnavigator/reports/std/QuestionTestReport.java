@@ -65,58 +65,57 @@ public class QuestionTestReport implements OmTestReport {
 		DatabaseAccess.Transaction dat=ns.getDatabaseAccess().newTransaction();
 		try
 		{
-		  ResultSet rs=ns.getOmQueries().queryQuestionReport(dat,us.getTestId(),sQuestion);
-		  String sCurrentPI=null;
-		  int iCurrentAttempt=0;
-		  boolean bInPI=false,bInAttempt=false;
-		  while(rs.next())
-		  {
-		  	String sPI=rs.getString(1);
+			ResultSet rs=ns.getOmQueries().queryQuestionReport(dat,us.getTestId(),sQuestion);
+			String sCurrentPI=null;
+			int iCurrentAttempt=0;
+			boolean bInPI=false,bInAttempt=false;
+			while(rs.next())
+			{
+				String sPI=rs.getString(1);
 				if(!sPI.equals(sCurrentPI))
-		  	{
-		  		if(bInAttempt)
-		  		{
-		  			sb.append("</div></div>");
-		  			bInAttempt=false;
-		  		}
-		  		if(bInPI) sb.append("</div>");
-		  		sCurrentPI=sPI;
-		  		sb.append("<div class='pi'><h3>"+sCurrentPI+" ("+rs.getString(2)+")</h3>");
-		  		iCurrentAttempt=0;
-		  		bInPI=true;
-		  	}
-		  	if(rs.getInt(3)!=iCurrentAttempt)
-		  	{
-		  		if(bInAttempt) sb.append("</div></div>");
-		  		sb.append(
-		  			"<div class='attempt'>"+
-		  		  "<div class='started'>Started: <em>"+sdf.format(rs.getTimestamp(4))+"</em></div>"+
-		  		  "<div class='question'>Question: <em>"+XML.escape(rs.getString(5))+"</em></div>"+
-		  		  "<div class='answer'>Answer: <em>"+XML.escape(rs.getString(6))+"</em></div>"+
-		  		  "<pre>"+XML.escape(rs.getString(7))+"</pre>"+
-		  		  "<div class='attempts'>Result: <em>");
-		  		int iAttempts=rs.getInt(8);
-					switch(iAttempts)
-		  		{
-		  		case -1: sb.append("Wrong"); break;
-		  		case 0 : sb.append("Pass"); break;
-		  		case 1 : sb.append("1<sup>st</sup>"); break;
-		  		case 2 : sb.append("2<sup>nd</sup>"); break;
-		  		case 3 : sb.append("3<sup>rd</sup>"); break;
-		  		default: sb.append(iAttempts+"<sup>th</sup>"); break;
-		  		}
-		  		sb.append("</em></div><div class='scores'><span class='t'>Score:</span>");
-		  		bInAttempt=true;
-		  	}
+				{
+					if(bInAttempt)
+					{
+						sb.append("</div></div>");
+						bInAttempt=false;
+					}
+					if(bInPI) sb.append("</div>");
+					sCurrentPI=sPI;
+					sb.append("<div class='pi'><h3>"+sCurrentPI+" ("+rs.getString(2)+")</h3>");
+					iCurrentAttempt=0;
+					bInPI=true;
+				}
+				if(rs.getInt(3)!=iCurrentAttempt)
+				{
+					if(bInAttempt) sb.append("</div></div>");
+					String questionSummary = rs.getString(5);
+					if (questionSummary == null) questionSummary = "The question did not return this information.";
+					String answerSummary = rs.getString(6);
+					if (answerSummary == null) answerSummary = "The question did not return this information.";
+					String actionSummary = rs.getString(7);
+					if (actionSummary == null) actionSummary = "The question did not return this information.";
+					String attemptString = NavigatorServlet.getAttemptsString(rs.getInt(8));
+					if (rs.wasNull()) attemptString = "The question did not return this information.";
+					
+					sb.append(
+							"<div class='attempt'>"+
+							"<div class='started'>Started: <em>" + sdf.format(rs.getTimestamp(4)) + "</em></div>" +
+							"<div class='question'>Question: <em>" + XML.escape(questionSummary) + "</em></div>" +
+							"<div class='answer'>Answer: <em>" + XML.escape(answerSummary) + "</em></div>" +
+							"<pre>" + XML.escape(actionSummary) + "</pre>" +
+							"<div class='attempts'>Result: <em>" + XML.escape(attemptString) + "</em></div>" +
+							"<div class='scores'><span class='t'>Score:</span>");
+					bInAttempt=true;
+				}
 
-		  	String sAxis=rs.getString(9);
+				String sAxis=rs.getString(9);
 				if(sAxis!=null)
-		  	{
-		  		sb.append("<div><span class='axis'>"+
-		  		  (sAxis.equals("") ? "Default" : sAxis)+
-		  		  ": </span><span class='val'>"+rs.getString(10)+"</span></div>");
-		  	}
-		  }
+				{
+					sb.append("<div><span class='axis'>"+
+							(sAxis.equals("") ? "Default" : sAxis)+
+							": </span><span class='val'>"+rs.getString(10)+"</span></div>");
+				}
+			}
 			if(bInAttempt) sb.append("</div></div>");
 			if(bInPI) sb.append("</div>");
 		}
