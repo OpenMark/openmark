@@ -2466,14 +2466,17 @@ public class NavigatorServlet extends HttpServlet
 		}
 	}
 
-	private void serveQuestionPage(RequestTimings rt,UserSession us,TestQuestion tq,String sXHTML,boolean bClearCSS,HttpServletRequest request, HttpServletResponse response) throws IOException,OmException
+	private void serveQuestionPage(RequestTimings rt,UserSession us,TestQuestion tq,String sXHTML,
+			boolean notReallyQuestion,HttpServletRequest request, HttpServletResponse response) throws IOException,OmException
 	{
 		us.sSequence=Math.random()+"";
+		if (!notReallyQuestion) {
 		sXHTML = "<form method='post' action='./' autocomplete='off'>" +
 				"<input type='hidden' name='" + SEQUENCEFIELD + "' value = '" + us.sSequence + "' />" +
 				sXHTML +
 				"</form>";
-
+		}
+		
 		if(us.isSingle())
 		{
 			Element eMetadata=getQuestionMetadata(rt,tq.getID(),
@@ -2490,14 +2493,14 @@ public class NavigatorServlet extends HttpServlet
 				if(XML.hasChild(eMetadata,"title"))
 				{
 					serveTestContent(us,XML.getText(eMetadata,"title"),"("+tq.getNumber()+" of "+getQuestionMax(us)+")",
-							us.bAdmin ? tq.getID() : null,us.sProgressInfo,sXHTML,true, request, response, bClearCSS);
+							us.bAdmin ? tq.getID() : null,us.sProgressInfo,sXHTML,true, request, response, notReallyQuestion);
 					return;
 				}
 			}
 
 			// Either not using names, or question is unnamed
 			serveTestContent(us,"Question "+tq.getNumber(),"(of "+getQuestionMax(us)+")",
-				us.bAdmin ? tq.getID() : null,us.sProgressInfo,sXHTML,true, request, response, bClearCSS);
+				us.bAdmin ? tq.getID() : null,us.sProgressInfo,sXHTML,true, request, response, notReallyQuestion);
 		}
 	}
 
