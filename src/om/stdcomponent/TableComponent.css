@@ -39,3 +39,12 @@ background:%%COLOUR:innerbghi%%;
 {
 background:%%COLOUR:innerbghi%%;
 }
+
+/* Without the next rule, text boxes in tables take up 2 px more height in IE7 than in FF
+which breaks the layout of some questions. */
+.winie-6 td input,.winie-7 td input,
+.winie-6 th input,.winie-7 th input
+{
+  margin-top:-1px;
+  margin-bottom:-1px;
+}
