@@ -165,7 +165,7 @@ public class Results
 	private void checkID(String sID) throws OmDeveloperException
 	{
 		if(sID==null) return;
-		if(!sID.matches("[A-Za-z0-9_-.!]*"))
+		if(!sID.matches("[-_.!A-Za-z0-9]*"))
 			throw new OmDeveloperException("Not a valid ID string (disallowed characters): "+sID);
 		if(sID.length()>64)
 			throw new OmDeveloperException("Not a valid ID string (>64 characters): "+sID);
