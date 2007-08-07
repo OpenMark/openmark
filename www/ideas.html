@@ -1,0 +1,41 @@
+<html>
+<head>
+<title>Development ideas</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Development ideas</h1>
+
+<p>These are some ideas for things it would be nice to have, but which we are unlikely 
+to have time to work on at the OU.</p>
+
+<h2>Support for other databases</h2>
+
+<p>Support for different databases is via subpackages of tnavigator.db. At the moment we
+only support Postgres and Microsoft SQL Server. To support a new database you just need to
+write an SQL file to create the tables, and a subclass of OmQueries to rewrite any queries where
+the standard SQL in OmQueries does not work. It would be good to offer support for MySQL.</p>
+
+<h2>Support for other authentication systems</h2>
+
+<p>At the moment, OpenMark integrates with the Open University's in-house
+authentication system, which is non-standard, and offers an extremely basic
+database table user lookup. We need plugins to support other standards-based 
+authentication systems and databases.</p>
+
+<h2>Support for other web browsers</h2>
+
+<p>At the moment, Firefox 1.5+ and Internet Explorer 6.0+ are fully supported, which 
+covers more than 90% of the web population, and most things work in other browsers with
+good standards support like Safari/KHTML and Opera, but with a few layout differences.
+It would be nice to document exactly what works in each browser, and then work to fix any
+problems. This would mostly involves changes in the stdcomponent package, and in navigator.css.</p>
+
+<h2>Anything else you would like to work on</h2>
+
+<p>Please feel free to scratch your own itches, but we request that you contact us before 
+starting work, so we can talk about how what you want to do fits in with our overall plans.</p>
+
+</body>
+</html>
