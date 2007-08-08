@@ -192,7 +192,7 @@ public class UserSession
 	 * @return the lRandomSeed
 	 */
 	long getRandomSeed() {
-		return testRealisation.getFixedVariant();
+		return testRealisation.getRandomSeed();
 	}
 
 	/**
@@ -342,12 +342,12 @@ public class UserSession
 		if(isSingle())
 		{
 			testDefinition = null;
-			testRealisation = TestRealisation.realiseSingleQuestion(tdDeployment.getQuestion(), randomSeed, -1, testID, dbTi);
+			testRealisation = TestRealisation.realiseSingleQuestion(tdDeployment.getQuestion(), randomSeed, fixedVariant, testID, dbTi);
 		}
 		else
 		{
 			testDefinition = tdDeployment.getTestDefinition();
-			testRealisation = TestRealisation.realiseTest(testDefinition, randomSeed, -1, testID, dbTi);
+			testRealisation = TestRealisation.realiseTest(testDefinition, randomSeed, fixedVariant, testID, dbTi);
 		}
 		testPosition = 0;
 		bFinished = finished;

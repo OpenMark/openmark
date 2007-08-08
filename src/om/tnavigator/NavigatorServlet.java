@@ -915,7 +915,7 @@ public class NavigatorServlet extends HttpServlet
 					if(!bPost && (us.getTestId()==null || !sTestID.equals(us.getTestId())))
 					{
 						// Start this test
-						handleStart(rt,sTestID,us,request, response);
+						handleStart(rt,sTestID,us,-1, request, response);
 						return;
 					}
 					// Otherwise check they're on current test (if not, wtf?)
@@ -944,14 +944,12 @@ public class NavigatorServlet extends HttpServlet
 				{
 					if(sCommand.equals("?restart"))
 					{
-						us.setFixedVariant(-1);
-						handleStart(rt,sTestID,us,request, response);
+						handleStart(rt,sTestID,us,-1, request, response);
 						return;
 					}
 					if(sCommand.matches("\\?variant=[0-9]+"))
 					{
-						us.setFixedVariant(Integer.parseInt(sCommand.substring(9)));
-						handleStart(rt,sTestID,us,request, response);
+						handleStart(rt,sTestID,us,Integer.parseInt(sCommand.substring(9)),request, response);
 						return;
 					}
 				}
@@ -1125,10 +1123,11 @@ public class NavigatorServlet extends HttpServlet
 		}
 	}
 
-	private void handleStart(RequestTimings rt,String sTestID,UserSession us,HttpServletRequest request, HttpServletResponse response)
+	private void handleStart(RequestTimings rt,String sTestID,UserSession us,int variant,
+			HttpServletRequest request, HttpServletResponse response)
 		throws Exception
 	{
-		initTestAttempt(rt,sTestID,us,request,response);
+		initTestAttempt(rt,sTestID,us,variant,request, response);
 
 		// Redirect to system-check page if needed
 		doSystemCheck(us,request,response);
@@ -1137,7 +1136,8 @@ public class NavigatorServlet extends HttpServlet
 		servePage(rt,us,false,request, response);
 	}
 
-	private void initTestAttempt(RequestTimings rt,String sTestID,UserSession us,HttpServletRequest request,HttpServletResponse response) throws Exception
+	private void initTestAttempt(RequestTimings rt,String sTestID,UserSession us,
+			int variant,HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
 		stopQuestionSession(rt, us);
 
@@ -1146,7 +1146,7 @@ public class NavigatorServlet extends HttpServlet
 		// Random seed is normally time in milliseconds. For system testing we fix
 		// it to always be the same value.
 		initTestSession(us,rt,sTestID,request, response, false, false,
-				us.ud.isSysTest() ? 1124965882611L : System.currentTimeMillis(), -1);
+				us.ud.isSysTest() ? 1124965882611L : System.currentTimeMillis(), variant);
 
 		// Don't store anything in database for singles version
 		if(us.isSingle()) return;
@@ -1635,7 +1635,7 @@ public class NavigatorServlet extends HttpServlet
 		UserSession us,HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
 		// Start new attempt at question
-		initTestAttempt(rt,us.getTestId(),us,request,response);
+		initTestAttempt(rt,us.getTestId(),us,-1,request, response);
 
 		// Redirect back to question page
 		response.sendRedirect(
