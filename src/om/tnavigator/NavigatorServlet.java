@@ -1788,7 +1788,8 @@ public class NavigatorServlet extends HttpServlet
 		if (OmVersion.compareVersions(us.navigatorVersion, "1.3.0") <= 0) {
 			seedIncrement = 1;
 		}
-		p.add("randomseed",(us.getRandomSeed()+iAttempt*seedIncrement)+"");
+		long randomSeed = us.getRandomSeed()+iAttempt*seedIncrement;
+		p.add("randomseed",randomSeed+"");
 		String sAccess=getAccessibilityCookie(request);
 		if(sAccess.indexOf("[plain]")!=-1)
 			p.add("plain","yes");
@@ -1813,6 +1814,9 @@ public class NavigatorServlet extends HttpServlet
 		if(us.getFixedVariant()>-1)
 			p.add("fixedvariant",us.getFixedVariant()+"");
 
+		l.logDebug("Starting a session on question " + tq.getID() + " version " + qv +
+				" with random seed " + randomSeed + ".");
+		
 		// Start question
 		us.oss=osb.start(rt,
 			tq.getID(),qv.toString(),sQuestionBase,p.getNames(),p.getValues(),new String[0]);
