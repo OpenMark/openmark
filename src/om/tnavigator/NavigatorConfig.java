@@ -110,34 +110,56 @@ public class NavigatorConfig
 	}
 
 	/**
-	 * Get a parameter from the <authentication> section of navigator.xml.
+	 * Get a parameter from the <authentication> section of navigator.xml as a String.
 	 * @param name as in, <param name=''>.
-	 * @param type A type name. For example <code>String.class</code> or <code>URL.class</code>.
 	 * @param required if false, this method will return null if the parameter is missing. If true,
 	 * 		it will throw an exception.
-	 * @return The value of the named parameter, as and Object of the type specified.
+	 * @return The value of the named parameter, as a String.
 	 * @throws IOException
 	 */
-	public Object getAuthParam(String name,Class type,boolean required) throws IOException
+	public String getAuthParamString(String name,boolean required) throws IOException
 	{
 		String value=(String)authParams.get(name);
 		if(value==null && required)
 			throw new IOException("navigator.xml: <authentication> - missing <param name='"+name+"'>");
-		if(type==String.class)
-			return value;
-		else if(type==URL.class)
+		return value;
+	}
+
+	/**
+	 * Get a parameter from the <authentication> section of navigator.xml as a URL.
+	 * @param name as in, <param name=''>.
+	 * @param required if false, this method will return null if the parameter is missing. If true,
+	 * 		it will throw an exception.
+	 * @return The value of the named parameter, as a URL. And exception will be thrown if the 
+	 *      parameter is not a valid URL.
+	 * @throws IOException
+	 */
+	public URL getAuthParamURL(String name,boolean required) throws IOException
+	{
+		String value=getAuthParamString(name,required);
+		try
 		{
-			try
-			{
-				return new URL(value);
-			}
-			catch(MalformedURLException e)
-			{
-				throw new IOException("navigator.xml: <authentication> - <param name='"+name+"'> is not a valid URL");
-			}
+			return new URL(value);
 		}
-		else
-			throw new IOException("getAuthParam does not support type: "+type.getName());
+		catch(MalformedURLException e)
+		{
+			throw new IOException("navigator.xml: <authentication> - <param name='"+name+"'> is not a valid URL");
+		}
+	}
+
+	/**
+	 * Get a parameter from the <authentication> section of navigator.xml as a array of strings, 
+	 * splitting the content of the parameter on whitespace.
+	 * @param name as in, <param name=''>.
+	 * @param required if false, this method will return null if the parameter is missing. If true,
+	 * 		it will throw an exception.
+	 * @return The value of the named parameter, as a string array.
+	 * @throws IOException
+	 */
+	public String[] getAuthParamStrings(String name,boolean required) throws IOException
+	{
+		String value=getAuthParamString(name,required);
+		return value.split("\\s+");
 	}
 
 	/** IP addresses that are trusted for server status */
