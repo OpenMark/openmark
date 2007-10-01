@@ -4193,7 +4193,7 @@ public class NavigatorServlet extends HttpServlet
 					title="Question engine connection fault";
 					message="The system could not connect to a required component. " +
 							TEMPPROBLEM;
-					exception=null;
+					// exception=null; Leave exception to display - we are getting inexplicable errors.
 				}
 				else
 				{
