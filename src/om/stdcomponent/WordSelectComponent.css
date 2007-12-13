@@ -1,0 +1,9 @@
+.om .chkdColor
+{
+  background: lime;
+}
+
+.om .offscreen
+{
+  position: absolute;left: -10px;
+}
