@@ -54,7 +54,8 @@ public class ComponentRegistry
 		RightComponent.class,
 		TableComponent.class,
 		TextComponent.class,
-		TextEquationComponent.class
+		TextEquationComponent.class,
+		WordSelectComponent.class
 		// Do not include root component as it can't be created from a tag
 	};
 
