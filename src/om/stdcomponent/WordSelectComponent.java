@@ -17,13 +17,23 @@
  */
 package om.stdcomponent;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
+import om.OmDeveloperException;
 import om.OmException;
+import om.OmUnexpectedException;
+import om.question.ActionParams;
 import om.stdquestion.QComponent;
 import om.stdquestion.QContent;
 import om.stdquestion.QDocument;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
 import util.xml.XML;
 
@@ -46,47 +56,72 @@ public class WordSelectComponent extends QComponent
 	{
 		return "wordselect";
 	}
+	
+	private ArrayList<WordBlock> alWordBlocks;
 
-	private static class Select
+	private static class WordBlock
 	{
 		String sID;
-		QComponent qcPlaceContent;
+		String words;
+		boolean checkedHighlight = false;
+		boolean secondHighlight = false;
+		boolean isSW = false;
 		
 	}
 	
 	String str = "";
-	//String[] list = null;
-	
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
-		//this works if there are no tags within the wordselect component
-		//getQDocument().buildInsideWithText(this,eThis);
-		//String[] exclude = {"select"};
-		//getQDocument().buildInsideExcept(this, eThis, exclude);
 		
-		str = XML.getText(eThis);
-		//list = XML.getTextFromChildren(eThis,"select");
+		str="";
 		
-		
-		
+		StringBuffer sbText=new StringBuffer();
 		for(Node n=eThis.getFirstChild();n!=null;n=n.getNextSibling())
 		{
 			if(n instanceof Element)
 			{
-
 				Element e=(Element)n;
-				if(e.getTagName().equals("select"))
+				if(e.getTagName().equals("sw"))
 				{
-					str += XML.getText(e);
-					//str += "found element";
+					//str += XML.getText(e);
+					//str += " found sw element";
+					if (alWordBlocks == null) alWordBlocks = new ArrayList<WordBlock>(10);
+					WordBlock p =new WordBlock();
+					p.words = XML.getText(e);
+					p.isSW = true;
+					if(e.hasAttribute("highlight")){
+						
+					}
+						 
+					
+					
+					alWordBlocks.add(p);
+				}
+				else
+				{
+					throw new OmDeveloperException("<selectword> can only contain <sw> tags");
+				}
+			}
+			else if(n instanceof Text)
+			{
+				// Appending text to buffer allows us to join up text nodes where
+				// there are multiple nodes for one string (e.g. if there's CDATA
+				// in the middle or something)
+				sbText.append(n.getNodeValue());
+				if(sbText.length()>0)
+				{
+					if (alWordBlocks == null) alWordBlocks = new ArrayList<WordBlock>(10);
+					WordBlock p =new WordBlock();
+					p.words = (sbText.toString());
+					
+					alWordBlocks.add(p);
+					
+					//str += (sbText.toString());
+					sbText.setLength(0);
 				}
 			}
 		}
-		
-		
-		
-	
 	}
 	
 
@@ -95,31 +130,69 @@ public class WordSelectComponent extends QComponent
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 
-		String s ="";
-		if(str.equalsIgnoreCase("")){
-			s = "no value";
-		}
-		else s = str;
 		
-		/*if(list != null){
-			for(int i = 0; i<list.length; i++){
-				s += list[i];
-			}
-		}
-		else{
-			s += "null list";
-		}*/
-	/*	Object eList[] = getChildren();
-		for (int i=0; i < eList.length;i++)
-		{
-			if (eList[i] instanceof String)
+		String s = "";
+		if (alWordBlocks != null){
+			for (int i=0; i < alWordBlocks.size(); i++)
 			{
-				s += (String) (eList[i]);
+				WordBlock ip = alWordBlocks.get(i);
+				s = ip.words;
+				//s +=" text ";
+			
+			
+				int wordNo = -1;
+				char current;
+				String clickword = "";
+				String checkwordID = "";
+				StringBuffer sb = new StringBuffer();
+				for(int j =0; j < s.length(); j++){
+					current = s.charAt(j);
+					if (Character.isLetterOrDigit(current)) {
+						sb.append(current);
+						//end = end + 1;
+					}
+					else{
+						clickword = sb.toString();
+						sb.delete(0,sb.length());
+						if(clickword.length() > 0){
+							wordNo++;
+							checkwordID = "b" + i + "c" + wordNo;
+							Element eInput=qc.getOutputDocument().createElement("input");
+							eInput.setAttribute("type","checkbox");
+							eInput.setAttribute("class", "offscreen");
+							eInput.setAttribute("name", QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
+							eInput.setAttribute("value", "1_" + checkwordID);
+							eInput.setAttribute("onclick","wordOnClick('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+"');");
+							eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID()+checkwordID);
+							qc.addInlineXHTML(eInput);
+							
+							Element eLabel=qc.getOutputDocument().createElement("label");
+							eLabel.setAttribute("for",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID()+checkwordID);
+							eLabel.setAttribute("class","lime");
+							eLabel.setAttribute("id","label" + QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID()+checkwordID);
+							
+							XML.createText(eLabel,clickword);
+							
+							qc.addInlineXHTML(eLabel);
+							
+							
+							String curr = "" + current;
+							Element eCurrent=qc.createElement("span");
+							XML.createText(eCurrent,curr);
+							qc.addInlineXHTML(eCurrent);	
+							
+						}
+						
+					}
+					
+				}
+			
 			}
-		}*/
+			//s += " ";
+		}
 		
 
-		int wordNo = -1;
+	/*	int wordNo = -1;
 		char current;
 		String clickword = "";
 		String checkwordID = "";
@@ -168,7 +241,7 @@ public class WordSelectComponent extends QComponent
 			
 			
 			
-		}
+		}*/
 		
 		
 		/*Element eInput=qc.getOutputDocument().createElement("input");
@@ -194,4 +267,32 @@ public class WordSelectComponent extends QComponent
 
 		//qc.unsetParent();
 	}
+	
+	File f = new File("C:/temp/omdebug.txt");
+	PrintWriter debugOutput = null;
+	protected void formSetValue(String sValue,ActionParams ap) throws OmException
+	{
+		if (debugOutput == null) {
+			try {
+				debugOutput = new PrintWriter(new FileOutputStream(f));
+			} catch (FileNotFoundException e) {
+			}
+		}
+		debugOutput.println("In formSetValue. sValue = " + sValue);
+	}
+
+	protected void formAllValuesSet(ActionParams ap) throws OmException
+	{
+		if (debugOutput == null) {
+			try {
+				debugOutput = new PrintWriter(new FileOutputStream(f));
+			} catch (FileNotFoundException e) {
+			}
+			debugOutput.println("formSetValue was never called.");
+		}
+		debugOutput.println("In formAllValuesSet.");
+		debugOutput.close();
+		debugOutput = null;
+	}
+
 }
