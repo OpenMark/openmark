@@ -110,8 +110,8 @@ public class RadioBoxComponent extends QComponent
 
 		Element eInput=XML.createChild(eOuterBox,"input");
 		eInput.setAttribute("type","radio");
-		eInput.setAttribute("value",QDocument.ID_PREFIX+getID());
-		eInput.setAttribute("name",getString("group"));
+		eInput.setAttribute("value",getID());
+		eInput.setAttribute("name",QDocument.ID_PREFIX+getString(PROPERTY_GROUP));
 		if(!bPlain)
 		{
 			eInput.setAttribute("class","radioboxcheck");
