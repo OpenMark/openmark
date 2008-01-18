@@ -43,7 +43,9 @@ public abstract class TabularReportBase {
 		/** TSV output class */
 		tsv(TsvReportWriter.class, "Tab-separated text"),
 		/** Moodle XML output class */
-		xml(XmlReportWriter.class, "XML");
+		xml(XmlReportWriter.class, "XML (in browser)"),
+		/** Moodle XML output class */
+		xmldownload(XmlForDownloadReportWriter.class, "XML (download)");
 
 		private final Class<? extends TabularReportWriter> writerClass;
 		private final String niceName;
