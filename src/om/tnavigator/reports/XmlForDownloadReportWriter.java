@@ -42,6 +42,7 @@ public class XmlForDownloadReportWriter extends XmlReportWriter {
 	@Override
 	public void sendHeaders(HttpServletResponse response, String batchid) {
 		super.sendHeaders(response, batchid);
-		response.setHeader("Content-Disposition", "attachment; filename='om_scores_" + batchid + ".xml'");
+		response.setHeader("Content-Disposition", "attachment; filename=report-"+
+				batchid+".xml");
 	}
 }
