@@ -28,7 +28,7 @@ public class Line extends Item
 	private int iVAlign=ALIGN_BASELINE;
 
 	/** Position of baseline */
-	private int iBaseline=0;
+	private int baseline=0;
 
 	/** Names of valign= constants */
 	private final static String[] ALIGNMENT=
@@ -46,7 +46,7 @@ public class Line extends Item
 	@Override
 	public int getBaseline()
 	{
-		return iBaseline;
+		return baseline;
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class Line extends Item
 			case ALIGN_TOP : iYPos=0; break;
 			case ALIGN_BOTTOM : iYPos=iHeight-i.getHeight(); break;
 			case ALIGN_MIDDLE : iYPos=(iHeight-i.getHeight())/2; break;
-			case ALIGN_BASELINE : iYPos=iBaseline-i.getBaseline(); break;
+			case ALIGN_BASELINE : iYPos=baseline-i.getBaseline(); break;
 			default: throw new Error("Invalid alignment");
 			}
 
@@ -134,12 +134,12 @@ public class Line extends Item
 		if(iVAlign==ALIGN_BASELINE)
 		{
 			iHeight=iMaxAboveBaseline+iMaxBelowBaseline;
-			iBaseline=iMaxAboveBaseline;
+			baseline=iMaxAboveBaseline;
 		}
 		else
 		{
 			iHeight=iMaxHeight;
-			iBaseline=iHeight;
+			baseline=iHeight;
 		}
 	}
 
