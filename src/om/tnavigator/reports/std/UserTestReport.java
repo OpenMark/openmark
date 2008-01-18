@@ -120,6 +120,7 @@ public class UserTestReport implements OmTestReport {
 				Timestamp tsFinished=rs.getTimestamp(13);
 				Timestamp tsMinAction=rs.getTimestamp(14);
 				Timestamp tsMaxAction=rs.getTimestamp(15);
+				int qFinished=rs.getInt(16);
 
 				if(iTAttempt!=iCurrentTAttempt)
 				{
@@ -130,6 +131,7 @@ public class UserTestReport implements OmTestReport {
 						bInQuestion=false;
 					}
 					if(bInTest) sb.append("</div>");
+					sCurrentQuestion = null;
 
 					sb.append("<div class='tattempt'><h3>Test attempt "+iCurrentTAttempt+
 						" ("+(iFinished==0?"Unfinished":"Finished on "+(tsFinished==null ? "[date not available] " : sdf.format(tsFinished))
@@ -140,7 +142,7 @@ public class UserTestReport implements OmTestReport {
 					if(sSessionInfo!=null) sb.append(sSessionInfo);
 				}
 
-				if(!sQuestion.equals(sCurrentQuestion) || iQAttempt!=iCurrentQAttempt)
+				if(sQuestion != null && qFinished > 0 && !sQuestion.equals(sCurrentQuestion))
 				{
 					iCurrentQAttempt=iQAttempt;
 					if(bInQuestion) sb.append("</div></div>");

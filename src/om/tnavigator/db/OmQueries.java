@@ -265,7 +265,6 @@ public abstract class OmQueries
 			"SELECT oucu,pi,clock,finished,admin,finishedclock,rseed,variant,ti " +
 			"FROM " + getPrefix() + "tests t " +
 			"WHERE deploy="+Strings.sqlQuote(testID)+" " +
-			"AND (SELECT COUNT(*) FROM " + getPrefix() + "questions q WHERE q.ti=t.ti AND finished>0)>0 "+
 			"ORDER BY finished DESC,pi,clock DESC");
 	}
 
@@ -348,13 +347,14 @@ public abstract class OmQueries
 		return dat.query(
 			"SELECT t.attempt,t.finished,q.question,q.attempt,q.clock,r.questionline,r.answerline,r.actions,r.attempts,s.axis,s.score,tq.questionnumber,t.finishedclock," +
 				"(SELECT MIN(a2.clock) FROM " + getPrefix() + "actions a2 WHERE a2.qi=q.qi) AS minaction,"+
-				"(SELECT MAX(a2.clock) FROM " + getPrefix() + "actions a2 WHERE a2.qi=q.qi) AS maxaction "+
+				"(SELECT MAX(a2.clock) FROM " + getPrefix() + "actions a2 WHERE a2.qi=q.qi) AS maxaction,"+
+				"q.finished as qfinished " +
 			"FROM " + getPrefix() + "tests t " +
-				"INNER JOIN " + getPrefix() + "questions q ON t.ti=q.ti " +
-				"INNER JOIN " + getPrefix() + "testquestions tq ON t.ti=tq.ti AND q.question=tq.question "+
+				"LEFT JOIN " + getPrefix() + "questions q ON t.ti=q.ti " +
+				"LEFT JOIN " + getPrefix() + "testquestions tq ON t.ti=tq.ti AND q.question=tq.question "+
 				"LEFT JOIN " + getPrefix() + "results r ON q.qi=r.qi " +
 				"LEFT JOIN " + getPrefix() + "scores s ON q.qi=s.qi " +
-			"WHERE t.deploy="+Strings.sqlQuote(testID)+" AND t.pi="+Strings.sqlQuote(pi)+" AND q.finished>0 " +
+			"WHERE t.deploy="+Strings.sqlQuote(testID)+" AND t.pi="+Strings.sqlQuote(pi)+" AND (q.finished>0 OR q.finished IS NULL OR tq.questionnumber = 1)" +
 			"ORDER BY t.attempt,tq.questionnumber,q.clock");
 	}
 
