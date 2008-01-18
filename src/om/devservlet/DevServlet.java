@@ -44,7 +44,10 @@ import util.xml.XML;
  */
 public class DevServlet extends HttpServlet
 {
+	/** Constant for specifying the number of text boxes for typing package names in the interface. */
 	private final static int NUM_EXTRA_PACKAGE_SLOTS = 3;
+	/** Number of times the question is started, to check that it is using the random seed correctly. */
+	private final static int NUM_REPEAT_INITS = 2;
 	/** In-progress question (null if none) */
 	private Question qInProgress=null;
 
@@ -172,7 +175,7 @@ public class DevServlet extends HttpServlet
 	}
 
 	private void handleFront(boolean bPost,HttpServletRequest request,HttpServletResponse response)
-	  throws Exception
+		throws Exception
 	{
 		if(bPost)
 		{
@@ -288,7 +291,6 @@ public class DevServlet extends HttpServlet
 				HttpServletResponse.SC_NOT_FOUND,"Not found","Don't know how to handle request: "+sRemainingPath, null);
 			return;
 		}
-
 		response.setContentType("text/html");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter pw=response.getWriter();
@@ -392,11 +394,10 @@ public class DevServlet extends HttpServlet
 			}
 
 			// Save resources
-			for(Iterator i=mResources.entrySet().iterator();i.hasNext();)
+			for(Map.Entry<String,Resource> me : mResources.entrySet())
 			{
-				Map.Entry me=(Map.Entry)i.next();
-				fos=new FileOutputStream(new File(fResources,(String)me.getKey()));
-				fos.write( ((Resource) me.getValue()).getContent());
+				fos=new FileOutputStream(new File(fResources, me.getKey()));
+				fos.write(me.getValue().getContent());
 				fos.close();
 			}
 
@@ -413,9 +414,15 @@ public class DevServlet extends HttpServlet
 		if(!bPost)
 		{
 			int iVariant=-1;
+			long randomSeed = System.currentTimeMillis();
 			if(sAfter.startsWith("v"))
 			{
 				iVariant=Integer.parseInt(sAfter.substring(1));
+				sAfter="";
+			}
+			if(sAfter.startsWith("rs"))
+			{
+				randomSeed = Long.parseLong(sAfter.substring(2));
 				sAfter="";
 			}
 			if(sAfter.equals(""))
@@ -433,9 +440,35 @@ public class DevServlet extends HttpServlet
 				String sFG="bw".equals(sAccess) ? "#00ff00" : null;
 				String sBG="bw".equals(sAccess) ? "#000000" : null;
 
-				ipInProgress=new InitParams(System.currentTimeMillis(),
+				ipInProgress=new InitParams(randomSeed,
 					sFG,sBG,dZoom,bPlain,cclInProgress,iVariant);
 				Rendering r=qInProgress.init(rr.dMeta,ipInProgress);
+
+				// Try starting the question a few times, and ensure we get the same result each time.
+				String xHTML = XML.saveString(r.getXHTML());
+				for (int i = 0; i < NUM_REPEAT_INITS; i++) {
+					Question qCopy = qInProgress.getClass().newInstance();
+					String newXHTML = XML.saveString(qCopy.init(rr.dMeta,ipInProgress).getXHTML());
+
+					if (!xHTML.equals(newXHTML)) {
+						response.setContentType("text/html");
+						response.setCharacterEncoding("UTF-8");
+						PrintWriter pw = new PrintWriter(response.getWriter());
+						pw.println("<html><head><title>Error starting question</title></head><body>");
+						pw.println("<div style='border: 1px solid #888; padding: 1em; background: #fdc; font-weight: bold'>Error: " +
+								"Starting the question twice with the same random seed produced " +
+								"different results. This means there is a bug in your question.</div>");
+						pw.println("<p><a href='../../build/" + sQuestion + "/'>Rebuild</a></p>");
+						pw.println("<h2>First verions of the question HTML</h2><pre>");
+						pw.println(XHTML.escape(xHTML, XHTML.ESCAPE_TEXT));
+						pw.println("</pre><h2>Repeat version of the question HTML</h2><pre>");
+						pw.println(XHTML.escape(newXHTML, XHTML.ESCAPE_TEXT));
+						pw.println("</pre>");
+						pw.println("</body></html>");
+						pw.close();
+						return;
+					}
+				}
 
 				// Add resources
 				Resource[] arResources=r.getResources();
@@ -498,18 +531,18 @@ public class DevServlet extends HttpServlet
 				return;
 			}
 
-		  ActionParams ap=new ActionParams();
-		  for(Enumeration e=request.getParameterNames();e.hasMoreElements();)
-		  {
-		  	String sName=(String)e.nextElement();
-		  	ap.setParameter(sName,request.getParameter(sName));
-		  }
-		  if(ipInProgress.isPlainMode()) ap.setParameter("plain","yes");
+			ActionParams ap=new ActionParams();
+			for(Enumeration<?> e = request.getParameterNames(); e.hasMoreElements();)
+			{
+				String sName = (String)e.nextElement();
+				ap.setParameter(sName,request.getParameter(sName));
+			}
+			if(ipInProgress.isPlainMode()) ap.setParameter("plain","yes");
 
-		  ActionRendering ar=qInProgress.action(ap);
+			ActionRendering ar=qInProgress.action(ap);
 
-		  if(ar.isSessionEnd())
-		  {
+			if(ar.isSessionEnd())
+			{
 				response.setContentType("text/html");
 				response.setCharacterEncoding("UTF-8");
 				PrintWriter pw=new PrintWriter(response.getWriter());
@@ -522,9 +555,9 @@ public class DevServlet extends HttpServlet
 				}
 				pw.println("</body></html>");
 				pw.close();
-		  }
-		  else
-		  {
+			}
+			else
+			{
 				// Add resources
 				Resource[] arResources=ar.getResources();
 				for(int i=0;i<arResources.length;i++)
@@ -537,7 +570,7 @@ public class DevServlet extends HttpServlet
 
 				// Serve XHTML
 				serveXHTML(sQuestion,ar,request,response,qInProgress);
-		  }
+			}
 		}
 	}
 
@@ -590,7 +623,7 @@ public class DevServlet extends HttpServlet
 
 	private void serveXHTML(String sQuestion,Rendering r,
 		HttpServletRequest request,HttpServletResponse response,Question q)
-	  throws IOException
+		throws IOException
 	{
 		// Create basic template
 		Document d=XML.parse(
@@ -607,15 +640,15 @@ public class DevServlet extends HttpServlet
 			"</head>"+
 			"<body>"+
 			"<h1 style='font: bold 14px Verdana'>Question: "+sQuestion+" " +
-			  "[<a href='./'>Restart</a> <small>" +
-  		  	"<a href='./v0'>0</a> <a href='./v1'>1</a> <a href='./v2'>2</a> " +
-  		  	  "<a href='./v3'>3</a> <a href='./v4'>4</a> " +
-			  	"<a href='./?access=plain'>Plain</a> <a href='./?access=bw'>Colour</a> " +
-			  	"<a href='./?access=big'>Big</a>" +
+				"[<a href='./'>Restart</a> <small>" +
+					"<a href='./v0'>0</a> <a href='./v1'>1</a> <a href='./v2'>2</a> " +
+						"<a href='./v3'>3</a> <a href='./v4'>4</a> " +
+					"<a href='./?access=plain'>Plain</a> <a href='./?access=bw'>Colour</a> " +
+					"<a href='./?access=big'>Big</a>" +
 
-			  	"</small>] " +
-			  "[<a href='../../build/"+sQuestion+"/'>Rebuild</a>] " +
-			  "[<a href='../../'>List</a>] <small>[<a href='./?save'>Save</a>]</small>" +
+					"</small>] " +
+				"[<a href='../../build/"+sQuestion+"/'>Rebuild</a>] " +
+				"[<a href='../../'>List</a>] <small>[<a href='./?save'>Save</a>]</small>" +
 			"</h1>"+
 			"<form method='post' action='./' id='question' autocomplete='off' class='om'/>"+
 			"<pre id='results' style='clear:both'/>"+
