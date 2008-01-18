@@ -265,6 +265,7 @@ public abstract class OmQueries
 			"SELECT oucu,pi,clock,finished,admin,finishedclock,rseed,variant,ti " +
 			"FROM " + getPrefix() + "tests t " +
 			"WHERE deploy="+Strings.sqlQuote(testID)+" " +
+			"AND (SELECT COUNT(*) FROM " + getPrefix() + "questions q WHERE q.ti=t.ti AND finished>0)>0 "+
 			"ORDER BY finished DESC,pi,clock DESC");
 	}
 
