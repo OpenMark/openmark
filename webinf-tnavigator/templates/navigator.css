@@ -9,6 +9,7 @@ html,body
 body
 {
   width:770px;
+  margin: 8px;
 }
 html.zoom15 body { width:1155px; }
 html.zoom20 body { width:1540px; }
@@ -61,13 +62,7 @@ body.progresswide #oulink
 {
   float:left;
   width:132px;
-  padding-top:7px;
   margin-right:38px;
-}
-* html body.progressleft #oulink,
-* html body.progresswide #oulink
-{
-  padding-top:4px;
 }
 
 /* Titles section (middle of topbar) */
