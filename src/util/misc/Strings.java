@@ -36,25 +36,22 @@ public class Strings
 	/**
 	 * Makes a string comprising the toString of all the elements of collection c,
 	 * with a copy of border between each item.
+	 * @param <T> Type of things in the collection.
 	 * @param sBorder the separator to put between items of c
 	 * @param c the collection to join.
 	 * @return the joined string.
 	 */
-	public static String join(String sBorder,Collection c)
+	public static <T> String join(String sBorder, Collection<T> c)
 	{
 		boolean started=false;
 		StringBuffer sb=new StringBuffer();
-		for(Iterator iter=c.iterator();iter.hasNext();)
-		{
-			if(started)
-			{
+		for (T item : c) {
+			if(started) {
 				sb.append(sBorder);
-			}
-			else
-			{
+			} else {
 				started=true;
 			}
-			sb.append(iter.next().toString());
+			sb.append(item.toString());
 		}
 		return sb.toString();
 	}
