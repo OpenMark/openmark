@@ -159,9 +159,8 @@ public class HomeTestReport implements OmTestReport {
 		sb.append("<p>Finished tests are those where the user clicked the " +
 			"'End test' button to submit their answers.</p>");
 		sb.append("<table class='topheaders'><tr><th>PI</th><th>OUCU</th><th>Start date</th><th>Time</th><th>Finish date</th><th>Time</th></tr>");
-		for(Iterator i=lFinished.iterator();i.hasNext();)
+		for(DbInfoPerson dip : lFinished)
 		{
-			DbInfoPerson dip=(DbInfoPerson)i.next();
 			sb.append("<tr><td><a href='reports!user!"+dip.sPI+"'>"+dip.sPI+"</a></td>" +
 				"<td>"+dip.sOUCU+"</td><td>"+dip.sDate+"</td><td>"+dip.sTime+"</td>" +
 				"<td>"+dip.sDateFinished+"</td><td>"+dip.sTimeFinished+"</td></tr>");
@@ -170,9 +169,8 @@ public class HomeTestReport implements OmTestReport {
 
 		sb.append("<h3>Unfinished tests ("+lUnfinished.size()+")</h3>");
 		sb.append("<table class='topheaders'><tr><th>PI</th><th>OUCU</th><th>Start date</th><th>Time</th></tr>");
-		for(Iterator i=lUnfinished.iterator();i.hasNext();)
+		for(DbInfoPerson dip : lUnfinished)
 		{
-			DbInfoPerson dip=(DbInfoPerson)i.next();
 			sb.append("<tr><td><a href='reports!user!"+dip.sPI+"'>"+dip.sPI+"</a></td>" +
 				"<td>"+dip.sOUCU+"</td><td>"+dip.sDate+"</td><td>"+dip.sTime+"</td></tr>");
 		}
@@ -181,9 +179,8 @@ public class HomeTestReport implements OmTestReport {
 		sb.append("<h3>Admin user tests</h3>");
 		sb.append("<p>Tests taken by admin users (finished or not) will not be included in any official results.</p>");
 		sb.append("<table class='topheaders'><tr><th>PI</th><th>OUCU</th><th>Start date</th><th>Time</th><th>Finish date</th><th>Time</th></tr>");
-		for(Iterator i=lAdmin.iterator();i.hasNext();)
+		for(DbInfoPerson dip : lAdmin)
 		{
-			DbInfoPerson dip=(DbInfoPerson)i.next();
 			sb.append("<tr><td><a href='reports!user!"+dip.sPI+"'>"+dip.sPI+"</a></td>" +
 				"<td>"+dip.sOUCU+"</td><td>"+dip.sDate+"</td><td>"+dip.sTime+"</td>" +
 				"<td>"+dip.sDateFinished+"</td><td>"+dip.sTimeFinished+"</td></tr>");
@@ -194,9 +191,8 @@ public class HomeTestReport implements OmTestReport {
 		sb.append("<p>The following counts include all who attempted a question, " +
 			"whether or not they finished the test.</p>");
 		sb.append("<table class='topheaders'><tr><th>#</th><th>ID</th><th>Taken by</th><th>Average score</th><th>Out of</th></tr>");
-		for(Iterator i=lQuestions.iterator();i.hasNext();)
+		for(DbInfoQuestion diq : lQuestions)
 		{
-			DbInfoQuestion diq=(DbInfoQuestion)i.next();
 			Score[] as=ns.getMaximumScores(null,diq.sQuestion,
 				ns.getLatestVersion(diq.sQuestion,diq.iMajor).toString());
 			String sMax="??";

@@ -80,7 +80,7 @@ public class NavigatorConfig
 	private String[] extraReports;
 
 	/** Parameters for auth */
-	private Map authParams=null;
+	private Map<String,String> authParams=null;
 
 	String getAuthClass()
 	{
@@ -119,7 +119,7 @@ public class NavigatorConfig
 	 */
 	public String getAuthParamString(String name,boolean required) throws IOException
 	{
-		String value=(String)authParams.get(name);
+		String value=authParams.get(name);
 		if(value==null && required)
 			throw new IOException("navigator.xml: <authentication> - missing <param name='"+name+"'>");
 		return value;

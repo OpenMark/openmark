@@ -315,7 +315,7 @@ public class SimpleAuth implements Authentication
 		return true;
 	}
 
-	public void obtainPerformanceInfo(Map m)
+	public void obtainPerformanceInfo(Map<String,Object> m)
 	{
 		// None tracked.
 	}

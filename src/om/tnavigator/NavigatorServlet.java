@@ -259,9 +259,9 @@ public class NavigatorServlet extends HttpServlet
 				long lNow=System.currentTimeMillis();
 				long lExpiry=lNow - SESSIONEXPIRY;
 
-				for(Iterator i=sessions.values().iterator();i.hasNext();)
+				for(Iterator<UserSession> i=sessions.values().iterator();i.hasNext();)
 				{
-					UserSession us=(UserSession)i.next();
+					UserSession us=i.next();
 					if(us.getLastActionTime() < lExpiry)
 					{
 						i.remove();
@@ -269,9 +269,9 @@ public class NavigatorServlet extends HttpServlet
 					}
 				}
 
-				for(Iterator i=tempForbid.values().iterator();i.hasNext();)
+				for(Iterator<Long> i=tempForbid.values().iterator();i.hasNext();)
 				{
-					if(lNow > ((Long)i.next()).longValue())
+					if(lNow > i.next())
 					{
 						i.remove();
 					}
@@ -696,9 +696,8 @@ public class NavigatorServlet extends HttpServlet
 					String sAddr=request.getRemoteAddr();
 
 					// Check if we've already been redirected
-					for(Iterator i=cookiesOffCheck.iterator();i.hasNext();)
+					for(NewSession ns : cookiesOffCheck)
 					{
-						NewSession ns=(NewSession)i.next();
 						if(ns.sAddr.equals(sAddr))
 						{
 							sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
@@ -2938,11 +2937,10 @@ public class NavigatorServlet extends HttpServlet
 		UserSession us,HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
 		NameValuePairs p=new NameValuePairs();
-		for(Enumeration e=request.getParameterNames();e.hasMoreElements();)
+		for(Enumeration<?> e=request.getParameterNames();e.hasMoreElements();)
 		{
-			String
-				sName=(String)e.nextElement(),
-				sValue=request.getParameter(sName);
+			String sName=(String)e.nextElement();
+			String sValue=request.getParameter(sName);
 
 			if(sName.equals(SEQUENCEFIELD))
 			{
