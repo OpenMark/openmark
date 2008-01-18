@@ -43,6 +43,7 @@ size itself to match other checkboxes on the same grid row.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates this control</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>checked</td><td>(boolean)</td><td>Whether or not the box is checked</td></tr>
 <tr><td>highlight</td><td>(boolean)</td><td>Whether to use the highlight border for box</td></tr>
 </table>
@@ -134,6 +135,7 @@ public class CheckboxComponent extends QComponent
 		produceChildOutput(qc,bInit,bPlain);
 		qc.addTextEquivalent("]");
 		qc.unsetParent();
+		addLangAttributes(eOuterBox);
 
 		if(shouldFillParent() && !bPlain)
 		{

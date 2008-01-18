@@ -73,6 +73,7 @@ at all, so it can be used when you don't really want a matching \right.</li>
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates children</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>alt</td><td>(string)</td><td>Alternative text for those who can't read the bitmap</td></tr>
 <tr><td>textfont</td><td>(boolean)</td><td>Uses default text font instead of the equation font</td></tr>
 </table>

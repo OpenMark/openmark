@@ -36,6 +36,7 @@ some blank space). May not contain anything.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>No effect</td></tr>
+<tr><td>lang</td><td>(string)</td><td>No effect</td></tr>
 </table>
 */
 public class BreakComponent extends QComponent

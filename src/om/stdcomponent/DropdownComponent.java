@@ -43,6 +43,7 @@ plain text.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates this control</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>selected</td><td>(string)</td><td>Value ID of the selected entry</td></tr>
 </table>
 */
@@ -114,13 +115,12 @@ public class DropdownComponent extends QComponent
 		qc.addInlineXHTML(eSelect);
 		eSelect.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
 		eSelect.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
+		addLangAttributes(eSelect);
 
 		// Create all options
 		String sSelectedValue=null;
-		for(Iterator i=lOptions.iterator();i.hasNext();)
+		for(Option o : lOptions)
 		{
-			Option o=(Option)i.next();
-
 			Element eOption=XML.createChild(eSelect,"option");
 			if(getString(PROPERTY_SELECTED).equals(o.sValue))
 			{
@@ -145,9 +145,8 @@ public class DropdownComponent extends QComponent
 	@Override
 	protected void formSetValue(String sValue,ActionParams ap) throws OmException
 	{
-		for(Iterator i=lOptions.iterator();i.hasNext();)
+		for(Option o : lOptions)
 		{
-			Option o=(Option)i.next();
 			if(o.sDisplay.equals(sValue))
 			{
 				setString(PROPERTY_SELECTED,o.sValue);
@@ -190,9 +189,8 @@ public class DropdownComponent extends QComponent
 		if(sName.equals(PROPERTY_SELECTED))
 		{
 			boolean bOK=false;
-			for(Iterator i=lOptions.iterator();i.hasNext();)
+			for(Option o : lOptions)
 			{
-				Option o=(Option)i.next();
 				if(o.sValue.equals(sValue))
 				{
 					bOK=true;

@@ -19,6 +19,7 @@ package om.stdcomponent;
 
 import om.OmException;
 import om.stdquestion.QComponent;
+import om.stdquestion.QContent;
 
 import org.w3c.dom.Element;
 
@@ -35,6 +36,7 @@ enter text there.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates children</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 </table>
 */
 public class TextComponent extends QComponent
@@ -49,6 +51,24 @@ public class TextComponent extends QComponent
 	protected void initChildren(Element eThis) throws OmException
 	{
 		getQDocument().buildInsideWithText(this,eThis);
+	}
+
+	@Override
+	protected void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
+	{
+		if (isPropertySet(PROPERTY_LANG)) {
+			Element eDiv=qc.getOutputDocument().createElement("div");
+			eDiv.setAttribute("class", "t");
+			addLangAttributes(eDiv);
+			qc.addInlineXHTML(eDiv);
+			qc.setParent(eDiv);
+
+			produceChildOutput(qc,bInit,bPlain);
+
+			qc.unsetParent();
+		} else {
+			super.produceVisibleOutput(qc, bInit, bPlain);
+		}
 	}
 
 	/**

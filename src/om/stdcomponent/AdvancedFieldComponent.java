@@ -43,6 +43,7 @@ tags themselves and in the chemical formula mode to ignore the formatting.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates this control</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>cols</td><td>(integer)</td><td>Number of columns (approx) to allow space for the component</td></tr>
 <tr><td>value</td><td>(string)</td><td>Current value of field. (See below) </td></tr>
 <tr><td>type</td><td>(string; 'superscript' | 'subscript' | 'both' | 'chem')</td><td>Type of field.</td></tr>
@@ -135,7 +136,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			Element eDiv=qc.createElement("div");
 			qc.addInlineXHTML(eDiv);
 
-			XML. createText(eDiv,"p",
+			XML.createText(eDiv,"p",
 					"(In the following edit field: " +
 					(	(sType.equals("superscript") || sType.equals("both")) ?
 							" Type { before, and " +
@@ -165,6 +166,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 			eInput.setAttribute("value",sValue);
 
 			if(!isEnabled()) eInput.setAttribute("disabled","disabled");
+			addLangAttributes(eInput);
 		}
 		else
 		{
@@ -189,6 +191,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 				else
 					eIframe.setAttribute("class","advancedfielddisabled");
 			}
+			addLangAttributes(eIframe);
 
 			Element eHidden=qc.createElement("input");
 			eDiv.appendChild(eHidden);

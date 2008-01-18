@@ -102,7 +102,7 @@ public class QComponentManager
 	 */
 	QComponent create(String sTagName) throws OmDeveloperException,OmUnexpectedException
 	{
-		Class c=mComponents.get(sTagName);
+		Class<?> c=mComponents.get(sTagName);
 		if(c==null) throw new OmDeveloperException(
 			"Attempt to create component <"+sTagName+"> which has not been registered");
 		try

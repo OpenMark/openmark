@@ -39,6 +39,7 @@ columns.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates children</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>shuffle</td><td>(boolean)</td><td>If true, randomises order of children</td></tr>
 <tr><td>widths</td><td>(string)</td><td>Comma-separated lists of percentages
 for each column (defaults to equal division) e.g. "30%,30%,40%". Must add up
@@ -93,6 +94,8 @@ public class LayoutGridComponent extends QComponent
 
 		if(!bPlain)
 			eOuter.setAttribute("class","layoutgrid");
+
+		addLangAttributes(eOuter);
 
 		int iCols=getInteger(PROPERTY_COLS);
 		boolean bShuffle=getBoolean(PROPERTY_SHUFFLE);

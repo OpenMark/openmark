@@ -179,9 +179,8 @@ public class RootComponent extends QComponent
 		int iCrossover;
 		crossoverloop: for(iCrossover=iMinY+1;iCrossover<iHeight;iCrossover++)
 		{
-			for(Iterator iBox=sBoxes.iterator();iBox.hasNext();)
+			for(BoxThingy bt : sBoxes)
 			{
-				BoxThingy bt=(BoxThingy)iBox.next();
 				if(bt.iY<iCrossover && bt.iY+bt.iH>iCrossover)
 					continue crossoverloop;
 			}
@@ -192,9 +191,9 @@ public class RootComponent extends QComponent
 		{
 			// OK now strip out everything above this crossover and send it to new method
 			Set<BoxThingy> sNew=new HashSet<BoxThingy>();
-			for(Iterator iBox=sBoxes.iterator();iBox.hasNext();)
+			for(Iterator<BoxThingy> iBox=sBoxes.iterator();iBox.hasNext();)
 			{
-				BoxThingy bt=(BoxThingy)iBox.next();
+				BoxThingy bt=iBox.next();
 				if(bt.iY+bt.iH<=iCrossover)
 				{
 					sNew.add(bt);

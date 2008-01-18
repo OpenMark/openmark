@@ -37,6 +37,7 @@ A component onto which DragBoxComponents may be dropped.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates this control</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>group</td><td>(string)</td><td>Optional group ID (should match that on dragboxes; will change colour)</td></tr>
 <tr><td>value</td><td>(string)</td><td>Value (= ID of the dragbox that was dragged into this box)</td></tr>
 <tr><td>forceborder</td><td>(boolean)</td><td>If true, displays faint grey border (use e.g. when over blank white image or in equation)</td></tr>
@@ -90,7 +91,7 @@ public class DropBoxComponent extends QComponent
 	private StringBuffer sbCrap=new StringBuffer();
 
 	/** @return Map of strings to component ID for the answers in plain mode (built on request) */
-	private Map getPlainAnswers() throws OmException
+	private Map<String, String> getPlainAnswers() throws OmException
 	{
 		// Build map from plain answers -> ID
 		Map<String, String> m=new HashMap<String, String>();
@@ -211,7 +212,7 @@ public class DropBoxComponent extends QComponent
 		if(ap.hasParameter("plain"))
 		{
 			// In plain mode, value = text of the selected option (ARGH)
-			String sAnswer=(String)getPlainAnswers().get(sValue);
+			String sAnswer=getPlainAnswers().get(sValue);
 			if(sAnswer==null)
 				throw new OmException("Unexpected dropdown value: "+sValue+"\n"+sbCrap.toString());
 

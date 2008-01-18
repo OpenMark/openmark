@@ -36,6 +36,7 @@ A top-level box that goes within the root &lt;question&gt; tag (after the
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates all children</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>gridx</td><td>(integer)</td><td>Controls position in overall question grid (0 = leftmost)</td></tr>
 <tr><td>gridy</td><td>(integer)</td><td>Controls position in question grid (0 = topmost)</td></tr>
 <tr><td>gridwidth</td><td>(integer)</td><td>Width in grid cells, default 1</td></tr>

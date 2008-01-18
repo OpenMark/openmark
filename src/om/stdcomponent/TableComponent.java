@@ -55,6 +55,7 @@ to be the caption for improved accessibillity.
 <tr><td>left</td><td>(integer)</td><td>number of label columns on left</td></tr>
 <tr><td>right</td><td>(integer)</td><td>number of label columns on right</td></tr>
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 </table>
 <br/>
 
@@ -182,6 +183,7 @@ public class TableComponent extends QComponent
 		Element eTable=qc.createElement("table");
 		eTable.setAttribute("border","1");
 		eTable.setAttribute("cellpadding","4");
+		addLangAttributes(eTable);
 		qc.addInlineXHTML(eTable);
 
 		int iTableElement = 0;

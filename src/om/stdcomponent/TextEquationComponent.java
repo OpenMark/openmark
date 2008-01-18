@@ -44,6 +44,7 @@ alt property to make it say something more sensible.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>No effect</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>textfont</td><td>(boolean)</td><td>Uses default text font instead of the equation font</td></tr>
 <tr><td>alt</td><td>(string)</td><td>Optional alt tag, use if the default alternate text is not clear enough.</td></tr>
 <tr><td>italic</td><td>(boolean)</td><td>Set 'no' to stop letters being italicised.</td></tr>
@@ -154,6 +155,7 @@ public class TextEquationComponent extends QComponent
 				eContent.setAttribute("class",eContent.getAttribute("class") + " nowrap");
 			}
 
+			addLangAttributes(eContent);
 			qc.addInlineXHTML(eContent);
 		}
 		else
@@ -162,6 +164,7 @@ public class TextEquationComponent extends QComponent
 			// even cope with <sup> and <sub>!!
 			Element eSpan=qc.createElement("span");
 			XML.createText(eSpan,sAlt);
+			addLangAttributes(eSpan);
 			qc.addInlineXHTML(eSpan);
 		}
 

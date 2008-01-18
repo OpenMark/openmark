@@ -51,6 +51,7 @@ noncommercial use). <a href="http://www.molinspiration.com/jme/">JME website</a>
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates all children</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>label</td><td>(string)</td><td>Label for button (default is 'Draw molecule')</td></tr>
 <tr><td>action</td><td>(string)</td><td>Name of method in question class that
   is called after user clicks OK. Optional, default is to not submit form, but

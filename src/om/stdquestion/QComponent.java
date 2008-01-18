@@ -46,6 +46,8 @@ public abstract class QComponent
 	public static final String PROPERTY_ENABLED="enabled";
 	/** 'id' string property (unique ID for component; see getID() */
 	public static final String PROPERTY_ID="id";
+	/** 'lang' string property (like the lang attribute in HTML; see getID() */
+	public static final String PROPERTY_LANG="lang";
 	/** 'forcewidth' int property (if set, fixes component width) */
 	public static final String PROPERTY_FORCEWIDTH="forcewidth";
 	/** 'forceheight' int property (if set, fixes component height) */
@@ -115,6 +117,9 @@ public abstract class QComponent
 
 	/** Regular expression restricting ID values */
 	public final static String PROPERTYRESTRICTION_ID="[A-Za-z][A-Za-z0-9_]*";
+
+	/** Regular expression restricting LANG values, as per RFC 1766 */
+	public final static String PROPERTYRESTRICTION_LANG="[a-z]{1,8}(-[a-z]{1,8})?";
 
 	/** Prefix used on generated IDs */
 	public static final String GENERATEDID_PREFIX="gen_";
@@ -342,6 +347,25 @@ public abstract class QComponent
 	}
 
 	/**
+	 * If the lang property has been set, add a corresponding lang attribute to the given HTML
+	 * element, and also add lang-en-gb (or whatever) to the class attribute. 
+	 * @param e The element to add the attributes to.
+	 * @throws OmDeveloperException 
+	 */
+	protected void addLangAttributes(Element e) throws OmDeveloperException {
+		if (isPropertySet(PROPERTY_LANG)) {
+			String lang = getString(PROPERTY_LANG);
+			e.setAttribute("lang", lang);
+			String cSSClass = "lang-" + lang;
+			if (e.hasAttribute("class")) {
+				e.setAttribute("class", e.getAttribute("class") + " " + cSSClass);
+			} else {
+				e.setAttribute("class", cSSClass);
+			}
+		}
+	}
+
+	/**
 	 * Called on question init to produce the CSS needed in a question that
 	 * includes this component. Happens after init() but before produceOutput()
 	 * <p>
@@ -563,7 +587,7 @@ public abstract class QComponent
 	/** Definition of a property (surprise!) */
 	private static class PropertyDefinition
 	{
-		Class cType;
+		Class<?> cType;
 		boolean bAllowFromXML;
 		String sRestriction;
 	}
@@ -581,7 +605,7 @@ public abstract class QComponent
 	 * @throws OmDeveloperException If you've tried to allow a property from XML
 	 *   that isn't one of the standard classes.
 	 */
-	protected void defineProperty(String sName,Class cType,boolean bAllowFromXML,
+	protected void defineProperty(String sName,Class<?> cType,boolean bAllowFromXML,
 		String sRestriction)
 	  throws OmDeveloperException
 	{
@@ -668,6 +692,7 @@ public abstract class QComponent
 	protected void defineProperties() throws OmDeveloperException
 	{
 		defineProperty(PROPERTY_ID,String.class,true,PROPERTYRESTRICTION_ID);
+		defineProperty(PROPERTY_LANG,String.class,true,PROPERTYRESTRICTION_LANG);
 		defineBoolean(PROPERTY_DISPLAY);
 		defineBoolean(PROPERTY_ENABLED);
 		setBoolean(PROPERTY_DISPLAY,true);
@@ -894,7 +919,7 @@ public abstract class QComponent
 	 * @param c Desired class
 	 * @throws OmDeveloperException If it doesn't exist or doesn't match class
 	 */
-	private void checkProperty(String sName,Class c) throws OmDeveloperException
+	private void checkProperty(String sName,Class<?> c) throws OmDeveloperException
 	{
 		PropertyDefinition pd=mDefinedProperties.get(sName);
 		if(pd==null) throw new OmDeveloperException(
@@ -910,7 +935,7 @@ public abstract class QComponent
 	 * @param c Desired class
 	 * @throws OmDeveloperException If it's not defined, wrong class, or wasn't set
 	 */
-	private void checkSetProperty(String sName,Class c) throws OmDeveloperException
+	private void checkSetProperty(String sName,Class<?> c) throws OmDeveloperException
 	{
 		checkProperty(sName,c);
 		if(!mProperties.containsKey(sName))
@@ -1350,4 +1375,30 @@ public abstract class QComponent
 		return sInput.substring(0,iMaxLength);
 	}
 
+	/**
+	 * @return the value of the lang property, or null if it has not been set.
+	 */
+	public String getLang() {
+		try {
+			if (isPropertySet(PROPERTY_LANG)) {
+				return getString(PROPERTY_LANG);
+			} else {
+				return null;
+			}
+		} catch (OmDeveloperException e) {
+			throw new OmUnexpectedException("Failed to get lang", e);
+		}
+	}
+
+	/**
+	 * @param lang the new lang to set.
+	 * @return the previous value, if any.
+	 */
+	public String setLang(String lang) {
+		try {
+			return setString(PROPERTY_LANG, lang);
+		} catch (OmDeveloperException e) {
+			throw new OmUnexpectedException("Failed to set lang", e);
+		}
+	}
 }

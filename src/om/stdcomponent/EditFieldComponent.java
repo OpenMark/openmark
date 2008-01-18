@@ -38,6 +38,7 @@ its own size for inclusion within {@link EquationComponent}s.  Default is one li
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates this control</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>cols</td><td>(integer)</td><td>Number of columns (approx) to allow space for</td></tr>
 <tr><td>rows</td><td>(integer)</td><td>Number of rows (approx) to allow space for</td></tr>
 <tr><td>value</td><td>(string)</td><td>Current value of field (text content)</td></tr>
@@ -189,6 +190,7 @@ public class EditFieldComponent extends QComponent implements Labelable
 				eInput.setAttribute("class","editfielddisabled");
 		}
 
+		addLangAttributes(eInput);
 		qc.addInlineXHTML(eInput);
 		if(isEnabled()) qc.informFocusable(eInput.getAttribute("id"),bPlain);
 		qc.addTextEquivalent("[Editfield: "+getValue()+"]");

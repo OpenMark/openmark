@@ -33,6 +33,7 @@ A standard XHTML button.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates this control</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>action</td><td>(string)</td><td>Name of method in question class that is called if user clicks button</td></tr>
 <tr><td>label</td><td>(string)</td><td>Text of button label</td></tr>
 </table>
@@ -96,6 +97,7 @@ public class ButtonComponent extends QComponent
 			eInput.setAttribute("onclick","if(this.hasSubmitted) { return false; } this.hasSubmitted=true; preSubmit(this.form); return true;");
 		}
 		if(!isEnabled()) eInput.setAttribute("disabled","yes");
+		addLangAttributes(eInput);
 
 		qc.addInlineXHTML(eInput);
 		if(isEnabled())	qc.informFocusable(QDocument.ID_PREFIX+QDocument.ACTION_PREFIX+getID(),bPlain);

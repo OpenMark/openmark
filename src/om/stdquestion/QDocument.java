@@ -111,9 +111,8 @@ public class QDocument
 			Set<Class<?> > sClassesDone=new HashSet<Class<?> >();
 			List<QComponent> lAll=new LinkedList<QComponent>();
 			unrollTree(qcRoot,lAll);
-			for(Iterator i=lAll.iterator();i.hasNext();)
+			for(QComponent qc : lAll)
 			{
-				QComponent qc=(QComponent)i.next();
 				boolean bFirst=!sClassesDone.contains(qc.getClass());
 				if(bFirst) sClassesDone.add(qc.getClass());
 				String sThis=qc.getCSS(bFirst);
@@ -417,9 +416,9 @@ public class QDocument
 	public void informRemoved(QComponent qc)
 	{
 		// Remove any entries from the cached ID map
-		for(Iterator i=mFoundIDs.entrySet().iterator();i.hasNext();)
+		for(Iterator<Map.Entry<String,QComponent> > i=mFoundIDs.entrySet().iterator();i.hasNext();)
 		{
-			Map.Entry me=(Map.Entry)i.next();
+			Map.Entry<String,QComponent> me=i.next();
 			if(me.getValue()==qc)
 			{
 				i.remove();
@@ -443,9 +442,8 @@ public class QDocument
 	public int getGroupIndex(String sGroup)
 	{
 		int iCount=0;
-		for(Iterator i=lGroups.iterator();i.hasNext();iCount++)
+		for(String s : lGroups)
 		{
-			String s=(String)i.next();
 			if(s.equals(sGroup)) return iCount;
 		}
 		lGroups.add(sGroup);

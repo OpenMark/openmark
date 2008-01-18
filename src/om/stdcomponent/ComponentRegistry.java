@@ -23,7 +23,7 @@ import om.stdquestion.QComponentManager;
 /** Just a list of standard components. */
 public class ComponentRegistry
 {
-	private static final Class[] COMPONENTCLASSES=
+	private static final Class<?>[] COMPONENTCLASSES=
 	{
 		// When adding extra standard components, put them here
 		AdvancedFieldComponent.class,

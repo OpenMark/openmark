@@ -46,6 +46,7 @@ This is a list of fruit <br/>
 <tr><th>Property</th><th>Values</th><th>Effect</th></tr>
 <tr><td>type</td><td>(optional string; 'bullet'|number')</td><td>type of list</td></tr>
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 </table>
 The default list type is 'bullet'.
 <br/>
@@ -97,6 +98,7 @@ public class ListComponent extends QComponent
 			eList=qc.createElement("ol");
 		else
 			eList=qc.createElement("ul");
+		addLangAttributes(eList);
 		qc.addInlineXHTML(eList);
 		for (int i=0; i<aListItems.length ;i++)
 		{

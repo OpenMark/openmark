@@ -36,6 +36,7 @@ A component that can be dropped onto DropBoxComponents.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates this control and children</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>group</td><td>(string)</td><td>Optional group ID (should match that on target dropbox); will change colour and
   make it only droppable on that box</td></tr>
 <tr><td>infinite</td><td>(boolean)</td><td>If true, user can drag from this same box more than once</td></tr>
@@ -124,6 +125,7 @@ public class DragBoxComponent extends QComponent
 		eContainer.setAttribute("style",
 			"background:"+convertHash(getGroupColour())+";");
 		//qc.addInlineXHTML(eContainer);
+		addLangAttributes(eContainer);
 		qc.addTopLevelXHTML(eContainer);
 
 		Element eInner=XML.createChild(eContainer,"div");

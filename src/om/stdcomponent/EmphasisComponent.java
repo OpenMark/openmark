@@ -35,6 +35,7 @@ Emphasises the contained text (by default rendered as bold).
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates children</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 </table>
 */
 public class EmphasisComponent extends QComponent
@@ -58,6 +59,7 @@ public class EmphasisComponent extends QComponent
 	{
 		Element eEm=qc.getOutputDocument().createElement("em");
 		eEm.setAttribute("class",getString(PROPERTY_TYPE));
+		addLangAttributes(eEm);
 		qc.addInlineXHTML(eEm);
 		qc.setParent(eEm);
 

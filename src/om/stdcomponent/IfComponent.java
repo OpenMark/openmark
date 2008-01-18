@@ -34,6 +34,7 @@ Conditionally displays content depending on settings.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates all children</td></tr>
+<tr><td>lang</td><td>No effect.</td></tr>
 <tr><td>plain</td><td>(boolean)</td><td>If set, requires plain mode to be
   either on (yes) or off (no), otherwise contents will not be shown</td></tr>
 </table>

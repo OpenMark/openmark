@@ -61,6 +61,7 @@ drawing your own graphics too.
 output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates interactive
 features</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>alt</td><td>(string)</td><td>Alternative text for those who can't read
 the bitmap</td></tr>
 <tr><td>width</td><td>(int)</td><td>Width in pixels</td></tr>
@@ -446,9 +447,8 @@ public class CanvasComponent extends QComponent implements World.Context
 	public void repaint() throws OmDeveloperException
 	{
 		clear();
-		for(Iterator i=lWorlds.iterator();i.hasNext();)
+		for(World w : lWorlds)
 		{
-			World w=(World)i.next();
 			w.paint(getGraphics());
 		}
 	}
@@ -460,9 +460,8 @@ public class CanvasComponent extends QComponent implements World.Context
 	 */
 	public World getWorld(String sID) throws OmDeveloperException
 	{
-		for(Iterator i=lWorlds.iterator();i.hasNext();)
+		for(World w : lWorlds)
 		{
-			World w=(World)i.next();
 			if(w.getID().equals(sID)) return w;
 		}
 		throw new OmDeveloperException("<canvas>: World not found: "+sID);
@@ -543,9 +542,9 @@ public class CanvasComponent extends QComponent implements World.Context
 	 */
 	public boolean removeLine(int iFromIndex,int iToIndex)
 	{
-		for(Iterator i=lLines.iterator();i.hasNext();)
+		for(Iterator<MarkerLine> i=lLines.iterator();i.hasNext();)
 		{
-			MarkerLine ml=(MarkerLine)i.next();
+			MarkerLine ml=i.next();
 			if(ml.iFrom==iFromIndex && ml.iTo==iToIndex)
 			{
 				i.remove();
@@ -576,6 +575,7 @@ public class CanvasComponent extends QComponent implements World.Context
 			// Put text equivalent
 			Element eDiv=qc.createElement("div"); // Can't use span because they aren't allowed to contain things
 			eDiv.setAttribute("style","display:inline");
+			addLangAttributes(eDiv);
 			qc.addInlineXHTML(eDiv);
 			XML.createText(eDiv,getString("alt"));
 			qc.addTextEquivalent(getString("alt"));
@@ -598,6 +598,7 @@ public class CanvasComponent extends QComponent implements World.Context
 
 		Element eEnsureSpaces=qc.createElement("div");
 		eEnsureSpaces.setAttribute("class","canvas");
+		addLangAttributes(eEnsureSpaces);
 		qc.addInlineXHTML(eEnsureSpaces);
 		XML.createText(eEnsureSpaces," ");
 
@@ -684,9 +685,8 @@ public class CanvasComponent extends QComponent implements World.Context
 		}
 
 		int iIndex=0;
-		for(Iterator i=lMarkers.iterator();i.hasNext();iIndex++)
+		for(Marker m : lMarkers)
 		{
-			Marker m=(Marker)i.next();
 			Element eMarker=XML.createChild(eEnsureSpaces,"img");
 			eMarker.setAttribute("id",QDocument.ID_PREFIX+getID()+"_marker"+iIndex);
 			eMarker.setAttribute("src","%%RESOURCES%%/"+sMarkerPrefix+
@@ -713,9 +713,8 @@ public class CanvasComponent extends QComponent implements World.Context
 
 			if(isEnabled()) qc.informFocusable(QDocument.ID_PREFIX+getID()+"_marker"+iIndex,bPlain);
 		}
-		for(Iterator i=lLines.iterator();i.hasNext();)
+		for(MarkerLine ml : lLines)
 		{
-			MarkerLine ml=(MarkerLine)i.next();
 			World w=ml.sWorld==null ? null : getWorld(ml.sWorld);
 
 			Element eScript=XML.createChild(eEnsureSpaces,"script");
@@ -765,9 +764,8 @@ public class CanvasComponent extends QComponent implements World.Context
 		// Get marker data
 		double dZoom=getQuestion().getZoom();
 		int i=0;
-		for(Iterator iMarker=lMarkers.iterator();iMarker.hasNext();i++)
+		for(Marker m : lMarkers)
 		{
-			Marker m=(Marker)iMarker.next();
 			if(ap.hasParameter("canvasmarker_"+getID()+"_"+i+"x"))
 			{
 				try

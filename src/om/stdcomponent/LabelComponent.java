@@ -34,6 +34,7 @@ be used in conjunction with editfields or advancedfields.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates all children</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 <tr><td>for</td><td>(string)</td><td>Om component ID of thing being labelled</td></tr>
 </table>
 */
@@ -93,6 +94,7 @@ public class LabelComponent extends QComponent
 	{
 		Element eLabel=qc.getOutputDocument().createElement("label");
 		eLabel.setAttribute("for",getLabel(getQDocument(),bPlain,getString(PROPERTY_FOR)));
+		addLangAttributes(eLabel);
 
 		qc.addInlineXHTML(eLabel);
 		qc.setParent(eLabel);

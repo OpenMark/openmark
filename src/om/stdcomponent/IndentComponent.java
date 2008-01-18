@@ -33,6 +33,7 @@ Indents contained text or components.
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
 <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
 <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates all children</td></tr>
+<tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
 </table>
 */
 public class IndentComponent extends QComponent
@@ -54,6 +55,7 @@ public class IndentComponent extends QComponent
 	{
 		Element eDiv=qc.getOutputDocument().createElement("div");
 		eDiv.setAttribute("class","indent");
+		addLangAttributes(eDiv);
 		qc.addInlineXHTML(eDiv);
 		qc.setParent(eDiv);
 
