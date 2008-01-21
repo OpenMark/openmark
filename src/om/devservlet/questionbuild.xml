@@ -19,7 +19,7 @@
 
 		<!-- Check for some programming problems -->
 		<concat destfile="${build}/allsource.java">
-			<fileset dir="${source}" includes="**/*.java" />
+			<fileset dir="${source}" includes="${questionpackage}/**/*.java" />
 		</concat>
 		<loadfile srcFile="${build}/allsource.java" property="allsource"/>
 		<condition property="nonstatic-finals">
