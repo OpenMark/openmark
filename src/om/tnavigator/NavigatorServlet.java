@@ -3353,8 +3353,12 @@ public class NavigatorServlet extends HttpServlet
 		}
 	}
 
-
-
+	/**
+	 * @return the location of the question bank folder.
+	 */
+	public File getQuestionbankFolder() {
+		return questionBankFolder;
+	}
 
 	private void handleQuestion(String sIDVersion,HttpServletRequest request,HttpServletResponse response)
 		throws Exception
