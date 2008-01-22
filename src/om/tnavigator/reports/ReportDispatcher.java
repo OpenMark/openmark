@@ -121,12 +121,6 @@ public class ReportDispatcher
 	public void handleReport(String suffix,HttpServletRequest request,HttpServletResponse response)
 		throws Exception
 	{
-		if(!ns.checkSecureIP(request))
-		{
-			ns.sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
-				false,false,null, "Forbidden", "System reports may only be accessed from particular computers.", null);
-		}
-
 		String[] bits = suffix.split("!", 2);
 		String reportName = bits[0];
 		if (bits.length > 1)
@@ -137,9 +131,15 @@ public class ReportDispatcher
 		{
 			suffix = "";
 		}
-		if(systemReports.containsKey(reportName))
+		OmReport report = systemReports.get(reportName);
+		if (report != null)
 		{
-			systemReports.get(reportName).handleReport(suffix, request, response);
+			if(report.isSecurityRestricted() && !ns.checkSecureIP(request))
+			{
+				ns.sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
+					false,false,null, "Forbidden", "System reports may only be accessed from particular computers.", null);
+			}
+			report.handleReport(suffix, request, response);
 		}
 		else
 		{

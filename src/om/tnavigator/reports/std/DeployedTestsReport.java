@@ -232,4 +232,12 @@ public class DeployedTestsReport implements OmReport {
 			}
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see om.tnavigator.reports.OmReport#isSecurityRestricted()
+	 */
+	@Override
+	public boolean isSecurityRestricted() {
+		return false;
+	}
 }

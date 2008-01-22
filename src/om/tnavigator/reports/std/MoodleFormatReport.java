@@ -185,4 +185,12 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 		report.handleReport(request, response);
 	}
 
+	/* (non-Javadoc)
+	 * @see om.tnavigator.reports.OmReport#isSecurityRestricted()
+	 */
+	@Override
+	public boolean isSecurityRestricted() {
+		return true;
+	}
+
 }
