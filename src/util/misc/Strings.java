@@ -219,4 +219,17 @@ public class Strings
 		}
 		return sb.toString();
 	}
+
+	/**
+	 * @param bytes
+	 * @return a string of hex made from the bytes.
+	 */
+	public static String byteArrayToHexString(byte[] bytes) {
+		StringBuffer sb = new StringBuffer(bytes.length * 2);
+		for (int i = 0; i < bytes.length; i++) {
+			String bit = Integer.toHexString(bytes[i] + 0x100);
+			sb.append(bit.substring(bit.length() - 2));
+		}
+		return sb.toString();
+	}
 }

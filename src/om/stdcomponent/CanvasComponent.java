@@ -21,6 +21,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.List;
 
@@ -35,6 +37,7 @@ import om.stdquestion.*;
 import org.w3c.dom.Element;
 
 import util.misc.IO;
+import util.misc.Strings;
 import util.xml.XML;
 import util.xml.XMLException;
 
@@ -155,14 +158,14 @@ public class CanvasComponent extends QComponent implements World.Context
 	private Graphics2D g2=null;
 
 	/** Random number used to ensure we don't duplicate image filenames */
-	private String sRandom;
+	private String filename;
 
 	/** Changed flag, true if we need to send a new bitmap */
 	private boolean bChanged=true;
 
 	/** 'Clear' image, if there's a background in place (to save reloading each time) */
 	private BufferedImage biBackground=null;
-
+	
 	/** List of graph worlds, in paint order */
 	private List<World> lWorlds=new LinkedList<World>();
 
@@ -587,14 +590,27 @@ public class CanvasComponent extends QComponent implements World.Context
 		// If image has changed, send new version
 		if(bChanged)
 		{
-			sRandom=(Math.random()+"").replaceAll("(^0)|[^0-9]","");
-			if(getString(PROPERTY_TYPE).equals("png")) qc.addResource(
-				getID()+"."+sRandom+".png","image/png",QContent.convertPNG(bi));
-			else if(getString(PROPERTY_TYPE).equals("jpg")) qc.addResource(
-				getID()+"."+sRandom+".jpg","image/jpeg",QContent.convertJPG(bi));
+			byte[] imageData;
+			String mimeType;
+			if (getString(PROPERTY_TYPE).equals("png")) {
+				imageData = QContent.convertPNG(bi);
+				mimeType = "image/png";
+			} else if (getString(PROPERTY_TYPE).equals("jpg")) {
+				imageData = QContent.convertJPG(bi);
+				mimeType = "image/jpeg";
+			} else {
+				throw new OmUnexpectedException("Unknown canvas type. Only png and jpg are valid.");
+			}
+			MessageDigest md;
+			try {
+				md = MessageDigest.getInstance("SHA-1");
+			} catch (NoSuchAlgorithmException e) {
+				throw new OmUnexpectedException(e);
+			}
+			filename = "canvas-" + getID() + "-" +
+					Strings.byteArrayToHexString(md.digest(imageData)) + "." + getString(PROPERTY_TYPE);
+			qc.addResource(filename, mimeType, imageData);
 		}
-
-		String sFilename=getID()+"."+sRandom+"."+getString(PROPERTY_TYPE);
 
 		Element eEnsureSpaces=qc.createElement("div");
 		eEnsureSpaces.setAttribute("class","canvas");
@@ -606,7 +622,7 @@ public class CanvasComponent extends QComponent implements World.Context
 		Element eImg=XML.createChild(eEnsureSpaces,"img");
 		eImg.setAttribute("id",sImageID);
 		eImg.setAttribute("onmousedown","return false;"); // Prevent Firefox drag/drop
-		eImg.setAttribute("src","%%RESOURCES%%/"+sFilename);
+		eImg.setAttribute("src","%%RESOURCES%%/"+filename);
 		eImg.setAttribute("alt",getString("alt"));
 
 		// Get zoom, marker size and hotspot position.
