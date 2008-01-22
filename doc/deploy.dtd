@@ -70,4 +70,5 @@
 	-->
 <!ELEMENT open (#PCDATA)>
 <!ELEMENT close (#PCDATA)>
+<!ELEMENT forbid (#PCDATA)>
 <!ELEMENT feedback (#PCDATA)>
