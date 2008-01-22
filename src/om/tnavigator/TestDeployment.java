@@ -591,6 +591,22 @@ public class TestDeployment
 		return new TestDefinition(fDefinition);
 	}
 
+	/**
+	 * @return the information about who to contact if a problem is identified with this test.
+	 */
+	public String getSupportContacts() {
+		if (XML.hasChild(dDeploy.getDocumentElement(), "supportcontacts")) {
+			try {
+				return XML.getText(dDeploy.getDocumentElement(), "supportcontacts");
+			} catch (XMLException e) {
+				// Cannot happen because of the hasChild test.
+				throw new OmUnexpectedException(e);
+			}
+		} else {
+			return "";
+		}
+	}
+
 	// Information required to support legacy OU systems
 
 	/** @return CMA batch code */

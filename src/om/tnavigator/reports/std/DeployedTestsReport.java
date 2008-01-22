@@ -74,6 +74,7 @@ public class DeployedTestsReport implements OmReport {
 		String closeDate;
 		String forbidDate;
 		String feedbackDate;
+		String supportcontacts;
 
 		private Test(String deploy, File deployFile, File testBank) throws OmException {
 			this.deploy = deploy;
@@ -97,6 +98,7 @@ public class DeployedTestsReport implements OmReport {
 			closeDate = def.displayCloseDate();
 			forbidDate = def.displayForbidDate();
 			feedbackDate = def.displayFeedbackDate();
+			supportcontacts = def.getSupportContacts();
 		}
 
 		private Map<String, String> toRow() {
@@ -112,6 +114,7 @@ public class DeployedTestsReport implements OmReport {
 			row.put("closedate", closeDate);
 			row.put("forbiddate", forbidDate);
 			row.put("feedbackdate", feedbackDate);
+			row.put("supportcontacts", supportcontacts);
 			
 			return row;
 		}
@@ -151,6 +154,7 @@ public class DeployedTestsReport implements OmReport {
 			columns.add(new ColumnDefinition("closedate", "Close date"));
 			columns.add(new ColumnDefinition("forbiddate", "Forbid date"));
 			columns.add(new ColumnDefinition("feedbackdate", "Feedback date"));
+			columns.add(new ColumnDefinition("supportcontacts", "Support Contacts"));
 			return columns;
 		}
 

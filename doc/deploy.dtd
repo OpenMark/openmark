@@ -6,11 +6,15 @@
 		<access> - Controls access to test
 		<dates> - Dates affecting test (optional; if omitted test is always available)
 -->	
-<!ELEMENT deploy (definition,access,dates?)>
+<!ELEMENT deploy (definition,responsible?,access,dates?)>
 
 
 <!-- <definition> is just text (test definition ID) -->
 <!ELEMENT definition (#PCDATA)>
+
+<!-- <supportcontacts> is just text (it should contain a list of email addresses of people responsible
+		for this test, so they can be contacted if a problem is identified with the test.) -->
+<!ELEMENT supportcontacts (#PCDATA)>
 
 
 <!-- 
