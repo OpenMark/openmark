@@ -41,6 +41,7 @@ public class ReportDispatcher
 		QuestionTestReport.class,
 		MoodleFormatReport.class,
 		DeployedQuestionsReport.class,
+		DeployedTestsReport.class,
 	};
 
 	private NavigatorServlet ns;

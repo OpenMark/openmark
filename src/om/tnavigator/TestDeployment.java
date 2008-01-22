@@ -172,7 +172,10 @@ public class TestDeployment
 		return iType;
 	}
 
-	String getDefinition()
+	/**
+	 * @return get the name of the test definition file.
+	 */
+	public String getDefinition()
 	{
 		if(sDefinition==null)
 			throw new OmUnexpectedException("Can't get definition, single only");
@@ -193,7 +196,11 @@ public class TestDeployment
 	}
 
 
-	boolean isWorldAccess() throws OmFormatException
+	/**
+	 * @return whether this test is world accessible.
+	 * @throws OmFormatException
+	 */
+	public boolean isWorldAccess() throws OmFormatException
 	{
 		try
 		{
@@ -333,8 +340,9 @@ public class TestDeployment
 	}
 
 	/** @return True if it's after/on the open date for the test (always returns
-	 *   true if the open date was set to 'yes') */
-	boolean isAfterOpen() throws OmFormatException
+	 *   true if the open date was set to 'yes') 
+	 * @throws OmFormatException */
+	public boolean isAfterOpen() throws OmFormatException
 	{
 		return isAfterDate("open","00:00:00",true,"yes",-1);
 	}
@@ -342,8 +350,9 @@ public class TestDeployment
 	/**
 	 * @return True if it's after/on the close date for the test, i.e. results
 	 *   don't count any more (always returns false if there is no close date)
+	 * @throws OmFormatException 
 	 */
-	boolean isAfterClose() throws OmFormatException
+	public boolean isAfterClose() throws OmFormatException
 	{
 		return isAfterDate("close","23:59:59",false,null,-1) || isAfterForbid();
 	}
@@ -352,8 +361,9 @@ public class TestDeployment
 	 * @return True if it's after/on the forbid date for the test, i.e. students
 	 *   literally can't take the test any more
 	 *   (always returns false if there is no forbid date)
+	 * @throws OmFormatException 
 	 */
-	boolean isAfterForbid() throws OmFormatException
+	public boolean isAfterForbid() throws OmFormatException
 	{
 		return isAfterDate("forbid","23:59:59",false,null,-1);
 	}
@@ -363,8 +373,9 @@ public class TestDeployment
 	 * submit the test but can't do anything else.
 	 * @return True if it's after/on the forbid extension
 	 *   (always returns false if there is no forbid date)
+	 * @throws OmFormatException 
 	 */
-	boolean isAfterForbidExtension() throws OmFormatException
+	public boolean isAfterForbidExtension() throws OmFormatException
 	{
 		return isAfterDate("forbid","23:59:59",false,null,System.currentTimeMillis()-4*60*60*1000);
 	}
@@ -372,8 +383,9 @@ public class TestDeployment
 	/**
 	 * @return True if feedback is permitted (always returns true if there is
 	 *   no feedback date)
+	 * @throws OmFormatException 
 	 */
-	boolean isAfterFeedback() throws OmFormatException
+	public boolean isAfterFeedback() throws OmFormatException
 	{
 		return isAfterDate("feedback","00:00:00",true,null,-1);
 	}
@@ -491,7 +503,11 @@ public class TestDeployment
 	public String displayFeedbackDate() throws OmFormatException
 	{
 		SimpleDateFormat sdf=new SimpleDateFormat("dd MMMM yyyy");
-		return sdf.format(getActualDate("feedback","00:00:00"));
+		if (XML.hasChild(eDates,"feedback")) {
+			return sdf.format(getActualDate("feedback","00:00:00"));
+		} else {
+			return "";
+		}
 	}
 
 	/** @return True if a close date was specified */
@@ -511,9 +527,11 @@ public class TestDeployment
 		{
 			return sdf.format(getActualDate("close","00:00:00"));
 		}
-		else
+		else if (XML.hasChild(eDates,"forbid"))
 		{
 			return sdf.format(getActualDate("forbid","00:00:00"));
+		} else {
+			return "";
 		}
 	}
 	/**
@@ -523,7 +541,11 @@ public class TestDeployment
 	public String displayForbidDate() throws OmFormatException
 	{
 		SimpleDateFormat sdf=new SimpleDateFormat("dd MMMM yyyy");
-		return sdf.format(getActualDate("forbid","00:00:00"));
+		if (XML.hasChild(eDates,"forbid")) {
+			return sdf.format(getActualDate("forbid","00:00:00"));
+		} else {
+			return "";
+		}
 	}
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
@@ -532,7 +554,19 @@ public class TestDeployment
 	public String displayOpenDate() throws OmFormatException
 	{
 		SimpleDateFormat sdf=new SimpleDateFormat("dd MMMM yyyy");
-		return sdf.format(getActualDate("open","00:00:00"));
+		if (XML.hasChild(eDates,"open")) {
+			try {
+				if ("yes".equals(XML.getText(eDates, "open"))) {
+					return "Always";
+				} else {
+					return sdf.format(getActualDate("open","00:00:00"));
+				}
+			} catch (XMLException e) {
+				throw new OmUnexpectedException(e);
+			}
+		} else {
+			return "";
+		}
 	}
 
 	/** @return True if this deployment is set up for CMA conversion */
