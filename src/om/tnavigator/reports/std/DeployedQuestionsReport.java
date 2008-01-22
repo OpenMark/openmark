@@ -13,10 +13,15 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.w3c.dom.*;
+
+import om.OmUnexpectedException;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.reports.*;
 import util.misc.ReverseComparator;
 import util.misc.Strings;
+import util.xml.XML;
+import util.xml.XMLException;
 
 /**
  * This report lists the questions that have been deployed on this server, with the
@@ -98,12 +103,13 @@ public class DeployedQuestionsReport implements OmReport {
 		 */
 		public DeployedQuestionsTabularReport(String prefix) {
 			this.prefix = prefix;
-			batchid = "";
+			batchid = null;
 			if (prefix == null ) {
 				title = "All deployed questions";
 			} else {
 				title = "Deployed questions with id " + prefix + "*";
 			}
+			this.ns = DeployedQuestionsReport.this.ns;
 		}
 
 		/* (non-Javadoc)
@@ -149,6 +155,38 @@ public class DeployedQuestionsReport implements OmReport {
 
 			for (Question question : questions.values()) {
 				reportWriter.printRow(question.toRow());
+			}
+		}
+		
+		/* (non-Javadoc)
+		 * @see om.tnavigator.reports.TabularReportBase#extraHtmlContent(org.w3c.dom.Element)
+		 */
+		@Override
+		public void extraHtmlContent(Element mainElement) {
+			super.extraHtmlContent(mainElement);
+			try {
+				Document d = mainElement.getOwnerDocument();
+				Element form = XML.getChild(XML.getChild(mainElement, "form"), "p");
+
+				Element label = d.createElement("label");
+				label.setAttribute("for", "prefix-input");
+				XML.setText(label, "Prefix ");
+
+				Element input = d.createElement("input");
+				input.setAttribute("type", "text");
+				input.setAttribute("size", "10");
+				input.setAttribute("name", "prefix");
+				input.setAttribute("id", "prefix-input");
+				if (prefix != null) {
+					input.setAttribute("value", prefix);
+				}
+
+				Node oldFirstChild = form.getFirstChild();
+				form.insertBefore(label, oldFirstChild);
+				form.insertBefore(input, oldFirstChild);
+				form.insertBefore(d.createTextNode(" "), oldFirstChild);
+			} catch (XMLException e) {
+				throw new OmUnexpectedException("Cannot find form element.", e);
 			}
 		}
 	}

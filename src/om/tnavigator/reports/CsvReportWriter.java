@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import om.tnavigator.NavigatorServlet;
+
 /**
  * A report writer for writing reports as CSV.
  */
@@ -30,10 +32,11 @@ public class CsvReportWriter extends TextReportWriter {
 	 * Create a report writer for writing this report out as CSV.
 	 * @param pw the PrintWriter to write to.
 	 * @param columns a list of column definitions.
+	 * @param ns the navigator servlet
 	 */
-	public CsvReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns)
+	public CsvReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns, NavigatorServlet ns)
 	{
-		super(pw,columns,",");
+		super(pw,columns, ",", ns);
 	}
 
 	/* (non-Javadoc)

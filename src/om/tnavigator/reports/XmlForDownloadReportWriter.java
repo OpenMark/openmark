@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import om.tnavigator.NavigatorServlet;
+
 /**
  * As for XML output, but forces download of the output.
  */
@@ -31,9 +33,10 @@ public class XmlForDownloadReportWriter extends XmlReportWriter {
 	 * Create an instance of this writer for writing the given report to the given HTTP Servlet
 	 * @param pw the place to send output.
 	 * @param columns a list of column definitions.
+	 * @param ns the navigator servlet
 	 */
-	public XmlForDownloadReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns) {
-		super(pw,columns);
+	public XmlForDownloadReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns, NavigatorServlet ns) {
+		super(pw,columns, ns);
 	}
 
 	/* (non-Javadoc)

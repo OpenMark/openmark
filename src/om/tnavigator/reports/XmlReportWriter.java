@@ -23,6 +23,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import om.tnavigator.NavigatorServlet;
+
 /**
  * A report writer for writing reports as XML. The document element will be
  * <results batch="[batchnumber]">, and each row will be wrapped in a <result> tag.
@@ -33,9 +35,10 @@ public class XmlReportWriter extends TabularReportWriter {
 	 * Create an instance of this writer for writing the given report to the given HTTP Servlet
 	 * @param pw the place to send output.
 	 * @param columns a list of column definitions.
+	 * @param ns the navigator servlet
 	 */
-	public XmlReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns) {
-		super(pw,columns);
+	public XmlReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns, NavigatorServlet ns) {
+		super(pw,columns, ns);
 	}
 
 	/* (non-Javadoc)

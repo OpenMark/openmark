@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import om.tnavigator.NavigatorServlet;
 import om.tnavigator.reports.TabularReportBase.ColumnDefinition;
 
 /**
@@ -31,15 +32,18 @@ import om.tnavigator.reports.TabularReportBase.ColumnDefinition;
 public abstract class TabularReportWriter {
 	protected final PrintWriter pw;
 	protected final List<TabularReportBase.ColumnDefinition>columns;
+	protected final NavigatorServlet ns;
 	/**
 	 * Create an instance of this writer for writing the given report to the given HTTP Servlet
 	 * @param pw the print writer we will be writing to.
 	 * @param columns a list of column definitions.
+	 * @param ns the navigator servlet
 	 */
-	public TabularReportWriter(PrintWriter pw,List<ColumnDefinition>columns)
+	public TabularReportWriter(PrintWriter pw,List<ColumnDefinition>columns, NavigatorServlet ns)
 	{
 		this.pw = pw;
 		this.columns = columns;
+		this.ns = ns;
 	}
 
 	/**

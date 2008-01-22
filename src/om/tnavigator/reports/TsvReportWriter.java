@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import om.tnavigator.NavigatorServlet;
+
 /**
  * A report writer for writing reports as a tab-separated text file.
  */
@@ -30,10 +32,11 @@ public class TsvReportWriter extends TextReportWriter {
 	 * Create a report writer for writing this report out as a tab-separated text file.
 	 * @param pw the PrintWriter to write to.
 	 * @param columns a list of column definitions.
+	 * @param ns the navigator servlet
 	 */
-	public TsvReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns)
+	public TsvReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns, NavigatorServlet ns)
 	{
-		super(pw,columns,"\r\n", "\t", "", "");
+		super(pw,columns,"\r\n", "\t", "", "", ns);
 	}
 
 	/* (non-Javadoc)

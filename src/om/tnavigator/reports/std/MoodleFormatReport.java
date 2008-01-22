@@ -67,6 +67,7 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 		MoodleTabularReport(String testId, TestDeployment deploy) throws OmException {
 			this.testId = testId;
 			this.def = deploy.getTestDefinition();
+			this.ns = MoodleFormatReport.this.ns;
 			batchid = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 			title = testId + " results for export to Moodle";
 		}

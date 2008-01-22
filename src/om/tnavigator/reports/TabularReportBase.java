@@ -25,8 +25,12 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.w3c.dom.Element;
+
 import om.OmException;
 import om.OmUnexpectedException;
+import om.tnavigator.NavigatorServlet;
+import util.xml.XML;
 
 /**
  * Base class for reports that are basically a table of data
@@ -34,6 +38,7 @@ import om.OmUnexpectedException;
 public abstract class TabularReportBase {
 	protected String batchid;
 	protected String title;
+	protected NavigatorServlet ns;
 
 	private static enum Format {
 		/** HTML output class */
@@ -63,13 +68,14 @@ public abstract class TabularReportBase {
 		/**
 		 * @param pw a print writer
 		 * @param columns a list of ColumnDefinitions.
+		 * @param ns the navigator servlet.
 		 * @return an instance of the specific type of TabularReportWriter, initialised with ph and columns.
 		 */
-		public TabularReportWriter makeInstance(PrintWriter pw, List<ColumnDefinition>columns) {
+		public TabularReportWriter makeInstance(PrintWriter pw, List<ColumnDefinition>columns, NavigatorServlet ns) {
 			try
 			{
-				return writerClass.getConstructor(PrintWriter.class, List.class).
-						newInstance(pw, columns);
+				return writerClass.getConstructor(PrintWriter.class, List.class, NavigatorServlet.class).
+						newInstance(pw, columns, ns);
 			}
 			catch (InstantiationException e)
 			{
@@ -113,7 +119,7 @@ public abstract class TabularReportBase {
 			format = Format.html.toString();
 		}
 		try {
-			return Format.valueOf(format).makeInstance(response.getWriter(), columns);
+			return Format.valueOf(format).makeInstance(response.getWriter(), columns, ns);
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -157,26 +163,34 @@ public abstract class TabularReportBase {
 	public abstract void generateReport(TabularReportWriter reportWriter);
 
 	/**
-	 * A change for the report to output some extra content, for example a settings form
+	 * A chance for the report to add some extra content, for example a settings form,
 	 * before the HTML table.
-	 * @param pw the printWriter from the HttpServletResponse.
+	 * @param mainElement the printWriter from the HttpServletResponse.
 	 */
-	public void extraHtmlContent(PrintWriter pw) {
-		pw.println("<form action='' method='get'>");
-		outputFormatSelector(pw);
-		pw.println("<input type='submit' value='Generate the report' />");
-		pw.println("</form>");
+	public void extraHtmlContent(Element mainElement) {
+		Element form = XML.createChild(mainElement, "form");
+		form.setAttribute("action", "");
+		form.setAttribute("method", "get");
+		form = XML.createChild(form, "p");
+		XML.createText(form, "Format ");
+		outputFormatSelector(form);
+		XML.createText(form, " ");
+		Element submit = XML.createChild(form, "input");
+		submit.setAttribute("type", "submit");
+		submit.setAttribute("value", "Generate the report");
 	}
 
 	/**
 	 * Write out a HTML &lt;select&gt; element for choosing a format.
-	 * @param pw place to write it.
+	 * @param form the form (or other element) to add this dropdown to.
 	 */
-	public static void outputFormatSelector(PrintWriter pw) {
-		pw.println("<select name='format'>");
+	public static void outputFormatSelector(Element form) {
+		Element select = XML.createChild(form, "select");
+		select.setAttribute("name", "format");
 		for (Format format : Format.values()) {
-			pw.println("<option value='" + format.name() + "'>" + format.getNiceName() + "</option>");
+			Element option = XML.createChild(select, "option");
+			option.setAttribute("value", format.name());
+			XML.setText(option, format.getNiceName());
 		}
-		pw.println("</select>");
 	}
 }

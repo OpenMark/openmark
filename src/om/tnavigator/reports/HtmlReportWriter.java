@@ -17,13 +17,19 @@
  */
 package om.tnavigator.reports;
 
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
-import util.xml.XHTML;
+import om.OmUnexpectedException;
+import om.tnavigator.NavigatorServlet;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import util.xml.*;
 
 /**
  * A report writer for writing reports as HTML.
@@ -31,14 +37,17 @@ import util.xml.XHTML;
 public class HtmlReportWriter extends TabularReportWriter
 {
 	private int row = 0;
+	private Document template;
+	private Element tableBody;
 
 	/**
 	 * @param pw the print writer we will be writing to.
 	 * @param columns a list of column definitions.
+	 * @param ns the navigator servlet
 	 */
-	public HtmlReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns)
+	public HtmlReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns, NavigatorServlet ns)
 	{
-		super(pw,columns);
+		super(pw,columns, ns);
 	}
 
 	/* (non-Javadoc)
@@ -47,24 +56,41 @@ public class HtmlReportWriter extends TabularReportWriter
 	@Override
 	public void printHead(String batchid, String title, TabularReportBase report)
 	{
-		pw.println("<html>");
-		pw.println("\t<head>");
-		pw.println("\t\t<title>" + title + " batch number: " + batchid + "</title>");
-		pw.println("\t</head>");
-		pw.println("\t<body>");
-		pw.println("\t\t<h1>" + title + " batch number: " + batchid + "</h1>");
-		report.extraHtmlContent(pw);
-		pw.println("\t\t<table>");
-		pw.println("\t\t\t<thead>");
-		pw.println("\t\t\t\t<tr>");
+		Element mainElement;
+		try {
+			template = ns.getTemplate(false, false, true);
+			Map<String,Object> replacements = new HashMap<String,Object>();
+			replacements.put("TITLEBAR", title);
+			replacements.put("ACCESS", "");
+			replacements.put("TESTTITLE",title);
+			replacements.put("TITLE","");
+			replacements.put("AUXTITLE", batchid != null ? "batch number: " + batchid : ".");
+			XML.find(template,"title","%%TOOLTIP%%").removeAttribute("title");
+			XML.replaceTokens(template,replacements);
+			
+			XML.remove(XML.find(template,"id","progressinfo"));
+			XML.removeChildren(XML.find(template,"id","buttons"));
+			mainElement = XML.find(template,"id","main");
+			XML.removeChildren(mainElement);
+			XML.getChild(template.getDocumentElement(),"body").setAttribute("class","progressleft");
+		} catch (XMLException e) {
+			throw new OmUnexpectedException("Could not load the template.", e);
+		}
+
+		report.extraHtmlContent(mainElement);
+
+		Element table = XML.createChild(mainElement, "table");
+		mainElement.setAttribute("class", "basicpage");
+		table.setAttribute("class", "topheaders");
+		Element tableHead = XML.createChild(table, "thead");
+		tableBody = XML.createChild(table, "tbody");
 		for (TabularReportBase.ColumnDefinition column : columns)
 		{
-			pw.println("\t\t\t\t\t<th scope=\"col\" class=\"" + XHTML.escape(column.id, XHTML.ESCAPE_ATTRDQ) + "\">" +
-					XHTML.escape(column.name, XHTML.ESCAPE_TEXT) + "</th>");
+			Element header = XML.createChild(tableHead, "th");
+			header.setAttribute("scope", "col");
+			header.setAttribute("class" , column.id);
+			XML.setText(header, column.name);
 		}
-		pw.println("\t\t\t\t</tr>");
-		pw.println("\t\t\t</thead>");
-		pw.println("\t\t\t<tbody>");
 	}
 
 	/* (non-Javadoc)
@@ -82,16 +108,15 @@ public class HtmlReportWriter extends TabularReportWriter
 	@Override
 	public void printRow(Map<String, String> data)
 	{
+		Element tableRow = XML.createChild(tableBody, "tr"); 
 		row++;
-		String tag = "th scope=\"row\"";
-		pw.println("\t\t\t\t<tr class=\"" + (row%2 == 0 ? "even" : "odd") + "\">");
+		tableRow.setAttribute("class", row%2 == 0 ? "even" : "odd");
 		for (TabularReportBase.ColumnDefinition column : columns)
 		{
-			pw.println("\t\t\t\t\t<" + tag + " scope=\"col\" class=\"" + XHTML.escape(column.id, XHTML.ESCAPE_ATTRDQ) + "\">" +
-					XHTML.escape(data.get(column.id), XHTML.ESCAPE_TEXT) + "</" + tag + ">");
-			tag = "td";
+			Element cell = XML.createChild(tableRow, "td");
+			cell.setAttribute("class" , column.id);
+			XML.setText(cell, data.get(column.id));
 		}
-		pw.println("\t\t\t\t</tr>");
 	}
 
 	/* (non-Javadoc)
@@ -100,9 +125,10 @@ public class HtmlReportWriter extends TabularReportWriter
 	@Override
 	public void printTail()
 	{
-		pw.println("\t\t\t</tbody>");
-		pw.println("\t\t</table>");
-		pw.println("\t</body>");
-		pw.println("</html>");
+		try {
+			XHTML.saveFullDocument(template, pw, false, "en");
+		} catch (IOException e) {
+			throw new OmUnexpectedException("Could not output the report.", e);
+		}
 	}
 }

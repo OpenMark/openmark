@@ -3789,41 +3789,25 @@ public class NavigatorServlet extends HttpServlet
 		throws IOException
 	{
 		String sAccessibility=getAccessibilityCookie(request);
-		boolean bPlain=sAccessibility.indexOf("[plain]")!=-1;
+		boolean plainMode=sAccessibility.indexOf("[plain]")!=-1;
 
 		if(us.getFixedVariant()>=0) sAuxTitle+=" [variant "+us.getFixedVariant()+"]";
 
 		// Create basic template
-		Document d=XML.clone(
-			us.isSingle()
-			? ( bPlain ? singlesPlainTemplate : singlesTemplate )
-			: ( bPlain ? plainTemplate : template) );
+		Document d = getTemplate(plainMode, us.isSingle(), bClearCSS);
 		Map<String,Object> mReplace=new HashMap<String,Object>();
 		if(us.isSingle() || sTitle.equals(us.getTestDefinition().getName()))
 			mReplace.put("TITLEBAR",sTitle);
 		else
 			mReplace.put("TITLEBAR",us.getTestDefinition().getName()+" - "+sTitle);
+		mReplace.put("CSSINDEX", ""+us.iCSSIndex);
 		mReplace.put("RESOURCES","resources/"+us.getTestPosition());
-		if(!bPlain)
-		{
-			if(bClearCSS)
-			{
-				// Get rid of stylesheet link
-				XML.remove(XML.find(d,"ss","here"));
-			}
-			else
-			{
-				// Get rid of stupid marker attribute, & set CSS index
-				XML.find(d,"ss","here").removeAttribute("ss");
-				mReplace.put("CSSINDEX",""+us.iCSSIndex);
-			}
-		}
 		mReplace.put("ACCESS",getAccessCSSAppend(request));
 
 		if(!us.isSingle())
 		{
 			// Tooltip stuff is only there for non-plain, non-single mode
-			if(!bPlain)
+			if(!plainMode)
 			{
 				if(sTip!=null)
 					mReplace.put("TOOLTIP",sTip);
@@ -3874,7 +3858,7 @@ public class NavigatorServlet extends HttpServlet
 		{
 			// Build progress indicator
 			Element eProgress;
-			if(bPlain)
+			if(plainMode)
 			{
 				eProgress=XML.find(d,"id","progressPlain");
 			}
@@ -3902,7 +3886,7 @@ public class NavigatorServlet extends HttpServlet
 
 			// Div for the buttons section
 			Element eButtons=XML.find(d,"id","buttons");
-			if(bPlain)
+			if(plainMode)
 			{
 				Element eH2=eButtons.getOwnerDocument().createElement("h2");
 				XML.createText(eH2,"Options");
@@ -3913,9 +3897,9 @@ public class NavigatorServlet extends HttpServlet
 			boolean bAllDone=true;
 			if(bIncludeNav)
 			{
-				if(bPlain) XML.createText(eProgress,"h2","Progress so far");
-				Element eNumbers=XML.createChild(eProgress,bPlain ? "ul" : "div");
-				if(!bPlain) eNumbers.setAttribute("class","numbers");
+				if(plainMode) XML.createText(eProgress,"h2","Progress so far");
+				Element eNumbers=XML.createChild(eProgress,plainMode ? "ul" : "div");
+				if(!plainMode) eNumbers.setAttribute("class","numbers");
 
 				boolean bAllowNavigation=us.bAdmin || us.getTestDefinition().isNavigationAllowed();
 
@@ -3933,7 +3917,7 @@ public class NavigatorServlet extends HttpServlet
 							eCurrentSection=null;
 						else
 						{
-							if(bPlain)
+							if(plainMode)
 							{
 								Element eLI=XML.createChild(eNumbers,"li");
 								XML.createText(eLI,"h3",sCurrentSection);
@@ -3960,7 +3944,7 @@ public class NavigatorServlet extends HttpServlet
 					else
 					{
 						// Needed to allow IE to wrap line
-						if(!bPlain)
+						if(!plainMode)
 							XML.createText(eCurrentSection!=null ? eCurrentSection : eNumbers," \u00a0 ");
 					}
 
@@ -3976,9 +3960,9 @@ public class NavigatorServlet extends HttpServlet
 					// Make child directly in progress or in current section if there is one
 					Element eThis=XML.createChild(
 						eCurrentSection!=null ? eCurrentSection : eNumbers,
-						bPlain ? "li" : "div");
+						plainMode ? "li" : "div");
 
-					if(bPlain)
+					if(plainMode)
 					{
 						Element eThingy=bLink ? XML.createChild(eThis,"a") : eThis;
 						XML.createText(eThingy,
@@ -4017,18 +4001,18 @@ public class NavigatorServlet extends HttpServlet
 				if(us.getTestDefinition().isSummaryAllowed())
 				{
 					Element eSummary=XML.createChild(eButtons,"div");
-					if(!bPlain) eSummary.setAttribute("class","button");
+					if(!plainMode) eSummary.setAttribute("class","button");
 					Element eThingy=XML.createChild(eSummary,"a");
-					XML.createText(eThingy,bPlain ? "Review your answers" : "Your answers");
+					XML.createText(eThingy,plainMode ? "Review your answers" : "Your answers");
 					eThingy.setAttribute("href","?summary");
-					if(!bPlain && bStopButton)
+					if(!plainMode && bStopButton)
 						XML.createChild(eButtons,"div").setAttribute("class","buttonspacer");
 				}
 
 				if(bStopButton)
 				{
 					Element eStop=XML.createChild(eButtons,"div");
-					if(!bPlain) eStop.setAttribute("class","button");
+					if(!plainMode) eStop.setAttribute("class","button");
 					Element eThingy=XML.createChild(eStop,"a");
 					XML.createText(eThingy,"End test");
 					eThingy.setAttribute("href","?end");
@@ -4050,6 +4034,44 @@ public class NavigatorServlet extends HttpServlet
 		// Whew! Now send to user
 		breakBack(response);
 		XHTML.output(d,request,response,"en");
+	}
+
+	/**
+	 * @param plainMode whether we are in plain mode.
+	 * @param singleQuestionMode whether we are in single question mode.
+	 * @param removeQuestionCss whether to remove the question stylesheet link.
+	 * @return the appropriate template for a page, based on the parameters.
+	 * @throws XMLException 
+	 */
+	public Document getTemplate(boolean plainMode, boolean singleQuestionMode,
+			boolean removeQuestionCss) throws XMLException {
+		Document d;
+		if (singleQuestionMode) {
+			if (plainMode) {
+				d = singlesPlainTemplate;
+			} else {
+				d = singlesTemplate;
+			}
+		} else {
+			if (plainMode) {
+				d = plainTemplate;
+			} else {
+				d = template;
+			}
+		}
+		d = XML.clone(d);
+		if(!plainMode)
+		{
+			if(removeQuestionCss)
+			{
+				XML.remove(XML.find(d, "ss", "here"));
+			}
+			else
+			{
+				XML.find(d, "ss", "here").removeAttribute("ss");
+			}
+		}
+		return d;
 	}
 
 	/** Cache label replacement (Map of String (labelset id) -> Map ) */

@@ -21,6 +21,8 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
+import om.tnavigator.NavigatorServlet;
+
 /**
  * @author tjh238
  *
@@ -40,12 +42,13 @@ public abstract class TextReportWriter extends TabularReportWriter
 	 * @param cellSeparator sting to output between data cells.
 	 * @param cellWrapperOpen sting to output before each cell.
 	 * @param cellWrapperClose sting to output after each cell.
+	 * @param ns the navigator servlet
 	 */
 	public TextReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns,
 			final String rowSeparator,final String cellSeparator,
-			final String cellWrapperOpen,final String cellWrapperClose)
+			final String cellWrapperOpen,final String cellWrapperClose, NavigatorServlet ns)
 	{
-		super(pw,columns);
+		super(pw,columns, ns);
 		this.rowSeparator=rowSeparator;
 		this.cellSeparator=cellSeparator;
 		this.cellWrapperOpen=cellWrapperOpen;
@@ -56,11 +59,12 @@ public abstract class TextReportWriter extends TabularReportWriter
 	 * @param pw the print writer we will be writing to.
 	 * @param columns a list of column definitions.
 	 * @param cellSeparator sting to output between data cells.
+	 * @param ns the navigator servlet
 	 */
 	public TextReportWriter(PrintWriter pw,List<TabularReportBase.ColumnDefinition>columns,
-			final String cellSeparator)
+			final String cellSeparator, NavigatorServlet ns)
 	{
-		this(pw,columns,"\r\n",cellSeparator,"\"","\"");
+		this(pw,columns,"\r\n",cellSeparator,"\"","\"", ns);
 	}
 
 	private void endLine()
