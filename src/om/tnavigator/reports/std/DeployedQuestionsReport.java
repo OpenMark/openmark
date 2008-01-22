@@ -28,9 +28,9 @@ import util.xml.XMLException;
  * available versions in reverse date order.
  */
 public class DeployedQuestionsReport implements OmReport {
-	final static String partRegexp = "[_a-z][_a-zA-Z0-9]*";
-	final static Pattern filenamePattern = Pattern.compile("^(" + partRegexp + "(?:\\." + partRegexp + ")*)\\.(\\d+\\.\\d+)\\.jar$");
-	final static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private final static String partRegexp = "[_a-z][_a-zA-Z0-9]*";
+	private final static Pattern filenamePattern = Pattern.compile("^(" + partRegexp + "(?:\\." + partRegexp + ")*)\\.(\\d+\\.\\d+)\\.jar$");
+	private final static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	private NavigatorServlet ns;
 
@@ -119,9 +119,9 @@ public class DeployedQuestionsReport implements OmReport {
 		public List<ColumnDefinition> init(HttpServletRequest request) {
 			List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 			columns.add(new ColumnDefinition("questionid", "Question ID"));
-			columns.add(new ColumnDefinition("latestversion", "Latest Version"));
-			columns.add(new ColumnDefinition("lastupdated", "Last Updated"));
-			columns.add(new ColumnDefinition("otherversions", "Other Versions"));
+			columns.add(new ColumnDefinition("latestversion", "Latest version"));
+			columns.add(new ColumnDefinition("lastupdated", "Last updated"));
+			columns.add(new ColumnDefinition("otherversions", "Other versions"));
 			return columns;
 		}
 
