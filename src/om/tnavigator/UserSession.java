@@ -165,7 +165,7 @@ public class UserSession
 		// Load test deploy, if necessary.
 		if(tdDeployment==null)
 		{
-			File deployFile = ns.resolveRelativePath("testbank/" + testId + ".deploy.xml");
+			File deployFile = ns.pathForTestDeployment(testId);
 			tdDeployment = new TestDeployment(deployFile);
 		}
 	}
