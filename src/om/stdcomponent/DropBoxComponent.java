@@ -105,6 +105,7 @@ public class DropBoxComponent extends QComponent
 				continue;
 
 			String sOption=dragBox.getPlainDropboxContent(false);
+			sOption = getQuestion().applyPlaceholders(sOption);
 			m.put(sOption,dragBox.getID());
 
 			sbCrap.append(sOption +"="+dragBox.getID()+"\n");
