@@ -459,7 +459,7 @@ public class DevServlet extends HttpServlet
 								"Starting the question twice with the same random seed produced " +
 								"different results. This means there is a bug in your question.</div>");
 						pw.println("<p><a href='../../build/" + sQuestion + "/'>Rebuild</a></p>");
-						pw.println("<h2>First verions of the question HTML</h2><pre>");
+						pw.println("<h2>First version of the question HTML</h2><pre>");
 						pw.println(XHTML.escape(xHTML, XHTML.ESCAPE_TEXT));
 						pw.println("</pre><h2>Repeat version of the question HTML</h2><pre>");
 						pw.println(XHTML.escape(newXHTML, XHTML.ESCAPE_TEXT));
