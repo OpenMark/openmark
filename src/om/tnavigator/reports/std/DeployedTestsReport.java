@@ -5,6 +5,7 @@ package om.tnavigator.reports.std;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -101,13 +102,19 @@ public class DeployedTestsReport implements OmReport {
 			supportcontacts = def.getSupportContacts();
 		}
 
-		private Map<String, String> toRow() {
+		private Map<String, String> toRow(boolean linkToDownloads) {
 			Map<String, String> row = new HashMap<String, String>();
 			row.put("deploy", deploy);
 			row.put("deploy" + HtmlReportWriter.LINK_SUFFIX, "../" + deploy + "/");
-			row.put("lastupdated", deployModified);
+			row.put("deploymodified", deployModified);
 			row.put("test", test);
 			row.put("testmodified", testModified);
+			if (linkToDownloads) {
+				row.put("deploymodified" + HtmlReportWriter.LINK_SUFFIX, "../!deploy/" + deploy);
+				if (!"".equals(testModified)) {
+					row.put("testmodified" + HtmlReportWriter.LINK_SUFFIX, "../!test/" + test);
+				}
+			}
 			row.put("open", open ? "Yes" : "No");
 			row.put("world", world ? "Yes" : "No");
 			row.put("opendate", openDate);
@@ -122,6 +129,7 @@ public class DeployedTestsReport implements OmReport {
 
 	private class DeployedTestsTabularReport extends TabularReportBase {
 		private final String prefix;
+		private boolean linkToDownloads = false;
 
 		/**
 		 * Constructor.
@@ -143,9 +151,15 @@ public class DeployedTestsReport implements OmReport {
 		 */
 		@Override
 		public List<ColumnDefinition> init(HttpServletRequest request) {
+			try {
+				linkToDownloads = ns.checkSecureIP(request);
+			} catch (UnknownHostException e) {
+				// Ingore this, we just don't show the links in this case.
+			}
+
 			List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 			columns.add(new ColumnDefinition("deploy", "Deploy file"));
-			columns.add(new ColumnDefinition("lastupdated", "Last updated"));
+			columns.add(new ColumnDefinition("deploymodified", "Deploy updated"));
 			columns.add(new ColumnDefinition("test", "Test file"));
 			columns.add(new ColumnDefinition("testmodified", "Test updated"));
 			columns.add(new ColumnDefinition("open", "Open now?"));
@@ -196,7 +210,7 @@ public class DeployedTestsReport implements OmReport {
 			}
 
 			for (Test test : tests) {
-				reportWriter.printRow(test.toRow());
+				reportWriter.printRow(test.toRow(linkToDownloads));
 			}
 		}
 		

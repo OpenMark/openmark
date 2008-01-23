@@ -564,12 +564,24 @@ public class NavigatorServlet extends HttpServlet
 			sPath=request.getPathInfo();
 			if(sPath==null) sPath="";
 
-			// Handle question requests separately as they're not from users [from QE]
+			// Handle requests for question, test and deploy files separately
+			// as they're not from users, so don't need the session stuff.
 			if(!bPost && sPath.startsWith("/!question/"))
 			{
 				handleQuestion(sPath.substring("/!question/".length()),request,response);
 				return;
 			}
+			if(!bPost && sPath.startsWith("/!test/"))
+			{
+				handleTest(sPath.substring("/!test/".length()),request,response);
+				return;
+			}
+			if(!bPost && sPath.startsWith("/!deploy/"))
+			{
+				handleDeploy(sPath.substring("/!deploy/".length()),request,response);
+				return;
+			}
+
 			// Handle session-forbid requests [from other TNs]
 			if(!bPost && sPath.startsWith("/!forbid/"))
 			{
@@ -3353,32 +3365,55 @@ public class NavigatorServlet extends HttpServlet
 		}
 	}
 
-	private void handleQuestion(String sIDVersion,HttpServletRequest request,HttpServletResponse response)
-		throws Exception
+	private void handleTestOrQuestion(File file, String what, HttpServletRequest request,
+			HttpServletResponse response) throws Exception
 	{
-		if(!nc.isTrustedQE(InetAddress.getByName(request.getRemoteAddr())))
-		{
+		// Check that access is allowed.
+		if(!(nc.isTrustedQE(InetAddress.getByName(request.getRemoteAddr()))
+				|| checkSecureIP(request))) {
 			sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
 				false,false,null, "Forbidden", "You are not authorised to access this URL.", null);
 		}
-
-		// Get question jar file
-		File f=new File(
-			questionBankFolder,
-			sIDVersion+".jar");
-		if(!f.exists())
-		{
+	
+		// Check that the requested file exits.
+		if(!file.exists()) {
 			sendError(null,request,response,
-				HttpServletResponse.SC_NOT_FOUND,false,false, null, "Not found", "The requested question is not present on this server.", null);
+				HttpServletResponse.SC_NOT_FOUND,false,false, null, "Not found", "The requested " + what + " is not present on this server.", null);
 		}
-
-		// Send jar to requester
-		byte[] abQuestion=IO.loadBytes(new FileInputStream(f));
-		response.setContentType("application/x-openmark");
+	
+		// Then send it.
+		byte[] abQuestion=IO.loadBytes(new FileInputStream(file));
+		if (what.equals("question")) {
+			response.setContentType("application/x-openmark");
+		} else {
+			response.setContentType("application/xml");
+			response.setCharacterEncoding("UTF-8");
+		}
 		response.setContentLength(abQuestion.length);
 		OutputStream os=response.getOutputStream();
 		os.write(abQuestion);
 		os.close();
+	}
+
+	private void handleQuestion(String sIDVersion, HttpServletRequest request, HttpServletResponse response)
+			throws Exception
+	{
+		File file = new File(questionBankFolder, sIDVersion + ".jar");
+		handleTestOrQuestion(file, "question", request, response);
+	}
+
+	private void handleTest(String testId, HttpServletRequest request, HttpServletResponse response)
+			throws Exception
+	{
+		File file = new File(getTestbankFolder(), testId + ".test.xml");
+		handleTestOrQuestion(file, "test definition", request, response);
+	}
+
+	private void handleDeploy(String deployId, HttpServletRequest request, HttpServletResponse response)
+			throws Exception
+	{
+		File file = new File(getTestbankFolder(), deployId + ".deploy.xml");
+		handleTestOrQuestion(file, "deploy file", request, response);
 	}
 
 	private void handleForbid(String sOucuTest,HttpServletRequest request,HttpServletResponse response)
