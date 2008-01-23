@@ -347,6 +347,11 @@ public class NavigatorServlet extends HttpServlet
 			sendError(us,request,response,
 				HttpServletResponse.SC_FORBIDDEN,false,false, null, "Test not yet available", "This test is not yet available.", null);
 		}
+
+		// Realise the test for this student.
+		// Initialise test settings
+		us.realiseTest(sTestID, bFinished, randomSeed, fixedVariant);
+
 		// If the test is finished, we allow them through even after the forbid date
 		// so they can see their results.
 		if(!us.bAdmin && us.getTestDeployment().isAfterForbid() && !us.isFinished() && !us.bAllowAfterForbid)
@@ -363,10 +368,6 @@ public class NavigatorServlet extends HttpServlet
 				throw new StopException();
 			}
 		}
-
-		// Realise the test for this student.
-		// Initialise test settings
-		us.realiseTest(sTestID, bFinished, randomSeed, fixedVariant);
 	}
 
 	private static class StopException extends OmException
