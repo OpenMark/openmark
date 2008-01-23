@@ -391,6 +391,10 @@ em.warning
 {
   font-weight:bold;
 }
+.basicpage table tr.even
+{
+  background:#eee;
+}
 
 
 .displayoptions .examples .option img
