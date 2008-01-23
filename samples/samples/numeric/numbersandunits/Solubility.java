@@ -31,7 +31,7 @@ public class Solubility extends SimpleQuestion1
 
 	protected void init() throws OmException
 	{
-	  mass = 5 + (int)(Math.random()*6);
+	  mass = 5 + getRandom().nextInt(6);
 	  switch (mass)
 	  {
 	    case 5:  temperature = 52.0; break;
