@@ -798,6 +798,7 @@ public class CanvasComponent extends QComponent implements World.Context
 					throw new OmException("Unexpected canvas marker value");
 				}
 			}
+			i++;
 		}
 	}
 
