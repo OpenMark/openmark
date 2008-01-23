@@ -69,7 +69,7 @@ public class JMEComponent extends QComponent
 	private String sValue;
 
 	/** Random token used to check when user goes to different window */
-	private String sToken="t"+Math.random();
+	private String sToken;
 
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
@@ -96,6 +96,7 @@ public class JMEComponent extends QComponent
 	@Override
 	protected void initSpecific(Element eThis) throws OmException
 	{
+		sToken="t"+getQuestion().getRandom().nextInt()+getID().hashCode();
 		getQuestion().checkCallback(getString(PROPERTY_ACTION));
 	}
 
