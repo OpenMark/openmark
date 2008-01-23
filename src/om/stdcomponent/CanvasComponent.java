@@ -700,11 +700,11 @@ public class CanvasComponent extends QComponent implements World.Context
 			eDynamic.setAttribute("id",QDocument.ID_PREFIX+getID()+"_dynamic");
 		}
 
-		int iIndex=0;
+		int index=0;
 		for(Marker m : lMarkers)
 		{
 			Element eMarker=XML.createChild(eEnsureSpaces,"img");
-			eMarker.setAttribute("id",QDocument.ID_PREFIX+getID()+"_marker"+iIndex);
+			eMarker.setAttribute("id",QDocument.ID_PREFIX+getID()+"_marker"+index);
 			eMarker.setAttribute("src","%%RESOURCES%%/"+sMarkerPrefix+
 				(isEnabled() ? "" : "d") + ".gif");
 			eMarker.setAttribute("class","canvasmarker");
@@ -719,15 +719,17 @@ public class CanvasComponent extends QComponent implements World.Context
 			Element eInputX=XML.createChild(eEnsureSpaces,"input");
 			eInputX.setAttribute("type","hidden");
 			eInputX.setAttribute("value",""+(int)(m.iX*dZoom));
-			eInputX.setAttribute("name",QDocument.ID_PREFIX+"canvasmarker_"+getID()+"_"+iIndex+"x");
+			eInputX.setAttribute("name",QDocument.ID_PREFIX+"canvasmarker_"+getID()+"_"+index+"x");
 			eInputX.setAttribute("id",eInputX.getAttribute("name"));
 			Element eInputY=XML.createChild(eEnsureSpaces,"input");
 			eInputY.setAttribute("type","hidden");
 			eInputY.setAttribute("value",""+(int)(m.iY*dZoom));
-			eInputY.setAttribute("name",QDocument.ID_PREFIX+"canvasmarker_"+getID()+"_"+iIndex+"y");
+			eInputY.setAttribute("name",QDocument.ID_PREFIX+"canvasmarker_"+getID()+"_"+index+"y");
 			eInputY.setAttribute("id",eInputY.getAttribute("name"));
 
-			if(isEnabled()) qc.informFocusable(QDocument.ID_PREFIX+getID()+"_marker"+iIndex,bPlain);
+			if(isEnabled()) qc.informFocusable(QDocument.ID_PREFIX+getID()+"_marker"+index,bPlain);
+
+			index++;
 		}
 		for(MarkerLine ml : lLines)
 		{
