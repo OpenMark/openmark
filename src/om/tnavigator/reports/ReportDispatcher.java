@@ -134,7 +134,8 @@ public class ReportDispatcher
 		OmReport report = systemReports.get(reportName);
 		if (report != null)
 		{
-			if(report.isSecurityRestricted() && !ns.checkSecureIP(request))
+			if((report.isSecurityRestricted() && !ns.checkSecureIP(request)) ||
+					!ns.checkLocalIP(request))
 			{
 				ns.sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
 					false,false,null, "Forbidden", "System reports may only be accessed from particular computers.", null);
