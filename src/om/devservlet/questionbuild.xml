@@ -22,12 +22,20 @@
 			<fileset dir="${source}" includes="${questionpackage}/**/*.java" />
 		</concat>
 		<loadfile srcFile="${build}/allsource.java" property="allsource"/>
+
 		<condition property="nonstatic-finals">
 			<matches string="${allsource}" singleline="true" multiline="true"
 				pattern="^(.(?!\bfinal\b))*\bstatic\b([^=\(;](?!\bfinal\b))*(=|;)"/>
 		</condition>
-		<delete file="${build}/allsource.java" quiet="true"/>
 		<fail message="Your question code contains variables that are declared as static, but not final. This is not allowed in OM. " if="nonstatic-finals"/>
+
+		<condition property="math-random">
+			<matches string="${allsource}" singleline="true" multiline="true"
+				pattern="\bMath\s*\.\s*random\b|\bnew\s*(java\..util\.)Random\b"/>
+		</condition>
+		<fail message="Your question code contains a call to Math.random, or new Random(). This is not allowed in OM. " if="math-random"/>
+
+		<delete file="${build}/allsource.java" quiet="true"/>
 
 		<!-- Compile question -->
 		<javac srcdir="${source}" destdir="${build}" debug="on" source="1.6" target="1.6">
