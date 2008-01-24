@@ -98,7 +98,7 @@ public class QuestionTestReport implements OmTestReport {
 					if (actionSummary == null) actionSummary = "The question did not return this information.";
 					String attemptString = NavigatorServlet.getAttemptsString(rs.getInt(8));
 					if (rs.wasNull()) attemptString = "The question did not return this information.";
-					
+
 					sb.append(
 							"<div class='attempt'>"+
 							"<div class='started'>Started: <em>" + sdf.format(startedTime) + "</em></div>" +

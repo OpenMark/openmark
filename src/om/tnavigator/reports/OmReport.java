@@ -39,7 +39,7 @@ public interface OmReport {
 	 * @return The part of the URL that means the servlet should run this report.
 	 */
 	public String getUrlReportName();
-	
+
 	/**
 	 * @return whether this test should be restricted to people coming from a restricted list of IP addresses.
 	 */

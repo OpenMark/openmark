@@ -165,7 +165,7 @@ public class CanvasComponent extends QComponent implements World.Context
 
 	/** 'Clear' image, if there's a background in place (to save reloading each time) */
 	private BufferedImage biBackground=null;
-	
+
 	/** List of graph worlds, in paint order */
 	private List<World> lWorlds=new LinkedList<World>();
 

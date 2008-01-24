@@ -70,7 +70,7 @@ public class HtmlReportWriter extends TabularReportWriter
 			replacements.put("AUXTITLE", batchid != null ? "batch number: " + batchid : ".");
 			XML.find(template,"title","%%TOOLTIP%%").removeAttribute("title");
 			XML.replaceTokens(template,replacements);
-			
+
 			XML.remove(XML.find(template,"id","progressinfo"));
 			XML.removeChildren(XML.find(template,"id","buttons"));
 			mainElement = XML.find(template,"id","main");

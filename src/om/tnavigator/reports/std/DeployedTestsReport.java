@@ -122,7 +122,7 @@ public class DeployedTestsReport implements OmReport {
 			row.put("forbiddate", forbidDate);
 			row.put("feedbackdate", feedbackDate);
 			row.put("supportcontacts", supportcontacts);
-			
+
 			return row;
 		}
 	}
@@ -213,7 +213,7 @@ public class DeployedTestsReport implements OmReport {
 				reportWriter.printRow(test.toRow(linkToDownloads));
 			}
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see om.tnavigator.reports.TabularReportBase#extraHtmlContent(org.w3c.dom.Element)
 		 */

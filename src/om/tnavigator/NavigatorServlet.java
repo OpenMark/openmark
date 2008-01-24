@@ -1828,7 +1828,7 @@ public class NavigatorServlet extends HttpServlet
 
 		l.logDebug("Starting a session on question " + tq.getID() + " version " + qv +
 				" with random seed " + randomSeed + ".");
-		
+
 		// Start question
 		us.oss=osb.start(rt,
 			tq.getID(),qv.toString(),sQuestionBase,p.getNames(),p.getValues(),new String[0]);
@@ -2492,7 +2492,7 @@ public class NavigatorServlet extends HttpServlet
 				sXHTML +
 				"</form>";
 		}
-		
+
 		if(us.isSingle())
 		{
 			Element eMetadata=getQuestionMetadata(rt,tq.getID(),
@@ -3375,13 +3375,13 @@ public class NavigatorServlet extends HttpServlet
 			sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
 				false,false,null, "Forbidden", "You are not authorised to access this URL.", null);
 		}
-	
+
 		// Check that the requested file exits.
 		if(!file.exists()) {
 			sendError(null,request,response,
 				HttpServletResponse.SC_NOT_FOUND,false,false, null, "Not found", "The requested " + what + " is not present on this server.", null);
 		}
-	
+
 		// Then send it.
 		byte[] abQuestion=IO.loadBytes(new FileInputStream(file));
 		if (what.equals("question")) {
