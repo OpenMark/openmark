@@ -25,11 +25,12 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.w3c.dom.Element;
-
 import om.OmException;
 import om.OmUnexpectedException;
 import om.tnavigator.NavigatorServlet;
+
+import org.w3c.dom.Element;
+
 import util.xml.XML;
 
 /**

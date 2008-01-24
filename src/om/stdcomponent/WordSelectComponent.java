@@ -17,23 +17,15 @@
  */
 package om.stdcomponent;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 
 import om.OmDeveloperException;
 import om.OmException;
-import om.OmUnexpectedException;
 import om.question.ActionParams;
-import om.stdquestion.QComponent;
-import om.stdquestion.QContent;
-import om.stdquestion.QDocument;
+import om.stdquestion.*;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 
 import util.xml.XML;
 
