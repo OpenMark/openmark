@@ -383,7 +383,15 @@ public class NavigatorServlet extends HttpServlet
 	 */
 	public static class RequestTimings
 	{
-		long lStart,lDatabaseElapsed,lQEngineElapsed;
+		long lStart;
+		long lDatabaseElapsed;
+		long lQEngineElapsed;
+		/**
+		 * @param time add this much time to the questionEngine time.
+		 */
+		public void recordServiceTime(long time){
+			lQEngineElapsed += time;
+		}
 	}
 
 	/** Tracks when last error occurred while sending forbids to each other nav */

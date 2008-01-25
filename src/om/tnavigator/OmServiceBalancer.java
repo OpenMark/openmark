@@ -41,42 +41,45 @@ class OmServiceBalancer
 	/** Timeout (ms) for SOAP service calls; currently 30s */
 	private static final int SOAPTIMEOUT=30000;
 
-	/** Array of available service URLs */
-	private URL[] au;
-	/** Array of available services */
-	private OmService[] aos;
-
-	/** Track average performance of all services */
-	private MovingAverage[] ama;
+	/** Penalty (ms) for when a service call fails (throws an exception); currently 60s */
+	private static final int FAILUREPENALTY=60000;
 
 	/** Number of measurements to track in the averaging process */
-	private final static int PERFORMANCEBUFFERSIZE=20;
+	private final static int PERFORMANCEBUFFERSIZE = 20;
+
+	/** Array of available service URLs */
+	private URL[] serviceUrls;
+	/** Array of available services */
+	private OmService[] services;
+
+	/** Track average performance of all services */
+	private MovingAverage[] movingAverages;
 
 	/** Log */
 	private Log l;
 
 	/** True if we should log additional debug info */
-	private boolean bExtraDebug;
+	private boolean logExtraDebug;
 
 	/**
-	 * @param aos Array of available services
+	 * @param serviceUrls Array of available services
 	 */
-	OmServiceBalancer(URL[] au,Log l,boolean bExtraDebug) throws ServiceException
+	OmServiceBalancer(URL[] serviceUrls,Log l,boolean logExtraDebug) throws ServiceException
 	{
-		this.au=au;
+		this.serviceUrls=serviceUrls;
 		this.l=l;
-		this.bExtraDebug=bExtraDebug;
+		this.logExtraDebug=logExtraDebug;
 
-		aos=new OmService[au.length];
+		services=new OmService[serviceUrls.length];
 		OmServiceServiceLocator ossl=new OmServiceServiceLocator();
-		for(int i=0;i<aos.length;i++)
+		for(int i=0;i<services.length;i++)
 		{
-			aos[i]=ossl.getOm(au[i]);
-			((Stub)aos[i]).setTimeout(SOAPTIMEOUT);
+			services[i]=ossl.getOm(serviceUrls[i]);
+			((Stub)services[i]).setTimeout(SOAPTIMEOUT);
 		}
 
-		ama=new MovingAverage[aos.length];
-		for(int i=0;i<aos.length;i++) ama[i]=new MovingAverage(PERFORMANCEBUFFERSIZE);
+		movingAverages=new MovingAverage[services.length];
+		for(int i=0;i<services.length;i++) movingAverages[i]=new MovingAverage(PERFORMANCEBUFFERSIZE);
 
 		lLastZero=System.currentTimeMillis();
 	}
@@ -101,7 +104,7 @@ class OmServiceBalancer
 		long lNow=System.currentTimeMillis();
 		while(lLastZero+AVERAGEUPDATEDELAY < lNow)
 		{
-			for(int i=0;i<ama.length;i++) ama[i].add(0);
+			for(int i=0;i<movingAverages.length;i++) movingAverages[i].add(0);
 			lLastZero+=AVERAGEUPDATEDELAY;
 		}
 
@@ -110,33 +113,33 @@ class OmServiceBalancer
 
 		// p(choosing server A) = (sum(avgsq) - avgsq[A]) / (SERVERS-1)*(sum(avgsq))
 
-		double[] adAvg=new double[aos.length];
-		double[] adAvgSq=new double[aos.length];
+		double[] adAvg=new double[services.length];
+		double[] adAvgSq=new double[services.length];
 		double dSumAvgSq=0;
-		for(int i=0;i<aos.length;i++)
+		for(int i=0;i<services.length;i++)
 		{
-			adAvg[i]=ama[i].get()+1.0; // The+1.0 is just to fudge it, otherwise when they're all 0 it's not so great
+			adAvg[i]=movingAverages[i].get()+1.0; // The+1.0 is just to fudge it, otherwise when they're all 0 it's not so great
 			adAvgSq[i]=adAvg[i]*adAvg[i];
 			dSumAvgSq+=adAvgSq[i];
 		}
-		double[] adProb=new double[aos.length];
-		double dDenominator=(aos.length-1)*dSumAvgSq;
+		double[] adProb=new double[services.length];
+		double dDenominator=(services.length-1)*dSumAvgSq;
 		StringBuffer sb=null;
-		if(bExtraDebug) sb=new StringBuffer("QE performance: ");
-		for(int i=0;i<aos.length;i++)
+		if(logExtraDebug) sb=new StringBuffer("QE performance: ");
+		for(int i=0;i<services.length;i++)
 		{
 			if(dDenominator<0.0001)
 				adProb[i]=1.0;
 			else
 				adProb[i]=(dSumAvgSq-adAvgSq[i]) / dDenominator;
 
-			if(bExtraDebug) sb.append("["+(i+1)+"] "+
+			if(logExtraDebug) sb.append("["+(i+1)+"] "+
 				Strings.formatOneDecimal(adAvg[i])+"ms, "+Strings.formatOneDecimal(adProb[i]*100.0)+"% ");
 		}
-		if(bExtraDebug) l.logDebug("OmServiceBalancer",sb.toString());
+		if(logExtraDebug) l.logDebug("OmServiceBalancer",sb.toString());
 
 		double dPick=Math.random();
-		for(int i=0;i<aos.length;i++)
+		for(int i=0;i<services.length;i++)
 		{
 			dPick-=adProb[i];
 			if(dPick<0)
@@ -144,7 +147,7 @@ class OmServiceBalancer
 				return i;
 			}
 		}
-		return aos.length-1;
+		return services.length-1;
 	}
 
 	/**
@@ -190,9 +193,9 @@ class OmServiceBalancer
 		void stop(RequestTimings rt) throws RemoteException
 		{
 			long lStart=System.currentTimeMillis();
-			aos[iService].stop(sQuestionSession);
+			services[iService].stop(sQuestionSession);
 			long lElapsed=System.currentTimeMillis()-lStart;
-			ama[iService].add(lElapsed);
+			movingAverages[iService].add(lElapsed);
 			rt.lQEngineElapsed+=lElapsed;
 		}
 
@@ -204,21 +207,21 @@ class OmServiceBalancer
 		 * @return Information about new state of session
 		 * @throws RemoteException If the service gives an error
 		 */
-	  om.axis.qengine.ProcessReturn process(RequestTimings rt,String[] names,String[] values) throws RemoteException
-	  {
+		om.axis.qengine.ProcessReturn process(RequestTimings rt,String[] names,String[] values) throws RemoteException
+		{
 			long lStart=System.currentTimeMillis();
-	  	om.axis.qengine.ProcessReturn pr=aos[iService].process(sQuestionSession,names,values);
+			om.axis.qengine.ProcessReturn pr=services[iService].process(sQuestionSession,names,values);
 			long lElapsed=System.currentTimeMillis()-lStart;
-			ama[iService].add(lElapsed);
+			movingAverages[iService].add(lElapsed);
 			rt.lQEngineElapsed+=lElapsed;
-	  	return pr;
-	  }
+			return pr;
+		}
 
-	  /** @return URL of question engine being used */
-	  public URL getEngineURL()
-	  {
-	  	return au[iService];
-	  }
+		/** @return URL of question engine being used */
+		public URL getEngineURL()
+		{
+			return serviceUrls[iService];
+		}
 	}
 
 	/**
@@ -236,137 +239,137 @@ class OmServiceBalancer
 	 * @return Session that can be used to carry out further requests
 	 * @throws RemoteException If all question engines fail
 	 */
-  OmServiceSession start(
-  	RequestTimings rt,
-  	final String questionID, final String questionVersion, final String questionBaseURL,
-  	final String[] initialParamNames, final String[] initialParamValues, final String[] cachedResources)
-  	throws RemoteException
+	OmServiceSession start(
+		RequestTimings rt,
+		final String questionID, final String questionVersion, final String questionBaseURL,
+		final String[] initialParamNames, final String[] initialParamValues, final String[] cachedResources)
+		throws RemoteException
 	{
-  	final OmServiceSession[] out=new OmServiceSession[1];
+		final OmServiceSession[] out=new OmServiceSession[1];
 
-  	balanceThing(rt,new Balanceable()
-  	{
-			public void run(int iService) throws RemoteException
-			{
-	  		out[0]=new OmServiceSession(iService,aos[iService].start(
-	    		questionID, questionVersion, questionBaseURL, initialParamNames, initialParamValues, cachedResources));
-			}
-  	});
-
-  	return out[0];
-	}
-
-  /**
-   * Calls the OmService.getQuestionMetadata method on a load-balanced service.
-   * @param rt Timings
-	 * @param questionID ID of question
-	 * @param questionVersion Version string for question
-	 * @param questionBaseURL Base URL to obtain question if needed
-   * @return True if question works in plain mode, false otherwise
-   * @throws RemoteException If all services fail
-   */
-  public String getQuestionMetadata(RequestTimings rt,
-  	final String questionID, final String questionVersion, final String questionBaseURL)
-  	throws RemoteException
-  {
-  	final String[] out=new String[1];
-
-  	balanceThing(rt,new Balanceable()
-  	{
-			public void run(int iService) throws RemoteException
-			{
-	  		out[0]=aos[iService].getQuestionMetadata(questionID, questionVersion, questionBaseURL);
-			}
-  	});
-
-  	return out[0];
-  }
-
-  /** Interface for things that can be balanced using balanceThing() */
-  private static interface Balanceable
-  {
-  	/**
-  	 * @param iService
-  	 * @throws RemoteException
-  	 */
-  	void run(int iService) throws RemoteException;
-  }
-
-  /**
-   * Load-balances (retrying across different services) a task.
-   * @param rt Receives timing information (may be null)
-   * @param b Task to balance
-   * @throws RemoteException If the task fails on all services
-   */
-  private void balanceThing(RequestTimings rt,Balanceable b) throws RemoteException
-	{
-  	int iPick=pickServer();
-  	int iService=iPick;
-  	while(true)
-  	{
-  		try
-  		{
-	  		long lStart=System.currentTimeMillis();
-	  		b.run(iService);
-	  		long lElapsed=System.currentTimeMillis()-lStart;
-	  		if(rt!=null) rt.lQEngineElapsed+=lElapsed;
-	  		ama[iService].add(lElapsed);
-	  		return;
-  		}
-  		catch(RemoteException re)
-  		{
-  			l.logError("OmServiceBalancer","Service "+au[iService]+"failed at balanced task",re);
-  			// Add a 60 second penalty for not working
-  			ama[iService].add(60000);
-
-	  		// Try next service - if there are any left!
-	  		iService++;
-	  		iService%=aos.length;
-	  		if(iService==iPick) throw re;
-  		}
-  	}
-	}
-
-  /**
-   * Checks whether a server is available, throws an exception if all servers
-   * fail.
-   * @return Total time taken (ms)
-   * @throws RemoteException
-   */
-  public int checkAvailable() throws RemoteException
-  {
-  	long lStart=System.currentTimeMillis();
-  	balanceThing(null,new Balanceable()
+		balanceThing(rt,new Balanceable()
 		{
 			public void run(int iService) throws RemoteException
 			{
-				aos[iService].getEngineInfo();
+				out[0]=new OmServiceSession(iService,services[iService].start(
+					questionID, questionVersion, questionBaseURL, initialParamNames, initialParamValues, cachedResources));
 			}
 		});
-  	return (int)(System.currentTimeMillis()-lStart);
-  }
 
-  /**
-   * Obtains information about question engine performance.
-   * @return XHTML element that can be added to server status page.
-   */
-  Element getPerformanceInfo()
-  {
-  	Element eTable=XML.createDocument().createElement("table");
-  	eTable.setAttribute("class","topheaders");
+		return out[0];
+	}
 
-  	Element eTR=XML.createChild(eTable,"tr");
-    XML.createText(eTR,"th","Engine");
-    XML.createText(eTR,"th","Performance");
+	/**
+	 * Calls the OmService.getQuestionMetadata method on a load-balanced service.
+	 * @param rt Timings
+	 * @param questionID ID of question
+	 * @param questionVersion Version string for question
+	 * @param questionBaseURL Base URL to obtain question if needed
+	 * @return True if question works in plain mode, false otherwise
+	 * @throws RemoteException If all services fail
+	 */
+	public String getQuestionMetadata(RequestTimings rt,
+		final String questionID, final String questionVersion, final String questionBaseURL)
+		throws RemoteException
+	{
+		final String[] out=new String[1];
 
-    for(int i=0;i<au.length;i++)
-    {
-    	eTR=XML.createChild(eTable,"tr");
-    	XML.createText(eTR,"td",au[i].getHost().replaceAll(".open.ac.uk","")+au[i].getPath());
-    	XML.createText(eTR,"td",""+(int)ama[i].get());
-    }
+		balanceThing(rt,new Balanceable()
+		{
+			public void run(int iService) throws RemoteException
+			{
+				out[0]=services[iService].getQuestionMetadata(questionID, questionVersion, questionBaseURL);
+			}
+		});
 
-  	return eTable;
-  }
+		return out[0];
+	}
+
+	/** Interface for things that can be balanced using balanceThing() */
+	private static interface Balanceable
+	{
+		/**
+		 * @param iService
+		 * @throws RemoteException
+		 */
+		void run(int iService) throws RemoteException;
+	}
+
+	/**
+	 * Load-balances (retrying across different services) a task.
+	 * @param rt Receives timing information (may be null)
+	 * @param b Task to balance
+	 * @throws RemoteException If the task fails on all services
+	 */
+	private void balanceThing(RequestTimings rt,Balanceable b) throws RemoteException
+	{
+		int initialPick=pickServer();
+		int iService=initialPick;
+		while(true)
+		{
+			try
+			{
+				long startTime=System.currentTimeMillis();
+				b.run(iService);
+				long elapsedTime=System.currentTimeMillis()-startTime;
+				if(rt!=null) rt.recordServiceTime(elapsedTime);
+				movingAverages[iService].add(elapsedTime);
+				return;
+			}
+			catch(RemoteException re)
+			{
+				l.logError("OmServiceBalancer","Service "+serviceUrls[iService]+"failed at balanced task",re);
+				// Add a 60 second penalty for not working
+				movingAverages[iService].add(FAILUREPENALTY);
+
+				// Try next service - if there are any left!
+				iService++;
+				iService = (iService + 1) % services.length;
+				if (iService==initialPick) throw re;
+			}
+		}
+	}
+
+	/**
+	 * Checks whether a server is available, throws an exception if all servers
+	 * fail.
+	 * @return Total time taken (ms)
+	 * @throws RemoteException
+	 */
+	public int checkAvailable() throws RemoteException
+	{
+		long lStart=System.currentTimeMillis();
+		balanceThing(null,new Balanceable()
+		{
+			public void run(int iService) throws RemoteException
+			{
+				services[iService].getEngineInfo();
+			}
+		});
+		return (int)(System.currentTimeMillis()-lStart);
+	}
+
+	/**
+	 * Obtains information about question engine performance.
+	 * @return XHTML element that can be added to server status page.
+	 */
+	Element getPerformanceInfo()
+	{
+		Element eTable=XML.createDocument().createElement("table");
+		eTable.setAttribute("class","topheaders");
+
+		Element eTR=XML.createChild(eTable,"tr");
+		XML.createText(eTR,"th","Engine");
+		XML.createText(eTR,"th","Performance");
+
+		for(int i=0;i<serviceUrls.length;i++)
+		{
+			eTR=XML.createChild(eTable,"tr");
+			XML.createText(eTR,"td",serviceUrls[i].getHost().replaceAll(".open.ac.uk","")+serviceUrls[i].getPath());
+			XML.createText(eTR,"td",""+(int)movingAverages[i].get());
+		}
+
+		return eTable;
+	}
 
 }
