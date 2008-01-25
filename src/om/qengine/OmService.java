@@ -32,6 +32,7 @@ import om.OmException;
 import om.question.*;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import util.misc.*;
 import util.xml.XML;
@@ -66,7 +67,14 @@ public class OmService implements ServiceLifecycle
 	/** Single instance (needed only for check method) */
 	private static OmService osSingleton=null;
 
-	/** Information about a single question session */
+	/** Used so random code can find the current question engine using a static method. */
+    private static ThreadLocal<OmService> servletForThread = new ThreadLocal<OmService>();
+
+    /** Used to store information read from the configuration file, and also things added
+     * later by setConfiguration. */
+    private Map<String, Object> configuration = new HashMap<String, Object>();
+
+    /** Information about a single question session */
 	private static class QuestionSession
 	{
 		String sSession;
@@ -121,6 +129,7 @@ public class OmService implements ServiceLifecycle
 		String[] cachedResources)
 	  throws OmException
 	{
+		setServletForThread();
 		if(initialParamNames==null) initialParamNames=new String[0];
 		if(initialParamValues==null) initialParamValues=new String[0];
 		if(cachedResources==null) cachedResources=new String[0];
@@ -199,6 +208,10 @@ public class OmService implements ServiceLifecycle
 		{
 			throw handleException("start",t);
 		}
+		finally
+		{
+			unsetServletForThread();
+		}
 	}
 
 	/**
@@ -233,6 +246,7 @@ public class OmService implements ServiceLifecycle
 		String questionID,String questionVersion,String questionBaseURL)
 		throws OmException
 	{
+		setServletForThread();
 		try
 		{
 			// Initial part
@@ -267,6 +281,10 @@ public class OmService implements ServiceLifecycle
 		catch(Throwable t)
 		{
 			throw handleException("getQuestionMetadata",t);
+		}
+		finally
+		{
+			unsetServletForThread();
 		}
 	}
 
@@ -328,6 +346,7 @@ public class OmService implements ServiceLifecycle
 	 */
 	public void stop(String questionSession) throws OmException
 	{
+		setServletForThread();
 		try
 		{
 			synchronized(this)
@@ -342,6 +361,10 @@ public class OmService implements ServiceLifecycle
 		catch(Throwable t)
 		{
 			throw handleException("stop",t);
+		}
+		finally
+		{
+			unsetServletForThread();
 		}
 	}
 
@@ -384,6 +407,7 @@ public class OmService implements ServiceLifecycle
 	public ProcessReturn process(String questionSession,String[] names,String[] values)
     		throws OmException
 	{
+		setServletForThread();
 		if(names==null) names=new String[0];
 		if(values==null) values=new String[0];
 
@@ -434,6 +458,10 @@ public class OmService implements ServiceLifecycle
 		{
 			throw handleException("process",t);
 		}
+		finally
+		{
+			unsetServletForThread();
+		}
 	}
 
 	private static OmException handleException(String sMethod,Throwable t)
@@ -446,9 +474,11 @@ public class OmService implements ServiceLifecycle
 	{
 		System.gc();
 
+		// Create the singleton instance that the check servlet expects.
 		if(osSingleton!=null) throw new ServiceException("Static OmService already exists");
 		osSingleton=this;
 
+		// Get the ServletContext.
 		try
 		{
 			ServletEndpointContext sec=(ServletEndpointContext)oContext;
@@ -460,6 +490,7 @@ public class OmService implements ServiceLifecycle
 			throw new ServiceException(t);
 		}
 
+		// Ensure we are running in headless mode.
 		try
 		{
 			System.setProperty("java.awt.headless", "true");
@@ -474,6 +505,21 @@ public class OmService implements ServiceLifecycle
 				"launches it: -Djava.awt.headless=true");
 		}
 
+		// Load the configuration from the configuration file.
+		File f = new File(sc.getRealPath("qengine.xml"));
+		if (f.exists()) {
+			try {
+				Document configXML = XML.parse(f);
+				Element[] elements = XML.getChildren(configXML.getDocumentElement());
+				for (int i = 0; i < elements.length; i++) {
+					setConfiguration(elements[i].getTagName(), elements[i]);
+				}
+			} catch (IOException e) {
+				new ServiceException("Failed to load and parse configuration file.");
+			}
+		}
+
+		// Start the check thread.
 		(new Thread(new Runnable()
 		{
 			public void run()
@@ -577,5 +623,43 @@ public class OmService implements ServiceLifecycle
 			"<usedmemory>"+sMemoryUsed+"</usedmemory>\n"+
 			"<activesessions>"+mQuestionSessions.size()+"</activesessions>\n"+
 			"</engineinfo>";
+	}
+
+	/**
+	 * This method must be called in a thread before getServletForThread will work.
+	 */
+	private void setServletForThread() {
+		servletForThread.set(this);
+	}
+
+	/**
+	 * @return the instace of this class that is currently handling the current thread.
+	 */
+	public static OmService getServletForThread() {
+		return servletForThread.get();
+	}
+
+	/**
+	 * 
+	 */
+	private void unsetServletForThread() {
+		servletForThread.set(null);
+	}
+
+	/**
+	 * @param key key to identify the bit of information requested.
+	 * @return the corresponding object.
+	 */
+	synchronized public Object getConfiguration(String key) {
+		return configuration.get(key);
+	}
+	
+	/**
+	 * Store some configuration information.
+	 * @param key key to identify the bit of information requested.
+	 * @param value the corresponding object.
+	 */
+	synchronized public void setConfiguration(String key, Object value) {
+		configuration.put(key, value);
 	}
 }

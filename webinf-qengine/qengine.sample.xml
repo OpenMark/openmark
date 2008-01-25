@@ -1,0 +1,16 @@
+<!--
+Sample qengine.xml. Please copy to qengine.xml then modify according to your
+needs. The comments in here should explain most options.
+
+This file is read when the web application starts. Consequently any changes do
+not take effect without a webapp reload.
+
+Note that qengine.xml is not stored in the WEB-INF folder; this is for
+logistical reasons in our setup (basically, each server needs a different
+qengine.xml, but they all have the same WEB-INF folder which we replace
+when updating version). However OpenMark is configured so that it won't serve
+requests for this file, so your database password should be safe.
+-->
+<config>
+	<!-- Currently there are no settings apart from one use by an OU-specific extension. -->
+</config>
