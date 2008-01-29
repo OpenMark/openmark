@@ -18,4 +18,5 @@ om.tnavigator.reports
 om.tnavigator.reports.std
 om.tnavigator.scores
 util.misc
+util.servicebalancer
 util.xml
