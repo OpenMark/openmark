@@ -20,7 +20,6 @@ package om.equation;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.w3c.dom.Element;
@@ -72,9 +71,8 @@ public class Text extends Item
 		Run rBefore=null;
 		int iChangeGap=0;
 
-		for(Iterator i=lRuns.iterator();i.hasNext();)
+		for(Run r : lRuns)
 		{
-			Run r=(Run)i.next();
 			Font fThis=r.iStyle==Font.ITALIC ? fItalic : fPlain;
 
 			boolean bChangeStyle=rBefore!=null && rBefore.iStyle!=r.iStyle;
@@ -342,10 +340,8 @@ public class Text extends Item
 		int iAscent,iDescent;
 
 		iAscent=0; iDescent=0;
-		for(Iterator i=lRuns.iterator();i.hasNext();)
+		for(Run r : lRuns)
 		{
-			Run r=(Run)i.next();
-
 			iAscent=Math.max(
 				Fonts.getMaxAscent(r.iStyle==Font.ITALIC ? fItalic : fPlain,r.sText),iAscent);
 			iDescent=Math.max(
@@ -359,9 +355,8 @@ public class Text extends Item
 		Run rBefore=null;
 		int iChangeGap=0;
 
-		for(Iterator i=lRuns.iterator();i.hasNext();)
+		for(Run r : lRuns)
 		{
-			Run r=(Run)i.next();
 			Font fThis=r.iStyle==Font.ITALIC ? fItalic : fPlain;
 
 			boolean bChangeStyle=rBefore!=null && rBefore.iStyle!=r.iStyle;
