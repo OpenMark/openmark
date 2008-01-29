@@ -200,9 +200,8 @@ public class QContent
 		if(!FILENAMES.matcher(sFilename).matches())
 			throw new IllegalArgumentException("Not a valid resource filename: "+sFilename);
 
-		for(Iterator i=lResources.iterator();i.hasNext();)
+		for(Resource r : lResources)
 		{
-			Resource r=(Resource)i.next();
 			if(r.getFilename().equals(sFilename))
 			{
 				if(!Arrays.equals(abContent,r.getContent()))
