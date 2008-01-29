@@ -59,13 +59,13 @@ public class NavigatorServlet extends HttpServlet
 
 	private static final String SUMMARYTABLE_NOTANSWERED="Not completed";
 
-	/** User passed on question. Should match the defitition in om.question.Results. */
+	/** User passed on question. Should match the definition in Om.question.Results. */
 	public final static int ATTEMPTS_PASS=0;
-	/** User got question wrong after all attempts. Should match the defitition in om.question.Results. */
+	/** User got question wrong after all attempts. Should match the definition in om.question.Results. */
 	public final static int ATTEMPTS_WRONG=-1;
-	/** User got question partially correct after all attempts. Should match the defitition in om.question.Results. */
+	/** User got question partially correct after all attempts. Should match the definition in om.question.Results. */
 	public final static int ATTEMPTS_PARTIALLYCORRECT=-2;
-	/** If developer hasn't set the value. Should match the defitition in om.question.Results. */
+	/** If developer hasn't set the value. Should match the definition in om.question.Results. */
 	public final static int ATTEMPTS_UNSET=-99;
 
 	private static final int MAGIC_RANDOM_SEED_INCREMENT = 12637946;
