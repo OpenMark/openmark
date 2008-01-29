@@ -294,9 +294,8 @@ public class DatabaseAccess
 
 		logDebug("Database connection closing ("+sInUseConnections.size()+" active)");
 
-		for(Iterator i=llAvailableConnections.iterator();i.hasNext();)
+		for(ConnectionInfo ci : llAvailableConnections)
 		{
-			ConnectionInfo ci=(ConnectionInfo)i.next();
 			try
 			{
 				ci.s.close();
@@ -308,9 +307,8 @@ public class DatabaseAccess
 			}
 		}
 		llAvailableConnections=null;
-		for(Iterator i=sInUseConnections.iterator();i.hasNext();)
+		for(ConnectionInfo ci : sInUseConnections)
 		{
-			ConnectionInfo ci=(ConnectionInfo)i.next();
 			try
 			{
 				ci.s.close();
