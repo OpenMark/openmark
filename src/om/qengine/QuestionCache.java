@@ -59,7 +59,7 @@ public class QuestionCache
 	/** Holds stuff related to a particular question (ID) */
 	private static class QuestionStuff
 	{
-		Class c=null;
+		Class<?> c=null;
 		ClosableClassLoader ccl;
 		Document dMeta;
 		List<Question> lActive=new LinkedList<Question>();
@@ -281,7 +281,7 @@ public class QuestionCache
 				// Load class
 				try
 				{
-					qs.c=qs.ccl.loadClass(sClass);
+					qs.c = qs.ccl.loadClass(sClass);
 				}
 				catch(ClassNotFoundException cnfe)
 				{
@@ -378,9 +378,8 @@ public class QuestionCache
 	/** Abandon all questions and close all classloaders */
 	synchronized void shutdown()
 	{
-		for(Iterator i=mActiveQuestions1.values().iterator();i.hasNext();)
+		for(QuestionStuff qs : mActiveQuestions1.values())
 		{
-			QuestionStuff qs=(QuestionStuff)i.next();
 			((ClosableClassLoader)qs.c.getClassLoader()).close();
 			qs.c=null;
 		}
