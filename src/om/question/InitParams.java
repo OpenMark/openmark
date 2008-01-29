@@ -17,6 +17,8 @@
  */
 package om.question;
 
+import om.helper.QEngineConfig;
+
 /**
  * Parameters that are passed to a question when it is being initialised.
  * <p>
@@ -47,6 +49,8 @@ public class InitParams
 	/** Variant mode */
 	private int iFixedVariant=-1;
 
+	private QEngineConfig qeConfig;
+
 	/**
 	 * Construct and set values.
 	 * @param lRandomSeed Random number seed
@@ -56,9 +60,10 @@ public class InitParams
 	 * @param bPlainMode Plain mode on/off
 	 * @param cl ClassLoader for resources
 	 * @param iFixedVariant Fixed question variant (-1 for normal)
+	 * @param config 
 	 */
 	public InitParams(long lRandomSeed,String sFixedColourFG,String sFixedColourBG,
-		double dZoom,boolean bPlainMode,ClassLoader cl,int iFixedVariant)
+		double dZoom,boolean bPlainMode,ClassLoader cl,int iFixedVariant, QEngineConfig config)
 	{
 		this.lRandomSeed=lRandomSeed;
 		this.sFixedColourFG=sFixedColourFG;
@@ -67,6 +72,7 @@ public class InitParams
 		this.bPlainMode=bPlainMode;
 		this.cl=cl;
 		this.iFixedVariant=iFixedVariant;
+		this.qeConfig = config;
 	}
 
 	/**
@@ -118,6 +124,13 @@ public class InitParams
 	public int getFixedVariant()
 	{
 		return iFixedVariant;
+	}
+
+	/**
+	 * @return the QEngineConfig to get config information from.
+	 */
+	public QEngineConfig getQEngineConfig() {
+		return qeConfig;
 	}
 
 	// TODO Add information about the jar files for any shared packages so we

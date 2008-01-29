@@ -29,6 +29,7 @@ import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
 import om.OmException;
+import om.helper.QEngineConfig;
 import om.question.*;
 
 import org.w3c.dom.Document;
@@ -41,7 +42,7 @@ import util.xml.XML;
  * Question engine Web service. This contains all public methods of the
  * question engine. Actual work is deferred to the {@link om.question} package.
  */
-public class OmService implements ServiceLifecycle
+public class OmService implements ServiceLifecycle, QEngineConfig
 {
 	/** Servlet context */
 	private ServletContext sc;
@@ -187,7 +188,7 @@ public class OmService implements ServiceLifecycle
 			// Create and initialise question
 			QuestionCache.QuestionInstance qi=qc.newQuestion(qk);
 			Question q=qi.q;
-			InitParams ip=new InitParams(lRandomSeed,sFixedFG,sFixedBG,dZoom,bPlain,qi.ccl,iFixedVariant);
+			InitParams ip=new InitParams(lRandomSeed,sFixedFG,sFixedBG,dZoom,bPlain,qi.ccl,iFixedVariant,this);
 			Rendering r=q.init(qc.getMetadata(qk),ip);
 
 			// Generate session details and store in map
@@ -653,7 +654,7 @@ public class OmService implements ServiceLifecycle
 	synchronized public Object getConfiguration(String key) {
 		return configuration.get(key);
 	}
-	
+
 	/**
 	 * Store some configuration information.
 	 * @param key key to identify the bit of information requested.

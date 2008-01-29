@@ -34,8 +34,6 @@ import util.servicebalancer.ServiceBalancer;
  * access.
  */
 class OmServiceBalancer extends ServiceBalancer<OmService> {
-	private final OmServiceServiceLocator ossl = new OmServiceServiceLocator();
-
 	/**
 	 * @param serviceUrls Array of available services
 	 */
@@ -45,6 +43,7 @@ class OmServiceBalancer extends ServiceBalancer<OmService> {
 
 	@Override
 	protected OmService createService(URL url) throws ServiceException {
+		OmServiceServiceLocator ossl = new OmServiceServiceLocator();
 		OmService service = ossl.getOm(url);
 		((Stub)service).setTimeout(SOAPTIMEOUT);
 		return service;
@@ -61,11 +60,15 @@ class OmServiceBalancer extends ServiceBalancer<OmService> {
 
 		/** Question session */
 		private String sQuestionSession;
+		private String questionID;
+		private String questionVersion;
 
-		private OmServiceSession(OmService service, om.axis.qengine.StartReturn sr) {
+		private OmServiceSession(OmService service, String questionID, String questionVersion, om.axis.qengine.StartReturn sr) {
 			super(service);
 			srTemp = sr;
 			sQuestionSession = sr.getQuestionSession();
+			this.questionID = questionID;
+			this.questionVersion = questionVersion;
 		}
 
 		/**
@@ -111,6 +114,20 @@ class OmServiceBalancer extends ServiceBalancer<OmService> {
 				}
 			});
 		}
+
+		/**
+		 * @return the questionID of the question that this session is for.
+		 */
+		public String getQuestionID() {
+			return questionID;
+		}
+
+		/**
+		 * @return the questionVersion of the question that this session is for.
+		 */
+		public String getQuestionVersion() {
+			return questionVersion;
+		}
 	}
 
 	/**
@@ -136,7 +153,7 @@ class OmServiceBalancer extends ServiceBalancer<OmService> {
 		return balanceServiceTask(rt, new ServiceTask<OmServiceSession>() {
 			@Override
 			public OmServiceSession run(OmService service) throws RemoteException {
-				return new OmServiceSession(service,
+				return new OmServiceSession(service, questionID, questionVersion, 
 						service.start(questionID, questionVersion, questionBaseURL,
 								initialParamNames, initialParamValues, cachedResources));
 			}

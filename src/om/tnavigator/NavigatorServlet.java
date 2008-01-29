@@ -1691,7 +1691,7 @@ public class NavigatorServlet extends HttpServlet
 	/**
 	 * Returns appropriate version of question to use.
 	 * @param sQuestionID Question ID
-	 * @param iRequiredVersion Desired version or TestQuestion.VERSION_UNSPECIFIEDD
+	 * @param iRequiredVersion Desired version or TestQuestion.VERSION_UNSPECIFIED
 	 * @return Appropriate version
 	 * @throws OmException
 	 */
@@ -4180,50 +4180,12 @@ public class NavigatorServlet extends HttpServlet
 			String backToTest, String title, String message, Throwable exception)
 			throws StopException
 	{
-		// Get rid of user session
-		String sTestID=backToTest;
-		boolean bClearedPosition=false;
-		if(us!=null && title!=ACCESSOUTOFSEQUENCE)
-		{
-			// If they just came in and it crashed, and they're on a question page,
-			// let's forget the position too. Conditions:
-			// * Error is caused by a bug, not permission failure etc
-			// * The test allows navigation (otherwise we shouldn't change their position)
-			if(isBug && us.getDbTi()>0 && us.getTestDefinition()!=null && us.getTestDefinition().isNavigationAllowed() &&
-				((System.currentTimeMillis() - us.lSessionStart) < 5000))
-			{
-				DatabaseAccess.Transaction dat=null;
-				try
-				{
-					dat=da.newTransaction();
-					oq.updateSetTestPosition(dat,us.getDbTi(), 0);
-					bClearedPosition=true;
-				}
-				catch(SQLException se)
-				{
-					// Damn, something maybe wrong with database?
-				}
-				finally
-				{
-					if(dat!=null) dat.finish();
-				}
-			}
-
-			if (!keepSession) {
-				l.logDebug("Throwing away session.");
-				synchronized(sessions)
-				{
-					sessions.values().remove(us);
-				}
-			}
-			if(sTestID==null) sTestID=us.getTestId();
-		}
-
+		boolean resetTestPosition = false;
 		// Detect particular errors that we want to make more friendly
 		if(exception!=null && exception.getMessage()!=null)
 		{
 			String TEMPPROBLEM="(This error indicates a temporary problem with our " +
-						"systems; wait a minute then try again.)";
+					"systems; wait a minute then try again.)";
 
 			if(exception instanceof SQLException)
 			{
@@ -4258,13 +4220,66 @@ public class NavigatorServlet extends HttpServlet
 				}
 				else
 				{
-					title="Question engine fault";
-					message="An error occurred in the question or a required system " +
-							"component.";
-					// Leave exception to display; this could be a question developer
-					// error.
+					Throwable cause = exception.getCause();
+					if (cause != null && cause instanceof OmTransientQuestionException) {
+						title="Temporary problem at the question engine";
+						if (cause.getMessage() != null)
+						{
+							message=cause.getMessage();
+						}
+						message += TEMPPROBLEM;
+						exception=null;
+						resetTestPosition = true;
+					}
+					else
+					{
+						title="Question engine fault";
+						message="An error occurred in the question or a required system " +
+								"component.";
+						// Leave exception to display; this could be a question developer
+						// error.
+					}
 				}
 			}
+		}
+
+		// Get rid of user session
+		String sTestID=backToTest;
+		boolean bClearedPosition=false;
+		if(us!=null && title!=ACCESSOUTOFSEQUENCE)
+		{
+			// If they just came in and it crashed, and they're on a question page,
+			// let's forget the position too. Conditions:
+			// * Error is caused by a bug, not permission failure etc
+			// * The test allows navigation (otherwise we shouldn't change their position)
+			if(isBug && us.getDbTi()>0 && us.getTestDefinition()!=null && us.getTestDefinition().isNavigationAllowed() &&
+				((System.currentTimeMillis() - us.lSessionStart) < 5000 || resetTestPosition))
+			{
+				DatabaseAccess.Transaction dat=null;
+				try
+				{
+					dat=da.newTransaction();
+					oq.updateSetTestPosition(dat,us.getDbTi(), 0);
+					bClearedPosition=true;
+				}
+				catch(SQLException se)
+				{
+					// Damn, something maybe wrong with database?
+				}
+				finally
+				{
+					if(dat!=null) dat.finish();
+				}
+			}
+
+			if (!keepSession) {
+				l.logDebug("Throwing away session.");
+				synchronized(sessions)
+				{
+					sessions.values().remove(us);
+				}
+			}
+			if(sTestID==null) sTestID=us.getTestId();
 		}
 
 		boolean bRemovedBackto=false;
@@ -4295,7 +4310,8 @@ public class NavigatorServlet extends HttpServlet
 
 			if(us!=null && us.oss!=null)
 			{
-				m.put("QENGINE",displayServletURL(us.oss.getEngineURL()));
+				m.put("QENGINE", displayServletURL(us.oss.getEngineURL()) + " (" +
+						us.oss.getQuestionID() + us.oss.getQuestionVersion() + ")");
 			}
 			else
 			{
@@ -4398,7 +4414,7 @@ public class NavigatorServlet extends HttpServlet
 			// Ignore exception, they must have closed browser or something
 		}
 
-		// Get requested path too, fo use in logged/displayed error
+		// Get requested path too, for use in logged/displayed error
 		String sPath=request.getPathInfo();
 		if(sPath==null) sPath="";
 		if(request.getQueryString()!=null) sPath+="?"+request.getQueryString();

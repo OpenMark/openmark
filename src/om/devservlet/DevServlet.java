@@ -24,9 +24,11 @@ import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
+import javax.xml.rpc.ServiceException;
 
 import om.OmException;
 import om.OmVersion;
+import om.helper.QEngineConfig;
 import om.question.*;
 import om.stdquestion.StandardQuestion;
 
@@ -42,7 +44,7 @@ import util.xml.XML;
  * for any production or public demonstration use. Only supports one instance
  * of one question at a time.
  */
-public class DevServlet extends HttpServlet
+public class DevServlet extends HttpServlet implements QEngineConfig
 {
 	/** Constant for specifying the number of text boxes for typing package names in the interface. */
 	private final static int NUM_EXTRA_PACKAGE_SLOTS = 3;
@@ -68,6 +70,10 @@ public class DevServlet extends HttpServlet
 
 	/** List of question definitions */
 	private QuestionDefinitions qdQuestions;
+
+    /** Used to store information read from the configuration file, and also things added
+     * later by setConfiguration. */
+    private Map<String, Object> configuration = new HashMap<String, Object>();
 
 	/** Clear/reset question data */
 	private void resetQuestion()
@@ -111,6 +117,20 @@ public class DevServlet extends HttpServlet
 			throw new ServletException("Your application server must be set to run in " +
 				"headless mode. Add the following option to the Java command line that " +
 				"launches it: -Djava.awt.headless=true");
+		}
+
+		// Load the configuration from the configuration file.
+		File f = new File(getServletContext().getRealPath("qengine.xml"));
+		if (f.exists()) {
+			try {
+				Document configXML = XML.parse(f);
+				Element[] elements = XML.getChildren(configXML.getDocumentElement());
+				for (int i = 0; i < elements.length; i++) {
+					setConfiguration(elements[i].getTagName(), elements[i]);
+				}
+			} catch (IOException e) {
+				new ServiceException("Failed to load and parse configuration file.");
+			}
 		}
 
 		try
@@ -441,7 +461,7 @@ public class DevServlet extends HttpServlet
 				String sBG="bw".equals(sAccess) ? "#000000" : null;
 
 				ipInProgress=new InitParams(randomSeed,
-					sFG,sBG,dZoom,bPlain,cclInProgress,iVariant);
+					sFG,sBG,dZoom,bPlain,cclInProgress,iVariant, this);
 				Rendering r=qInProgress.init(rr.dMeta,ipInProgress);
 
 				// Try starting the question a few times, and ensure we get the same result each time.
@@ -756,4 +776,20 @@ public class DevServlet extends HttpServlet
 		return m;
 	}
 
+	/**
+	 * @param key key to identify the bit of information requested.
+	 * @return the corresponding object.
+	 */
+	synchronized public Object getConfiguration(String key) {
+		return configuration.get(key);
+	}
+
+	/**
+	 * Store some configuration information.
+	 * @param key key to identify the bit of information requested.
+	 * @param value the corresponding object.
+	 */
+	synchronized public void setConfiguration(String key, Object value) {
+		configuration.put(key, value);
+	}
 }

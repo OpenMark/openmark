@@ -22,6 +22,7 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import om.*;
+import om.helper.QEngineConfig;
 import om.question.*;
 import om.stdcomponent.*;
 
@@ -150,6 +151,10 @@ public abstract class StandardQuestion implements Question
 		{
 			return IO.loadResource(getClass(),sName);
 		}
+	}
+
+	protected QEngineConfig getQEngineConfig() {
+		return ip.getQEngineConfig();
 	}
 
 	public synchronized ActionRendering action(ActionParams ap) throws OmException
