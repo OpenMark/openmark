@@ -3,6 +3,7 @@
 
 	<!-- Test ID -->
 	<definition>mu120.module5</definition>
+	<supportcontact>nobody@example.com</supportcontact>
 
 	<access>
 
