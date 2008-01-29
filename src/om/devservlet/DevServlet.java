@@ -21,6 +21,8 @@ import java.awt.GraphicsEnvironment;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -50,6 +52,10 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 	private final static int NUM_EXTRA_PACKAGE_SLOTS = 3;
 	/** Number of times the question is started, to check that it is using the random seed correctly. */
 	private final static int NUM_REPEAT_INITS = 2;
+	/** Regular expression for question ID/versions. There are two capturing brackets,
+	 * which give the id and the version. */
+	private final static Pattern QUESTIONID_REGEXP = Pattern.compile(
+			"([_a-z][_a-z0-9]*(?:\\.[_a-z][_a-z0-9]*)+)\\.(\\d+\\.\\d+)");
 	/** In-progress question (null if none) */
 	private Question qInProgress=null;
 
@@ -619,6 +625,10 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 					return;
 				}
 			}
+			// Handle requests for question, test and deploy files separately
+			// as they're not from users, so don't need the session stuff.
+			else if(!bPost && sPath.startsWith("/!question/"))
+				handleQuestion(sPath.substring("/!question/".length()),request,response);
 			else if(sPath.startsWith("/build/"))
 				handleBuild(sPath.substring("/build/".length()),request,response);
 			else if(sPath.startsWith("/run/"))
@@ -638,7 +648,32 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 		}
 	}
 
-	/** Remember last xhtml sent so we can save it */
+	private void handleQuestion(String idVersion, HttpServletRequest request, HttpServletResponse response)
+	throws Exception
+	{
+		Matcher m = QUESTIONID_REGEXP.matcher(idVersion);
+		if (!m.matches()) {
+			sendError(request, response, HttpServletResponse.SC_NOT_FOUND,
+					"Not found", "Not a valid question id-version.", null);
+		}
+		File file = new File(getServletContext().getRealPath("questions"), m.group(1) + ".jar");
+
+		// Check that the requested file exits.
+		if(!file.exists()) {
+			sendError(request, response, HttpServletResponse.SC_NOT_FOUND,
+					"Not found", "The requested question is not present on this server.", null);
+		}
+
+		// Then send it.
+		byte[] abQuestion=IO.loadBytes(new FileInputStream(file));
+		response.setContentType("application/x-openmark");
+		response.setContentLength(abQuestion.length);
+		OutputStream os=response.getOutputStream();
+		os.write(abQuestion);
+		os.close();
+	}
+
+	/** Remember last XHTML sent so we can save it */
 	private String sLastXHTML;
 
 	private void serveXHTML(String sQuestion,Rendering r,
