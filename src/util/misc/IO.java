@@ -109,7 +109,7 @@ public abstract class IO
 	 * @return Byte array containing file in memory
 	 * @throws IOException If it doesn't exist or there is any other error loading
 	 */
-	public static byte[] loadResource(Class c,String sName) throws IOException
+	public static byte[] loadResource(Class<?> c,String sName) throws IOException
 	{
 		return loadResource(c.getClassLoader(),
 			"/"+c.getName().replace('.','/').replaceFirst("/[^/]*$","")+"/"+sName);
