@@ -284,7 +284,7 @@ public class QuestionDefinition
 			// Load class
 			try
 			{
-				Class c=rr.ccl.loadClass(sClass);
+				Class<?> c=rr.ccl.loadClass(sClass);
 				rr.q=(Question)c.newInstance();
 			}
 			catch(ClassNotFoundException cnfe)
