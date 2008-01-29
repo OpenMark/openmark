@@ -19,7 +19,6 @@ package om.graph;
 
 import java.awt.*;
 import java.lang.reflect.*;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -157,9 +156,8 @@ public class World
 	 */
 	public void paint(Graphics2D g2)
 	{
-		for(Iterator i=llItems.iterator();i.hasNext();)
+		for(GraphItem gi : llItems)
 		{
-			GraphItem gi=(GraphItem)i.next();
 			gi.paint(g2);
 		}
 	}
@@ -441,12 +439,12 @@ public class World
 					int iMod=am[iMethod].getModifiers();
 					if(!Modifier.isPublic(iMod) || Modifier.isStatic(iMod)) continue;
 
-					// Ignore methods that don't take single param
-					Class[] ac=am[iMethod].getParameterTypes();
+					// Ignore methods that don't take a single parameter
+					Class<?>[] ac=am[iMethod].getParameterTypes();
 					if(ac.length!=1) continue;
-					Class cParam=ac[0];
+					Class<?> cParam=ac[0];
 
-					// Ok this is the right method, now convert/validate the parameter
+					// OK this is the right method, now convert/validate the parameter
 					Object oParam;
 					try
 					{
