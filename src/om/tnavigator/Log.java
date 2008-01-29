@@ -471,9 +471,8 @@ public class Log
 		Document d=XML.createDocument();
 		Element e=XML.createChild(d,"recentproblems");
 
-		for(Iterator i=llRecentProblems.iterator();i.hasNext();)
+		for(String s : llRecentProblems)
 		{
-			String s=(String)i.next();
 			e.appendChild(d.importNode(XML.parse(s).getDocumentElement(),true));
 		}
 
@@ -489,9 +488,8 @@ public class Log
 		Document d=XML.createDocument();
 		Element e=XML.createChild(d,"recententries");
 
-		for(Iterator i=llRecentEntries.iterator();i.hasNext();)
+		for(String s : llRecentEntries)
 		{
-			String s=(String)i.next();
 			e.appendChild(d.importNode(XML.parse(s).getDocumentElement(),true));
 		}
 
@@ -585,7 +583,7 @@ public class Log
 	}
 
 	/** Data about a single log file. Comparable in date order. */
-	public static class LogFile implements Comparable
+	public static class LogFile implements Comparable<LogFile>
 	{
 		String sComponent;
 		String sDate;
@@ -614,9 +612,8 @@ public class Log
 			return sDate;
 		}
 
-		public int compareTo(Object o)
+		public int compareTo(LogFile lfOther)
 		{
-			LogFile lfOther=(LogFile)o;
 			return getDate().compareTo(lfOther.getDate());
 		}
 	}

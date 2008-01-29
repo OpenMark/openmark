@@ -46,10 +46,10 @@ public class SimpleUser implements UserDetails
 	public String getAuthIDsAsString()
 	{
 		StringBuffer result=new StringBuffer();
-		for(Iterator i=groups.iterator();i.hasNext();)
+		for(String group : groups)
 		{
 			if(result.length()!=0) result.append(' ');
-			result.append((String)i.next());
+			result.append(group);
 		}
 		return result.toString();
 	}
