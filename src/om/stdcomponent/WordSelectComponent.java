@@ -196,7 +196,7 @@ public class WordSelectComponent extends QComponent
 				input.setAttribute("onclick","wordOnClick('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
 				input.setAttribute("id",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
 				if (w.selected) {
-					input.setAttribute("selected", "selected");
+					input.setAttribute("checked", "checked");
 					labelclass = "selectedhilight ";
 				}
 				qc.addInlineXHTML(input);
