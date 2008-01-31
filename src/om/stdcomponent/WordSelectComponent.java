@@ -17,8 +17,7 @@
  */
 package om.stdcomponent;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 
 import om.OmDeveloperException;
 import om.OmException;
@@ -49,26 +48,73 @@ public class WordSelectComponent extends QComponent
 		return "wordselect";
 	}
 	
-	private ArrayList<WordBlock> alWordBlocks;
+	private static class Word
+	{
+		String word;
+		String following;
+		int id;
+		boolean selected = false;
+
+		private Word(String word, String following, int id) {
+			this.word = word;
+			this.following = following;
+			this.id = id;
+		}
+	}
 
 	private static class WordBlock
 	{
-		String sID;
-		String words;
-		boolean checkedHighlight = false;
-		boolean secondHighlight = false;
-		boolean isSW = false;
+		List<Word> words = new ArrayList<Word>();
+		String preceding;
+		String id;
+		boolean isSecondHighlighted = false;
+		boolean isSelectable = false;
 		
+		private WordBlock(String content, String id, boolean isSelectable, boolean isSecondHighlighted) {
+			this.id = id;
+			this.isSecondHighlighted = isSecondHighlighted;
+			this.isSelectable = isSelectable;
+
+			int i = 0;
+			StringBuffer fragment = new StringBuffer();
+			
+			// Extract any non-word characters before the first word starts.
+			while (i < content.length() && !isWordCharacter(content.charAt(i))) {
+				fragment.append(content.charAt(i++));
+			}
+			preceding = fragment.toString();
+			fragment.setLength(0);
+
+			int wordIndex = 1;
+			// Extract the words, followed by any non-word characters.
+			while (i < content.length()) {
+				// Extract a word.
+				while (i < content.length() && isWordCharacter(content.charAt(i)))
+				{
+					fragment.append(content.charAt(i++));
+				}
+				String word = fragment.toString();
+				fragment.setLength(0);
+
+				// Extract any following non-word characters.
+				while (i < content.length() && !isWordCharacter(content.charAt(i)))
+				{
+					fragment.append(content.charAt(i++));
+				}
+				words.add(new Word(word, fragment.toString(), wordIndex++));
+				fragment.setLength(0);
+			}
+		}
 	}
-	
-	String str = "";
+
+	private List<WordBlock> wordBlocks = new ArrayList<WordBlock>();
+	private Map<String, WordBlock> wordsById = new HashMap<String, WordBlock>();
+
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
-		
-		str="";
-		
 		StringBuffer sbText=new StringBuffer();
+		int idCounter = 1;
 		for(Node n=eThis.getFirstChild();n!=null;n=n.getNextSibling())
 		{
 			if(n instanceof Element)
@@ -76,215 +122,146 @@ public class WordSelectComponent extends QComponent
 				Element e=(Element)n;
 				if(e.getTagName().equals("sw"))
 				{
-					//str += XML.getText(e);
-					//str += " found sw element";
-					if (alWordBlocks == null) alWordBlocks = new ArrayList<WordBlock>(10);
-					WordBlock p =new WordBlock();
-					p.words = XML.getText(e);
-					p.isSW = true;
-					if(e.hasAttribute("highlight")){
-						
+					if(sbText.length()>0)
+					{
+						String id = "" + (idCounter++);
+						WordBlock wb = new WordBlock(sbText.toString(), id, false, false);
+						wordBlocks.add(wb);
+						wordsById.put(id, wb);
+
+						sbText.setLength(0);
 					}
-						 
-					
-					
-					alWordBlocks.add(p);
+					String id;
+					if (e.hasAttribute("id")) {
+						id = e.getAttribute("id");
+					} else {
+						id = "" + (idCounter++);
+					}
+					WordBlock wb =new WordBlock(XML.getText(e), id, true, e.hasAttribute("highlight"));
+					wordBlocks.add(wb);
+					wordsById.put(id, wb);
 				}
 				else
 				{
-					throw new OmDeveloperException("<selectword> can only contain <sw> tags");
+					throw new OmDeveloperException("<wordselect> can only contain <sw> tags");
 				}
 			}
 			else if(n instanceof Text)
 			{
-				// Appending text to buffer allows us to join up text nodes where
-				// there are multiple nodes for one string (e.g. if there's CDATA
-				// in the middle or something)
 				sbText.append(n.getNodeValue());
-				if(sbText.length()>0)
-				{
-					if (alWordBlocks == null) alWordBlocks = new ArrayList<WordBlock>(10);
-					WordBlock p =new WordBlock();
-					p.words = (sbText.toString());
-					
-					alWordBlocks.add(p);
-					
-					//str += (sbText.toString());
-					sbText.setLength(0);
-				}
 			}
 		}
-	}
-	
+		if(sbText.length()>0)
+		{
+			String id = "" + (idCounter++);
+			WordBlock wb = new WordBlock(sbText.toString(), id, false, false);
+			wordBlocks.add(wb);
+			wordsById.put(id, wb);
 
+			sbText.setLength(0);
+		}
+	}
+
+	private static boolean isWordCharacter(char c) {
+		return Character.isLetterOrDigit(c);
+	}
+
+	private String makeCheckwordId(WordBlock wb, Word w) {
+		return "_b" + wb.id + "_w" + w.id;
+	}
 
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
+		for (WordBlock wb : wordBlocks)
+		{
+			if ("" != wb.preceding) {
+				Element span = qc.createElement("span");
+				XML.createText(span, wb.preceding);
+				if (wb.isSecondHighlighted) {
+					span.setAttribute("class","secondhilight");
+				}
+				qc.addInlineXHTML(span);
+			}
 
-		
-		String s = "";
-		if (alWordBlocks != null){
-			for (int i=0; i < alWordBlocks.size(); i++)
+			for(Word w : wb.words)
 			{
-				WordBlock ip = alWordBlocks.get(i);
-				s = ip.words;
-				//s +=" text ";
-			
-			
-				int wordNo = -1;
-				char current;
-				String clickword = "";
-				String checkwordID = "";
-				StringBuffer sb = new StringBuffer();
-				for(int j =0; j < s.length(); j++){
-					current = s.charAt(j);
-					if (Character.isLetterOrDigit(current)) {
-						sb.append(current);
-						//end = end + 1;
-					}
-					else{
-						clickword = sb.toString();
-						sb.delete(0,sb.length());
-						if(clickword.length() > 0){
-							wordNo++;
-							checkwordID = "b" + i + "c" + wordNo;
-							Element eInput=qc.getOutputDocument().createElement("input");
-							eInput.setAttribute("type","checkbox");
-							eInput.setAttribute("class", "offscreen");
-							eInput.setAttribute("name", QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
-							eInput.setAttribute("value", "1_" + checkwordID);
-							eInput.setAttribute("onclick","wordOnClick('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+"');");
-							eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID()+checkwordID);
-							qc.addInlineXHTML(eInput);
-							
-							Element eLabel=qc.getOutputDocument().createElement("label");
-							eLabel.setAttribute("for",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID()+checkwordID);
-							eLabel.setAttribute("class","lime");
-							eLabel.setAttribute("id","label" + QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID()+checkwordID);
-							
-							XML.createText(eLabel,clickword);
-							
-							qc.addInlineXHTML(eLabel);
-							
-							
-							String curr = "" + current;
-							Element eCurrent=qc.createElement("span");
-							XML.createText(eCurrent,curr);
-							qc.addInlineXHTML(eCurrent);	
-							
-						}
-						
-					}
-					
+				String labelclass = "";
+				String checkwordID = makeCheckwordId(wb, w);
+				Element input=qc.getOutputDocument().createElement("input");
+				input.setAttribute("type","checkbox");
+				input.setAttribute("class", "offscreen");
+				input.setAttribute("name", QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
+				input.setAttribute("value", "1");
+				input.setAttribute("onclick","wordOnClick('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
+				input.setAttribute("id",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
+				if (w.selected) {
+					input.setAttribute("selected", "selected");
+					labelclass = "selectedhilight ";
 				}
-			
-			}
-			//s += " ";
-		}
-		
-
-	/*	int wordNo = -1;
-		char current;
-		String clickword = "";
-		String checkwordID = "";
-		StringBuffer sb = new StringBuffer();
-		for(int i =0; i < s.length(); i++){
-			current = s.charAt(i);
-			if (Character.isLetterOrDigit(current)) {
-				sb.append(current);
-				//end = end + 1;
-			}
-			else{
-				clickword = sb.toString();
-				sb.delete(0,sb.length());
-				if(clickword.length() > 0){
-					wordNo++;
-					checkwordID = "c" + wordNo;
-					Element eInput=qc.getOutputDocument().createElement("input");
-					eInput.setAttribute("type","checkbox");
-					eInput.setAttribute("class", "offscreen");
-					eInput.setAttribute("value", "1");
-					eInput.setAttribute("onclick","wordOnClick('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
-					eInput.setAttribute("id",QDocument.ID_PREFIX+getID()+checkwordID);
-					qc.addInlineXHTML(eInput);
-					
-					Element eLabel=qc.getOutputDocument().createElement("label");
-					eLabel.setAttribute("for",QDocument.ID_PREFIX+getID()+checkwordID);
-					eLabel.setAttribute("class","lime");
-					eLabel.setAttribute("id","label" + QDocument.ID_PREFIX+getID()+checkwordID);
-					
-					XML.createText(eLabel,clickword);
-					
-					qc.addInlineXHTML(eLabel);
-					
-					
-					String curr = "" + current;
-					Element eCurrent=qc.createElement("span");
-					XML.createText(eCurrent,curr);
-					qc.addInlineXHTML(eCurrent);
-					
-					
-					
-					
-				}
+				qc.addInlineXHTML(input);
 				
-			}
-			
-			
-			
-		}*/
-		
-		
-		/*Element eInput=qc.getOutputDocument().createElement("input");
-		eInput.setAttribute("type","checkbox");
-		eInput.setAttribute("class", "offscreen");
-		eInput.setAttribute("value", "1");
-		eInput.setAttribute("onclick","wordOnClick('"+getID()+"','"+QDocument.ID_PREFIX+"');");
-		eInput.setAttribute("id",QDocument.ID_PREFIX+getID());
-		qc.addInlineXHTML(eInput);
-		
-		Element eLabel=qc.getOutputDocument().createElement("label");
-		eLabel.setAttribute("for",QDocument.ID_PREFIX+getID());
-		eLabel.setAttribute("class","lime");
-		eLabel.setAttribute("id","label" + QDocument.ID_PREFIX+getID());
-		
-		XML.createText(eLabel,s);
-		XML.createText(eLabel,"s" + len + " ");
-		
-		qc.addInlineXHTML(eLabel);*/
-		//qc.setParent(eLabel);
+				Element label=qc.getOutputDocument().createElement("label");
+				label.setAttribute("for",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
+				if (wb.isSecondHighlighted) {
+					labelclass += "secondhilight";
+				}
+				label.setAttribute("class",labelclass);
+				label.setAttribute("id",QDocument.ID_PREFIX+"label_wordselectword_"+getID() + checkwordID);
+				XML.createText(label,w.word);
+				qc.addInlineXHTML(label);
 
-		//produceChildOutput(qc,bInit,bPlain);
+				if ("" != w.following) {
+					Element span = qc.createElement("span");
+					XML.createText(span, w.following);
+					if (wb.isSecondHighlighted) {
+						label.setAttribute("class","secondhilight");
+					}
+					qc.addInlineXHTML(span);
+				}
 
-		//qc.unsetParent();
-	}
-	
-	File f = new File("C:/temp/omdebug.txt");
-	PrintWriter debugOutput = null;
-	protected void formSetValue(String sValue,ActionParams ap) throws OmException
-	{
-		if (debugOutput == null) {
-			try {
-				debugOutput = new PrintWriter(new FileOutputStream(f));
-			} catch (FileNotFoundException e) {
 			}
 		}
-		debugOutput.println("In formSetValue. sValue = " + sValue);
 	}
 
+	@Override
 	protected void formAllValuesSet(ActionParams ap) throws OmException
 	{
-		if (debugOutput == null) {
-			try {
-				debugOutput = new PrintWriter(new FileOutputStream(f));
-			} catch (FileNotFoundException e) {
+		if(!isEnabled()) return;
+
+		// Get selected words data
+		for (WordBlock wb : wordBlocks)
+		{
+			for(Word w : wb.words)
+			{
+				String checkwordID = makeCheckwordId(wb, w);
+				w.selected = false;
+				if(ap.hasParameter("wordselectword_"+getID() + checkwordID))
+				{
+					w.selected = true;
+				}
 			}
-			debugOutput.println("formSetValue was never called.");
 		}
-		debugOutput.println("In formAllValuesSet.");
-		debugOutput.close();
-		debugOutput = null;
 	}
 
+	/**
+	 * Clear all the selected words.
+	 */
+	public void clearSelection()
+	{
+		for (WordBlock wb : wordBlocks) {
+			clearSelection(wb.id);
+		}
+	}
+
+	/**
+	 * Clear all the selected words in the block with the given id.
+	 * @param blockId the id of the block of words to clear.
+	 */
+	public void clearSelection(String blockId) {
+		WordBlock wb = wordsById.get(blockId);
+		for (Word w : wb.words) {
+			w.selected = false;
+		}
+	}
 }

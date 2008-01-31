@@ -1,9 +1,14 @@
-.om .chkdColor
+.om .selectedhilight
 {
   background: lime;
+}
+.om .secondhilight
+{
+  background: red;
 }
 
 .om .offscreen
 {
-  position: absolute;left: -10px;
+  position: absolute;
+  left: -10000px;
 }
