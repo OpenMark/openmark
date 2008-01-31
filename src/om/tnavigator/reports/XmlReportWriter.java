@@ -30,6 +30,8 @@ import om.tnavigator.NavigatorServlet;
  * <results batch="[batchnumber]">, and each row will be wrapped in a <result> tag.
  */
 public class XmlReportWriter extends TabularReportWriter {
+	private String rootTag;
+	private String rowTag;
 
 	/**
 	 * Create an instance of this writer for writing the given report to the given HTTP Servlet
@@ -46,7 +48,13 @@ public class XmlReportWriter extends TabularReportWriter {
 	 */
 	@Override
 	public void printHead(String batchid, String title, TabularReportBase report) {
-		pw.println("<results batch=\"" + batchid + "\">");
+		rootTag = report.getReportTagName();
+		rowTag = report.getRowTagName();
+		if (batchid != null) {
+			pw.println("<" + rootTag + " batch=\"" + batchid + "\">");
+		} else {
+			pw.println("<" + rootTag + ">");
+		}
 	}
 
 	/* (non-Javadoc)
@@ -63,12 +71,12 @@ public class XmlReportWriter extends TabularReportWriter {
 	 */
 	@Override
 	public void printRow(Map<String, String> data) {
-		pw.println("\t<result>");
+		pw.println("\t<" + rowTag + ">");
 		for (TabularReportBase.ColumnDefinition column : columns)
 		{
 			pw.println("\t\t<"+column.id+">"+data.get(column.id)+"</"+column.id+">");
 		}
-		pw.println("\t</result>");
+		pw.println("\t</" + rowTag + ">");
 	}
 
 	/* (non-Javadoc)
@@ -76,6 +84,6 @@ public class XmlReportWriter extends TabularReportWriter {
 	 */
 	@Override
 	public void printTail() {
-		pw.println("</results>");
+		pw.println("</" + rootTag + ">");
 	}
 }

@@ -114,6 +114,15 @@ public class DeployedQuestionsReport implements OmReport {
 			this.ns = DeployedQuestionsReport.this.ns;
 		}
 
+		@Override
+		public String getReportTagName() {
+			return "questions";
+		}
+		@Override
+		public String getRowTagName() {
+			return "question";
+		}
+
 		/* (non-Javadoc)
 		 * @see om.tnavigator.reports.TabularReportBase#init(javax.servlet.http.HttpServletRequest)
 		 */

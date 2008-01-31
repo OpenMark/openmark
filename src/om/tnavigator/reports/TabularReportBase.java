@@ -112,6 +112,20 @@ public abstract class TabularReportBase {
 		}
 	}
 
+	/**
+	 * @return the identifier to use for the whole reports, for example as the outer XML tag name.
+	 */
+	public String getReportTagName() {
+		return "results";
+	}
+
+	/**
+	 * @return the identifier to use for rows of the report, used, for example, as an XML tag name.
+	 */
+	public String getRowTagName() {
+		return "result";
+	}
+
 	private TabularReportWriter setupWriter(HttpServletRequest request,
 			HttpServletResponse response, List<ColumnDefinition> columns) throws OmException {
 		String format = request.getParameter("format");

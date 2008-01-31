@@ -146,6 +146,15 @@ public class DeployedTestsReport implements OmReport {
 			this.ns = DeployedTestsReport.this.ns;
 		}
 
+		@Override
+		public String getReportTagName() {
+			return "tests";
+		}
+		@Override
+		public String getRowTagName() {
+			return "test";
+		}
+
 		/* (non-Javadoc)
 		 * @see om.tnavigator.reports.TabularReportBase#init(javax.servlet.http.HttpServletRequest)
 		 */

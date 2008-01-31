@@ -575,7 +575,22 @@ public class NavigatorServlet extends HttpServlet
 
 			// Handle requests for question, test and deploy files separately
 			// as they're not from users, so don't need the session stuff.
-			if(!bPost && sPath.startsWith("/!question/"))
+			if (sPath.equals("/!question/list"))
+			{
+				// Delegate producing the question list to the DeployedQuestionReport
+				// by pretending we came from a different URL with an extra parameter.
+				sPath = "/!report/allquestions";
+				request = new HttpServletRequestWrapper(request) {
+					@Override
+					public String getParameter(String name) {
+						if ("format".equals(name)) {
+							return "xml";
+						}
+						return super.getParameter(name);
+					}
+				};
+			}
+			else if(!bPost && sPath.startsWith("/!question/"))
 			{
 				handleQuestion(sPath.substring("/!question/".length()),request,response);
 				return;
