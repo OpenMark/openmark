@@ -4,9 +4,13 @@
 }
 .om .secondhilight
 {
-  background: red;
+  background-color: #EF9ECA;
 }
+.om .borderfocus
+{
+	border:1px dashed grey;
 
+}
 .om .offscreen
 {
   position: absolute;
