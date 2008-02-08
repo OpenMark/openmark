@@ -60,6 +60,20 @@ public class PostgreSQL extends OmQueries
 	{
 		return "CURRENT_TIMESTAMP";
 	}
+ 
+	/* (non-Javadoc)
+	 * @see om.tnavigator.db.OmQueries#extractMonthFromTimestamp(java.lang.String)
+	 */
+	@Override
+	protected String extractMonthFromTimestamp(String value) {
+		return "DATE_PART('month', " + value + ")";
+	}
 
-
+	/* (non-Javadoc)
+	 * @see om.tnavigator.db.OmQueries#extractYearFromTimestamp(java.lang.String)
+	 */
+	@Override
+	protected String extractYearFromTimestamp(String value) {
+		return "DATE_PART('year', " + value + ")";
+	}
 }

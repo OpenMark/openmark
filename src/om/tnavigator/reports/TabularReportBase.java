@@ -178,6 +178,15 @@ public abstract class TabularReportBase {
 	public abstract void generateReport(TabularReportWriter reportWriter);
 
 	/**
+	 * This method can be used from extraHtmlContent to print a simple string message
+	 * surrounded by <p> tags.
+	 * @param message
+	 */
+	protected void printMessage(String message, Element mainElement) {
+		XML.createText(mainElement, "p", message);
+	}
+
+	/**
 	 * A chance for the report to add some extra content, for example a settings form,
 	 * before the HTML table.
 	 * @param mainElement the printWriter from the HttpServletResponse.

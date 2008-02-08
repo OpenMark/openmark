@@ -96,4 +96,20 @@ public class SQLServer extends OmQueries
 		dat.update("UPDATE " + getPrefix() + "tests SET navigatorversion = '1.3.0'");
 		dat.update("ALTER TABLE " + getPrefix() + "tests ALTER COLUMN navigatorversion CHAR(16) NOT NULL");
 	}
+
+	/* (non-Javadoc)
+	 * @see om.tnavigator.db.OmQueries#extractMonthFromTimestamp(java.lang.String)
+	 */
+	@Override
+	protected String extractMonthFromTimestamp(String value) {
+		return "MONTH(" + value + ")";
+	}
+
+	/* (non-Javadoc)
+	 * @see om.tnavigator.db.OmQueries#extractYearFromTimestamp(java.lang.String)
+	 */
+	@Override
+	protected String extractYearFromTimestamp(String value) {
+		return "YEAR(" + value + ")";
+	}
 }

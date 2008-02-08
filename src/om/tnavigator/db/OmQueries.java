@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import om.tnavigator.db.DatabaseAccess.Transaction;
+
 import util.misc.IO;
 import util.misc.Strings;
 
@@ -52,6 +54,9 @@ public abstract class OmQueries
 	 */
 	public abstract String getURL(String server,String database,String username,String password)
 	  throws ClassNotFoundException;
+
+	protected abstract String extractYearFromTimestamp(String value);
+	protected abstract String extractMonthFromTimestamp(String value);
 
 	/**
 	 * Get a summary of a user's attempt at a test.
@@ -356,6 +361,61 @@ public abstract class OmQueries
 				"LEFT JOIN " + getPrefix() + "scores s ON q.qi=s.qi " +
 			"WHERE t.deploy="+Strings.sqlQuote(testID)+" AND t.pi="+Strings.sqlQuote(pi)+" AND (q.finished>0 OR q.finished IS NULL OR tq.questionnumber = 1)" +
 			"ORDER BY t.attempt,tq.questionnumber,q.clock");
+	}
+
+	/**
+	 * Get the number of non-admin attempts at each test that were started and completed,
+	 * ordered by number completed.
+	 * @param dat the transaction within which the query should be executed.
+	 * @return the requested data.
+	 * @throws SQLException 
+	 */
+	public ResultSet queryTestUsageReport(Transaction dat) throws SQLException {
+		return dat.query(
+				"SELECT " +
+					"deploy, " +
+					"SUM(CAST(finished AS INTEGER)) AS attemptscompleted, " +
+					"COUNT(1) AS attemptsstarted " +
+				"FROM " + getPrefix() + "tests " +
+				"WHERE admin = 0 " +
+				"GROUP BY deploy " +
+				"ORDER BY SUM(CAST(finished AS INTEGER)) DESC");
+	}
+
+	/**
+	 * Get the number of non-admin attempts that were started and completed, each month.
+	 * @param dat the transaction within which the query should be executed.
+	 * @return the requested data.
+	 * @throws SQLException 
+	 */
+	public ResultSet queryMonthlyTestStarts(Transaction dat) throws SQLException {
+		return dat.query(
+				"SELECT " +
+					extractYearFromTimestamp("clock") + " AS year, " +
+					extractMonthFromTimestamp("clock") + " AS month, " +
+					"COUNT(1) AS attemptsstarted " +
+				"FROM " + getPrefix() + "tests " +
+				"WHERE admin = 0 " +
+				"GROUP BY " + extractYearFromTimestamp("clock") + ", " + extractMonthFromTimestamp("clock") + " " +
+				"ORDER BY " + extractYearFromTimestamp("clock") +  " ASC, " + extractMonthFromTimestamp("clock") + " ASC");
+	}
+
+	/**
+	 * Get the number of non-admin attempts that were started and completed, each month.
+	 * @param dat the transaction within which the query should be executed.
+	 * @return the requested data.
+	 * @throws SQLException 
+	 */
+	public ResultSet queryMonthlyTestFinishes(Transaction dat) throws SQLException {
+		return dat.query(
+				"SELECT " +
+					extractYearFromTimestamp("finishedclock") + " AS year, " +
+					extractMonthFromTimestamp("finishedclock") + " AS month, " +
+					"COUNT(1) AS attemptscompleted " +
+				"FROM " + getPrefix() + "tests " +
+				"WHERE admin = 0 AND finishedclock IS NOT NULL " +
+				"GROUP BY " + extractYearFromTimestamp("finishedclock") + ", " + extractMonthFromTimestamp("finishedclock") + " " +
+				"ORDER BY " + extractYearFromTimestamp("finishedclock") +  " ASC, " + extractMonthFromTimestamp("finishedclock") + " ASC");
 	}
 
 	/**
