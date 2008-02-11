@@ -3,6 +3,7 @@
  */
 package om.tnavigator.reports.std;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -87,6 +88,7 @@ public class TestUsageReport implements OmReport {
 		 */
 		@Override
 		public void generateReport(TabularReportWriter reportWriter) {
+			File testBank = ns.getTestbankFolder();
 			DatabaseAccess.Transaction dat;
 			try {
 				dat = ns.getDatabaseAccess().newTransaction();
@@ -100,7 +102,10 @@ public class TestUsageReport implements OmReport {
 					Map<String, String> row = new HashMap<String, String>();
 					String deploy = rs.getString(1);
 					row.put("deploy", deploy);
-					row.put("deploy" + HtmlReportWriter.LINK_SUFFIX, "../" + deploy + "/");
+					File testFile = new File(testBank, deploy + ".deploy.xml");
+					if (testFile.exists()) {
+						row.put("deploy" + HtmlReportWriter.LINK_SUFFIX, "../" + deploy + "/");
+					}
 					row.put("attemptscompleted", rs.getInt(2) + "");
 					row.put("attemptsstarted", rs.getInt(3) + "");
 					reportWriter.printRow(row);
@@ -111,10 +116,12 @@ public class TestUsageReport implements OmReport {
 				dat.finish();
 			}
 		}
+
 		@Override
 		public void extraHtmlContent(Element mainElement) {
 			super.extraHtmlContent(mainElement);
 			printMessage("This report only counts non-admin attempts.", mainElement);
+			printMessage("Test names are links to the test, but only if the test is still available on this server.", mainElement);
 		}
 	}
 
