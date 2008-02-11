@@ -44,6 +44,7 @@ public class ReportDispatcher
 		DeployedTestsReport.class,
 		TestUsageReport.class,
 		MonthlyUsageReport.class,
+		VariantsTestReport.class,
 	};
 
 	private NavigatorServlet ns;

@@ -419,6 +419,27 @@ public abstract class OmQueries
 	}
 
 	/**
+	 * Return the testposition, questionid, questionline and score for each question in a test.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param deploy the name of the test (deploy file).
+	 * @return the requested data.
+	 * @throws SQLException 
+	 */
+	public ResultSet queryVariantReport(Transaction dat, String deploy) throws SQLException {
+		return dat.query(
+				"SELECT tq.questionnumber, q.question, r.questionline, s.score " + 
+				"FROM " + getPrefix() + "tests t " +
+					"JOIN " + getPrefix() + "questions q ON t.ti=q.ti " +
+					"JOIN " + getPrefix() + "testquestions tq on t.ti=tq.ti and q.question=tq.question " +
+					"JOIN " + getPrefix() + "results r on q.qi=r.qi " +
+					"JOIN " + getPrefix() + "scores s on q.qi=s.qi AND axis = '' " +
+				"WHERE deploy='" + deploy + "' AND t.admin = 0 AND t.finished > 0" +
+				"AND q.attempt = (SELECT MAX(iq.attempt) FROM " + getPrefix() + "questions iq " +
+						"WHERE iq.ti = q.ti AND iq.question=q.question AND iq.finished > 0) " +
+				"ORDER BY tq.questionnumber, q.question, t.ti");
+	}
+
+	/**
 	 * Store a user's action within an question attempt.
 	 * @param dat the transaction within which the query should be executed.
 	 * @param qi question instance id.
