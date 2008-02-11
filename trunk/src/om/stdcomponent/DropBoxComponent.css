@@ -1,0 +1,52 @@
+.om .dropbox
+{
+  position:absolute;
+  visibility:hidden;
+  border:1px solid pink;
+}
+.om .dropboximg,#om .dragboximg
+{
+  border:0;
+  padding:0;
+  margin:0;
+}
+.om .dropboxsidelabel
+{
+  font-size:10px;
+  vertical-align:4px;
+  padding-left:2px;
+}
+
+.om .dragbox
+{
+  position:absolute;
+  visibility:hidden;
+  border:1px solid %%COLOUR:text%%;
+  padding:2px;
+  text-align:center;
+  z-index:10;
+  cursor:default;
+}
+.om .dragbox.withsidelabel .dragboxinner
+{
+	padding-right:%%SIZE:10px%%;
+}
+.om .dragboxsidelabel
+{
+  font-size:%%SIZE:10px%%;
+  position:absolute;
+  text-align:right;
+  bottom:-1px;
+  right:2px;
+}
+
+@media screen /* For Firefox printing bug 252263 */
+{
+	.om .transparent
+	{
+	  filter: alpha(opacity=50);
+	  -moz-opacity: 0.5;
+	  opacity:50%;
+	}
+}
+

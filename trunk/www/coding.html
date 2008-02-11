@@ -1,0 +1,69 @@
+<html>
+<head>
+<title>OpenMark coding guidelines</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.codesample {
+    border: 1px solid #369;
+    background: #eee;
+    padding: 1em;
+}
+</style>
+</head>
+<body>
+
+<h1>OpenMark coding guidelines</h1>
+
+<h2>General rules</h2>
+
+<ul>
+<li>Indent control structures with a single tab character.</li>
+<li>Indent code wrapped to the next line with two tabs.</li>
+<li>No trailing whitespace.</li>
+<li>No Hungarian notation. That is, use variable names like <code>String title</code>, not <code>String sTitle</code></li>
+<li>Put the braces on a separate line (see the templates below).</li>
+<li>No space around arithmetic operators or in control statements.</li>
+<li>Single space around logical operators.</li>
+</ul>
+
+<h2>Examples</h2>
+
+<pre class="codesample">
+    if(!bPost &amp;&amp; sPath.startsWith("/!test/"))
+    {
+        handleTestCookie(sPath.substring("/!test/".length()),request,response);
+        return;
+    }
+</pre>
+
+<pre class="codesample">
+    for(int iAxis=0;iAxis&lt;asAxes.length;iAxis++)
+    {
+        // Do stuff.
+    }
+</pre>
+
+<pre class="codesample">
+    switch(us.tdDeployment.getType())
+    {
+    case TestDeployment.TYPE_NOTASSESSED :
+        break;
+    case TestDeployment.TYPE_ASSESSED_OPTIONAL :
+        sMessage+="However, you will not receive any credit&lt;/em&gt; unless " +
+                "you have previously obtained special permission to submit late.";
+    }
+</pre>
+
+<pre class="codesample">
+    try
+    {
+        osb=new OmServiceBalancer(nc.getOmServices(),l,nc.hasDebugFlag("log-balancer"));
+    }
+    catch(ServiceException e)
+    {
+        throw new ServletException("Unexpected error obtaining service",e);
+    }
+</pre>
+
+</body>
+</html>

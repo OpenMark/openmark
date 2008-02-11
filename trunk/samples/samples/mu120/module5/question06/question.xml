@@ -1,0 +1,167 @@
+<question class="samples.mu120.module5.question06.Q6">
+
+    <scoring>
+        <marks>3</marks>
+    </scoring>
+
+    <layout>
+        <row height="400"/>
+        <row height="360"/>
+        <column width="592"/>
+    </layout>
+  
+    <!-- Defines the question box -->
+    <box gridx="0" gridy="0" id="inputbox" background="input">
+        <layoutgrid cols ="2">
+            <t>
+                The data below is to be plotted on a graph on the graph paper on the right,
+                to show clearly the trend in average room temperature in a particular office
+                in __month__ during the working day.
+                <gap/>
+                <table id="mine" rows="2" cols="7" left="1">
+                    <title>Average temperatures in an office</title> 
+                    <row><t>Time of day (hours)</t><t>8</t><t>10</t><t>12</t><t>14</t><t>16</t><t>18</t></row>
+                    <row><t>Average temperatures °C</t><t>__X1__</t><t>__X3__</t><t>__X5__</t><t>__X7__</t><t>__X4__</t><t>__X2__</t></row>
+                </table>
+                <gap/>
+                Choose the most convenient scale for the graph on the given graph paper.
+                Note that the scales on the axes do not have to start at zero.
+                <gap/>
+                On the horizontal axis, one division represents
+                <editfield id="rtime" label="enter value" cols="3"/> hours.
+                <break/>
+                On the vertical axis, one division represents 
+                <editfield id="rtemp" label="enter value" cols="3"/> <eq>^°C</eq>.
+            </t>
+            <t>
+                <gap/>
+                <canvas id="graph1" width="280" height="256"></canvas>
+            </t>
+        </layoutgrid>
+        <gap/>
+
+        <button action="actionSubmit" label="%%lENTERANSWER%%"/>
+        <button id="hintButton" action="actionHint" label="Hint"/>
+        <!--button action="actionGiveUp" label="%%lGIVEUP%%"/-->
+ 
+    </box>
+
+    <!-- Defines the right-hand answer box, which is initially hidden  -->
+    <box gridx="0" gridy="1" id="answerbox" display="no" background="answer">
+		 
+        <t id="wrong">Your answer is <t id="still">still</t> incorrect.<gap/></t>
+        <t id="right">Your answer is correct.<gap/></t>
+        <t id="pass">You passed on this question.<gap/></t>
+
+        <t id="hints">
+            <t id="hint1">
+                Examine the range for the time from the table
+                and fit this on the horizontal axis.
+                Repeat this for the temperature.
+                There are 7 divisions on each axis,
+                each axis begins with a given value
+                and increments by a fixed amount for each division.
+                <gap/>
+            </t>
+            <t id="hint2">
+                Note the temperature goes from __X1__°C to __X7__°C,
+                this is a range of 6°C,
+                and that the time of day goes from 8 to 18 hours,
+                a range of 10 hours.
+                <gap/>
+            </t>
+        </t>
+
+        <t id="feedback">
+            <t id="nonumber">
+                You must enter two numbers for the fixed increments
+                on both the horizontal and vertical scales.
+                <gap/>
+            </t>
+            <t id="feedback1a">
+                Your scale on the time axis is fine,
+                but your scale on the temperature axis is rather too cramped for the paper.
+                <gap/>
+            </t>   
+            <t id="feedback1b">
+                Your scale on the time axis is fine,
+                but your scale on the temperature axis is rather too spread out for the paper.
+                <gap/>
+            </t>   
+            <t id="feedback1c">
+                Your scale on the temperature axis is fine,
+                but your scale on the time axis is rather too cramped for the paper.
+                <gap/>
+            </t>   
+            <t id="feedback1d">
+                Your scale on the temperature axis is fine,
+                but your scale on the time axis is rather too spread out for the paper.
+                <gap/>
+            </t>   
+            <t id="feedback2a">
+                Your scale on the time axis is fine,
+                but your scale on the temperature axis is rather too cramped for the paper.
+                The temperature goes from __X1__°C to __X7__°C.
+                This is a range of 6°C.
+                There are 7 divisions, so how many °C per division is best?
+                <gap/>
+            </t>   
+            <t id="feedback2b">
+                Your scale on the time axis is fine,
+                but your scale on the temperature axis is rather too spread out for the paper.
+                The temperature goes from __X1__°C to __X7__°C.
+                This is a range of 6°C.
+                There are 7 divisions, so how many °C per division is best?
+                <gap/>
+            </t>   
+            <t id="feedback2c">
+                Your scale on the temperature axis is fine,
+                but your scale on the time axis is rather too cramped for the paper.
+                The time of day goes from 8 to 18 hours, this is a range of 10 hours.
+                There are only 7 divisions and so not enough for one hour per division.
+                Would 2 or 3 hours per division be better?
+                <gap/>
+            </t>   
+            <t id="feedback2d">
+                Your scale on the temperature axis is fine,
+                but your scale on the time axis is rather too spread out for the paper.
+                The time of day goes from 8 to 18 hours, this is a range of 10 hours.
+                There are only 7 divisions and so not enough for one hour per division.
+                Would 2 or 3 hours per division be better?
+                <gap/>
+            </t>   
+            <t id="feedback2">
+                The first, or x co-ordinate of the point is the position on the x axis
+                and the second the position on the y axis,
+                whether positive or negative.
+                <gap/>
+            </t>   
+        </t>
+
+        <t id="answer">
+            <layoutgrid cols ="2">
+                <t>
+                    The temperature goes from __X1__°C to __X7__°C.
+                    This is a range of 6°C.
+                    There are 7 divisions on the y-axis and so 1°C per division is best,
+                    starting at __X1__°C, for convenience.
+                    The time of day goes from 8 to 18 hours, this is a range of 10 hours.
+                    There are only 7 divisions and so not enough for one hour per division.
+                    However 2 hours per division is possible and should show the trend well.
+                    See the completed graph opposite.
+                </t>
+                <canvas id="graph2" width="256" height="256"></canvas>	
+            </layoutgrid>
+        </t>
+
+        <t id="reference">
+            Please see MU120 Preparatory Resource Book B section 5.3.2
+            <gap/>
+        </t>
+     
+        <button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+        <button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+   
+    </box>
+ 
+</question>

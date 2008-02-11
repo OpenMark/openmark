@@ -1,0 +1,86 @@
+<project name="Question" basedir="." default="all">
+
+	<!-- Properties set in code -->
+	<property name="webapp" location="%%WEBAPP%%"/>
+	<property name="jar" location="%%JAR%%"/>
+	<property name="source" location="%%SOURCE%%"/>
+	<!-- Question package with / not . -->
+	<property name="questionpackage" value="%%QUESTIONPACKAGE%%"/>
+
+	<!-- Build in temp subfolder of questions folder -->
+	<property name="build" location="${webapp}/questions/tempbuild"/>
+
+	<!-- Java compile -->
+	<target name="compile" description="Recompile question source">
+
+		<!-- Clear and recreate build -->
+		<delete dir="${build}" quiet="true"/>
+		<mkdir dir="${build}"/>
+
+		<!-- Check for some programming problems -->
+		<concat destfile="${build}/allsource.java">
+			<fileset dir="${source}" includes="${questionpackage}/**/*.java" />
+		</concat>
+		<loadfile srcFile="${build}/allsource.java" property="allsource"/>
+
+		<condition property="nonstatic-finals">
+			<matches string="${allsource}" singleline="true" multiline="true"
+				pattern="^(.(?!\bfinal\b))*\bstatic\b([^=\(;](?!\bfinal\b))*(=|;)"/>
+		</condition>
+		<fail message="Your question code contains variables that are declared as static, but not final. This is not allowed in OM. " if="nonstatic-finals"/>
+
+		<condition property="math-random">
+			<matches string="${allsource}" singleline="true" multiline="true"
+				pattern="\bMath\s*\.\s*random\b|\bnew\s*(java\..util\.)Random\b"/>
+		</condition>
+		<fail message="Your question code contains a call to Math.random, or new Random(). This is not allowed in OM. " if="math-random"/>
+
+		<delete file="${build}/allsource.java" quiet="true"/>
+
+		<!-- Compile question -->
+		<javac srcdir="${source}" destdir="${build}" debug="on" source="1.6" target="1.6">
+
+			<include name="${questionpackage}/**/*.java"/>
+			<ADDPACKAGESMARKER type="javac"/>
+
+			<!-- Classpath includes this webapp's lib and classes folders -->
+			<classpath>
+				<fileset dir="${webapp}/WEB-INF/lib">
+					<include name="*.jar"/>
+				</fileset>
+				<pathelement path="${webapp}/WEB-INF/classes"/>
+			</classpath>
+		</javac>
+
+	</target>
+
+	<!-- Copy data .xml etc. from source to build - everything except .java -->
+	<target name="copydata" description="Copy data files from source to build folder">
+		<copy todir="${build}">
+			<fileset dir="${source}" >
+				<include name="${questionpackage}/"/>
+				<ADDPACKAGESMARKER type="other"/>
+				<exclude name="**/*.java"/>
+				<exclude name="**/question.xml"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- question.xml moving -->
+	<target name="copymeta" description="Copy question.xml metadata to build root">
+		<copy tofile="${build}/question.xml" file="${source}/${questionpackage}/question.xml"/>
+	</target>
+
+	<!-- Build jar -->
+	<target name="jar" description="Build jar file" depends="compile,copydata,copymeta">
+		<jar jarfile="${jar}" basedir="${build}"/>
+	</target>
+
+	<!-- Delete build folder -->
+	<target name="clean" description="Delete build folder">
+		<delete dir="${build}" quiet="true"/>
+	</target>
+
+	<target name="all" description="Build jar then clean up" depends="jar,clean"/>
+
+</project>

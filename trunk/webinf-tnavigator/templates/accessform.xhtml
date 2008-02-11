@@ -1,0 +1,101 @@
+<div class="basicpage displayoptions">
+    <p>
+        You can use this form at any time to change how the test is displayed. 
+        Your choices will be remembered for this and future tests.
+    </p>
+    <form action="?access" method="post">
+        <h3>Display magnification</h3>
+        <p>
+            This makes everything bigger, not just text.
+        </p>
+        <div class="examples">
+          <div class="option">
+            <label for="azoom">
+            <img src="../!shared/displayoptions/size-normal.png" alt="Normal-size text"/>
+            <span class="rad"><input type="radio" name="zoom" value="normal" id="azoom"/>
+            Normal <small>(recommended)</small></span></label>
+          </div>
+          <div class="option">
+            <label for="bzoom">
+            <img src="../!shared/displayoptions/size-big.png" alt="Big text"/>
+            <span class="rad"><input type="radio" name="zoom" value="1.5" id="bzoom"/>
+            Big</span></label>
+          </div>
+          <div class="option right">
+            <label for="czoom"> 
+            <img src="../!shared/displayoptions/size-bigger.png" alt="Even bigger text"/>
+            <span class="rad"><input type="radio" name="zoom" value="2.0" id="czoom"/>
+            Even bigger</span></label>
+          </div>
+          <div style="clear:both"/>
+        </div>
+        <div class="setbutton"><input type="submit" name="end" value="Save"/></div>
+        
+        <h3>Colours</h3>
+        <div class="examples">
+
+          <div class="option">
+            <label for="acolours">
+            <img src="../!shared/displayoptions/colour-normal.png" alt="Full colour"/>
+            <span class="rad"><input type="radio" name="colours" value="normal" id="acolours"/>
+             Full colour <small>(recommended)</small></span></label>
+          </div>
+          
+          <div class="option">
+            <label for="ccolours">
+            <img src="../!shared/displayoptions/colour-000000ffffff.png" alt="Black on white"/>
+            <span class="rad"><input type="radio" name="colours" value="000000ffffff" id="ccolours"/>
+             Black on white</span></label>
+          </div>
+          
+          <div class="option right">
+            <label for="ecolours">
+            <img src="../!shared/displayoptions/colour-000000ffff00.png" alt="Black on yellow"/>
+            <span class="rad"><input type="radio" name="colours" value="000000ffff00" id="ecolours"/>
+             Black on yellow</span></label>
+          </div>
+          
+          <div style="clear:both; padding-bottom:20px;"/>
+          
+          <div class="option">
+            <label for="bcolours">
+            <img src="../!shared/displayoptions/colour-000088ddeeff.png" alt="Dark on light blue"/>
+            <span class="rad"><input type="radio" name="colours" value="000088ddeeff" id="bcolours"/>
+             Dark on light blue</span></label>
+          </div>
+
+          <div class="option">
+            <label for="dcolours">
+            <img src="../!shared/displayoptions/colour-ffffff000000.png" alt="White on black"/>
+            <span class="rad"><input type="radio" name="colours" value="ffffff000000" id="dcolours"/>
+             White on black</span></label>
+          </div>
+
+          <div class="option right">
+            <label for="fcolours">
+            <img src="../!shared/displayoptions/colour-ffff00000000.png" alt="Yellow on black"/>
+            <span class="rad"><input type="radio" name="colours" value="ffff00000000" id="fcolours"/>
+             Yellow on black</span></label>
+          </div>
+
+<div style="clear:both;"/>
+        </div>      
+        <div class="setbutton"><input type="submit" name="end" value="Save"/></div>
+
+        <h3>Plain mode</h3>
+        <p>
+            Plain mode is intended for use with screen reading software.
+            It displays questions according to your Web browser's default 
+            settings in all aspects - with no styles or interactive scripting - and
+            uses text alternatives instead of images. Plain mode has some
+            limitations and you should not select it unless absolutely necessary.
+        </p>
+        <input type="checkbox" name="plainmode" value="yes" id="plainmode"/>
+        <label for="plainmode"> Plain mode</label>
+        <div class="setbutton"><input type="submit" name="end" value="Save"/></div>
+        
+        <div style="margin-top:2em">
+					<a href="./%%EXTRA%%">Return to test</a>
+        </div>
+    </form>
+</div>

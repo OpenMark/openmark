@@ -1,0 +1,17 @@
+.om .canvas
+{
+  display:inline;
+}
+.om .canvas img /* bit dodgy */
+{
+  border:0;
+  padding:0;
+  margin:0;
+}
+
+.om .canvasmarker
+{
+  position:absolute;
+  display:none;
+  padding:1px;
+}

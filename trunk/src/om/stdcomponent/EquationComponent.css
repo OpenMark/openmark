@@ -1,0 +1,15 @@
+.om .equation
+{
+  display:inline;
+}
+.om .equation .placeholder
+{
+  position:absolute;
+  font-size:%%SIZE:13px%%;
+}
+.om .equation img /* bit dodgy */
+{
+  border:0;
+  padding:0;
+  margin:0;
+}

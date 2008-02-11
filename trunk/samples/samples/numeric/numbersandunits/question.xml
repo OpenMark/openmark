@@ -1,0 +1,69 @@
+<question class="samples.numeric.numbersandunits.Solubility" plainmode="no">
+
+	<scoring>
+		<marks>3</marks>
+	</scoring>	
+
+	<layout>
+		<row height="540"/>
+		<column width="312"/>
+		<column width="280"/>  
+	</layout>
+ 
+	<!-- Defines the left-hand question box -->
+	<box gridx="0" gridy="0" id="inputbox" background="input">
+		A solution is made by dissolving <eq>__4MASS__\mbox{ g}</eq> of potassium chlorate
+		in <eq>100\mbox{ g}</eq> water at <eq>90</eq> ºC. The solution is then cooled to 
+		<eq>10</eq> ºC.
+		<gap/>
+		What <label for="input">mass of crystals</label> is deposited?
+		Give your answer to the nearest whole number and include the correct unit.
+		<gap/>
+		<editfield id="input" cols="6"/>
+		<gap/>
+		<image id="solubilityCurve" filePath="q18a.png" alt="" width="273" height="317"/>
+		<gap/>
+
+		<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+  
+	</box>
+
+	<!-- Defines the right-hand answer box, which is initially hidden  -->
+	<box gridx="1" gridy="0" id="answerbox" display="no" background="answer">
+   
+		<t id="wrong">Your answer is <t id="still">still</t> incorrect.</t>
+		<t id="right">Your answer is correct.</t>
+		<t id="pass">You passed on this question.</t>	
+		<gap/>
+	
+		<t id="unitsWrong" display="no">
+			Your numerical value is correct but your unit is not.
+			<gap/>
+		</t>
+		
+		<t id="feedback">
+			<t id="default">
+				From the graph read off the concentration of a saturated solution at
+				<eq>10</eq> ºC. Then subtract this from the value of the initial concentration.
+				<gap/>
+			</t>
+		</t>	 
+	   
+		<t id="answer">
+			A saturated solution of potassium chlorate at <eq>10</eq> ºC contains
+			<eq>5 \mbox{ g}</eq> per <eq>100\mbox{ g}</eq> water. This means that
+			<eq>__4MASS__ \mbox{ g} – 5 \mbox{ g} = __ANS__ \mbox{ g}</eq>
+			are deposited.
+		    <gap/>
+			Solubility is discussed in Section 7 of S103 
+			<emphasis type="italic">Discovering Science</emphasis>
+			Block 8.
+			<gap/>
+		</t>
+		
+		<button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+   
+	</box>
+ 
+</question>

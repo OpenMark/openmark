@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style type="text/css">
+body
+{
+  font-family: Verdana,sans-serif;
+  width:35em;
+}
+h1
+{
+  font-size:100%;
+  margin-top:0;
+}
+#technical
+{
+  margin-top:4em;
+  padding-top:0.3em;
+  color:#888;
+  font-size:80%;
+  border-top: 1px solid #888;
+}
+h2
+{
+  font-size:100%;
+  margin-top:0;
+  margin-bottom:0.5em;
+}
+p,ul,li
+{
+  margin-top:0;
+  margin-bottom:0.6em;
+}
+.space
+{
+  margin-top:1.2em;
+}
+</style>
+<script type="text/javascript">
+var L=unescape("%3c");
+function checkBrowser()
+{
+var ua=navigator.userAgent;
+var browser, message, ok=false;
+
+if(ua.match(/KHTML/))
+{
+  if(ua.match(/\ Safari\//)) browser="Safari";
+  else browser="a KHTML-based browser";
+  message="Some parts of this system rely on features that are not "+
+    "included in current versions of KHTML-based browsers (like Safari) "+
+    "at the time of writing.";
+}
+else if(ua.match(/\ Gecko\//))
+{
+  message="The system may work in recent versions of browsers "+
+    "based on the Gecko engine, but is less likely to work in older versions "+
+    "(such as Netscape 6 or 7).";
+  if(ua.match(/\ Camino\//)) browser="Camino";
+  else if(ua.match(/\ Firefox\//))
+  {
+    browser="Firefox";
+    var re=/\ Firefox\/([0-9]+).([0-9]+)/;
+    var versionResult=re.exec(ua);
+    if(versionResult)
+    {
+		  if(versionResult[1]==1)
+			  ok=versionResult[2]>=0;
+		  else
+			  ok=versionResult[1]>1;
+      browser+=" "+versionResult[1]+"."+versionResult[2];
+    }
+
+    message="Firefox is one of our supported browsers, but you should use "+
+      "the latest version (at least version 1.0). Using old browser versions "+
+      "also leaves you open to security risks.";
+  }
+  else browser="a Gecko-based browser";
+}
+else if(ua.match(/Opera/))
+{
+  browser="Opera";
+  message="Some parts of this system rely on features that are not "+
+    "included in Opera 8; it may work in Opera 9, but we can't guarantee this.";
+}
+else if(ua.match(/MSIE.*Windows/))
+{
+  browser="Internet Explorer"
+
+  var re=/\ MSIE\ ([0-9]+).([0-9]+)/;
+  var versionResult=re.exec(ua);
+  if(versionResult)
+  {
+    ok=(versionResult[1]>=6);
+    browser+=" "+versionResult[1]+"."+versionResult[2];
+  }
+
+  message="Internet Explorer is one of our supported browsers, but you should use "+
+    "the latest version (at least version 6.0). Using old browser versions also "+
+    "leaves you open to security risks.";
+}
+else
+{
+  browser="an older browser or one we don't recognise";
+  message="This system is unlikely to work on old browsers or unusual "+
+    "browsers such as those on mobile devices.";
+}
+if(ok)
+{
+// Redirect back to test
+  location.href=unescape(location.search).substring(1);
+  return;
+}
+
+document.write(L+"div style='position:absolute; left:10000px;'>"+
+  "If you are using a screen reader and do not require the visual version "+
+  "of this test, you can ignore the on-screen instructions that follow and "+
+  L+"a href='"+unescape(location.search.substring(1))+"'>enter the test - "+
+  "select plain mode from the next screen"+L+"/a>"+L+"/div>");
+
+document.write(L+"h1>Unsupported browser"+L+"/h1>");
+document.write(L+"p>You appear to be using a Web browser we don't support. "+
+  "While it is possible to enter the test anyway, we would "+
+  L+"strong>strongly encourage"+L+"/strong> "+
+  "you to switch to one of the browsers we officially support, particularly "+
+  "if the test you are about to take counts toward your course mark. Tests may "+
+  L+"strong>display or respond incorrectly"+L+"/strong> when using other browsers."+L+"/p>");
+
+document.write(L+"p class='space'>You are using "+L+"strong>"+browser+L+"/strong>."+L+"/p>");
+
+document.write(L+"p>"+message+L+"/p>");
+
+
+document.write(L+"p class='space'>We support the following browsers:"+L+"/p>");
+document.write(L+"ul>"+L+"li>"+L+"strong>"+L+"a href='http://www.mozilla.org/products/firefox/'>Mozilla Firefox"+L+"/a> 1.5+"+L+"/strong> "+L+"small>(available on "+
+  "Windows, Mac OS X, and other platforms; we verify against the Windows version)"+L+"/small>"+
+  L+"/li>"+L+"li>"+L+"strong>Microsoft Internet Explorer 6.0+"+L+"/strong> "+L+"small>(Windows version only)"+L+"/small>"+L+"/li>"+L+"/ul>");
+
+document.write(L+"p class='space'>We recommend that you close this window and then access the test using one of our "+
+  "supported browsers, upgrading your software if necessary."+L+"/p>");
+
+document.write(L+"p class='space'>"+
+  L+"a href='"+unescape(location.search.substring(1))+"'>"+
+  "Enter test anyway, even though it may not work"+L+"/a>"+L+"/p>");
+
+document.write(L+"div id='technical'>"+L+"h2>Information for those interested in Web standards"+L+"/h2>");
+document.write(L+"p>You may like to know that we "+
+  "developed the system in line with standards where possible, but certain tasks "+
+  "could only be achieved using browser features that are not specified in any standard and are not supported in all browsers. "+
+  "In addition, we strongly recommend using specific browsers because those are the "+
+  "browsers that we check the system with. Only when using those browsers can we be "+
+  "fairly sure that the system will operate correctly."+L+"/p>"+L+"/div>");
+
+
+}
+</script>
+<title>System check</title>
+</head>
+<body>
+<script type="text/javascript">
+checkBrowser();
+document.write(L+"div style='display:none'>");
+</script>
+
+<!-- This section is displayed if Javascript is not enabled -->
+
+<div style="position:absolute; left:10000px;">
+If you wish to access the test using a screen reader, you do not need to enable
+Javascript. (Please ignore the message that follows.) Instead, return to the previous
+page and re-enter the test. Once you get into the test, select the 'plain mode' link.
+</div>
+
+<p>Javascript is not enabled. In order to take this test you must enable
+Javascript in your browser. Once you have enabled Javascript, please click the
+Reload or Refresh button in your browser to reload this page.</p>
+
+<script type="text/javascript">
+document.write(L+"/div>");
+</script>
+</body>
+</html>

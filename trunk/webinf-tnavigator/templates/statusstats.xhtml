@@ -1,0 +1,44 @@
+<xhtml>
+<head>
+<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
+<title>%%DATE%% - %%MACHINE%% stats</title>
+<link rel='stylesheet' href='../navigator%%ACCESS%%.css' type='text/css'/>
+<style type="text/css">
+.userlist
+{
+  padding:10px;
+  border:1px solid #888;
+  margin:1em 0;
+  color:#a80;
+}
+</style>
+</head>
+<body class="basicpage report">
+<h3>%%DATE%% - %%MACHINE%%</h3>
+<h4>Users</h4>
+<div class="userlist">%%OUCUS%%</div>
+<ul>
+<li>Unique users: %%USERS%%</li>
+</ul>
+<h4>Requests</h4>
+<ul>
+<li>Total requests: %%REQUESTS%%</li>
+<li>Test main requests: %%TESTREQUESTS%%</li>
+</ul>
+<h4>Performance</h4>
+<p>
+This performance analysis includes the %%TESTREQUESTS%% 'test main' requests
+only.
+</p>
+<ul>
+<li>Total time (ms): median %%PERFTOTALMEAN%%, mean %%PERFTOTALMEDIAN%%, 95th percentile %%PERFTOTAL95%%</li>
+<li>QE time (ms): median %%PERFQEMEAN%%, mean %%PERFQEMEDIAN%%, 95th percentile %%PERFQE95%%</li>
+<li>DB time (ms): median %%PERFDBMEAN%%, mean %%PERFDBMEDIAN%%, 95th percentile %%PERFDB95%%</li>
+</ul>
+<h4>Load</h4>
+<ul>
+<li>Busiest minute by requests: %%LOADMAXMINUTER%% (%%LOADMAXRPM%%)</li>
+<li>Busiest minute by test requests: %%LOADMAXMINUTETR%% (%%LOADMAXTRPM%%)</li>
+</ul>
+</body>
+</xhtml>

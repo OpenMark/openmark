@@ -1,0 +1,136 @@
+<!-- S151 Chapter 3 Question 10
+	P G Butcher June 2005
+	from the original by Spencer Harben of June 2002 -->
+
+<question class="samples.numeric.scientificnotation.Q10">
+
+	<scoring><marks>3</marks></scoring>
+	<layout>
+		<row height="340"/>
+		<column width="296"/>
+		<column width="296"/>  
+	</layout>
+  
+	<box gridx="0" gridy="0" id="inputbox" background="input">
+
+		Evaluate the following. You should give your answer in scientific notation
+		and to one significant figure. You may choose to do the calculation with or without
+		a calculator.
+		<gap/>
+		<equation alt="square root of (__A__ times (ten to the power __C__)) over (__B__ times (ten to the power minus __D__) times (ten to the power 5))">
+			\frac{\sqrt{__A__ × 10^{__C__}}}{__B__ × 10^{–__D__} × 10^5}
+			= 
+			<eplace width='125' height='20' label="Response">
+				<advancedfield id="response" cols="12" type="superscript"/>
+			</eplace>	
+		</equation>
+		<gap/> <gap/>
+		<if plain="no">
+			<emphasis type="italic">
+				Click on the 'Superscript' box to enter superscripts in your answer
+				and click again to return to normal text, or use the up and down keys
+				on your keyboard.
+			</emphasis>
+		</if>
+		<gap/>
+		 
+		<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+<!-- 		<button action="actionGiveUp" label="%%lGIVEUP%%"/> -->
+  
+	</box>
+
+	<box gridx="1" gridy="0" id="answerbox" display="no" background="answer">
+		 
+		<t id="wrong">Your answer is <t id="still">still</t> incorrect.</t>
+		<t id="right">Your answer is correct.</t>
+		<t id="pass">You passed on this question.</t> 
+		<gap/>
+	  
+		<t id="feedback">
+			<t id="toomanysigfigs">
+				Remember that you were asked for an answer to one significant figure.
+			</t>
+			<t id="onedigit">
+				For an answer to be in scientific notation it is written as a number
+				multiplied by a power of ten. The number, n, must be in the range 1 &lt;= n &lt; 10.
+				<gap/>
+			</t>
+			<t id="notscinot">
+				Remember that you were asked for an answer in scientific notation
+				and to one significant figure.
+				<gap/>
+				You should use the superscript box to format your answer
+				in scientific notation.
+			</t>
+			<t id="calccare">
+				Your answer has the wrong power of ten. If you are using a calculator check
+				that you are inputting the numbers correctly
+				in scientific notation (see Section 3.2.2). Take particular care with the
+				<eq>10^5</eq>.
+			</t>
+			<t id="sqrtcare">
+				Look carefully at the positioning of the square root sign.
+			</t>
+			<t id="default">
+				Look carefully at the positioning of the square root sign and, if you are using a
+				calculator, check that you are entering the numbers correctly in scientific notation.
+				Remember that you were asked for an answer in scientific notation and to one 
+				significant figure.
+				
+				<gap/>
+				You should use the superscript box to format your answer
+				in scientific notation.
+			</t>
+			<!-- ...general... -->
+			<gap/>
+	    </t>   
+   
+		<t id="answer">
+			<layoutgrid cols="2">
+				<!-- first row -->
+				<t>
+					<right>
+						<equation alt="square root of (__A__ times (ten to the power __C__)) over (__B__ times (ten to the power minus __D__) times (ten to the power 5))">
+							\frac{\sqrt{__A__ × 10^{__C__}}}{__B__ × 10^{–__D__} × 10^5}
+						</equation>
+					</right>
+				</t>
+				<t>	
+					=
+					<equation alt="(__B__ times ten to the power __E__) over (__B__ times ten to the power (minus __D__ plus 5))">
+						\frac{__B__ × 10^{__E__}}{__B__ × 10^{–__D__ + 5}}
+					</equation>
+				</t>
+			
+				<!-- second row -->
+				<t> </t> <!-- empty column (no breaking space) -->
+				<t> </t> <!-- empty column (no breaking space) -->
+
+				<!-- third row -->
+				<t> </t> <!-- empty first column -->
+				<t>
+					=
+					<equation alt="(1 times 10 to the power __E__) over (10 to the power __F__)">
+						\frac{1 × 10^{__E__}}{10^{__F__}}
+					</equation>
+				</t>
+
+				<!-- fourth row -->
+				<t> </t> <!-- empty column (no breaking space) -->
+				<t> </t> <!-- empty column (no breaking space) -->
+
+				<!-- fifth row -->
+				<t> </t> <!-- empty first column -->
+				<t>
+					= <eq>1 × 10^9</eq>
+				</t>
+			</layoutgrid>
+			<gap/>
+		</t>
+     
+	    <button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+   
+	</box>
+ 
+</question>

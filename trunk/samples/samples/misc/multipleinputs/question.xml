@@ -1,0 +1,95 @@
+<question class="samples.misc.multipleinputs.EditBoxChoice">
+
+	<scoring>
+		<marks>3</marks>
+	</scoring>	
+
+  	<layout>
+    	<row height="400"/>
+    	<column width="326"/>
+    	<column width="266"/>  
+  	</layout>
+
+  	<box gridx="0" gridy="0" id="inputbox" background="input">
+  		This question requires two answers.
+  		<gap/>
+		On paper, sketch a Lewis structure for
+		<eq italic="no">__MOL__</eq>.
+		<gap/>
+		How many repulsion axes are there?
+		<gap/>
+		<label for="input"></label><editfield id="input" cols="2"/> repulsion axes
+    	<gap/>
+		<gap/>
+		How are they arranged? 
+		<gap/>
+		<layoutgrid cols="2" shuffle="yes">	
+			<radiobox id="box0">
+				<eq textfont="yes">\mbox{__GEOMETRY1__}</eq>
+			</radiobox>
+			<radiobox id="box1">
+				<eq textfont="yes">\mbox{__GEOMETRY2__}</eq>
+			</radiobox>
+			<radiobox id="box2">
+				<eq textfont="yes">\mbox{__GEOMETRY3__}</eq>
+			</radiobox>
+			<radiobox id="box3">
+				<eq textfont="yes">\mbox{__GEOMETRY4__}</eq>
+			</radiobox>
+			<radiobox id="box4">
+				<eq textfont="yes">\mbox{__GEOMETRY5__}</eq>
+			</radiobox>
+		</layoutgrid>
+		<gap/>
+		
+      	<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+      	<!--<button action="actionGiveUp" label="%%lGIVEUP%%"/>-->
+ 	</box>
+
+  	<box gridx="1" gridy="0" id="answerbox" display="no" background="answer">
+    	<t id="wrong">Your answer is <t id="still">still</t> incorrect.</t>
+    	<t id="right">Your answer is correct.</t>
+    	<t id="pass">You passed on this question.</t> 
+    	<gap/>
+    	
+    	<t id="nWrong" display="no">
+    		Your value for the number of repulsion axes is incorrect.
+    		<gap/>
+    	</t>
+    	
+    	<t id="geometryWrong" display="no">
+    		You have not chosen the correct arrangement of repulsion axes.
+    		<gap/>
+    	</t>
+    	
+		<t id="hint1" display="no">
+			Determine the number of outer electrons on the central atom.
+			<gap/>
+		</t>  
+
+		<t id="hint2" display="no">
+			Assign the outer electrons on the central atom to bonds.
+			<gap/>
+		</t>  
+
+    	<t id="feedback">
+    	</t>   
+
+    	<t id="answer">
+	    	There are <eq>__N__</eq> repulsion axes which should therefore be 
+	    	disposed in a triangular sense. The molecule itself should be V-shaped
+	    	with a bond angle slightly less than <eq>120°</eq> because of the primacy
+	    	of the non-bonded pair–bond	pair repulsions. Experimentally, this is 
+	    	found to be the case.
+	    	<gap/>
+	    	<indent>
+	    	<image id="ans" filePath="fig0.png" alt="Lewis diagram of __MOL__"></image>
+	    	</indent>
+	    	<gap/>
+	    </t>
+
+		<button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+	</box>
+
+</question>

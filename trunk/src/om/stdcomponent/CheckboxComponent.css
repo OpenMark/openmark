@@ -1,0 +1,17 @@
+.om .checkbox
+{
+  border:1px solid pink;
+  padding:4px;
+}
+.om .checkboxcontents
+{
+  display:inline;
+}
+.om .checkboxcheck
+{
+  vertical-align:top;
+}
+* html om .checkboxcheck
+{
+  margin-right:4px;
+}

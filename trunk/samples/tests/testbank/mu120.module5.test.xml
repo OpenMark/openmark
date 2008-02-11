@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- test definition -->
+<test>
+	
+    <title>How’s your Mathematics?</title>
+	
+    <options navigation="yes" navlocation="left" redotest="yes" freestop="yes" freesummary="yes" redoquestionauto="yes" summaryscores="no" summaryquestions="no" summaryattempts="yes" labelset="science"></options>
+	
+    <content>
+		
+        <!-- 
+        Main content goes in here. We haven't rescored the whole test, but you can
+        do by adding <rescore/> elements here.
+        -->
+
+        <rescore marks="18" axis="Overall" fromaxis="Module5"></rescore>
+
+        <rescore marks="18" axis="Module5" fromaxis="Module5"></rescore>
+
+        <info>
+               <title>Can you use Diagrams? </title>
+
+                <p>There are 6 questions in this quiz.</p>
+
+                <p>Each question should only take you a few minutes to complete.</p>
+
+                <p>If one takes longer, make a note to revise this topic again.</p>
+
+                <p>If you can’t do a question you can click on the hint button
+		for some advice on how to proceed.</p>
+
+                <p>Once you have started the quiz,
+                number buttons will appear on the left of your screen. 
+                Each number represents a question type.
+                If you click on a question button,
+                you will get a question of this type.</p>
+
+                <p>You can return to a question at any time and you can
+		redo the whole quiz as many times as you like. If you do
+		this you will find that many of the questions will be
+		slightly different, to give you extra practice.</p>
+                
+                <p>At any time you can click on the 'end test' button at the top right to finish.</p>
+
+                <p>When you have completed the quiz,
+                and clicked on finish,
+                you will get a summary of your results and some study advice,
+                including references to the MU120 Resource Books A or B
+                or the Calculator Book.</p>
+
+                <p>Enjoy the quiz!</p>
+        </info>
+	
+        <section>
+            <title>Can you use Diagrams? </title>
+
+            <!-- questions -->
+            <question id="samples.mu120.module5.question01"> </question>
+            <question id="samples.mu120.module5.question02"> </question>
+            <question id="samples.mu120.module5.question03"> </question>
+            <question id="samples.mu120.module5.question04"> </question>
+            <question id="samples.mu120.module5.question05"> </question>
+            <question id="samples.mu120.module5.question06"> </question>
+
+            <rescore marks="18" axis="Module5" fromaxis=""></rescore>
+        </section>
+			
+    </content>
+	
+    <confirm button="Finish">
+        <title>Summary</title>
+        <p>
+            The table below lists the questions in this diagnostic quiz together with 
+            information on your performance.
+            <br></br><br></br>
+
+            When you click on 'Finish' (at the bottom of this page) we will provide
+            you with our analysis of your performance. To enable us to do this it is
+            important that you have attempted all the questions, otherwise our analysis
+            will assume that you are unable to answer any questions shown as 'not completed'. 
+            <br></br><br></br>
+        </p>
+
+    </confirm>
+
+    <final>
+        <p>
+            Here is a summary of how you did on this quiz:
+        </p>
+
+        <summary attempts="yes"></summary>
+
+        <p>
+            <b>Overall score</b>
+        </p>
+
+        <scores marks="yes" percentage="yes">
+            <axislabel axis="Module5" hide="yes"></axislabel>
+            <axislabel axis="Overall"></axislabel>
+        </scores>
+
+        <conditional on="percentage" gte="99" axis="Overall">
+            <p>Well done you have an excellent score, showing that you have a good grasp of
+            numbers, units and arithmetic. However if some questions took you a long time
+            to complete you might like to study
+            the relevant part of MU120 Preparatory Resource Book B. This is
+            available in pdf format on the course website.</p>
+        </conditional>
+
+        <conditional on="percentage" gte="90" lt="99" axis="Overall">
+            <p>Well done you have an excellent score, showing that you have a good grasp of
+            numbers, units and arithmetic. However if some questions took you a long time
+            to complete or you did not get them right first time, you might like to study
+            the relevant part of MU120 Preparatory Resource Book B. This is
+            available in pdf format on the course website.</p>
+        </conditional>
+
+        <conditional on="percentage" gte="70" lt="90" axis="Overall">
+            <p>Well done! You have achieved a good overall score, but the individual scores
+            show that you have a few weaker areas in your knowledge and skills which you
+            may wish to revise. References are given below from MU120 Preparatory Resource
+            Book B. This is available on pdf format on the course website.</p>
+        </conditional>
+
+        <conditional on="percentage" gte="50" lt="70" axis="Overall">
+            <p>Well done, this is a good score. However there are a few gaps in your knowledge
+            that you might consider revising. References are given below from MU120
+            Preparatory Resource Book B. This is available in pdf format on the course
+            website.</p>
+        </conditional>
+
+        <conditional on="percentage" gte="30" lt="50" axis="Overall">
+            <p>You have some knowledge of the topics but you may wish to revise a number of
+            areas. References are given below from MU120 Preparatory Resource Book B.
+            This is available in pdf format on the course website.</p>
+        </conditional>
+
+        <conditional on="percentage" lt="30" axis="Overall">
+            <p>You did not do so well on the test. So perhaps you might spend time studying
+            the topics well. References are given below from MU120 Preparatory Resource
+            Book B. This is available in pdf format on the course website.</p>
+        </conditional>
+
+
+        <p>Good luck with your studies.</p>
+        <br></br>
+
+        <p>
+            <b>MU120 Preparatory Resource Book B references</b>
+            <br></br>
+            <em>Module 5</em><br></br>
+            Question 1: Section 5.1<br></br>
+            Question 2: Sections 5.2.2<br></br>
+            Question 3: Sections 5.2.3<br></br>
+            Question 4: Sections 5.3.1<br></br>
+            Question 5: Section 5.3.1 and 5.3.2<br></br>
+            Question 6: Section 5.3.2<br></br>
+            <br></br>
+        </p>
+
+        <p>If you wish to re-run the diagnostic quiz with different questions,
+            click the 'Restart entire test' button at the bottom of this page
+            <br></br>
+        </p>
+
+    </final>
+	
+</test>

@@ -1,0 +1,85 @@
+<!-- MU120 Module 1 Question 2 -->
+
+<question class="samples.numeric.multipleentries.q2">
+
+	<scoring>
+		<marks>3</marks>
+	</scoring>
+
+	<layout>
+		<row height="450"/>
+		<column width="330"/>
+		<column width="262"/>  
+	</layout>
+  
+	<box gridx="0" gridy="0" id="inputbox" background="input">
+
+		In a school class election for form captain, 24 students were entitled to
+		vote. The figure below shows how many of them actually voted.
+		<image id="votes15" display="no" filePath="fig15.png" alt="Figure has pie chart showing 15 votes"></image>
+		<image id="votes16" display="no" filePath="fig16.png" alt="Figure has pie chart showing 16 votes"></image>
+		<image id="votes18" display="no" filePath="fig18.png" alt="Figure has pie chart showing 18 votes"></image>
+		<image id="votes20" display="no" filePath="fig20.png" alt="Figure has pie chart showing 20 votes"></image>
+		<image id="votes22" display="no" filePath="fig22.png" alt="Figure has pie chart showing 22 votes"></image>
+		<gap/>
+		What is the fraction of eligible voters who actually voted in its simplest form?
+			
+		<indent>
+			fraction = 
+			<equation alt="Enter two values, numerator and denominator">
+				\frac{<eplace label="Numerator"><editfield id="numerator" cols="2"/></eplace>}
+					 {<eplace label="Denominator"><editfield id="denominator" cols="2"/></eplace>}		
+			</equation>
+		</indent>
+		<gap/>
+    
+		<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+	</box>
+
+	<box gridx="1" gridy="0" id="answerbox" display="no" background="answer">
+		 
+		<t id="wrong">Your answer is <t id="still">still</t> incorrect.</t>
+		<t id="right">Your answer is correct.</t>
+		<t id="pass"></t> 
+		<gap/>
+		<t id="notsimplest" display="no">
+			Although your answers give the right numerical value
+			you have not expressed the fraction in its simplest form.
+			<gap/>
+		</t>
+		<t id="toolarge" display="no">
+			Your answer is too large.
+			<gap/>
+		</t>
+		<t id="toosmall" display="no">
+			Your answer is too small.
+			<gap/>
+		</t>
+	  
+		<t id="feedback">
+			<t id="default">
+				There are __SHADES__ shaded segments and so __SHADES__ students voted
+				out of 24. However this can be simplified.
+			<gap/>
+			</t>
+	    </t>   
+   
+		<t id="answer">
+			There are __SHADES__ shaded segments and so __SHADES__ students voted
+			out of 24.
+			<gap/>
+			However this can be simplified to
+			<equation alt="__B__ over __C__" textfont="yes">\frac{__B__}{__C__}</equation>.
+			<gap/>
+		</t>
+		<t id="reference">
+			Please see Prep Resource Book A sections 1.1.3.
+			<gap/>
+		</t>
+      
+	    <button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+   
+	</box>
+ 
+</question>

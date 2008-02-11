@@ -1,0 +1,136 @@
+<question class="samples.mu120.module5.question05.Q5">
+
+    <scoring>
+        <marks>3</marks>
+    </scoring>
+
+    <layout>
+        <row height="330"/>
+        <row height="370"/>
+        <column width="592"/>
+    </layout>
+  
+    <!-- Defines the question box -->
+    <box gridx="0" gridy="0" id="inputbox" background="input">
+        <layoutgrid cols ="2">
+            <canvas id="graph" width="256" height="256">
+                <world id="w1" px="10" py="10" pw="236" ph="236"
+                    xleft="-100" xright="100" ybottom="-100" ytop="100">
+                    <function id="f1" colour="graph1" lineWidth="2"/> 
+                    <grid minX="-100" maxX="100" minY="-100" maxY="100" XSpacing="10,10" YSpacing="10,10"/>
+                    <xAxis ticks="50,10" tickSide="both" numbers="50" omitNumbers="0"/>
+                    <yAxis ticks="50,10" tickSide="+" numbers="50" omitNumbers="0"/>
+                <text x="100:5" y="0" text="X" font="bold"/> 
+                <text x="0:5" y="100:10" text="Y" font="bold"/> 
+                </world>			
+                <marker x="156" y="20" labelJS='label="A"; font="bold";' world='w1'/>
+                <marker x="156" y="40" labelJS='label="B"; font="bold";' world='w1'/>
+                <marker x="156" y="60" labelJS='label="C"; font="bold";' world='w1'/>
+                <marker x="156" y="80" labelJS='label="D"; font="bold";' world='w1'/>
+            </canvas>	
+
+            <t>
+                On the left is a graph with 4 points, A, B, C, D marked on it.
+                <gap/>
+                Using the mouse pick up each point and drag it to its allocated position
+                given by the co-ordinates below.
+                <gap/>
+                <gap/>
+                <layoutgrid cols ="2" widths="10%,90%">
+                    <t>A</t>
+                    <t>(__pXA__, __pYA__)</t>
+                    <t>B</t>
+                    <t>(__pXB__, __pYB__)</t>
+                    <t>C</t>
+                    <t>(__pXC__, __pYC__)</t>
+                    <t>D</t>
+                    <t>(__pXD__, __pYD__)</t>
+               </layoutgrid>
+            </t>
+        </layoutgrid>
+        <gap/>
+
+        <button action="actionSubmit" label="%%lENTERANSWER%%"/>
+        <button id="hintButton" action="actionHint" label="Hint"/>
+        <!--button action="actionGiveUp" label="%%lGIVEUP%%"/-->
+ 
+    </box>
+
+    <!-- Defines the right-hand answer box, which is initially hidden  -->
+    <box gridx="0" gridy="1" id="answerbox" display="no" background="answer">
+		 
+        <t id="wrong">Your answer is <t id="still">still</t> incorrect.<gap/></t>
+        <t id="right">Your answer is correct.<gap/></t>
+        <t id="pass">You passed on this question.<gap/></t>
+
+        <t id="hints">
+            <t id="hint">
+                To position the named point on the graph,
+                identify the X coordinate on the horizontal axis,
+                the Y coordinate on the vertical axis
+                and using the mouse
+                pick up and drag the labelled point
+                to the intersection given by the X and Y coordinates.
+                <gap/>
+            </t>
+        </t>
+
+        <t id="feedback">
+            <t id="correct">
+                __CORRECT__
+                <gap/>
+            </t>
+            <t id="pointamisplaced">
+                Point A is misplaced.
+                <gap/>
+            </t>   
+            <t id="pointbmisplaced">
+                Point B is misplaced.
+                <gap/>
+            </t>   
+            <t id="pointcmisplaced">
+                Point C is misplaced.
+                <gap/>
+            </t>   
+            <t id="pointdmisplaced">
+                Point D is misplaced.
+                <gap/>
+            </t>   
+            <t id="feedback1">
+                Notice that one division on the scale represents 10 units on both axes.
+                <gap/>
+            </t>   
+            <t id="feedback2">
+                The first, or x co-ordinate of the point is the position on the x axis
+                and the second the position on the y axis,
+                whether positive or negative.
+                <gap/>
+            </t>   
+        </t>
+
+        <t id="answer">
+            __CORRECT__
+            <gap/>
+            Please verify the following against the graph above.
+            <gap/>
+            point A has coordinates (__pXA__, __pYA__)
+            <break/>
+            point B has coordinates (__pXB__, __pYB__)
+            <break/>
+            point C has coordinates (__pXC__, __pYC__)
+            <break/>
+            point D has coordinates (__pXD__, __pYD__)
+            <gap/>
+        </t>
+
+        <t id="reference">
+            Please see MU120 Preparatory Resource Book B sections 5.3.1, 5.3.2
+            <gap/>
+        </t>
+     
+        <button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+        <button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+   
+    </box>
+ 
+</question>

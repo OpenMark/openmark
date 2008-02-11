@@ -1,0 +1,158 @@
+options
+{
+  STATIC=false;
+}
+
+PARSER_BEGIN(EquationFormat)
+
+package om.equation.generated;
+import om.equation.SimpleNode;
+  
+public class EquationFormat
+{
+}
+
+PARSER_END(EquationFormat)
+
+TOKEN:
+{
+  <LEFT: "\\left" [".","|","(",")","{","}","[","]"] >
+| <RIGHT: "\\right" ([".","|","(",")","{","}","[","]"]) >
+| <COMMAND: "\\" ( ["a"-"z","A"-"Z","0"-"9"] )+ >  
+| <LPAREN: "{" >
+| <RPAREN: "}" >
+| <SUPER: "^" >
+| <SUB: "_" >
+| <ESCAPE: "\\\\" | "\\{" | "\\}" | "\\^" | "\\_" >
+| <WHITESPACE: (" " | "\n" | "\t")+ >
+| <CHAR: (~["\\","{","}","^","_"," ","\n","\t"]) | (["\u0100" - "\uffff"])>
+}
+
+
+
+SimpleNode equation() #int_equation :	
+{}
+{
+  ( (whitespace())? thing() )* (whitespace())? <EOF>
+  { return jjtThis; }
+}
+
+void thing() #void :
+{}
+{
+  supsub()
+|
+  simplething() 
+}
+
+void simplething() #void :
+{}
+{
+  group() 
+|
+  text() 
+| 
+  command()
+|
+  matchbrackets()
+}
+
+void matchbrackets() #int_brackets :
+{
+  Token t;
+}
+{
+  t=<LEFT>
+  {
+    jjtThis.setAttribute("leftsymbol",t.image.substring(5));
+  }
+  innergroup() 
+  t=<RIGHT>
+  {
+    jjtThis.setAttribute("rightsymbol",t.image.substring(6));
+  }
+}
+
+
+void supsub() #int_supersub :
+{}
+{
+  LOOKAHEAD (sup() sub())
+  sup() sub()
+|  
+  sup()
+|
+  LOOKAHEAD (sub() sup())
+  sub() sup()
+|
+  sub()
+}
+
+void sup() #int_sup :
+{}
+{
+  <SUPER> simplething()
+}
+
+void sub() #int_sub :
+{}
+{
+  <SUB> simplething()
+}
+
+void group() #void:
+{}
+{
+  <LPAREN> innergroup() <RPAREN>
+}
+
+void innergroup() #int_line:
+{}
+{
+  (whitespace())? (thing() (whitespace())?)*
+}
+
+
+void whitespace() #int_whitespace:
+{
+  Token t;
+}
+{
+  t=<WHITESPACE>
+  {
+  	jjtThis.setContent(t.image);
+  }
+}
+
+
+void text() #int_text:
+{
+  Token t;
+}
+{
+  t=<CHAR>
+  {
+    jjtThis.setContent(t.image);  
+  }
+| t=<ESCAPE>  
+  {
+    jjtThis.setContent(t.image.substring(1));
+  }
+}
+ 
+void command() :
+{
+  Token t;
+}
+{
+  t=<COMMAND> 
+  {
+    jjtThis.setName(t.image.substring(1));
+  }
+  [ LOOKAHEAD((whitespace())? group())
+    (whitespace())? group() 
+    [ LOOKAHEAD((whitespace())? group())
+      (whitespace())? group() ]
+  ]
+}
+

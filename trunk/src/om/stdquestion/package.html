@@ -1,0 +1,183 @@
+<html>
+<body>
+Implementation of standard Om questions.
+<p/>
+Most Om questions should be
+subclasses of {@link om.stdquestion.StandardQuestion}. This includes support for the XML format,
+question components ({@link om.stdquestion.QComponent}) and various other things.
+<p/>
+It is possible to create Om questions that don't use this infrastructure
+by making your question implement only the interface in the 'question' package,
+but that should be needed only in rare cases as it's a lot more work.
+<p/>
+StandardQuestion provides a way to define questions in an XML format that is documented here.
+<h2>Format of question.xml</h2>
+<h3>Example</h3>
+Please see the question author's guide for an example and tutorial information. This file
+is the definitive reference, not a tutorial.
+<h3>Header</h3>
+<pre>&lt;question class="samples.q1.MinusDivision" plainmode="no"
+  resources="/samples/resources/"></pre>
+<table border="1">
+<tr><th>Attribute</th><th>Meaning</th><th>Required?</th></tr>
+<tr>
+<td>class</td>
+<td>Full name (including package) of class that implements the Question interface.</td>
+<td>Required.</td>
+</tr>
+<tr>
+<td>plainmode</td>
+<td>If no, the question cannot be used in plain mode.</td>
+<td>Optional. By default questions are accessible in plain mode.</td>
+</tr>
+<tr>
+<td>resources</td>
+<td>Location of resource files (such as images) that are included in the question. Should
+be specified as a folder name within the question .jar file, beginning and ending with /.</td>
+<td>Optional. By default resources are loaded from the same folder as the question (/samples/q1/ in the
+above example).</td>
+</tr>
+</table>
+<h3>Title</h3>
+<pre>&lt;title>Dividing negative numbers&lt;/title></pre>
+<p>
+The &lt;title> tag is optional. It is used to define a brief title for the question. We
+recommend that you include a &lt;title> in every question.
+</p>
+<p>
+While some tests may not display question titles, including a title allows for more consistent
+reuse in other test that do. It is also valuable metadata that may be used within the ECM system /
+question bank.
+</p>
+<p>
+Titles should be no more than four words long (at most!) and appropriate for display to students.
+</p>
+<h3>Define-component</h3>
+<pre>
+&lt;define-component class="my.component.Class"/>
+</pre>
+<p>
+The &lt;define-component/> tag is optional, and can be included as many times as necessary. It is used if the
+question needs to include a custom question component within its own jar file. Once the component
+has been defined, its XML tag can be used further down in the file.
+</p>
+<h3>Scoring</h3>
+<pre>
+&lt;scoring>
+ &lt;marks>3&lt;/marks>
+ &lt;marks axis="evil">666&lt;/marks>
+&lt;/scoring>
+</pre>
+<p>
+The &lt;scoring> tag is optional. It defines the maximum number of marks available from the question.
+If you don't include it then the question makes no contribution to an overall test score.
+</p>
+<p>
+If using {@link om.helper.SimpleQuestion1}, you must set the available marks to the same as the number
+of attempts (3, by default).
+</p>
+<p>
+The second &lt;marks> entry in the above example demonstrates scoring on a particular axis. Questions
+can report different scores on multiple axes; for example a language question could report scores in
+spelling and punctuation on separate axes. However, most questions need only the one default axis so
+generally there will be only a single &lt;marks> entry.
+</p>
+<h3>Layout</h3>
+<pre>
+&lt;layout>
+ &lt;row height="340"/>
+ &lt;column width="296"/>
+ &lt;column width="296"/>
+&lt;/layout>
+</pre>
+<p>
+The &lt;layout> tag is required. It defines the visual organisation of the question into a grid, into
+which boxes (the &lt;box> component tag, see below) can be slotted.
+</p>
+<p>
+The above example has one row and two columns (a 2x1 grid). If you wanted to add a second row, you would
+add only one extra &lt;row/> tag; this would make a 2x2 grid. In other words, column tags and row tags are
+independent; you don't need to add columns within each row. The &lt;layout> defines a grid, not its
+contents, and is not similar to HTML table structures.
+</p>
+<p>
+Specified widths and heights are in pixels. Each grid row or column can be a different size. The first
+height controls the topmost row, and the first width controls the leftmost column. Between rows and
+columns there is an 8 pixel margin.
+</p>
+<ul>
+<li> The total width, including all margins, must currently be 600 pixels
+or under (we recommend using 600 pixels, even if you don't need it). In this case, 296+296+8 (the margin
+between) = 600. Questions wider than 600 pixels will not be displayed correctly.</li>
+<li> There is no
+restriction on height. We currently recommend setting height
+so that your question fits, with a comfortable margin.</li>
+</ul>
+<h3>Remainder of file</h3>
+<p>
+The remainder of the file consists of question components that produce the content of the question.
+Typically, there would be at least two &lt;box> components, inside which other components would be placed.
+Around these other components you can also include text.
+</p>
+<p>
+Please note that this is <em>not</em> directly related to HTML. None of the tags are exactly the same as in HTML
+(although some are similar). You cannot add HTML directly. Instead, only the question components generate HTML,
+which has already been tested in target browsers and for accessibility.
+</p>
+<p>
+A list of standard components is below. This shows the XML tag that is used for the component, and links to
+the corresponding Javadoc page. The javadoc page is useful for two main purposes:
+</p>
+<ul>
+<li>Documentation at the top of the page lists any attributes that the component accepts inside its XML tag</li>
+<li>Standard Javadoc documentation shows methods of the component, some of which might be useful to question
+authors. You can call these from question code if you obtain the component object using
+{@link om.stdquestion.StandardQuestion#getComponent(String)} or one of the convenience methods (getText(),
+getEditField(), etc.)</li>
+<li>If you need to set the properties (XML attributes) from code, you can usually do so even if there is
+no specific method for setting them. Most components
+define string constants for their property names. For example, you could do
+<tt>getCheckbox("chk").setBoolean(CheckboxComponent.PROPERTY_CHECKED,true);</tt>, if checkboxes didn't include
+a more convenient <tt>getCheckbox("chk").setChecked(true);</tt> method.
+</ul>
+
+<h3>XML tag index</h3>
+
+
+<table border="1">
+    <tr><th>XML tag</th><th>Component class</th><th>Purpose</th></tr>
+    <tr><td>&lt;advancedfield&gt;</td><td>{@link om.stdcomponent.AdvancedFieldComponent}</td><td>Editfield with superscript</td></tr>
+    <tr><td>&lt;box&gt;</td><td>{@link om.stdcomponent.BoxComponent}</td><td>Top-level layout box</td></tr>
+    <tr><td>&lt;break&gt;</td><td>{@link om.stdcomponent.BreakComponent}</td><td>Line break</td></tr>
+    <tr><td>&lt;button&gt;</td><td>{@link om.stdcomponent.ButtonComponent}</td><td>Standard button</td></tr>
+    <tr><td>&lt;canvas&gt;</td><td>{@link om.stdcomponent.CanvasComponent}</td><td>Canvas for graphs and Java-based drawing</td></tr>
+    <tr><td>&lt;centre&gt;</td><td>{@link om.stdcomponent.CentreComponent}</td><td>Centres contents</td></tr>
+    <tr><td>&lt;checkbox&gt;</td><td>{@link om.stdcomponent.CheckboxComponent}</td><td>Checkbox (can contain stuff)</td></tr>
+    <tr><td>&lt;dragbox&gt;</td><td>{@link om.stdcomponent.DragBoxComponent}</td><td>Thing that can be dragged (can contain stuff)</td></tr>
+    <tr><td>&lt;dropbox&gt;</td><td>{@link om.stdcomponent.DropBoxComponent}</td><td>Thing that dragboxes can be dropped onto</td></tr>
+    <tr><td>&lt;dropdown&gt;</td><td>{@link om.stdcomponent.DropdownComponent}</td><td>Dropdown list</td></tr>
+    <tr><td>&lt;editfield&gt;</td><td>{@link om.stdcomponent.EditFieldComponent}</td><td>Simple text entry field</td></tr>
+    <tr><td>&lt;emphasis&gt;</td><td>{@link om.stdcomponent.EmphasisComponent}</td><td>Emphasises contained text</td></tr>
+    <tr><td>&lt;eq&gt;</td><td>{@link om.stdcomponent.TextEquationComponent}</td><td>Formats equation as XHTML</td></tr>
+    <tr><td>&lt;equation&gt;</td><td>{@link om.stdcomponent.EquationComponent}</td><td>Displays equation as bitmap</td></tr>
+    <tr><td>&lt;gap&gt;</td><td>{@link om.stdcomponent.GapComponent}</td><td>Line break and small space</td></tr>
+    <tr><td>&lt;if&gt;</td><td>{@link om.stdcomponent.IfComponent}</td><td>For making areas of the question conditional on plain mode</td></tr>
+    <tr><td>&lt;image&gt;</td><td>{@link om.stdcomponent.ImageComponent}</td><td>Include a standard bitmap</td></tr>
+    <tr><td>&lt;indent&gt;</td><td>{@link om.stdcomponent.IndentComponent}</td><td>Indents contents</td></tr>
+    <tr><td>&lt;jme&gt;</td><td>{@link om.stdcomponent.JMEComponent}</td><td>Includes a pop-up Java Molecular Editor applet</td></tr>
+    <tr><td>&lt;label&gt;</td><td>{@link om.stdcomponent.LabelComponent}</td><td>Marks text as a label for an associated edit field</td></tr>
+    <tr><td>&lt;layoutgrid&gt;</td><td>{@link om.stdcomponent.LayoutGridComponent}</td><td>Arranges contents in a grid</td></tr>
+    <tr><td>&lt;link&gt;</td><td>{@link om.stdcomponent.LinkComponent}</td><td>An HTML link</td></tr>
+    <tr><td>&lt;list&gt;</td><td>{@link om.stdcomponent.ListComponent}</td><td>A numbered or bulleted list</td></tr>
+    <tr><td>&lt;radiobox&gt;</td><td>{@link om.stdcomponent.RadioBoxComponent}</td><td>Radio button (similar to checkbox)</td></tr>
+    <tr><td>&lt;right&gt;</td><td>{@link om.stdcomponent.RightComponent}</td><td>Right-aligns contents</td></tr>
+    <tr><td>&lt;table&gt;</td><td>{@link om.stdcomponent.TableComponent}</td><td>A table used to present structured data (do not use for layout)</td></tr>
+    <tr><td>&lt;t&gt;</td><td>{@link om.stdcomponent.TextComponent}</td><td>Outputs plain text</td></tr>
+    <!-- Blank line for copying when adding more - causes javadoc to display a broken link warning.
+    <tr><td>&lt;&gt;</td><td>{@link }</td><td></td></tr>
+    -->
+</table>
+
+
+</body>
+</html>

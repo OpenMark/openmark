@@ -1,0 +1,79 @@
+About these questions
+---------------------
+
+The samples in this folder were created by various staff across Open University 
+development teams in the University's LTS Media department, not (with a few 
+exceptions) by the OpenMark system developers. 
+
+Programming styles may vary, and these aren't necessarily all good examples of
+the best way to create OpenMark questions - but they are all examples of 
+practical real-world use. The questions have been categorised into appropriate
+folders but are otherwise left untouched, so you'll see existing names and 
+references to Open University course codes.
+
+These were originally created for various courses in the maths and science 
+faculties.
+
+Thanks to all staff for their contributions. 
+
+MU120
+-----
+
+MU120 is a University course from the Maths faculty that used OpenMark for 
+eight short tests. We have included one of these in its entirety as a
+test demonstration.
+
+Running these questions
+-----------------------
+
+Build the OpenMark system. You can then run these questions as follows:
+
+* MU120 module 5
+
+  This is installed in the test navigator as a sample test. You can access
+  it at http://your.server/om-tn/mu120.module5/
+  
+* Other questions
+
+  These can be built in the development environment. You will need to know
+  the full path to the samples root (the folder which includes this readme).
+  To run a question, visit http://your.server/om/ and in the form at the bottom
+  of the page:
+  
+  1. Enter the absolute path to samples root as 'source tree'. Example:
+     /Users/sam/Documents/workspace/openmark/samples
+  2. Enter 'samples.shared' as 'Extra package' (some questions use shared 
+     classes from this package; entering it here means those shared classes
+     are built into each question).
+  3. Enter the package name of a question, such as 'samples.numeric.singleentry'.
+  4. Click Create. 
+  
+  This will create an XML file defining all the information needed to build the
+  question package, and the question should appear in a list on the page.
+  
+  5. Click Build next to the question. The question should build and run.
+  
+  If there are problems building, check the configuration of the developer
+  servlet to make sure that it correctly points to your Java and Apache Ant
+  installations.
+  
+* JME
+
+  JME is the 'Java Molecular Editor'. It's a Java applet that can be used to
+  enter molecules with a visual interface. This isn't part of the OpenMark system
+  and is available with separate licensing conditions, so the question won't
+  run right off. 
+  
+  In order to use it, do a Google search for the above. When you find it, put 
+  jme.jar into src/om/stdcomponent and rebuild Om.
+  
+  
+Public availability
+-------------------  
+  
+If you just want to see the samples without installing OpenMark (or you want
+to see what is supposed to happen!), you can find them at: 
+
+http://www.open.ac.uk/openmarkexamples
+
+This includes extra information about the context/purpose of the samples.

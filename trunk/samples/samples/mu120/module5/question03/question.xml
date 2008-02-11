@@ -1,0 +1,92 @@
+<question class="samples.mu120.module5.question03.Q3">
+
+    <scoring>
+        <marks>3</marks>
+    </scoring>
+
+    <layout>
+        <row height="400"/>
+        <column width="290"/>
+        <column width="302"/>  
+    </layout>
+  
+    <!-- Defines the question box -->
+    <box gridx="0" gridy="0" id="inputbox" background="input">
+        The frequency chart below shows the number of households in a village
+        with differing numbers of children.
+        <gap/>
+        <canvas id="barchart" width="256" height="196">
+        </canvas>	
+        <gap/>
+        How many households have __X__ __CHILD(REN)__
+        <gap/>
+
+        <indent>
+            <editfield id="response" label="enter value" cols="6"/> households
+        </indent>
+        <gap/>
+
+        <button action="actionSubmit" label="%%lENTERANSWER%%"/>
+        <button id="hintButton" action="actionHint" label="Hint"/>
+        <!--button action="actionGiveUp" label="%%lGIVEUP%%"/-->
+    </box>
+
+    <!-- Defines the right-hand answer box, which is initially hidden  -->
+    <box gridx="1" gridy="0" id="answerbox" display="no" background="answer">
+		 
+        <t id="wrong">Your answer is <t id="still">still</t> incorrect.<gap/></t>
+        <t id="right">Your answer is correct.<gap/></t>
+        <t id="pass">You passed on this question.<gap/></t>
+
+        <t id="hints">
+            <t id="hint">
+                Start with the number of children on the horizontal axis.
+                <gap/>
+            </t>
+        </t>
+        <t id="feedback">
+            <t id="nonumber">
+                You must enter a number for the 0 to 5.
+                <gap/>
+            </t>
+            <t id="toosmall">
+                Your number is too small.
+                <gap/>
+            </t>
+            <t id="toolarge">
+                Your number is too big.
+                <gap/>
+            </t>
+            <t id="feedback1">
+                Look at the height of the bar with the required number of children on the horizontal axis,
+                taking account of the scale.
+                <gap/>
+            </t>   
+            <t id="feedback2">
+                Check the height of the __X__ bar against the left hand vertical scale,
+                and take care over the scale,
+                <gap/>
+            </t>   
+        </t>
+		
+        <t id="answer">
+            On the vertical scale,
+            8 divisions represent 40 households,
+            so each division represents 5.
+            Checking the height of the __X__ bar against the left hand vertical scale
+            shows that it is __Y/5__ divisions.
+            <break/>
+            So this is __Y/5__ × 5 = __Y__ households.
+            <gap/>
+        </t>
+
+        <t id="reference">
+            Please see MU120 Preparatory Resource Book B section 5.2.3
+            <gap/>
+        </t>
+     
+        <button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+        <button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+    </box>
+ 
+</question>

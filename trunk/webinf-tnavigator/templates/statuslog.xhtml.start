@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
+<title>%%DATE%% - %%MACHINE%% log</title>
+<link rel='stylesheet' href='../navigator%%ACCESS%%.css' type='text/css'/>
+<style type="text/css">
+.l
+{
+  border-top:1px solid #d8d8d8;
+  margin-bottom:6px;
+  clear:left;
+}
+.f
+{
+  float:left;
+  width:130px;
+  font-size:85%;
+  margin-bottom:6px;
+}
+.t
+{
+  margin-top:1px;
+  font-weight:bold;
+}
+.d
+{
+  color:#888;
+}
+.e
+{
+  color:#a00 
+}
+.w
+{
+  color:#970 
+}
+.m,pre
+{
+  margin-left:130px;
+}
+pre
+{
+  font:80% Andale Mono, monospace;
+}
+</style>
+</head>
+<body class="basicpage report">
+<h3>%%DATE%% - %%MACHINE%%</h3>
+
+
