@@ -23,6 +23,8 @@ import util.xml.XML;
  *
  */
 public class UserTestReport implements OmTestReport {
+	private final static SimpleDateFormat sdf=new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
+
 	NavigatorServlet ns;
 
 	/**
@@ -63,7 +65,6 @@ public class UserTestReport implements OmTestReport {
 		// Build result
 		StringBuffer sb=new StringBuffer("<div class='basicpage userreport report'>");
 
-		SimpleDateFormat sdf=new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
 
 		// Query from database for PIs and questions
 		DatabaseAccess.Transaction dat=ns.getDatabaseAccess().newTransaction();
@@ -86,7 +87,7 @@ public class UserTestReport implements OmTestReport {
 					"<tr><th class='time'>Time</th><th class='ip'>IP address</th><th class='useragent'>User agent</th></tr>"+
 					"</table></div>";
 				sOutput=sOutput.substring(0,sOutput.length()-"</table></div>".length());
-				sOutput+="<tr><td class='time'>"+sdf.format(tsDate)+
+				sOutput+="<tr><td class='time'>"+formatDate(tsDate)+
 					"</td><td class='ip'>"+sIP+"</td><td class='useragent'>"+
 					XHTML.escape(sUserAgent, XHTML.ESCAPE_TEXT)+"</td></tr></table></div>";
 				mSessionInfo.put(iTAttempt,sOutput);
@@ -134,7 +135,7 @@ public class UserTestReport implements OmTestReport {
 					sCurrentQuestion = null;
 
 					sb.append("<div class='tattempt'><h3>Test attempt "+iCurrentTAttempt+
-						" ("+(iFinished==0?"Unfinished":"Finished on "+(tsFinished==null ? "[date not available] " : sdf.format(tsFinished))
+						" ("+(iFinished==0?"Unfinished":"Finished on "+formatDate(tsFinished)
 								)+")</h3>");
 					bInTest=true;
 
@@ -149,8 +150,8 @@ public class UserTestReport implements OmTestReport {
 
 					sb.append("<div class='qattempt'><h4>#"+iQNumber+" ("+sQuestion+") attempt "+
 						iCurrentQAttempt+"</h4>"+
-						"<div class='started'>Access time: <em>"+sdf.format(tsDate)+"</em></div>"+
-						"<div class='started'>Action times: <em>"+sdf.format(tsMinAction)+"</em> - <em>"+sdf.format(tsMaxAction)+"</em></div>"+
+						"<div class='started'>Access time: <em>"+formatDate(tsDate)+"</em></div>"+
+						"<div class='started'>Action times: <em>"+formatDate(tsMinAction)+"</em> - <em>"+formatDate(tsMaxAction)+"</em></div>"+
 						"<div class='question'>Question: <em>"+XML.escape(questionSummary)+"</em></div>"+
 						"<div class='answer'>User's answer: <em>"+XML.escape(answerSummary)+"</em></div>"+
 						"<pre>"+XML.escape(actionSummary)+"</pre>"+
@@ -177,5 +178,16 @@ public class UserTestReport implements OmTestReport {
 		sb.append("<p><a href='reports!'>Back to reports home</a></p>");
 		sb.append("</div>");
 		ns.serveTestContent(us,"Reports: "+sUser,"",null,null,sb.toString(),false, request, response, true);
+	}
+
+	/**
+	 * @param date a timestamp from the database.
+	 * @return a string representation of this date.
+	 */
+	private String formatDate(Timestamp date) {
+		if (date == null) {
+			return "[date not available]";
+		}
+		return sdf.format(date);
 	}
 }
