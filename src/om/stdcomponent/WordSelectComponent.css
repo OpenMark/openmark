@@ -1,15 +1,14 @@
 .om .selectedhilight
 {
-  background: lime;
+  background: %%COLOUR:innerbg%%;
 }
 .om .secondhilight
 {
-  background-color: #EF9ECA;
+  background-color: %%COLOUR:innerbg3%%;
 }
 .om .borderfocus
 {
-	border:1px dashed grey;
-
+	border:1px dotted %%COLOUR:text%%;
 }
 .om .offscreen
 {
