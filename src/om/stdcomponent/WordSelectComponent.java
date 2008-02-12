@@ -191,7 +191,9 @@ public class WordSelectComponent extends QComponent
 	}
 
 	private static boolean isWordCharacter(char c) {
-		return Character.isLetterOrDigit(c);
+		boolean character = Character.isLetterOrDigit(c) || c == '\''
+						|| c == '\u2032' || c == '’';
+		return character;
 	}
 	
 	private String makeCheckwordId(WordBlock wb, Word w) {
@@ -226,11 +228,13 @@ public class WordSelectComponent extends QComponent
 				input.setAttribute("onfocus","wordOnFocus('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
 				input.setAttribute("onblur","wordOnBlur('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
 				input.setAttribute("id",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
+				if(!isEnabled())input.setAttribute("disabled", "yes");
 				if (w.selected) {
 					input.setAttribute("checked", "checked");
 					labelclass = "selectedhilight ";
 				}
 				qc.addInlineXHTML(input);
+				if(isEnabled()) qc.informFocusable(input.getAttribute("id"),bPlain);
 				
 				Element label=qc.getOutputDocument().createElement("label");
 				label.setAttribute("for",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
