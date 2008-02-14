@@ -204,57 +204,116 @@ public class WordSelectComponent extends QComponent
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
+		Element selectDiv = qc.createElement("div");
+		qc.addInlineXHTML(selectDiv);
+		selectDiv.setAttribute("class","selectdiv");
+		
 		for (WordBlock wb : wordBlocks)
 		{
-			if ("" != wb.preceding) {
+			if ("" != wb.preceding.trim()) {
 				Element span = qc.createElement("span");
-				XML.createText(span, wb.preceding);
-				if (wb.isSecondHighlighted) {
-					span.setAttribute("class","secondhilight");
-				}
+				XML.createText(span, wb.preceding.trim());
+				qc.setParent(selectDiv);
 				qc.addInlineXHTML(span);
+				qc.unsetParent();
 			}
 
 			for(Word w : wb.words)
 			{
-				String labelclass = "";
 				String checkwordID = makeCheckwordId(wb, w);
-				Element input=qc.getOutputDocument().createElement("input");
+				Element eOuterBox = null;
+				Element innerBox = null;
+				Element input = null;
+				if(!bPlain){
+					eOuterBox=qc.createElement("div");
+					qc.setParent(selectDiv);
+					qc.addInlineXHTML(eOuterBox);
+					qc.unsetParent();
+					eOuterBox.setAttribute("class","selectworddiv");
+					eOuterBox.setAttribute("id",QDocument.ID_PREFIX+"div_wordselectword_"+getID() + checkwordID);
+					
+					innerBox=qc.createElement("div");
+					qc.setParent(eOuterBox);
+					qc.addInlineXHTML(innerBox);
+					qc.unsetParent();
+					innerBox.setAttribute("class","innerDiv");
+				}
+				String labelclass = "";
+				
+				if(!bPlain && eOuterBox != null){
+					input=XML.createChild(eOuterBox,"input");
+					
+				}
+				else{
+					input=qc.getOutputDocument().createElement("input");
+				}
+				
 				input.setAttribute("type","checkbox");
-				input.setAttribute("class", "offscreen");
 				input.setAttribute("name", QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
 				input.setAttribute("value", "1");
-				input.setAttribute("onclick","wordOnClick('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
-				input.setAttribute("onfocus","wordOnFocus('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
-				input.setAttribute("onblur","wordOnBlur('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
+				input.setAttribute("class", "offscreen");
 				input.setAttribute("id",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
+				
+				if(!bPlain){
+					input.setAttribute("onclick","wordOnClick('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
+					input.setAttribute("onfocus","wordOnFocus('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
+					input.setAttribute("onblur","wordOnBlur('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
+				}
+				
 				if(!isEnabled())input.setAttribute("disabled", "yes");
 				if (w.selected) {
 					input.setAttribute("checked", "checked");
-					labelclass = "selectedhilight ";
+					if(!bPlain){
+						labelclass = "selectedhilight ";
+					}
 				}
-				qc.addInlineXHTML(input);
-				if(isEnabled()) qc.informFocusable(input.getAttribute("id"),bPlain);
+				else if(!bPlain){
+					labelclass = "selectword";
+				}
 				
 				Element label=qc.getOutputDocument().createElement("label");
 				label.setAttribute("for",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
-				if (wb.isSecondHighlighted) {
-					labelclass += "secondhilight";
-				}
-				label.setAttribute("border", "1px");
-				label.setAttribute("class",labelclass);
 				label.setAttribute("id",QDocument.ID_PREFIX+"label_wordselectword_"+getID() + checkwordID);
-				XML.createText(label,w.word);
-				qc.addInlineXHTML(label);
-
-				if ("" != w.following) {
-					Element span = qc.createElement("span");
-					XML.createText(span, w.following);
-					if (wb.isSecondHighlighted) {
-						label.setAttribute("class","secondhilight");
+				XML.createText(label, " " + w.word);
+				
+				
+				if (wb.isSecondHighlighted) {
+					if(!bPlain){
+						labelclass = "secondhilight";
 					}
-					qc.addInlineXHTML(span);
+					else{
+						input.setAttribute("checked", "checked");
+					}
 				}
+				
+				if(!bPlain){
+					label.setAttribute("class",labelclass);
+				}
+				
+				if(!bPlain){
+					qc.setParent(innerBox);
+					qc.addInlineXHTML(input);
+					qc.addInlineXHTML(label);
+					qc.unsetParent();
+				}
+				else{
+					qc.setParent(selectDiv);
+					qc.addInlineXHTML(input);
+					qc.addInlineXHTML(label);
+					qc.unsetParent();
+				}
+				
+				
+
+				if ("" != w.following.trim()) {
+					Element span = qc.createElement("span");
+					XML.createText(span, " " + w.following.trim());
+					qc.setParent(selectDiv);
+					qc.addInlineXHTML(span);
+					qc.unsetParent();
+				}
+				
+				if(isEnabled()) qc.informFocusable(input.getAttribute("id"),bPlain);
 
 			}
 		}
