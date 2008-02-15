@@ -204,44 +204,49 @@ public class WordSelectComponent extends QComponent
 	@Override
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
-		Element selectDiv = qc.createElement("div");
-		qc.addInlineXHTML(selectDiv);
-		selectDiv.setAttribute("class","selectdiv");
+		Element selectDiv = null;
+		if(!bPlain){
+			selectDiv = qc.createElement("div");
+			qc.addInlineXHTML(selectDiv);
+			selectDiv.setAttribute("class","selectdiv");
+		}
 		
 		for (WordBlock wb : wordBlocks)
 		{
 			if ("" != wb.preceding.trim()) {
-				Element span = qc.createElement("span");
-				XML.createText(span, wb.preceding.trim());
-				qc.setParent(selectDiv);
-				qc.addInlineXHTML(span);
-				qc.unsetParent();
+				
+				if(!bPlain && selectDiv != null){
+					Element span = qc.createElement("div");
+					XML.createText(span, wb.preceding.trim());
+					span.setAttribute("class","spanclass");
+					qc.setParent(selectDiv);
+					qc.addInlineXHTML(span);
+					qc.unsetParent();
+				}
+				else{
+					Element span = qc.createElement("span");
+					XML.createText(span, wb.preceding.trim());
+					qc.addInlineXHTML(span);
+				}
 			}
 
 			for(Word w : wb.words)
 			{
 				String checkwordID = makeCheckwordId(wb, w);
-				Element eOuterBox = null;
-				Element innerBox = null;
+				Element outerBox = null;
 				Element input = null;
-				if(!bPlain){
-					eOuterBox=qc.createElement("div");
+				if(!bPlain && selectDiv != null){
+					outerBox=qc.createElement("div");
 					qc.setParent(selectDiv);
-					qc.addInlineXHTML(eOuterBox);
+					qc.addInlineXHTML(outerBox);
 					qc.unsetParent();
-					eOuterBox.setAttribute("class","selectworddiv");
-					eOuterBox.setAttribute("id",QDocument.ID_PREFIX+"div_wordselectword_"+getID() + checkwordID);
-					
-					innerBox=qc.createElement("div");
-					qc.setParent(eOuterBox);
-					qc.addInlineXHTML(innerBox);
-					qc.unsetParent();
-					innerBox.setAttribute("class","innerDiv");
+					outerBox.setAttribute("class","selectworddiv");
+					outerBox.setAttribute("id",QDocument.ID_PREFIX+"div_wordselectword_"+getID() + checkwordID);
 				}
 				String labelclass = "";
 				
-				if(!bPlain && eOuterBox != null){
-					input=XML.createChild(eOuterBox,"input");
+				if(!bPlain && outerBox != null){
+					input=XML.createChild(outerBox,"input");
 					
 				}
 				else{
@@ -274,7 +279,7 @@ public class WordSelectComponent extends QComponent
 				Element label=qc.getOutputDocument().createElement("label");
 				label.setAttribute("for",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
 				label.setAttribute("id",QDocument.ID_PREFIX+"label_wordselectword_"+getID() + checkwordID);
-				XML.createText(label, " " + w.word);
+				XML.createText(label, w.word + " ");
 				
 				
 				if (wb.isSecondHighlighted) {
@@ -290,27 +295,35 @@ public class WordSelectComponent extends QComponent
 					label.setAttribute("class",labelclass);
 				}
 				
-				if(!bPlain){
-					qc.setParent(innerBox);
+				if(!bPlain && outerBox != null){
+					qc.setParent(outerBox);
 					qc.addInlineXHTML(input);
 					qc.addInlineXHTML(label);
 					qc.unsetParent();
 				}
 				else{
-					qc.setParent(selectDiv);
 					qc.addInlineXHTML(input);
 					qc.addInlineXHTML(label);
-					qc.unsetParent();
 				}
 				
 				
 
 				if ("" != w.following.trim()) {
-					Element span = qc.createElement("span");
-					XML.createText(span, " " + w.following.trim());
-					qc.setParent(selectDiv);
-					qc.addInlineXHTML(span);
-					qc.unsetParent();
+					if(!bPlain && selectDiv != null){
+						Element span = qc.createElement("div");
+						//Note without the space the component doesn't
+						//display properly in IE
+						XML.createText(span,w.following.trim() + " ");
+						span.setAttribute("class","spanclass");
+						qc.setParent(selectDiv);
+						qc.addInlineXHTML(span);
+						qc.unsetParent();
+					}
+					else{
+						Element span = qc.createElement("span");
+						XML.createText(span, w.following.trim() + " ");
+						qc.addInlineXHTML(span);
+					}
 				}
 				
 				if(isEnabled()) qc.informFocusable(input.getAttribute("id"),bPlain);
