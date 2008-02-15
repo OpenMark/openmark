@@ -236,6 +236,10 @@ public class WordSelectComponent extends QComponent
 					qc.unsetParent();
 					outerBox.setAttribute("class","selectworddiv");
 					outerBox.setAttribute("id",QDocument.ID_PREFIX+"div_wordselectword_"+getID() + checkwordID);
+					Element script=XML.createChild(outerBox,"script");
+					script.setAttribute("type","text/javascript");
+					XML.createText(script,
+						"addOnLoad(function() { geckoborder('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"'); });");
 				}
 				String labelclass = "";
 

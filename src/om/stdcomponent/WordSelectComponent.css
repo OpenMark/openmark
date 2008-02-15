@@ -7,6 +7,12 @@
 {
 	display: inline;
 }
+
+.om .geckoselectworddiv
+{
+	border: 1px solid transparent;
+}
+
 .om .selectword
 {
 	display: inline;
