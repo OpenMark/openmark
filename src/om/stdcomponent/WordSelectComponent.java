@@ -53,7 +53,7 @@ public class WordSelectComponent extends QComponent
 	{
 		return "wordselect";
 	}
-	
+
 	//used to store the properties of each word
 	private static class Word
 	{
@@ -71,7 +71,7 @@ public class WordSelectComponent extends QComponent
 		}
 	}
 
-	//used to store the properties of each block of words
+	// Used to store the properties of each block of words
 	private static class WordBlock
 	{
 		List<Word> words = new ArrayList<Word>();
@@ -79,16 +79,15 @@ public class WordSelectComponent extends QComponent
 		String id;
 		boolean isSecondHighlighted = false;
 		boolean isSW = false;
-		
+
 		private WordBlock(String content, String id, int wordCounter, boolean isSW, boolean isSecondHighlighted) {
 			this.id = id;
 			this.isSecondHighlighted = isSecondHighlighted;
 			this.isSW = isSW;
-			
 
 			int i = 0;
 			StringBuffer fragment = new StringBuffer();
-			
+
 			// Extract any non-word characters before the first word starts.
 			while (i < content.length() && !isWordCharacter(content.charAt(i))) {
 				fragment.append(content.charAt(i++));
@@ -118,37 +117,35 @@ public class WordSelectComponent extends QComponent
 			}
 		}
 	}
-	
-	
+
 	private List<WordBlock> wordBlocks = new ArrayList<WordBlock>();
 	private Map<String, WordBlock> wordsById = new HashMap<String, WordBlock>();
-	
-	private int getWordCount(){
+
+	private int getWordCount() {
 		int wordCounter = 0;
-		if(wordBlocks != null){
-			for(WordBlock wb : wordBlocks){
+		if (wordBlocks != null) {
+			for(WordBlock wb : wordBlocks) {
 				wordCounter += wb.words.size();
 			}
 		}
 		return wordCounter;
 	}
 
-	
 	@Override
 	protected void initChildren(Element eThis) throws OmException
 	{
 		StringBuffer sbText=new StringBuffer();
 		int idCounter = 1;
-		
+
 		for(Node n=eThis.getFirstChild();n!=null;n=n.getNextSibling())
 		{
-			
-			if(n instanceof Element)
+
+			if (n instanceof Element)
 			{
 				Element e=(Element)n;
-				if(e.getTagName().equals("sw"))
+				if (e.getTagName().equals("sw"))
 				{
-					if(sbText.length()>0)
+					if (sbText.length()>0)
 					{
 						String id = "" + (idCounter++);
 						WordBlock wb = new WordBlock(sbText.toString(), id, getWordCount(), false, false);
@@ -163,7 +160,7 @@ public class WordSelectComponent extends QComponent
 					} else {
 						id = "" + (idCounter++);
 					}
-					
+
 					WordBlock wb =new WordBlock(XML.getText(e), id, getWordCount(), true, e.hasAttribute("highlight"));
 					wordBlocks.add(wb);
 					wordsById.put(id, wb);
@@ -173,14 +170,14 @@ public class WordSelectComponent extends QComponent
 					throw new OmDeveloperException("<wordselect> can only contain <sw> tags");
 				}
 			}
-			else if(n instanceof Text)
+			else if (n instanceof Text)
 			{
 				sbText.append(n.getNodeValue());
 			}
 		}
-		if(sbText.length()>0)
+		if (sbText.length()>0)
 		{
-			
+
 			String id = "" + (idCounter++);
 			WordBlock wb = new WordBlock(sbText.toString(), id, getWordCount(), false, false);
 			wordBlocks.add(wb);
@@ -192,12 +189,11 @@ public class WordSelectComponent extends QComponent
 
 	private static boolean isWordCharacter(char c) {
 		boolean character = Character.isLetterOrDigit(c) || c == '\''
-						|| c == '\u2032' || c == '’';
+				|| c == '\u2032' || c == '’';
 		return character;
 	}
-	
+
 	private String makeCheckwordId(WordBlock wb, Word w) {
-		//return "_b" + wb.id + "_w" + w.id;
 		return "_" + w.idTag;
 	}
 
@@ -205,25 +201,23 @@ public class WordSelectComponent extends QComponent
 	public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
 	{
 		Element selectDiv = null;
-		if(!bPlain){
+		if (!bPlain) {
 			selectDiv = qc.createElement("div");
 			qc.addInlineXHTML(selectDiv);
 			selectDiv.setAttribute("class","selectdiv");
 		}
-		
+
 		for (WordBlock wb : wordBlocks)
 		{
 			if ("" != wb.preceding.trim()) {
-				
-				if(!bPlain && selectDiv != null){
+				if (!bPlain && selectDiv != null) {
 					Element span = qc.createElement("div");
 					XML.createText(span, wb.preceding.trim());
 					span.setAttribute("class","spanclass");
 					qc.setParent(selectDiv);
 					qc.addInlineXHTML(span);
 					qc.unsetParent();
-				}
-				else{
+				} else {
 					Element span = qc.createElement("span");
 					XML.createText(span, wb.preceding.trim());
 					qc.addInlineXHTML(span);
@@ -235,7 +229,7 @@ public class WordSelectComponent extends QComponent
 				String checkwordID = makeCheckwordId(wb, w);
 				Element outerBox = null;
 				Element input = null;
-				if(!bPlain && selectDiv != null){
+				if (!bPlain && selectDiv != null) {
 					outerBox=qc.createElement("div");
 					qc.setParent(selectDiv);
 					qc.addInlineXHTML(outerBox);
@@ -244,58 +238,57 @@ public class WordSelectComponent extends QComponent
 					outerBox.setAttribute("id",QDocument.ID_PREFIX+"div_wordselectword_"+getID() + checkwordID);
 				}
 				String labelclass = "";
-				
-				if(!bPlain && outerBox != null){
+
+				if (!bPlain && outerBox != null) {
 					input=XML.createChild(outerBox,"input");
-					
+
 				}
 				else{
 					input=qc.getOutputDocument().createElement("input");
 				}
-				
+
 				input.setAttribute("type","checkbox");
 				input.setAttribute("name", QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
 				input.setAttribute("value", "1");
 				input.setAttribute("class", "offscreen");
 				input.setAttribute("id",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
-				
-				if(!bPlain){
+
+				if (!bPlain) {
 					input.setAttribute("onclick","wordOnClick('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
 					input.setAttribute("onfocus","wordOnFocus('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
 					input.setAttribute("onblur","wordOnBlur('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"');");
 				}
-				
-				if(!isEnabled())input.setAttribute("disabled", "yes");
+
+				if (!isEnabled())input.setAttribute("disabled", "yes");
 				if (w.selected) {
 					input.setAttribute("checked", "checked");
-					if(!bPlain){
+					if (!bPlain) {
 						labelclass = "selectedhilight ";
 					}
 				}
-				else if(!bPlain){
+				else if (!bPlain) {
 					labelclass = "selectword";
 				}
-				
+
 				Element label=qc.getOutputDocument().createElement("label");
 				label.setAttribute("for",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
 				label.setAttribute("id",QDocument.ID_PREFIX+"label_wordselectword_"+getID() + checkwordID);
 				XML.createText(label, w.word + " ");
-				
-				
+
 				if (wb.isSecondHighlighted) {
-					if(!bPlain){
+					if (!bPlain) {
 						labelclass = "secondhilight";
 					}
 					else{
 						input.setAttribute("checked", "checked");
 					}
 				}
-				
-				if(!bPlain){
+
+				if (!bPlain) {
 					label.setAttribute("class",labelclass);
 				}
-				
-				if(!bPlain && outerBox != null){
+
+				if (!bPlain && outerBox != null) {
 					qc.setParent(outerBox);
 					qc.addInlineXHTML(input);
 					qc.addInlineXHTML(label);
@@ -305,11 +298,9 @@ public class WordSelectComponent extends QComponent
 					qc.addInlineXHTML(input);
 					qc.addInlineXHTML(label);
 				}
-				
-				
 
 				if ("" != w.following.trim()) {
-					if(!bPlain && selectDiv != null){
+					if (!bPlain && selectDiv != null) {
 						Element span = qc.createElement("div");
 						//Note without the space the component doesn't
 						//display properly in IE
@@ -325,8 +316,8 @@ public class WordSelectComponent extends QComponent
 						qc.addInlineXHTML(span);
 					}
 				}
-				
-				if(isEnabled()) qc.informFocusable(input.getAttribute("id"),bPlain);
+
+				if (isEnabled()) qc.informFocusable(input.getAttribute("id"),bPlain);
 
 			}
 		}
@@ -335,11 +326,11 @@ public class WordSelectComponent extends QComponent
 	private int countAllSelected;
 	private int countSWWordsSelected;
 	private int countSWWords;
-	
+
 	@Override
 	protected void formAllValuesSet(ActionParams ap) throws OmException
 	{
-		if(!isEnabled()) return;
+		if (!isEnabled()) return;
 
 		countAllSelected = 0;
 		countSWWordsSelected = 0;
@@ -349,20 +340,20 @@ public class WordSelectComponent extends QComponent
 		{
 			for(Word w : wb.words)
 			{
-				if(wb.isSW){
+				if (wb.isSW) {
 					countSWWords++;
 				}
-				
+
 				String checkwordID = makeCheckwordId(wb, w);
 				w.selected = false;
-				if(ap.hasParameter("wordselectword_"+getID() + checkwordID))
+				if (ap.hasParameter("wordselectword_"+getID() + checkwordID))
 				{
 					w.selected = true;
 					countAllSelected++;
-					if(wb.isSW){
+					if (wb.isSW) {
 						countSWWordsSelected++;
 					}
-					
+
 				}
 			}
 		}
@@ -388,59 +379,56 @@ public class WordSelectComponent extends QComponent
 			w.selected = false;
 		}
 	}
-	
-	
+
 	/**
-	 * returns a count of all the selected words (integer value) 
+	 * @return a count of all the selected words (integer value) 
 	 */
-	public int getTotalWordsSelected(){
+	public int getTotalWordsSelected() {
 		return countAllSelected;
 	}
-	
+
 	/**
-	 * returns a count of the words within the sw tags that 
+	 * @return a count of the words within the sw tags that 
 	 * have been selected (integer value) 
 	 */
-	public int getTotalSWWordsSelected(){
+	public int getTotalSWWordsSelected() {
 		return countSWWordsSelected;
 	}
-	
+
 	/**
-	 * returns a count of the total number of words within 
+	 * @return a count of the total number of words within 
 	 * the sw tags (integer value) 
 	 */
-	public int getTotalSWWords(){
+	public int getTotalSWWords() {
 		return countSWWords;
 	}
-	
-	
+
 	/**
-	 * boolean returns true only if all the words within the sw tags 
+	 * @return true only if all the words within the sw tags 
 	 * have been selected and no other words are selected 
 	 */
-	public boolean getIsCorrect(){
-		if(countSWWords == countSWWordsSelected
-				&& countSWWords == countAllSelected){
+	public boolean getIsCorrect() {
+		if (countSWWords == countSWWordsSelected
+				&& countSWWords == countAllSelected) {
 			return true;
 		}
 		else{
 			return false;
 		}
-		
 	}
-	
+
 	/**
 	 * highlights all the words contained within all the sw tags
 	 * in a second colour. Intended for use with final feedback
 	 */
-	public void secondHilightSWWords(){
+	public void secondHilightSWWords() {
 		for (WordBlock wb : wordBlocks) {
-			if(wb.isSW){
+			if (wb.isSW) {
 				secondHilightSWWords(wb.id);
 			}
 		}
 	}
-	
+
 	/**
 	 * highlights all the words contained within an sw tag
 	 * of the given id in a second colour.
@@ -450,5 +438,4 @@ public class WordSelectComponent extends QComponent
 		WordBlock wb = wordsById.get(swId);
 		wb.isSecondHighlighted = true;
 	}
-	
 }
