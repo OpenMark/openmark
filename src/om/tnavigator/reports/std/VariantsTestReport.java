@@ -3,7 +3,6 @@
  */
 package om.tnavigator.reports.std;
 
-import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -15,13 +14,13 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.w3c.dom.Element;
-
 import om.OmException;
 import om.OmUnexpectedException;
 import om.tnavigator.*;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.reports.*;
+
+import org.w3c.dom.Element;
 
 /**
  * This report analyses different variants of each question, and gives the number
@@ -131,44 +130,14 @@ public class VariantsTestReport implements OmTestReport {
 					minVariant = overallMinVariant;
 					maxVariant = overallMinVariant - 1;
 				}
-{
-	try {
-		PrintWriter p = new PrintWriter(new FileOutputStream(
-				"E:/Temp/JavaDump.txt", true));
-		p.println("Looping from = " + overallMinVariant + " to < " + minVariant);
-		p.close();
-	} catch (IOException e) {
-		// Ignore.
-	}
-}
 				for (int i = overallMinVariant; i < minVariant; ++i) {
 					row.put("variant" + i + "count", getCount(""));
 					row.put("variant" + i + "average", getAverage(""));
 				}
-{
-	try {
-		PrintWriter p = new PrintWriter(new FileOutputStream(
-				"E:/Temp/JavaDump.txt", true));
-		p.println("Looping from = " + minVariant + " to <= " + maxVariant);
-		p.close();
-	} catch (IOException e) {
-		// Ignore.
-	}
-}
 				for (int i = minVariant; i <= maxVariant; ++i) {
 					row.put("variant" + i + "count", getCount(i + ""));
 					row.put("variant" + i + "average", getAverage(i + ""));
 				}
-{
-	try {
-		PrintWriter p = new PrintWriter(new FileOutputStream(
-				"E:/Temp/JavaDump.txt", true));
-		p.println("Looping from = " + (maxVariant + 1) + " to <= " + overallMaxVariant);
-		p.close();
-	} catch (IOException e) {
-		// Ignore.
-	}
-}
 				for (int i = maxVariant + 1; i <= overallMaxVariant; ++i) {
 					row.put("variant" + i + "count", getCount(""));
 					row.put("variant" + i + "average", getAverage(""));
