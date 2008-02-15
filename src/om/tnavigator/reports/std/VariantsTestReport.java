@@ -3,6 +3,7 @@
  */
 package om.tnavigator.reports.std;
 
+import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -64,7 +65,7 @@ public class VariantsTestReport implements OmTestReport {
 	}
 
 	private class VariantsTabularReport extends TabularReportBase {
-		private int overallMaxVariant = 0;
+		private int overallMaxVariant = Integer.MIN_VALUE;
 		private int overallMinVariant = Integer.MAX_VALUE;
 		private SortedMap<String, QuestionData> questionData = new TreeMap<String, QuestionData>();
 
@@ -72,7 +73,7 @@ public class VariantsTestReport implements OmTestReport {
 			private final static String UNKNOWNVARIANT = "unknown";
 			private int position;
 			private String questionid;
-			private int maxVariant;
+			private int maxVariant = Integer.MIN_VALUE;
 			private int minVariant = Integer.MAX_VALUE;
 			private Map<String, Integer> numAttemptsPerVariant = new HashMap<String, Integer>();
 			private Map<String, Double> totalScorePerVariant = new HashMap<String, Double>();
@@ -84,10 +85,10 @@ public class VariantsTestReport implements OmTestReport {
 				String sVariant;
 				if (variant != null) {
 					sVariant = variant + "";
-					if (variant < maxVariant) {
+					if (variant > maxVariant) {
 						maxVariant = variant;
 					}
-					if (variant < overallMaxVariant) {
+					if (variant > overallMaxVariant) {
 						overallMaxVariant = variant;
 					}
 					if (variant < minVariant) {
@@ -125,14 +126,49 @@ public class VariantsTestReport implements OmTestReport {
 				Map<String, String> row = new HashMap<String, String>();
 				row.put("testposition", position + "");
 				row.put("questionid", questionid);
+				if (minVariant > maxVariant) {
+					// This was a question where all the answers were of an unknown variant.
+					minVariant = overallMinVariant;
+					maxVariant = overallMinVariant - 1;
+				}
+{
+	try {
+		PrintWriter p = new PrintWriter(new FileOutputStream(
+				"E:/Temp/JavaDump.txt", true));
+		p.println("Looping from = " + overallMinVariant + " to < " + minVariant);
+		p.close();
+	} catch (IOException e) {
+		// Ignore.
+	}
+}
 				for (int i = overallMinVariant; i < minVariant; ++i) {
 					row.put("variant" + i + "count", getCount(""));
 					row.put("variant" + i + "average", getAverage(""));
 				}
+{
+	try {
+		PrintWriter p = new PrintWriter(new FileOutputStream(
+				"E:/Temp/JavaDump.txt", true));
+		p.println("Looping from = " + minVariant + " to <= " + maxVariant);
+		p.close();
+	} catch (IOException e) {
+		// Ignore.
+	}
+}
 				for (int i = minVariant; i <= maxVariant; ++i) {
 					row.put("variant" + i + "count", getCount(i + ""));
 					row.put("variant" + i + "average", getAverage(i + ""));
 				}
+{
+	try {
+		PrintWriter p = new PrintWriter(new FileOutputStream(
+				"E:/Temp/JavaDump.txt", true));
+		p.println("Looping from = " + (maxVariant + 1) + " to <= " + overallMaxVariant);
+		p.close();
+	} catch (IOException e) {
+		// Ignore.
+	}
+}
 				for (int i = maxVariant + 1; i <= overallMaxVariant; ++i) {
 					row.put("variant" + i + "count", getCount(""));
 					row.put("variant" + i + "average", getAverage(""));
@@ -172,13 +208,14 @@ public class VariantsTestReport implements OmTestReport {
 
 					Integer variant;
 					Matcher m = variantRegexp.matcher(questionLine);
-					if (m.matches()) {
+					if (m.find()) {
 						variant = Integer.parseInt(m.group(1));
 					} else {
 						variant = null;
 					}
 
 					questionData.get(key).recordVariantScore(variant, score);
+
 				}
 			} catch (Exception e) {
 				throw new OmUnexpectedException("Error generating report.", e);
