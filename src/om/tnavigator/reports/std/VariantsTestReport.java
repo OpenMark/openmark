@@ -66,6 +66,7 @@ public class VariantsTestReport implements OmTestReport {
 	private class VariantsTabularReport extends TabularReportBase {
 		private int overallMaxVariant = Integer.MIN_VALUE;
 		private int overallMinVariant = Integer.MAX_VALUE;
+		private boolean hasUnknown = false;
 		private SortedMap<String, QuestionData> questionData = new TreeMap<String, QuestionData>();
 
 		private class QuestionData {
@@ -98,6 +99,7 @@ public class VariantsTestReport implements OmTestReport {
 					}
 				} else {
 					sVariant = UNKNOWNVARIANT;
+					hasUnknown = true;
 				}
 				if (numAttemptsPerVariant.containsKey(sVariant)) {
 					numAttemptsPerVariant.put(sVariant, numAttemptsPerVariant.get(sVariant) + 1);
@@ -142,8 +144,10 @@ public class VariantsTestReport implements OmTestReport {
 					row.put("variant" + i + "count", getCount(""));
 					row.put("variant" + i + "average", getAverage(""));
 				}
-				row.put("unknownvariantcount", getCount(UNKNOWNVARIANT));
-				row.put("unknownvariantaverage", getAverage(UNKNOWNVARIANT));
+				if (hasUnknown) {
+					row.put("unknownvariantcount", getCount(UNKNOWNVARIANT));
+					row.put("unknownvariantaverage", getAverage(UNKNOWNVARIANT));
+				}
 				return row;
 			}
 		}
@@ -207,8 +211,10 @@ public class VariantsTestReport implements OmTestReport {
 				columns.add(new ColumnDefinition("variant" + i + "count", "Variant " + i + " count"));
 				columns.add(new ColumnDefinition("variant" + i + "average", "Variant " + i + " average"));
 			}
-			columns.add(new ColumnDefinition("unknownvariantcount", "Unknown variant count"));
-			columns.add(new ColumnDefinition("unknownvariantaverage", "Unknown variant average"));
+			if (hasUnknown) {
+				columns.add(new ColumnDefinition("unknownvariantcount", "Unknown variant count"));
+				columns.add(new ColumnDefinition("unknownvariantaverage", "Unknown variant average"));
+			}
 			return columns;
 		}
 
