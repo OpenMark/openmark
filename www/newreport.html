@@ -1,0 +1,142 @@
+<html>
+<head>
+<title>How to create a new Om report</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>How to create a new Om report</h1>
+
+<h2>Overview</h2>
+
+<p>There are two types of report in OpenMark: Test reports, which display
+information about a particular test, and System reports, which display
+system-wide information. Access to test reports is controlled through the
+deploy file for the test. Access to system reports is controlled by IP address,
+as configured by the &lt;trustedaddresses> and &lt;secureaddresses> tags in
+the navigator.xml file.</p>
+
+<p>A report is implemented as a Java class that implements the interface
+om.tnavigator.reports.OmTestReport or om.tnavigator.reports.OmReport, or both.
+All the standard reports live in the
+package om.tnavigator.reports.std. You should be able to get a long way
+by looking at how the existing reports work. They tend to use helper code from
+the om.tnavigator.reports package. A single instance of the report class is
+responsible for serving all instances of the report. Often they do this by having
+and inner class that is a subclass of om.tnavigator.reports.TabularReportBase, and
+creating an instance of this inner class whenever a report is requested.
+Dispatching of report requests to the appropriate report class is handled by the
+om.tnavigator.reports.ReportDispatcher class.</p>
+
+<h2>What happens when the test navigator starts up</h2>
+
+<p>When the NavigatorServlet starts up, it creates a ReportDispatcher. This loads
+and creates one instance of all the known report classes. The list of classes to load
+comes from two sources:</p>
+
+<ul>
+<li>Standard reports, that are part of the Om system, should be listed in the
+standardReports array in the ReportDispatcher class.</li>
+<li>Any additional reports that you have written should be listed in the
+&lt;extrareports> section of the navigator.xml file. For example</li>
+</ul>
+
+<pre>
+	&lt;extrareports>
+		&lt;report>ou.CMAReport</report>
+		&lt;report>ou.CMADataReport</report>
+	&lt;/extrareports>
+</pre>
+
+<p>will cause the two report classes om.tnavigator.reports.ou.CMAReport and
+om.tnavigator.reports.ou.CMADataReport to be loaded</p>
+
+<h2>What happens when a report is requested</h2>
+
+<p>If a URL starting /!report/ is recieved by the test navigator, NavigatorServlet.handle()
+calls ReportDispatcher.handleReport(), which looks to see if a report class exists 
+that handles the rest of the URL. If it does, it performs a check on the IP address, then calls
+<i>ReportClass</i>.handleReport() method if allowed. That method is then fully
+responsible for handling the request and sending back a response.</p>
+
+<p>If a URL starting /<i>testId</i>/reports! is recieved as part of a test session,
+and if the use is permitted to see reports on this test, then
+NavigatorServlet.handle() calls ReportDispatcher.handleTestReport(), which
+looks for a matching report class and calls <i>ReportClass</i>.handleTestReport().</p>
+
+<h2>How a typical report, utilising TabularReportBase, works</h2>
+
+<p>A good example of a simple report is
+<a href="source/browse/openmark/trunk/src/om/tnavigator/reports/std/TestUsageReport.java?view=markup">TestUsageReport</a>.</p>
+
+<p>The class must have a public constructor that takes a NavigatorServlet parameter,
+otherwise the ReportDispatcher will not be able to create it.</p>
+
+<p>The getUrlReportName from the OmReport interface is how URLs are translated into
+calls to a particular report class. In our example getUrlReportName is implemented to
+return "testusage", so URLs /!report/testusage will be handled by this report class.</p>
+
+<p>The handleReport method (another one from the OmReport interface) simply creates an
+instance of the inner TestUsageTabularReport class that extends TabularReportBase, then calls
+its handleReport method to do the actual work.</p>
+
+<p>The final interface method to imlement is isSecurityRestricted. If this returns ture,
+the report will only be available to 'secure' IP addresses, otherwise it will only be 
+available to 'trusted' IP addresses.</p> 
+
+<p>So the real work is done by the subclass of TabularReportBase. TabularReportBase is
+designed to make it easy to write reports that are basically a single table. It provides
+facilites for outputting that table in a number of different formats (HTML, XML, CSV, ...).
+There are two abstract methods you have to override: init() and generateReport().</p>
+
+<p>The init method, as well as doing any initialisation that your report wants to do at 
+this stage, must return a list of ColumnDefinitions. A column definition is just an iternal id
+for this column, which can be used as a tag name in XML or a class attribute in HTML, and 
+a human-readable column title.</p>
+
+<p>The generateReport method needs to contain a loop over the rows in the report, and
+for each row, call the reportWriter.printRow method. This takes an argument that is
+a Map&lt;String, String> which is the data for the row - where the keys are internal ids of the
+columns, and the values are what appears in the table cells of the report. As a bit
+of magic, if you have a column with id 'deploy', then if you put an entry into the
+row map with key deploy_link and value a URL, then when output as HTML,
+the table cell will be made into a link to that URL.</p>
+
+<p>Finally, there are a few methods on TabularReportBase you can override to tweak things.
+Normally the XML version of the report will use a &lt;results> tag as the document elements,
+and wrap each row in a &lt;result> tag. You can customise this by overriding the getReportTagName
+and getRowTagName methods. Normally, when rendered to HTML, a format selector is output
+above the report table. If you want to output additional information above your report
+in HTML mode, then override extraHtmlContent. When doing this, you almost certainly 
+want to call super.extraHtmlContent to generate the format selector. When overriding
+extraHtmlContent, the printMessage method is useful - it just adds whatever string 
+you give it, wrapped in &lt;p> tags, to the output.</p>
+
+<p>The various formats that tabular reports can be output in is handled by subclasses of
+TabularReportWriter. If you want a new format, write a new subclass, and add it to the
+Format enum in TabularReportBase.</p>
+
+<h2>Strategies for generating reports</h2>
+
+<p>At the moment, we have some reports that report on thing in the file system
+(e.g. DeployedTest and DeployedQuestions), and some
+reports that report on data in the database (e.g. all the rest).</p>
+
+<p>The simplest sort of report is one that you can generate one row at a time. Then
+it is possible to do all the work inside a single loop in the the generateReport method.
+For example DeployedQuestions and TestUsageReport. This is good, because it minimises
+memory usage. For reports that return large amounts of data, this is the way to go,
+if at all possible.</p>
+
+<p>However, at other times, it is not possible to generate the report one row at a
+time. Then you have to do some processing up-front. For example MonthlyUsageReport
+has two loops in generateReport, the first stores some data in a HashMap that is then
+used in the second loop to ouput the rows. VariantsTestReport is interesting in that
+in advance you don't even know how many columns there should be until the report
+is computed, so all teh hard work is done in the constructor, and then init and
+generateReport are quite simple. Here, we know that the total report size will not be very big
+(# questions in text \times; # variants per question cells, so having all that data in
+memory is not a problem.</p>
+
+</body>
+</html>
