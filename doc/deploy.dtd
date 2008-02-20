@@ -6,7 +6,7 @@
 		<access> - Controls access to test
 		<dates> - Dates affecting test (optional; if omitted test is always available)
 -->	
-<!ELEMENT deploy (definition,responsible?,access,dates?)>
+<!ELEMENT deploy (definition,supportcontacts?,access,dates?)>
 
 
 <!-- <definition> is just text (test definition ID) -->
