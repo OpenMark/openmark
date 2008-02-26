@@ -17,9 +17,8 @@
  */
 package om.stdcomponent;
 
-import java.util.Random;
-
 import om.*;
+import om.helper.Shuffler;
 import om.stdquestion.QComponent;
 import om.stdquestion.QContent;
 
@@ -163,28 +162,7 @@ public class LayoutGridComponent extends QComponent
 				// Get new RNG (means it's repeatable, and doesn't affect question's
 				// other use of random numbers; does mean that two lists of same length
 				// in same question will be shuffled in same way).
-				Random r=getQuestion().getRandom();
-
-				int[] aiNew=new int[aiShuffleMap.length];
-				for(int iOut=0;iOut<aiNew.length;iOut++)
-				{
-					int iPick=r.nextInt(aiNew.length-iOut);
-					int iCount=0;
-					for(int iIn=0;iIn<aiShuffleMap.length;iIn++)
-					{
-						if(aiShuffleMap[iIn]!=-1)
-						{
-							if(iPick==iCount)
-							{
-								aiNew[iOut]=aiShuffleMap[iIn];
-								aiShuffleMap[iIn]=-1;
-								break;
-							}
-							iCount++;
-						}
-					}
-				}
-				aiShuffleMap=aiNew;
+				Shuffler.shuffle(aiShuffleMap, getQuestion().getRandom());
 			}
 		}
 
