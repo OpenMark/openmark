@@ -209,17 +209,17 @@ public class WordSelectComponent extends QComponent
 
 		for (WordBlock wb : wordBlocks)
 		{
-			if ("" != wb.preceding.trim()) {
+			if (!wb.preceding.trim().equals("")) {
 				if (!bPlain && selectDiv != null) {
 					Element span = qc.createElement("div");
-					XML.createText(span, wb.preceding.trim());
+					XML.createText(span, wb.preceding.trim() + " ");
 					span.setAttribute("class","spanclass");
 					qc.setParent(selectDiv);
 					qc.addInlineXHTML(span);
 					qc.unsetParent();
 				} else {
 					Element span = qc.createElement("span");
-					XML.createText(span, wb.preceding.trim());
+					XML.createText(span, wb.preceding.trim() + " ");
 					qc.addInlineXHTML(span);
 				}
 			}
@@ -277,7 +277,15 @@ public class WordSelectComponent extends QComponent
 				Element label=qc.getOutputDocument().createElement("label");
 				label.setAttribute("for",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
 				label.setAttribute("id",QDocument.ID_PREFIX+"label_wordselectword_"+getID() + checkwordID);
-				XML.createText(label, w.word + " ");
+				
+				if(!w.following.trim().equals("")){
+					XML.createText(label, w.word);
+				}
+				//Note without the space the component doesn't
+				//display properly in IE
+				else{
+					XML.createText(label, w.word + " ");
+				}
 
 				if (wb.isSecondHighlighted) {
 					if (!bPlain) {
@@ -303,11 +311,9 @@ public class WordSelectComponent extends QComponent
 					qc.addInlineXHTML(label);
 				}
 
-				if ("" != w.following.trim()) {
+				if (!w.following.trim().equals("")) {
 					if (!bPlain && selectDiv != null) {
 						Element span = qc.createElement("div");
-						//Note without the space the component doesn't
-						//display properly in IE
 						XML.createText(span,w.following.trim() + " ");
 						span.setAttribute("class","spanclass");
 						qc.setParent(selectDiv);
