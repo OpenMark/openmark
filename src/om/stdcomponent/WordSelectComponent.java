@@ -320,31 +320,17 @@ public class WordSelectComponent extends QComponent
 				if((!w.following.trim().equals("") 
 						&& !Character.isWhitespace(w.following.charAt(0)))
 						|| (nextWordBlockPrecedingNotWhitespace && w.id == wb.words.size())){
-					//XML.createText(label, w.word);
 					labelText += w.word;
 				}
 				//Note without the space the component doesn't
 				//display properly in IE unless there is a following dividing div
 				//with something other than whitespace in it
 				else{
-					//XML.createText(label, w.word + " ");
 					labelText += w.word + " ";
 				}
 				
 				XML.createText(label, labelText);
 				
-				/*if(!w.following.trim().equals("") 
-						&& !Character.isWhitespace(w.following.charAt(0))){
-					//XML.createText(label, w.word);
-				}
-				//Note without the space the component doesn't
-				//display properly in IE
-				else{
-					//XML.createText(label, w.word + " ");
-				}*/
-				
-				
-
 				if (wb.isSecondHighlighted) {
 					if (!bPlain) {
 						labelclass = "secondhilight";
