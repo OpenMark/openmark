@@ -212,14 +212,14 @@ public class WordSelectComponent extends QComponent
 			if (!wb.preceding.trim().equals("")) {
 				if (!bPlain && selectDiv != null) {
 					Element span = qc.createElement("div");
-					XML.createText(span, wb.preceding.trim() + " ");
+					XML.createText(span, wb.preceding);
 					span.setAttribute("class","spanclass");
 					qc.setParent(selectDiv);
 					qc.addInlineXHTML(span);
 					qc.unsetParent();
 				} else {
 					Element span = qc.createElement("span");
-					XML.createText(span, wb.preceding.trim() + " ");
+					XML.createText(span, wb.preceding);
 					qc.addInlineXHTML(span);
 				}
 			}
@@ -278,7 +278,8 @@ public class WordSelectComponent extends QComponent
 				label.setAttribute("for",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
 				label.setAttribute("id",QDocument.ID_PREFIX+"label_wordselectword_"+getID() + checkwordID);
 				
-				if(!w.following.trim().equals("")){
+				if(!w.following.trim().equals("") 
+						&& !Character.isWhitespace(w.following.charAt(0))){
 					XML.createText(label, w.word);
 				}
 				//Note without the space the component doesn't
@@ -314,7 +315,7 @@ public class WordSelectComponent extends QComponent
 				if (!w.following.trim().equals("")) {
 					if (!bPlain && selectDiv != null) {
 						Element span = qc.createElement("div");
-						XML.createText(span,w.following.trim() + " ");
+						XML.createText(span,w.following);
 						span.setAttribute("class","spanclass");
 						qc.setParent(selectDiv);
 						qc.addInlineXHTML(span);
@@ -322,7 +323,7 @@ public class WordSelectComponent extends QComponent
 					}
 					else{
 						Element span = qc.createElement("span");
-						XML.createText(span, w.following.trim() + " ");
+						XML.createText(span, w.following);
 						qc.addInlineXHTML(span);
 					}
 				}
