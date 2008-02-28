@@ -207,8 +207,39 @@ public class WordSelectComponent extends QComponent
 			selectDiv.setAttribute("class","selectdiv");
 		}
 
+		boolean lastWordBlockEndedInSpace = true;
+		boolean nextWordBlockPrecedingNotWhitespace = false;
+		int countWordBlocks = 0;
+		
 		for (WordBlock wb : wordBlocks)
-		{
+		{	
+			if(countWordBlocks > 0){
+				WordBlock lastBlock = wordBlocks.get(countWordBlocks - 1);
+				int length = lastBlock.words.size() - 1;
+				if(length != -1){
+					Word lastWord = lastBlock.words.get(length);
+					if(!lastWord.following.trim().equals("") && 
+							lastWord.following.length() > 0 
+							&& !Character.isWhitespace(lastWord.following.charAt(lastWord.following.length() - 1))){
+						lastWordBlockEndedInSpace = false;
+					}
+					else{
+						lastWordBlockEndedInSpace = true;
+					}
+				}
+			}
+			
+			
+			countWordBlocks++;
+			nextWordBlockPrecedingNotWhitespace = false;
+			if(countWordBlocks < wordBlocks.size()){
+				WordBlock nextBlock = wordBlocks.get(countWordBlocks);
+				if(!nextBlock.preceding.trim().equals("")){
+					nextWordBlockPrecedingNotWhitespace = true;
+				}
+			}
+			
+			
 			if (!wb.preceding.trim().equals("")) {
 				if (!bPlain && selectDiv != null) {
 					Element span = qc.createElement("div");
@@ -278,15 +309,41 @@ public class WordSelectComponent extends QComponent
 				label.setAttribute("for",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
 				label.setAttribute("id",QDocument.ID_PREFIX+"label_wordselectword_"+getID() + checkwordID);
 				
-				if(!w.following.trim().equals("") 
+				String labelText = "";
+				
+				if(!lastWordBlockEndedInSpace && w.id == 1 && wb.preceding.length() > 0 
+						&& Character.isWhitespace(wb.preceding.charAt(wb.preceding.length() - 1))){
+					labelText += " ";
+				}
+				
+				
+				if((!w.following.trim().equals("") 
+						&& !Character.isWhitespace(w.following.charAt(0)))
+						|| (nextWordBlockPrecedingNotWhitespace && w.id == wb.words.size())){
+					//XML.createText(label, w.word);
+					labelText += w.word;
+				}
+				//Note without the space the component doesn't
+				//display properly in IE unless there is a following dividing div
+				//with something other than whitespace in it
+				else{
+					//XML.createText(label, w.word + " ");
+					labelText += w.word + " ";
+				}
+				
+				XML.createText(label, labelText);
+				
+				/*if(!w.following.trim().equals("") 
 						&& !Character.isWhitespace(w.following.charAt(0))){
-					XML.createText(label, w.word);
+					//XML.createText(label, w.word);
 				}
 				//Note without the space the component doesn't
 				//display properly in IE
 				else{
-					XML.createText(label, w.word + " ");
-				}
+					//XML.createText(label, w.word + " ");
+				}*/
+				
+				
 
 				if (wb.isSecondHighlighted) {
 					if (!bPlain) {
