@@ -2552,7 +2552,7 @@ public class NavigatorServlet extends HttpServlet
 	 */
 	private int initQuestionAttempt(RequestTimings rt,UserSession us) throws SQLException
 	{
-		if(us.isSingle()) return 1;
+		if(us.isSingle()) return (int)System.currentTimeMillis();
 
 		int iAttempt;
 		TestQuestion tq=(TestQuestion)us.getTestLeavesInOrder()[us.getTestPosition()];
