@@ -80,7 +80,21 @@ public class DeployedTestsReport implements OmReport {
 		private Test(String deploy, File deployFile, File testBank) throws OmException {
 			this.deploy = deploy;
 			deployModified = dateFormat.format(deployFile.lastModified());
-			TestDeployment def = new TestDeployment(deployFile);
+			TestDeployment def;
+			try {
+				def = new TestDeployment(deployFile);
+			} catch (OmException e) {
+				test = "";
+				testModified = "";
+				open = false;
+				world = false;
+				openDate = "";
+				closeDate = "";
+				forbidDate = "";
+				feedbackDate = "";
+				supportcontacts = "[deploy file is invalid XML]";
+				return;
+			}
 			if (def.isSingleQuestion()) {
 				test = "[single question]";
 				testModified = "";
