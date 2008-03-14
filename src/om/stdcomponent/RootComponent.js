@@ -135,19 +135,22 @@ if(isGecko)
 function inlinePositionFix(imageID)
 {
 	var imageElement=document.getElementById(imageID);
-	var rootx=imageElement.offsetLeft,rooty=imageElement.offsetTop;
+	resolvePageXY(imageElement);
 
 	for(var i=1;i<arguments.length;i++)
 	{
 		var ph=document.getElementById(arguments[i][0]);
+		resolvePageXY(ph);
+        var deltaX = imageElement.pageX + arguments[i][1] - ph.pageX;
+        var deltaY = imageElement.pageY + arguments[i][2] - ph.pageY;
 
- 		// Hack for IE positioning editfields one too far down (?!)
-		var moveUp=false;
+		// Hack for IE positioning editfields one too far down (?!)
+		var moveUp=0;
 		if(isIE && (ph.childNodes.length==1 ||
 			(ph.childNodes.length==2 && ph.childNodes[1].nodeName.toLowerCase()=="script")) &&
 			isDomElement(ph.childNodes[0],"input",["type","text"]))
 		{
-			moveUp=true;
+			moveUp=1;
 		}
 
 		if(isIE && ph.firstChild && ph.firstChild.nodeType==1 && ph.firstChild.currentStyle.display=="inline")
@@ -161,14 +164,14 @@ function inlinePositionFix(imageID)
 			// Image placeholders don't have width so check it exists before messing
 			if(ph.style.width)
 				ph.style.width=(parseInt(ph.style.width.replace(/px/,""),10)+1)+"px";
-			ph.style.left=(rootx+arguments[i][1]-1)+'px';
+			ph.style.left=(Number(ph.style.left.replace("px","")) + deltaX - 1)+'px';
 			ph.insertBefore(ieSucks,ph.firstChild);
 		}
 		else
 		{
-			ph.style.left=(rootx+arguments[i][1])+'px';
+			ph.style.left=(Number(ph.style.left.replace("px","")) + deltaX)+'px';
 		}
-		ph.style.top=(rooty+arguments[i][2]-(moveUp ? 1 : 0))+'px';
+		ph.style.top=(Number(ph.style.top.replace("px","")) + deltaY - moveUp)+'px';
 
 		ph.style.visibility='visible';
 	}
@@ -244,6 +247,24 @@ function focusFromList(idThis,offset)
 			setTimeout(focusList[index].expr+".focus();",0);
 		}
 	}
+}
+
+// Adds pageX and pageY to the element
+function resolvePageXY(e)
+{
+    e.pageX=e.offsetLeft;
+    e.pageY=e.offsetTop;
+
+    var parent=e.offsetParent;
+    while(parent!=null)
+    {
+        e.pageX+=parent.offsetLeft;
+        e.pageY+=parent.offsetTop;
+        parent=parent.offsetParent;
+    }
+
+    e.pageX2=e.pageX+e.offsetWidth;
+    e.pageY2=e.pageY+e.offsetHeight;
 }
 
 // overflow hidden is set on the divs just so floats don't bounce

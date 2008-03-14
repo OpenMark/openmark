@@ -5,6 +5,8 @@
 .om .image .placeholder
 {
   position:absolute;
+  top: 0;
+  left: 0;
   font-size:%%SIZE:13px%%;
   visibility:hidden;
 }

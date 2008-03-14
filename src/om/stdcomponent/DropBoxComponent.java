@@ -17,6 +17,7 @@
  */
 package om.stdcomponent;
 
+import java.io.*;
 import java.util.*;
 
 import om.*;
@@ -160,7 +161,17 @@ public class DropBoxComponent extends QComponent
 			eBox.setAttribute("class","dropbox");
 			String sGroup=getString(PROPERTY_GROUP);
 			String sColour=convertHash("innerbg"+
-					(getQDocument().getGroupIndex(sGroup)%5) );
+					(getQDocument().getGroupIndex(sGroup)%4) );
+			{
+				try {
+					PrintWriter p = new PrintWriter(new FileOutputStream(
+							"E:/Temp/JavaDump.txt", true));
+					p.println(sGroup + ", " + getQDocument().getGroupIndex(sGroup) + ", " + sColour);
+					p.close();
+				} catch (IOException e) {
+					// Ignore.
+				}
+			}
 			String sBorderColour=sColour;
 			// If on white background or forced, use a light grey
 			if(
