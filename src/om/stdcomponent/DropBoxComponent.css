@@ -29,7 +29,7 @@
 }
 .om .dragbox.withsidelabel .dragboxinner
 {
-	padding-right:%%SIZE:10px%%;
+  padding-right:%%SIZE:10px%%;
 }
 .om .dragboxsidelabel
 {
@@ -40,13 +40,23 @@
   right:2px;
 }
 
+@media print /* For Bug 4942 */
+{
+  .om .dragbox {
+    overflow: hidden;
+  }
+  .om .dragbox .dragboxinner {
+    margin: 0 -2px;
+  }
+}
+
 @media screen /* For Firefox printing bug 252263 */
 {
-	.om .transparent
-	{
-	  filter: alpha(opacity=50);
-	  -moz-opacity: 0.5;
-	  opacity:50%;
-	}
+  .om .transparent
+  {
+    filter: alpha(opacity=50);
+    -moz-opacity: 0.5;
+    opacity:50%;
+  }
 }
 
