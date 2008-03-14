@@ -444,7 +444,8 @@ public class QDocument
 		int iCount=0;
 		for(String s : lGroups)
 		{
-			if(s.equals(sGroup)) return iCount;
+			if (s.equals(sGroup)) return iCount;
+			iCount++;
 		}
 		lGroups.add(sGroup);
 		return iCount;
