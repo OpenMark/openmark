@@ -251,24 +251,6 @@ function dropboxFix2(id,idPrefix)
 	}
 }
 
-// Adds pageX and pageY to the element
-function resolvePageXY(e)
-{
-	e.pageX=e.offsetLeft;
-	e.pageY=e.offsetTop;
-
-	var parent=e.offsetParent;
-	while(parent!=null)
-	{
-		e.pageX+=parent.offsetLeft;
-		e.pageY+=parent.offsetTop;
-		parent=parent.offsetParent;
-	}
-
-	e.pageX2=e.pageX+e.offsetWidth;
-	e.pageY2=e.pageY+e.offsetHeight;
-}
-
 function clearSelection()
 {
 	if (window.getSelection)
