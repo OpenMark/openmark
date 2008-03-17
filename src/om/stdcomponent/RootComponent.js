@@ -153,26 +153,10 @@ function inlinePositionFix(imageID)
 			moveUp=1;
 		}
 
-		if(isIE && ph.firstChild && ph.firstChild.nodeType==1 && ph.firstChild.currentStyle.display=="inline")
-		{
-			// In IE, if you don't put some text (such as this 0-size NBSP) before the
-			// first item in the placeholder, then in some (only some) cases, it adds
-			// a humungous chunk of space before that first item.
-			var ieSucks=document.createElement("span");
-			ieSucks.style.fontSize="0";
-			ieSucks.appendChild(document.createTextNode("\u00a0"));
-			// Image placeholders don't have width so check it exists before messing
-			if(ph.style.width)
-				ph.style.width=(parseInt(ph.style.width.replace(/px/,""),10)+1)+"px";
-			ph.style.left=(Number(ph.style.left.replace("px","")) + deltaX - 1)+'px';
-			ph.insertBefore(ieSucks,ph.firstChild);
-		}
-		else
-		{
-			ph.style.left=(Number(ph.style.left.replace("px","")) + deltaX)+'px';
-		}
+		// There used to be some very hacky code here to fix layout problems in IE when
+		// the placeholder contained an element, but it now seems to do more harm than good.
+		ph.style.left=(Number(ph.style.left.replace("px","")) + deltaX)+'px';
 		ph.style.top=(Number(ph.style.top.replace("px","")) + deltaY - moveUp)+'px';
-
 		ph.style.visibility='visible';
 	}
 }
