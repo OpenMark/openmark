@@ -5,7 +5,10 @@
 .om .equation .placeholder
 {
   position:absolute;
+  top: 0;
+  left: 0;
   font-size:%%SIZE:13px%%;
+  visibility:hidden;
 }
 .om .equation img /* bit dodgy */
 {
