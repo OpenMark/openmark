@@ -141,8 +141,8 @@ function inlinePositionFix(imageID)
 	{
 		var ph=document.getElementById(arguments[i][0]);
 		resolvePageXY(ph);
-        var deltaX = imageElement.pageX + arguments[i][1] - ph.pageX;
-        var deltaY = imageElement.pageY + arguments[i][2] - ph.pageY;
+		var deltaX = imageElement.pageX + arguments[i][1] - ph.pageX;
+		var deltaY = imageElement.pageY + arguments[i][2] - ph.pageY;
 
 		// Hack for IE positioning editfields one too far down (?!)
 		var moveUp=0;
@@ -155,6 +155,7 @@ function inlinePositionFix(imageID)
 
 		// There used to be some very hacky code here to fix layout problems in IE when
 		// the placeholder contained an element, but it now seems to do more harm than good.
+		// I think it is the same issue that is now handled by the workaround in resolvePageXY.
 		ph.style.left=(Number(ph.style.left.replace("px","")) + deltaX)+'px';
 		ph.style.top=(Number(ph.style.top.replace("px","")) + deltaY - moveUp)+'px';
 		ph.style.visibility='visible';
@@ -236,19 +237,29 @@ function focusFromList(idThis,offset)
 // Adds pageX and pageY to the element
 function resolvePageXY(e)
 {
-    e.pageX=e.offsetLeft;
-    e.pageY=e.offsetTop;
+	e.pageX=e.offsetLeft;
+	e.pageY=e.offsetTop;
 
-    var parent=e.offsetParent;
-    while(parent!=null)
-    {
-        e.pageX+=parent.offsetLeft;
-        e.pageY+=parent.offsetTop;
-        parent=parent.offsetParent;
-    }
+	var parent=e.offsetParent;
+	while(parent!=null)
+	{
+		e.pageX+=parent.offsetLeft;
+		e.pageY+=parent.offsetTop;
+		parent=parent.offsetParent;
+	}
 
-    e.pageX2=e.pageX+e.offsetWidth;
-    e.pageY2=e.pageY+e.offsetHeight;
+	// Bug fix for IE7. When an eplace containing a text field is in an equation
+	// in an indented line of text, then IE7 was applying the left margin from the
+	// line of text to the input. In this case, add the offsetLeft from the first 
+	// child to the position of this element, so the input ends up in the right place.
+	if (e.firstChild && e.firstChild.nodeType==1 &&
+			e.firstChild.tagName.toLowerCase() == 'input' &&
+			e.firstChild.offsetLeft != 0) {
+		e.pageX += e.firstChild.offsetLeft;
+	}
+
+	e.pageX2=e.pageX+e.offsetWidth;
+	e.pageY2=e.pageY+e.offsetHeight;
 }
 
 // overflow hidden is set on the divs just so floats don't bounce
