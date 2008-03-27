@@ -107,7 +107,7 @@ function log(line)
 	if(!logBox.firstChild)
 		logBox.appendChild(newLine);
 	else
- 		logBox.insertBefore(newLine,logBox.firstChild);
+		logBox.insertBefore(newLine,logBox.firstChild);
 }
 
 
@@ -276,7 +276,8 @@ if(window.isDevServlet===undefined || !window.isDevServlet)
 			if(!isIE)
 			{
 				divs[i].style.minHeight=divs[i].style.height;
-				divs[i].style.height="auto";			}
+				divs[i].style.height="auto";
 			}
+		}
 	});
 }

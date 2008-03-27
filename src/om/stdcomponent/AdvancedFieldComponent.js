@@ -115,7 +115,7 @@ function advancedfieldKeyFilter(fieldName,idPrefix,e)
 				else
 				{
 					var sub=document.getElementById(idPrefix+"om_"+fieldName+"_sub");
-				 	if (sub) delayedFocus(sub);
+					if (sub) delayedFocus(sub);
 				}
 			}
 		}
@@ -244,7 +244,6 @@ function advancedfieldSub(fieldName,idPrefix)
 {
 	var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
 	myframe.contentWindow.focus();
-	// delayedFocus(myframe.contentWindow);
 
 	var mydoc=myframe.contentWindow.document;
 	var sub=document.getElementById(idPrefix+"om_"+fieldName+"_sub");
@@ -262,7 +261,6 @@ function advancedfieldSup(fieldName,idPrefix)
 {
 	var myframe=document.getElementById(idPrefix+"om_"+fieldName+"_iframe");
 	myframe.contentWindow.focus();
-	// delayedFocus(myframe.contentWindow);
 
 	var mydoc=myframe.contentWindow.document;
 	var sup=document.getElementById(idPrefix+"om_"+fieldName+"_sup");
