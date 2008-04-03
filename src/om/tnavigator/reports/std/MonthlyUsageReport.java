@@ -105,7 +105,7 @@ public class MonthlyUsageReport implements OmReport {
 				while(rs.next()) {
 					int year = rs.getInt(1);
 					int month = rs.getInt(2);
-					String date = dateFormat.format((new GregorianCalendar(year, month, 1).getTime()));
+					String date = dateFormat.format((new GregorianCalendar(year, month - 1, 1).getTime()));
 					testFinishes.put(date, rs.getInt(3) + "");
 				}
 
@@ -114,7 +114,7 @@ public class MonthlyUsageReport implements OmReport {
 					Map<String, String> row = new HashMap<String, String>();
 					int year = rs.getInt(1);
 					int month = rs.getInt(2);
-					String date = dateFormat.format((new GregorianCalendar(year, month, 1).getTime()));
+					String date = dateFormat.format((new GregorianCalendar(year, month - 1, 1).getTime()));
 					row.put("date", date);
 					if (testFinishes.containsKey(date)) {
 						row.put("attemptscompleted", testFinishes.get(date));
