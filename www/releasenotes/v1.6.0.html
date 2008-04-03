@@ -1,0 +1,86 @@
+<html>
+<head>
+<title>Release notes for OpenMark v1.4.0</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Release notes for OpenMark v1.6.0</h1>
+
+<p>These are the changes since v1.4.x.</p>
+
+<p>You can <a href="../servlets/ProjectDocumentList?folderID=7783&amp;expandFolder=7783&amp;folderID=0">download
+OpenMark v1.6.0</a> from the Documents &amp; files section of this web site.</p>
+
+<h2>A Changes that affect question and test authors</h2>
+
+<ol>
+<li>In deploy files, you must now include a <tt>&lt;supportcontacts&gt;</tt> tag
+just after <tt>&lt;definition&gt;</tt> tag, containing the contact email(s) for
+the person or people responsible for the test. This allows them to be contacted
+if a problem is detected with that test. For example:</li>
+</ol>
+<pre>
+	&lt;!-- Test ID --&gt;
+	&lt;definition&gt;s151.pa&lt;/definition&gt;
+	&lt;supportcontacts&gt;tim@example.com&lt;/supportcontacts&gt;
+</pre>
+<ol>
+<li>All questions components can have a <tt>lang="xx"</tt> attribute added. This
+is good for accessibility (you only need to bother marking non-English content),
+and also to allow different fonts for different languages.</li>
+<li>New question component <tt>&lt;wordselect&gt;</tt> created by Spencer Harben.
+Allows you to make questions like "Highlight all the adjectives in the following
+paragraph."</li>
+<li>If your question is doing something that might fail due to external
+influences (e.g. trying to connect to a web service which might be down at the
+time) you should throw an <tt>OmTransientQuestionException</tt> instead of an
+<tt>OmDeveloperException</tt>, so we can display a better error message to
+students, telling them to try again later.</li>
+<li>The developer servlet now checks that starting a question with a particular
+random seed will always generate exactly the same question. This catches a
+common programming error by question authors.</li>
+<li>A way to analyse scores by question variant. To support this, they make sure
+the question includes the text "Variant = NN" in the questionline it returns,</li>
+<li>New helper methods <tt>om.helper.Shuffler.shuffle(array, random)</tt>, to
+properly shuffle an array of any type. I needed this in the Om system, and also
+I saw some very poor shuffling code in a couple of questions. Please use the
+library routine to shuffle arrays in future.</li>
+</ol>
+
+<h2>R Improvements to reports</h2>
+
+<ol>
+<li>New report that lists all the tests currently on a server. (Uses A.1 above.)</li>
+<li>New report listing all the versions of all the questions currently on a server.</li>
+<li>New reports giving an overview of total system usage by test and by month.</li>
+<li>New variants report, see A.5 above. Available to anyone with reports access on that test.</li>
+<li>Improved formatting of on-screen HTML in some reports.</li>
+<li>Option to download XML reports, as well as seeing them in your browser.</li>
+<li>Test attempts where the student starts the test, does not answer any
+questions, and then submits, are now consistently included in the reports.</li>
+</ol>
+
+<h2>S System enhancements</h2>
+
+<ol>
+<li>OpenMark questions in Moodle now fully work using the Moodle
+<a href="http://moodle.org/mod/data/view.php?d=13&rid=798">Opaque question type</a>.
+(Or then will once I uploade the latest Opaque code.)</li>
+</ol>
+
+<h2>F Notable bug fixes</h2>
+
+<ol>
+<li>There were layout problems with iplaces and eplaces in some situations that
+should now be fixed.</li>
+<li>There was a null pointer exception if a student who had not submitted went
+in after the close date - they should be given a few hours grace when they are
+not allowed to answer any more questions, but are still able to finish test.</li>
+<li>There was a problem with place-holders in drag boxes in plain mode. Many
+congratulation to Fiona for finding this obscure combination!</li>
+<li>Layout problem when you tried to print a question with drag-boxes.</li>
+</ol>
+
+</body>
+</html>
