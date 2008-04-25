@@ -51,7 +51,7 @@
 
 
 <!-- 
-	<text> contains an optional <title> followed by paragraphs <p>. The
+	<info> contains an optional <title> followed by paragraphs <p>. The
 	<title> is used for text pages to display them when allowing navigation.
 	-->	 
 <!ELEMENT info (title?,p*)>
@@ -65,7 +65,7 @@
 
 <!-- Standard question-equivalent items -->
 <!ENTITY % questionbasecontents
-     "(question | text |  random | group)*">
+     "(question | info |  random | group)*">
 
 <!-- Stuff that goes inside a normal thingy -->
 <!ENTITY % questioncontents
@@ -87,7 +87,7 @@
 	total of marks (optional). marks= can be a number (in which case it applies
 	to all axes) or a comma-separated list of axis=number pairs.
 	-->
-<!ELEMENT content (rescore*, text, (section+ | %questioncontents;))>
+<!ELEMENT content (rescore*, info, (section+ | %questioncontents;))>
 
 <!-- Groups don't do anything special -->
 <!ELEMENT group %questioncontents;>
@@ -216,6 +216,7 @@
 	-->
 <!ELEMENT summary EMPTY>
 <!ATTLIST summary 
+	attempts (yes|no) #IMPLIED
 	marks (yes|no) #IMPLIED
 >
 
