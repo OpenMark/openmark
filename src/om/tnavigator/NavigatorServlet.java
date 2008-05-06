@@ -4326,7 +4326,7 @@ public class NavigatorServlet extends HttpServlet
 			if(us!=null && us.oss!=null)
 			{
 				m.put("QENGINE", displayServletURL(us.oss.getEngineURL()) + " (" +
-						us.oss.getQuestionID() + us.oss.getQuestionVersion() + ")");
+						us.oss.getQuestionID() + "." + us.oss.getQuestionVersion() + ")");
 			}
 			else
 			{
