@@ -121,7 +121,7 @@
 		<mkdir dir="${build}/compiled"/>
 		
 		<!-- Compile everything -->		
-		<javac srcdir="src" destdir="${build}/compiled" debug="on" source="1.6" target="1.6">
+		<javac srcdir="src" destdir="${build}/compiled" debug="on" source="1.6" target="1.6" encoding="UTF-8">
 			<!-- Include all lib files -->
 			<classpath>
 				<fileset dir="${servletapi}">

@@ -38,7 +38,7 @@
 		<delete file="${build}/allsource.java" quiet="true"/>
 
 		<!-- Compile question -->
-		<javac srcdir="${source}" destdir="${build}" debug="on" source="1.6" target="1.6">
+		<javac srcdir="${source}" destdir="${build}" debug="on" source="1.6" target="1.6" encoding="UTF-8">
 
 			<include name="${questionpackage}/**/*.java"/>
 			<ADDPACKAGESMARKER type="javac"/>
