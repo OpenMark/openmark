@@ -189,7 +189,7 @@ public class WordSelectComponent extends QComponent
 
 	private static boolean isWordCharacter(char c) {
 		boolean character = Character.isLetterOrDigit(c) || c == '\''
-				|| c == '\u2032' || c == '’';
+				|| c == '\u2032' || c == 'â€™';
 		return character;
 	}
 
