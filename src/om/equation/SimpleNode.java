@@ -38,16 +38,19 @@ public class SimpleNode implements Node {
 	private final static Set<String> STANDARDFUNCTIONS=new HashSet<String>(
 		Arrays.asList(new String[]
 		{
-			// List from p. 124 of 'A Guide To LaTeX 2e' 2nd ed (tim's book)
+			// List from p. 124 of 'A Guide To LaTeX 2e' 2nd ed (Tim's book)
 			"arccos","arcsin","arctan","arg","cos","cosh","cot","coth","csc",
 			"deg","det","dim","exp","gcd","hom","inf","ker","lg","lim","liminf",
 			"limsup","ln","log","max","min","Pr","sec","sin","sinh","sup","tan","tanh"
 		}));
 
-	private final static Map<String, String> STANDARDSYMBOLS;
+	final static Map<String, String> STANDARDSYMBOLS;
+	final static Set<String> STANDARDOPERATORS;
 	private final static String[] STANDARDSYMBOLS_ARRAY=
 	{
-		// Lists from p. 121 of above text
+		// Lists from p. 121-123 of above text. A few are commented out because our
+		// sumbol font (Lucida Sans Unicode) does not contain a suitable glyph.
+
 		// Greek lower
 		"alpha","\u03b1",
 		"beta","\u03b2",
@@ -78,6 +81,7 @@ public class SimpleNode implements Node {
 		"chi","\u03c7",
 		"psi","\u03c8",
 		"omega","\u03c9",
+
 		// Greek upper
 		"Gamma","\u0393",
 		"Delta","\u0394",
@@ -90,15 +94,139 @@ public class SimpleNode implements Node {
 		"Phi","\u03a6",
 		"Psi","\u03a8",
 		"Omega","\u03a9",
+
+		// Various other symbols
+		"aleph", "\u2135",
+		"hbar", "\u210f",
+		"imath", "\u0131",
+//		"jmath", "\u0237",
+		"ell", "\u2113",
+		"wp", "\u2118",
+		"Re", "\u211c",
+		"Im", "\u2111",
+		"mho", "\u2127",
+		"prime", "\u2032",
+		"emptyset", "\u2205",
+		"nabla", "\u2207",
+		"surd", "\u221a",
+		"partial", "\u2202",
+		"top", "\u22a4",
+		"bot", "\u22a5",
+		"forall", "\u2200",
+		"exists", "\u2203",
+		"neg", "\u00ac",
+		"flat", "\u266d",
+		"natural", "\u266e",
+		"sharp", "\u266f",
+		"angle", "\u2220",
+		"backslash", "\\",
+		"Box", "\u25a1",
+		"Diamond", "\u22c4",
+		"triangle", "\u25b3",
+		"clubsuit", "\u2663",
+		"diamondsuit", "\u2666",
+		"heartsuite", "\u2665",
+		"spadesuit", "\u2660",
+		"infty", "\u221e",
+	};
+	private final static String[] STANDARDOPERTORS_ARRAY=
+	{
+		// Binary opertors
+		"", "=",
+		"pm", "\u00b1",
+		"mp", "\u2213",
+		"times", "\u00d7",
+		"div", "\u00f7",
+		"cdot", "\u00b7",
+		"ast", "*",
+		"star", "\u22c6",
+		"dagger", "\u2020",
+		"ddagger", "\u2021",
+//		"amalg", "\u2a3f",
+		"cap", "\u2229",
+		"cup", "\u222a",
+		"uplus", "\u228e",
+		"sqcap", "\u2293",
+		"sqcup", "\u2294",
+		"vee", "\u2228",
+		"wedge", "\u2227",
+		"oplus", "\u2295",
+		"ominus", "\u2296",
+		"otimes", "\u2297",
+		"circ", "\u25e6",
+		"bullet", "\u2022",
+		"diamond", "\u22c4",
+		"oslash", "\u2289",
+		"odot", "\u2299",
+//		"bigcirc", "\u25ef",
+		"bigtriangleup", "\u25b3",
+		"bigtriangledown", "\u25bd",
+		"triangleleft", "\u25c3",
+		"triangleright", "\u25B9",
+		"setminus", "\u2216",
+		"wr", "\u2240",
+
+		// Relations and their negations
+		"le", "\u2264",
+		"leq", "\u2264",
+		"ll", "\u226a",
+		"subset", "\u2282",
+		"subseteq", "\u2286",
+		"sqsubset", "\u228f",
+		"sqsubseteq", "\u2291",
+		"in", "\u2208",
+		"vdash", "\u22a2",
+		"models", "\u22a7",
+		"ge", "\u2265",
+		"geq", "\u2265",
+		"gg", "\u226b",
+		"supset", "\u2283",
+		"supseteq", "\u2287",
+		"sqsupset", "\u2290",
+		"sqsupseteq", "\u2292",
+		"ni", "\u220b",
+		"dashv", "\u22a3",
+		"perp", "\u22a5",
+		"neq", "\u2260",
+		"doteq", "\u2250",
+		"approx", "\u2248",
+		"cong", "\u2245",
+		"equiv", "\u2261",
+		"propto", "\u221d",
+		"prec", "\u227a",
+//		"preceq", "\u2aaf",
+		"parallel", "\u2225",
+		"sim", "\u223c",
+		"simeq", "\u2243",
+		"asymp", "\u2248",
+		"smile", "\u2323",
+		"frown", "\u2322",
+		"bowtie", "\u22c8",
+		"succ", "\u227b",
+//		"succeq", "\u2ab0",
+		"mid", "\u2223",
+		"notin", "\u2209",
+
+		// Arrows and pointers
+		// TODO "", "\u1234",
 	};
 	static
 	{
-		HashMap<String, String> hm=new HashMap<String, String>();
+		HashMap<String, String> ss = new HashMap<String, String>();
+		HashSet<String> so = new HashSet<String>();
 		for(int i=0;i<STANDARDSYMBOLS_ARRAY.length;i+=2)
 		{
-			hm.put(STANDARDSYMBOLS_ARRAY[i],STANDARDSYMBOLS_ARRAY[i+1]);
+			ss.put(STANDARDSYMBOLS_ARRAY[i],STANDARDSYMBOLS_ARRAY[i+1]);
 		}
-		STANDARDSYMBOLS=hm;
+		for(int i=0;i<STANDARDOPERTORS_ARRAY.length;i+=2)
+		{
+			if (!"".equals(STANDARDOPERTORS_ARRAY[i])) {
+				ss.put(STANDARDOPERTORS_ARRAY[i],STANDARDOPERTORS_ARRAY[i+1]);
+			}
+			so.add(STANDARDOPERTORS_ARRAY[i+1]);
+		}
+		STANDARDSYMBOLS=ss;
+		STANDARDOPERATORS=so;
 	}
 
 
@@ -296,11 +424,26 @@ public class SimpleNode implements Node {
 		System.out.println(toString(prefix));
 		if (children != null) {
 			for (int i = 0; i < children.length; ++i) {
-	SimpleNode n = (SimpleNode)children[i];
-	if (n != null) {
-		n.dump(prefix + " ");
-	}
+				SimpleNode n = (SimpleNode)children[i];
+				if (n != null) {
+					n.dump(prefix + " ");
+				}
 			}
+		}
+	}
+
+	/**
+	 * @param args not used.
+	 */
+	public static void main(String[] args) {
+		
+		for(int i=0;i<STANDARDSYMBOLS_ARRAY.length;i+=2)
+		{
+			System.out.println(STANDARDSYMBOLS_ARRAY[i] + ": " + STANDARDSYMBOLS_ARRAY[i+1]);
+		}
+		for(int i=0;i<STANDARDOPERTORS_ARRAY.length;i+=2)
+		{
+			System.out.println(STANDARDOPERTORS_ARRAY[i] + ": " + STANDARDOPERTORS_ARRAY[i+1]);
 		}
 	}
 }

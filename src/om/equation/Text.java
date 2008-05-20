@@ -20,7 +20,7 @@ package om.equation;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
-import java.util.LinkedList;
+import java.util.*;
 
 import org.w3c.dom.Element;
 
@@ -30,6 +30,7 @@ import util.xml.XML;
 /** Simple mathematical text item */
 public class Text extends Item
 {
+	private final static int THIS_IS_A_ZED = 0x2000000; // Must be different from SPECIAL_CHAR_FONT.
 	/** Shared font render context */
 	public static FontRenderContext frc;
 	static
@@ -47,6 +48,8 @@ public class Text extends Item
 	/** True if this text block is first in its parent */
 	private boolean bFirst;
 
+	private Map<Integer, Font> fonts = new HashMap<Integer, Font>(3);
+
 	/**
 	 * @return Original text of input (used for handling parameters in software
 	 *   rather than as text items)
@@ -60,12 +63,15 @@ public class Text extends Item
 	{
 		String sText;
 		int iStyle;
+		private Run(String text, int style) {
+			sText = text;
+			iStyle = style;
+		}
 	}
 
 	@Override
 	public void render(Graphics2D g2,int iX,int iY)
 	{
-		Font fPlain=getFont(Font.PLAIN),fItalic=getFont(Font.ITALIC);
 		g2.setColor(getForeground());
 
 		Run rBefore=null;
@@ -73,7 +79,7 @@ public class Text extends Item
 
 		for(Run r : lRuns)
 		{
-			Font fThis=r.iStyle==Font.ITALIC ? fItalic : fPlain;
+			Font fThis = fonts.get(r.iStyle);
 
 			boolean bChangeStyle=rBefore!=null && rBefore.iStyle!=r.iStyle;
 
@@ -87,15 +93,14 @@ public class Text extends Item
 			if(rBefore==null || bChangeStyle)
 				iX+=Fonts.getLeftOverlap(fThis,r.sText.charAt(0));
 
-			Font f=getFont(r.iStyle);
-			g2.setFont(f);
+			g2.setFont(fThis);
 			g2.drawString(r.sText,iX,iY+iBaseline);
 
 			// Note: This hack is needed because Java (1.4, 1.5) does not render the
 			// diagonal stroke on italic Times New Roman z at below 26px.
 			if(r.sText.equals("z") && r.iStyle==Font.ITALIC && getFontFamily().equals("Times New Roman"))
 			{
-				switch(f.getSize())
+				switch(fThis.getSize())
 				{
 				case 16:
 				case 15:
@@ -115,9 +120,9 @@ public class Text extends Item
 					g2.drawLine(iX+3,iY+iBaseline-5,iX-1,iY+iBaseline-1);
 					break;
 				default:
-					if(f.getSize()<=26)
+					if(fThis.getSize()<=26)
 					{
-					  float fFactor=f.getSize() / 13.0f;
+					  float fFactor=fThis.getSize() / 13.0f;
 						g2.setStroke(new BasicStroke(0.6f*fFactor));
 						g2.drawLine(
 							Math.round(iX+(4*fFactor)),
@@ -179,23 +184,19 @@ public class Text extends Item
 
 	}
 
-	private static void fixupOperator(StringBuffer sbText,char c)
+	// Fix up all operators at once, using the list of operators in 
+	// SimpleNode.STANDARDOPERATORS.
+	private static void fixupOperators(StringBuffer sbText)
 	{
 		// Operators get spaces either side
 		int iPos=0;
-		while(true)
+		while(iPos < sbText.length())
 		{
-			iPos=sbText.indexOf(""+c,iPos);
-			if(iPos==-1) return; // Not found
-
-			// Add space to left and right
-//			if(iPos>0)
-//			{
-				sbText.insert(iPos,SPACE);
-				iPos++;
-//			}
-			sbText.insert(iPos+1,SPACE);
-			iPos++;
+			if (SimpleNode.STANDARDOPERATORS.contains("" + sbText.charAt(iPos))) {
+				sbText.insert(iPos, SPACE);
+				sbText.insert(iPos+2, SPACE);
+				iPos+=2;
+			}
 
 			iPos++;
 		}
@@ -246,10 +247,7 @@ public class Text extends Item
 		StringBuffer sb=new StringBuffer(sText);
 		fixupSignOperator(sb,'-',bFirst);
 		fixupSignOperator(sb,'+',bFirst);
-		fixupOperator(sb,'\u00f7');
-		fixupOperator(sb,'\u00d7');
-		fixupOperator(sb,'=');
-		fixupOperator(sb,'\u2248');
+		fixupOperators(sb);
 		trimSpaces(sb,bFirst);
 
 		sText=sb.toString();
@@ -275,10 +273,7 @@ public class Text extends Item
 		if(getAncestor(MBox.class)!=null)
 		{
 			// Simple text
-			Run r=new Run();
-			r.iStyle=Font.PLAIN;
-			r.sText=sText;
-			lRuns.add(r);
+			lRuns.add(new Run(sText, Font.PLAIN));
 		}
 		else
 		{
@@ -299,53 +294,80 @@ public class Text extends Item
 			return true;
 	}
 
+	private static boolean isSpecialChar(char c, Font f)
+	{
+		return !f.canDisplay(c);
+	}
+
+	private int styleForChar(char c, Font f) {
+		if (c == 'z') {
+			return THIS_IS_A_ZED;
+		} else if (isSpecialChar(c, f)) {
+			return SPECIAL_CHAR_FONT;
+		} else if (isItalic(c)) {
+			return Font.ITALIC;
+		} else {
+			return Font.PLAIN;
+		}
+	}
+
 	private void buildRuns(String sText)
 	{
-		if(sText.length()==0) return;
+		if(sText.length() == 0) return;
+		Font f = new Font(getFontFamily(), Font.PLAIN, 14);
+		
+		StringBuffer currentRun = new StringBuffer();
+		int currentStyle = -1;
+		for (int pos = 0; pos < sText.length(); pos++) {
+			char c = sText.charAt(pos);
+			int style = styleForChar(c, f);
+			if (style == currentStyle) {
+				// Style stays the same, just add to the current run.
+				currentRun.append(c);
+			} else {
+				// Style changed, we'll need to start a new run.
 
-		Run r=new Run();
-		char cFirst=sText.charAt(0);
-		if(cFirst=='z')
-		{
-			r.iStyle=Font.ITALIC;
-			r.sText="z";
-			lRuns.add(r);
-			buildRuns(sText.substring(1));
+				// But first process any currently open run.
+				if (currentStyle != -1) {
+					lRuns.add(new Run(currentRun.toString(), currentStyle));
+					currentRun.setLength(0);
+				}
+
+				// Now process the new character.
+				if (style == THIS_IS_A_ZED) {
+					// Special case. Each z goes in a run on its own.
+					lRuns.add(new Run("z", Font.ITALIC));
+					currentStyle = -1;
+				} else {
+					// Start a new run of the specified style.
+					currentRun.append(c);
+					currentStyle = style;
+				}
+			}
 		}
-		else if(isItalic(cFirst))
-		{
-			int iCut=1;
-			for(;iCut<sText.length() && isItalic(sText.charAt(iCut)) && sText.charAt(iCut)!='z';iCut++) {}
-			r.iStyle=Font.ITALIC;
-			r.sText=sText.substring(0,iCut);
-			lRuns.add(r);
-			buildRuns(sText.substring(iCut));
+		if (currentStyle != -1) {
+			lRuns.add(new Run(currentRun.toString(), currentStyle));
 		}
-		else
-		{
-			int iCut=1;
-			for(;iCut<sText.length() && !isItalic(sText.charAt(iCut));iCut++) {}
-			r.iStyle=Font.PLAIN;
-			r.sText=sText.substring(0,iCut);
-			lRuns.add(r);
-			buildRuns(sText.substring(iCut));
-		}
+	}
+
+	private void createFonts() {
+		fonts.put(Font.PLAIN, getFont(Font.PLAIN));
+		fonts.put(Font.ITALIC, getFont(Font.ITALIC));
+		fonts.put(SPECIAL_CHAR_FONT, getSpecialCharacterFont());
 	}
 
 	@Override
 	protected void internalPrepare()
 	{
-		Font fPlain=getFont(Font.PLAIN),fItalic=getFont(Font.ITALIC);
+		createFonts();
 
 		int iAscent,iDescent;
 
 		iAscent=0; iDescent=0;
 		for(Run r : lRuns)
 		{
-			iAscent=Math.max(
-				Fonts.getMaxAscent(r.iStyle==Font.ITALIC ? fItalic : fPlain,r.sText),iAscent);
-			iDescent=Math.max(
-				Fonts.getMaxDescent(r.iStyle==Font.ITALIC ? fItalic : fPlain,r.sText),iDescent);
+			iAscent=Math.max(Fonts.getMaxAscent(fonts.get(r.iStyle),r.sText),iAscent);
+			iDescent=Math.max(Fonts.getMaxDescent(fonts.get(r.iStyle),r.sText),iDescent);
 		}
 
 		iBaseline=iAscent;
@@ -357,7 +379,7 @@ public class Text extends Item
 
 		for(Run r : lRuns)
 		{
-			Font fThis=r.iStyle==Font.ITALIC ? fItalic : fPlain;
+			Font fThis = fonts.get(r.iStyle);
 
 			boolean bChangeStyle=rBefore!=null && rBefore.iStyle!=r.iStyle;
 
@@ -391,8 +413,8 @@ public class Text extends Item
 		Run rLast=lRuns.getLast();
 		if(rLast!=null && rLast.iStyle==Font.ITALIC)
 		{
-			fEndSlope=fItalic.getItalicAngle();
-			iAdvanceWidth+=Fonts.getItalicRightOverlap(fItalic,
+			fEndSlope=fonts.get(Font.ITALIC).getItalicAngle();
+			iAdvanceWidth+=Fonts.getItalicRightOverlap(fonts.get(Font.ITALIC),
 				rLast.sText.charAt(rLast.sText.length()-1));
 		}
 	}

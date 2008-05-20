@@ -154,6 +154,8 @@ public class Test extends JFrame
 			"\\left{\\frac{2n+6n}{2} + 4\\right}",
 			"2+\\left{\\frac{2n+6n}{2}+4\\right.",
 
+			"\\frac{\\partial y}{\\partial x} \\propto \\hbar \\wr \\nabla \\ell \\forall x \\exists z_\\infty",
+
 //			"x^2=n + N^N_N"
 //			"N_N^N"
 //			"= x ^N_N"
