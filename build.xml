@@ -414,7 +414,7 @@
 
 		<mkdir dir="${javadoc}"/>
 		
-		<javadoc sourcepath="src" destdir="${javadoc}" source="1.6"
+		<javadoc sourcepath="src" destdir="${javadoc}" source="1.6" encoding="UTF-8"
 			packagenames="om.*,util.*"
 			excludepackagenames="om.equation.generated.*,om.axis.*">
 			<classpath>
