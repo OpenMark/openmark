@@ -84,7 +84,7 @@ function dropboxKeyDown(id,idPrefix,e)
 		{
 			dragboxUnplace(dropbox.draggedItem,true);
 		}
-		return true;
+		return false;
 	}
 	else if(e.mKey==38 || e.mKey==37) // Up or left
 	{
@@ -100,7 +100,8 @@ function dropboxKeyDown(id,idPrefix,e)
 				{
 					dragboxUnplace(dropbox.draggedItem,true);
 				}
-				return true;
+				//return false to override the default IE pagedown action on space bar
+				return false;
 			}
 
 			if(startSeek)
@@ -135,7 +136,7 @@ function dropboxKeyDown(id,idPrefix,e)
 				{
 					dragboxUnplace(dropbox.draggedItem,true);
 				}
-				return true;
+				return false;
 			}
 
 			if(startSeek)
