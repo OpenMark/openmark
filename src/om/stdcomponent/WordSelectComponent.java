@@ -62,6 +62,7 @@ public class WordSelectComponent extends QComponent
 		String idTag;
 		int id;
 		boolean selected = false;
+		boolean isThirdHilight = false;
 
 		private Word(String word, String following, String idTag, int id) {
 			this.word = word;
@@ -189,7 +190,7 @@ public class WordSelectComponent extends QComponent
 
 	private static boolean isWordCharacter(char c) {
 		boolean character = Character.isLetterOrDigit(c) || c == '\''
-				|| c == '\u2032' || c == '’';
+				|| c == '\u2032' || c == '\u00B4';
 		return character;
 	}
 
@@ -339,6 +340,15 @@ public class WordSelectComponent extends QComponent
 						input.setAttribute("checked", "checked");
 					}
 				}
+				
+				if (w.isThirdHilight) {
+					if (!bPlain) {
+						labelclass = "thirdhilight";
+					}
+					else{
+						input.setAttribute("checked", "checked");
+					}
+				}
 
 				if (!bPlain) {
 					label.setAttribute("class",labelclass);
@@ -473,7 +483,8 @@ public class WordSelectComponent extends QComponent
 
 	/**
 	 * highlights all the words contained within all the sw tags
-	 * in a second colour. Intended for use with final feedback
+	 * in a pink background(full colour mode) and a double underline. 
+	 * Intended for use with final feedback
 	 */
 	public void secondHilightSWWords() {
 		for (WordBlock wb : wordBlocks) {
@@ -485,11 +496,71 @@ public class WordSelectComponent extends QComponent
 
 	/**
 	 * highlights all the words contained within an sw tag
-	 * of the given id in a second colour.
+	 * of the given id in a pink background(full colour mode) 
+	 * and a double underline.
 	 * @param swId the id of the block of words to highlight.
 	 */
 	public void secondHilightSWWords(String swId) {
 		WordBlock wb = wordsById.get(swId);
 		wb.isSecondHighlighted = true;
 	}
+	
+	/**
+	 * Highlights all the correctly selected words contained within an sw tag
+	 * of the given id with a grey background(full colour mode) 
+	 * and a dotted underline. Can be used in conjuction with 
+	 * secondHilightSWWords, where it takes precedence and with 
+	 * clearSelection. Note, if used with clearSelection 
+	 * then highlightCorrectSWWords MUST be called first.
+	 * Intended for use with final feedback.
+	 */
+	public void highlightCorrectSWWords() {
+		
+		for (WordBlock wb : wordBlocks) {
+			if (wb.isSW) {
+				highlightCorrectSWWords(wb.id);
+			}
+			
+		}
+	}
+	
+	/**
+	 * Highlights all the correctly selected words contained within 
+	 * all the sw tags with a grey background(full colour mode) 
+	 * and a dotted underline. Can be used in conjuction with 
+	 * secondHilightSWWords, where it takes precedence and with 
+	 * clearSelection. Note, if used with clearSelection 
+	 * then highlightCorrectSWWords MUST be called first.
+	 * Intended for use with final feedback.
+	 * @param swId the id of the block of words to clear.
+	 */
+	public void highlightCorrectSWWords(String swId) {
+		WordBlock wb = wordsById.get(swId);
+		for (Word w : wb.words) {
+			if(w.selected){
+				w.isThirdHilight = true;
+			}
+		}
+			
+	}
+	
+	/**
+	 * Calls highlightCorrectSWWords() and secondHilightSWWords()
+	 * Intended for use with final feedback.
+	 */
+	public void highlightCorrectandUnselectedSWWords() {
+		highlightCorrectSWWords();
+		secondHilightSWWords();
+	}
+	
+	/**
+	 * Calls highlightCorrectSWWords(swId) and secondHilightSWWords(swId)
+	 * @param swId the id of the block of words to clear.
+	 */
+	public void highlightCorrectandUnselectedSWWords(String swId) {
+		highlightCorrectSWWords(swId);
+		secondHilightSWWords(swId);
+			
+	}
+	
 }
