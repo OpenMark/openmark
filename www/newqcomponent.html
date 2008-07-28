@@ -33,20 +33,34 @@
 		Adds styles and alignment information for the radiobox.</li>	
 </ul>
 
-<p>New question component should probably be created in package om.stdcomponent.
-You need a new class that is a subclass of om.stdquestion.QComponent,
-typically called SomethingComponent, and then you need to edit
-om.stdcomponent.ComponentRegistry to add your class to the COMPONENTCLASSES array.
-In addition to the SomethingComponent.java file, you may also have one or both of a
-SomethingComponent.js and a SomethingComponent.css file for Javascript and styles.
-If either of these exist, the question engine automatically proesses them for you.</p>
-
-<p>Now you actually need to implement the funcitonality of your new question component, 
-and there are four parts to this described in the sections below. This is just a very
-brief overview of what you need to do. To actually do it, the only way to learn is to
-look at how other components work, and copy them.</p>
+<p>
+	To add a component to Openmark you will need to edit the 
+	<code>om.stdcomponent.ComponentRegistry</code>.  The new class should be 
+	added to the COMPONENTCLASSES array (alphabetical order has been used).
+</p>
+	
+<p>
+	Once you have created the files that you need , <code>SomethingTypeComponent .java, .js, .css</code> 
+	and added the component to the Component registry you will need  to implement the 
+	functionality of your new question component. There are four parts to this 
+	outlined in the sections below.	
+</p>
+	
 
 <h2>Initialisation</h2>
+
+	<p>Your component will require a tag name for use in the question.xml.</p>
+	
+	<p>e.g. from the IndentComponent</p>
+	
+	<pre class="codesample">
+		/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
+		public static String getTagName()
+		{
+			return "indent";
+		}
+	</pre>	
+	
 
 <p>params</p>
 
