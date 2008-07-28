@@ -69,7 +69,7 @@
 	</pre>	
 	
 
-<h3>Adding parameters</h3>
+<p><strong>Adding parameters</strong></p>
 	<p>
 		<code>QComponent</code> has the method defineProperties() that is intended 
 		for overriding. As default it is set to allow an 'id', 'display'(true)  
@@ -94,7 +94,58 @@
 		}
 	</pre>
 
-<p>init</p>
+<p><strong>init</strong></p>
+	
+	<p>
+		As part of the initialisation <code>QComponent</code> init calls 
+		initChildren(Element eThis). This initialises children 
+		based on the given XML element.	
+	</p>
+		
+	<p>
+		The default implementation treats all child elements as components. 
+		If you want to include text as well or treat elements differently 
+		(i.e. your component will have it's own internal tags with a specific meaning) 
+		you will need  to override this method.
+	</p>
+	
+	<p>
+		You want to include text
+	</p>
+	
+	<p>
+		e.g. from the text component
+	</p>
+	
+	<pre class="codesample">
+		@Override
+		protected void initChildren(Element eThis) throws OmException
+		{
+			getQDocument().buildInsideWithText(this,eThis);
+		}
+	</pre>
+	
+	<p>
+		You do not want your component to have any child elements
+	</p>
+	
+	<p>
+		e.g. from the gap component
+	</p>
+	
+	<pre class="codesample">
+		@Override
+		protected void initChildren(Element eThis) throws OmException
+		{
+			if(eThis.getFirstChild()!=null) throw new OmFormatException(
+				"<gap> may not contain other content");
+		}	
+	</pre>
+		
+	<p>
+		for examples of components with their own internal tags that are not components see the 
+		<code>DropdownComponent, EquationComponent, TableComponent, WordselectComponent</code>.
+	</p>
 
 <h2>Rendering</h2>
 
