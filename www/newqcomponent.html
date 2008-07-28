@@ -8,6 +8,18 @@
 <h1>How to create a new question component</h1>
 
 <h2>Overview</h2>
+	
+<p>
+	New question components should probably be created in the package om.stdcomponent. 
+	<br/>
+	To develop a question component  a new class that is a subclass of om.stdquestion.QComponent is 
+	required. These are typically called SomethingTypeComponent.java.
+	<br/>
+	In addition to the SomethingTypeComponent.java file, you may also have one or 
+	both of a SomethingTypeComponent.js and a SomethingTypeComponent.css file for 
+	Javascript and styles. If either of these exist, the question engine 
+	automatically processes them for you.
+</p>
 
 <p>New question component should probably be created in package om.stdcomponent.
 You need a new class that is a subclass of om.stdquestion.QComponent,
