@@ -338,6 +338,62 @@
 		}
 
 	</pre>
+		
+	<h2>Notes on accessibility</h2>
+		
+	<p>
+		Accessibility is considered to be of great importance and component authors 
+		should strive to ensure that the components they develop work in the different 
+		accessibility modes, full colour, alt colours, plain mode and big mode.
+	</p>
+		
+	<p><strong>Keyboard accessibility</strong></p>
+		
+	<p>
+		Components that require inputs (edit boxes, check boxes, radio boxes etc) or 
+		movement (marker components) are expected to be keyboard accessible and can 
+		usually be tabbed to and gain focus. Therefore you should ensure that they are 
+		added to the list of items so that the tab order is correct by including code 
+		along the following lines in the produceVisibleOutput(...) method
+	</p>
+		
+	<pre>
+		if(isEnabled()) qc.informFocusable(eInput.getAttribute("id"),bPlain);
+	</pre>
+		
+	<p><strong>Colours</strong></p>
+		
+	<p>
+		Time has been spent ensuring that any colours used are as user friendly as possible. 
+		These are defined in QComponent,  <code>om.stdquestion.QComponent</code>. 
+		Where possible developers should use these predefined colours. If used in the 
+		components .css file then the colours will be automatically adjusted as users move 
+		through the different colour options.
+	</p>
+		
+	<p>e.g. You will see the following in some of the .css files</p>
+		
+	<pre>
+		border:1px solid %%COLOUR:text%%
+	</pre>
+		
+	<p>
+		where a border is being drawn with the current text colour.	
+	</p>
+		
+	<p>
+		Note that colour alone should not be used alone to denote a change of state for components. 
+		If you have a selectable component then in addition to a colour change you 
+		should also consider the use of a border/underline to indicate when a component 
+		has been selected or highlighted.
+	</p>
+		
+	<p>
+		e.g. radiobox and checkbox components use a single line border to show when  highlighted, 
+		the wordselect component uses both single and double underlines.
+	</p>
+		
+	<h2>The Hello world program</h2>
 
 </body>
 </html>
