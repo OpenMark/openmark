@@ -11,13 +11,27 @@
 	
 <p>
 	New question components should probably be created in the package <code>om.stdcomponent</code>. 
-	To develop a question component  a new class that is a subclass of om.stdquestion.QComponent is 
+	To develop a question component  a new class that is a subclass of <code>om.stdquestion.QComponent</code> is 
 	required. These are typically called <code>SomethingTypeComponent.java</code>.
 	In addition to the <code>SomethingTypeComponent.java</code> file, you may also have one or 
 	both of a <code>SomethingTypeComponent.js</code> and a <code>SomethingTypeComponent.css</code> file for 
 	Javascript and styles. If either of these exist, the question engine 
 	automatically processes them for you.
 </p>
+	
+<p>
+	e.g. the RadioBoxComponent has java, javascript and css files.
+</p>
+<ul>
+	<li><code>RadioBoxComponent.java</code> -  
+		The java file contains the code for initialising, rendering and handling student inputs.</li>
+	<li><code>RadioBoxComponent.js</code> - 
+		The javascript file typically contains event handling for student interaction with 
+		the component on the webpage. For the RadioBoxComponent it handles the onClick event 
+		for the radiobox</li>
+	<li><code>RadioBoxComponent.css</code> - 
+		Adds styles and alignment information for the radiobox.</li>	
+</ul>
 
 <p>New question component should probably be created in package om.stdcomponent.
 You need a new class that is a subclass of om.stdquestion.QComponent,
