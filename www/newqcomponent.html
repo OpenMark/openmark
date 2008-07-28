@@ -54,7 +54,7 @@
 </p>
 	
 
-<h2>Initialisation</h2>
+<h2>1. Initialisation</h2>
 
 	<p>Your component will require a tag name for use in the question.xml.</p>
 	
@@ -144,16 +144,74 @@
 		
 	<p>
 		for examples of components with their own internal tags that are not components see the 
-		<code>DropdownComponent, EquationComponent, TableComponent, WordselectComponent</code>.
+		DropdownComponent, EquationComponent, TableComponent, WordselectComponent.
 	</p>
+		
+		
 
-<h2>Rendering</h2>
+<h2>2. Rendering</h2>
+	
+	<p>
+		Instructions for how the content of the component should be built up and displayed 
+		should be done by overriding the produceVisibleOutput method.
+	</p>
+		
+	<p>
+		The example below is from the GapComponent
+	</p>
+		
+	<pre class="codesample">
+		@Override
+		public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
+		{
+			if(bPlain)
+			{
+				Element eDiv=qc.createElement("div");
+				qc.addInlineXHTML(eDiv);
+				XML.createChild(eDiv,"br");
+			}
+			else
+			{
+				Element eDiv=qc.createElement("div");
+				eDiv.setAttribute("class","gap");
+				qc.addInlineXHTML(eDiv);
+			}
+		}
+	</pre>
+		
+	<p>
+		Note that the code has an if statement for <code>bPlain</code>. Here if the display is to 
+		be in plain mode then a standard html break tag is added as opposed to a 
+		div with a class that then picks up it's spacing properties from the 
+		<code>GapComponent.css</code> file, (see notes on accessibility below).
+	</p>
+		
+	<p>
+		so, if in plain mode the component produces the following output in the html
+	</p>
+	
+	<pre>
+		&lt;div>&lt;br />&lt;/div>
+	</pre>
+		
+	<p>
+		A div element is created, it is added in line and the break is added as a child to the div.
+	</p>
+		
+	<p>
+		In all other modes
+	</p>
+		
+	<pre>
+		&lt;div class="gap">&lt;/div>
+	</pre>
+		
+	<p>
+		A div element is created, it is given a class attribute called gap and is added to the XHTML.
+	</p>
+		
 
-<p>produce visible output.</p>
-
-<p>resources.</p>
-
-<h2>Recieving the student's response</h2>
+<h2>3. Recieving the student's response</h2>
 
 <p>...</p>
 
