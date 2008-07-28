@@ -394,6 +394,86 @@
 	</p>
 		
 	<h2>The Hello world program</h2>
+		
+	<p><strong>In the openmark_public java project go to <code>src.om.stdcomponent</code></strong></p>
+		
+	<p>1. Go to the <code>GapComponent.java</code> and save as <code>HelloComponent.java</code> </p>
+		
+	<p>2. Go to the  <code>GapComponent.css</code> and save as <code>HelloComponent.css</code></p>
+	
+	<p>3. Open <code>ComponentRegistry.java</code> and add HelloComponent.class to the array of classes</p>
+		
+	<p><strong>open  HelloComponent.java</strong></p>
+		
+	<p>4. change public class GapComponent extends QComponent to public class HelloComponent extends QComponent</p>
+		
+	<p>5. in getTagName change gap to hello</p>
+		
+	<pre>
+		public static String getTagName()
+		{
+			return "hello";
+		} 
+	</pre>
+		
+	<p>6. in initChildren change &lt;gap> to &lt;hello></p>
+		
+	<pre>
+		@Override
+		protected void initChildren(Element eThis) throws OmException
+		{
+			if(eThis.getFirstChild()!=null) throw new OmFormatException(
+				"&lt;hello> may not contain other content");
+		}
+	</pre>
+		
+	<p>7. create the output for the component by changing produceVisibleOutput to create a 
+		division with a class attribute called hello, containing the text hello world.</p>
+		
+	<pre>
+		@Override
+		public void produceVisibleOutput(QContent qc,boolean bInit,boolean bPlain) throws OmException
+		{
+				Element div=qc.createElement("div");
+				div.setAttribute("class","hello");
+				XML.createText(div, "hello world");
+				qc.addInlineXHTML(div);
+		}
+	</pre>
+		
+	<p><strong>open HelloComponent.css</strong></p>
+		
+	<p>8. Add some styles by deleting .om . gap and adding .om .hello</p>
+		
+	<pre>
+		.om .hello
+		{
+		  padding:4px;
+		  background-color: %%COLOUR:innerbg3%%;
+		  font-style:italic;
+		  font-weight:bold;
+		}
+	</pre>
+		
+	<p>9. Run the ant build on openmark_ou project to build your new component into Openmark.</p>
+		
+	<p><strong>test the component by using it in a question.</strong></p>
+		
+	<p>10. Create a test question, or use an existing one, in 
+		the openmark_ou project in the testquestions folder.</p>
+		
+	<p>11. To the question.xml add the hello tag i.e. &lt;hello/> in an appropriate place</p>
+		
+	<p>12. In the question development environment build your question.</p>
+	
+	<p><i>
+		N.B make sure you use the correct paths to the openmark_ou project and not the omqstns project.
+		i.e. Source tree = C:\Documents and Settings\xyzz\workspace\openmark_ou\testquestions
+	</i></p>
+		
+	<p><strong>the result should look something like this</strong></p>
+		
+	<p><img src="hworld.png" alt="Output of hello world component" /></p>
 
 </body>
 </html>
