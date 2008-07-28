@@ -288,9 +288,56 @@
 
 	</pre>
 
-<h2>An interface for quesion authors</h2>
+<h2>4. An interface for quesion authors</h2>
 
-<p>...</p>
+	<p>
+		Finally you may need methods to allow question authors to retrieve input values/parameters 
+		for components and/or set parameters for the components from the question java file.
+	</p>
+		
+	<p>
+		For the Editfield Component in the example for the section above (Receiving the 
+		student's response) we have the code for retrieving the student input and 
+		storing this for the component. To allow question authors to access this 
+		value then a public method is required.
+	</p>
+		
+	<p>Getting the current value.</p>
+		
+	<pre class="codesample">
+		/** @return Current value of edit field. For single-line editfield,
+	 	* value is trimmed to be no more than 100 characters.
+		 */
+		public String getValue()
+		{
+			try
+			{
+				return getString(PROPERTY_VALUE);
+			}
+			catch(OmDeveloperException e)
+			{
+				throw new OmUnexpectedException(e);
+			}
+		}
+	</pre>
+		
+	<p>Setting the current value.</p>
+		
+	<pre class="codesample">
+		/** @param sValue New value for edit field */
+		public void setValue(String sValue)
+		{
+			try
+			{
+				setString(PROPERTY_VALUE,sValue);
+			}
+			catch(OmDeveloperException e)
+			{
+				throw new OmUnexpectedException(e);
+			}
+		}
+
+	</pre>
 
 </body>
 </html>
