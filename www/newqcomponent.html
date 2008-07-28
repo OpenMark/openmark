@@ -69,7 +69,30 @@
 	</pre>	
 	
 
-<p>params</p>
+<h3>Adding parameters</h3>
+	<p>
+		<code>QComponent</code> has the method defineProperties() that is intended 
+		for overriding. As default it is set to allow an 'id', 'display'(true)  
+		and 'enabled'(true). If you require more properties then override this 
+		method, remembering to call the superclass if you want to keep the defaults.
+	</p>
+	
+	<p>
+		e.g. Your component requires a highlight property and you want to set 
+		the initial/default value to false.
+	</p>
+	
+	<pre class="codesample">
+		/** Property name for being highlighted (boolean) */
+		public static final String PROPERTY_HIGHLIGHT="highlight";
+		@Override
+		protected void defineProperties() throws OmDeveloperException
+		{
+			super.defineProperties();
+			defineBoolean(PROPERTY_HIGHLIGHT);
+			setBoolean(PROPERTY_HIGHLIGHT,false);
+		}
+	</pre>
 
 <p>init</p>
 
