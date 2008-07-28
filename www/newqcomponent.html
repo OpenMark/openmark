@@ -213,7 +213,80 @@
 
 <h2>3. Recieving the student's response</h2>
 
-<p>...</p>
+	<p>
+		On submission of the form (i.e. a student has clicked the submit button) 
+		then all components receive a call from the Openmark framework to the 
+		formAllValuesSet method. The QComponent default does nothing.
+	</p>
+		
+	<p>
+		Items with action parameters that begin with QDocument.VALUE_PREFIX will have 
+		the method formSetValue called first on all items on submission of the form 
+		before formAllValuesSet is called.
+	</p>
+		
+	<p>
+		Therefore to receive the student input you will need to override one or both of these methods.	
+	</p>
+		
+	<p>
+		e.g. Editfield component overrides the formSetValue method to obtain the students input 
+		to the  editfield on the form and then sets the property value for this instance of 
+		the component to store the input value.	
+	</p>
+		
+	<pre class="codesample">
+		@Override
+		protected void formSetValue(String sValue,ActionParams ap) throws OmException
+		{
+			sValue=sValue.replaceAll("\r\n","\n");
+			if(getInteger(PROPERTY_ROWS)==1) sValue=trim(sValue,MAXCHARS_SINGLELINE);
+			setString(PROPERTY_VALUE,sValue);
+		}
+	</pre>
+		
+	<p>
+		The CanvasComponent and WordSelect component override the formAllValuesSet method. 
+		These components may need to process multiple input items (canvas markers in the 
+		case of the Canvas component and checkboxes (selected words) in the case of the 
+		WordSelect component) and this can be done in the formAllValuesSet method.
+	</p>
+		
+	<p>
+		 In the Canvas component case the data for each marker is fetched and the 
+		x and y position of each of the markers on the canvas is stored in turn.
+	</p>
+		
+	<pre class="codesample">
+		@Override
+		protected void formAllValuesSet(ActionParams ap) throws OmException
+		{
+			if(!isEnabled()) return;
+	
+			// Get marker data
+			double dZoom=getQuestion().getZoom();
+			int i=0;
+			for(Marker m : lMarkers)
+			{
+				if(ap.hasParameter("canvasmarker_"+getID()+"_"+i+"x"))
+				{
+					try
+					{
+						m.iX=(int)(Integer.parseInt(
+							ap.getParameter("canvasmarker_"+getID()+"_"+i+"x")) / dZoom);
+						m.iY=(int)(Integer.parseInt(
+							ap.getParameter("canvasmarker_"+getID()+"_"+i+"y")) / dZoom);
+					}
+					catch(NumberFormatException nfe)
+					{
+						throw new OmException("Unexpected canvas marker value");
+					}
+				}
+				i++;
+			}
+		}
+
+	</pre>
 
 <h2>An interface for quesion authors</h2>
 
