@@ -210,6 +210,91 @@
 		A div element is created, it is given a class attribute called gap and is added to the XHTML.
 	</p>
 		
+	<p>
+		The above code is a fairly simple example of a component producing an html output. 
+		Below are some code samples for adding id and name attributes and for adding resources. 
+	</p>
+		
+	<p>
+		 When a question is built Openmark builds a Tree of QComponents 
+		used for the question using om.stdquestion.QDocument. If you wish to create 
+		an id and/or name attributes for an instance of the component in the 
+		html then the properties within the component Tree should be used.
+	</p>
+		
+	<p>
+		Below is an example from the EditFieldComponent. 
+		In the  produceVisibleOutput method the following can be found.
+	</p>
+		
+	<pre class="codesample">
+		eInput.setAttribute("name",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
+		eInput.setAttribute("id",QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID());
+	</pre>
+		
+	<p>
+		The name and id attributes are being built from the values held in 
+		QDocument for the question and the id value for the instance of the 
+		component. If an id is not specified then Openmark will automatically 
+		generate a unique id.
+	</p>
+		
+	<p>If in the question.xml we have the following</p>
+		
+	<pre>&lt;editfield id="edit1" label=""/></pre>
+	
+	<p>then the html output will be</p>
+		
+	<pre>
+		&lt;input class="editfieldnonscary" <strong>id="omval_edit1" name="omval_edit1"</strong> size="20" type="text" value="" />
+	</pre>
+		
+	<p>
+		Resources can be added using the getQuestion.loadResource(String filepath) 
+		and qc.addResource(String sFilename,String sMimeType,byte[] abContent) methods.	
+	</p>
+		
+	<p>
+		The example below is from the ImageComponent	
+	</p>
+		
+	<pre class="codesample">
+		/** loads image data from file if not yet loaded */
+			if (sFilePath == null || !sFilePath.equals(getString(PROPERTY_FILEPATH)))
+			{
+				sFilePath=getString(PROPERTY_FILEPATH);
+
+				//get image mime type
+				String sFL = sFilePath.toLowerCase();
+				if (sFL.endsWith(".jpg")) sMimeType = "image/jpeg";
+				else if(sFL.endsWith(".gif")) sMimeType = "image/gif";
+				else if(sFL.endsWith(".png")) sMimeType = "image/png";
+				else if (sFL.endsWith(".jpeg")) sMimeType = "image/jpeg";
+				else if(sFL.endsWith(".jpe")) sMimeType = "image/jpeg";
+				else throw new OmException("Invalid image file type: "+sFilePath);
+
+				try
+				{
+					imageData = getQuestion().loadResource(sFilePath);
+					findImageSize();
+				}
+				catch (IOException e)
+				{
+					throw new OmException("Image file not found: "+sFilePath,e);
+				}
+				if(!sAddedResources.contains(sFilePath))
+				{
+					sAddedResources.add(sFilePath);
+					qc.addResource(sFilePath,sMimeType,imageData);
+				}
+			}
+	</pre>
+		
+	<p>
+		Similar code can be found in produceVisibleOutput(..) for the AudioComponent 
+		and FlashComponent where .mp3 and .swf files are loaded.
+	</p>
+		
 
 <h2>3. Recieving the student's response</h2>
 
@@ -361,11 +446,19 @@
 		if(isEnabled()) qc.informFocusable(eInput.getAttribute("id"),bPlain);
 	</pre>
 		
+	<p>
+		The above example is taken from the Radiobox component, though you will find 
+		similar code in many of the other components.
+	</p>
+		
 	<p><strong>Colours</strong></p>
 		
 	<p>
-		Time has been spent ensuring that any colours used are as user friendly as possible. 
-		These are defined in QComponent,  <code>om.stdquestion.QComponent</code>. 
+		Time has been spent ensuring that any colours used are as accessible as possible. 
+		Consideration has been given to users who are colour blind, suffer from 
+		dyslexia or require high contrast. Therefore, Openmark has a number of colour options 
+		and predefined colours. 
+		A number of colours are defined in QComponent,  <code>om.stdquestion.QComponent</code>. 
 		Where possible developers should use these predefined colours. If used in the 
 		components .css file then the colours will be automatically adjusted as users move 
 		through the different colour options.
@@ -393,7 +486,7 @@
 		the wordselect component uses both single and double underlines.
 	</p>
 		
-	<h2>The Hello world program</h2>
+	<h2>The Hello world component</h2>
 		
 	<p><strong>In the openmark_public java project go to <code>src.om.stdcomponent</code></strong></p>
 		
@@ -403,7 +496,7 @@
 	
 	<p>3. Open <code>ComponentRegistry.java</code> and add HelloComponent.class to the array of classes</p>
 		
-	<p><strong>open  HelloComponent.java</strong></p>
+	<p><strong>Open  HelloComponent.java</strong></p>
 		
 	<p>4. change public class GapComponent extends QComponent to public class HelloComponent extends QComponent</p>
 		
@@ -441,7 +534,7 @@
 		}
 	</pre>
 		
-	<p><strong>open HelloComponent.css</strong></p>
+	<p><strong>Open HelloComponent.css</strong></p>
 		
 	<p>8. Add some styles by deleting .om . gap and adding .om .hello</p>
 		
@@ -457,21 +550,15 @@
 		
 	<p>9. Run the ant build on openmark_ou project to build your new component into Openmark.</p>
 		
-	<p><strong>test the component by using it in a question.</strong></p>
+	<p><strong>Test the component by using it in a question.</strong></p>
 		
-	<p>10. Create a test question, or use an existing one, in 
-		the openmark_ou project in the testquestions folder.</p>
+	<p>10. Create a test question, or use an existing one.</p>
 		
 	<p>11. To the question.xml add the hello tag i.e. &lt;hello/> in an appropriate place</p>
 		
 	<p>12. In the question development environment build your question.</p>
-	
-	<p><i>
-		N.B make sure you use the correct paths to the openmark_ou project and not the omqstns project.
-		i.e. Source tree = C:\Documents and Settings\xyzz\workspace\openmark_ou\testquestions
-	</i></p>
 		
-	<p><strong>the result should look something like this</strong></p>
+	<p><strong>The result should look something like this</strong></p>
 		
 	<p><img src="hworld.png" alt="Output of hello world component" /></p>
 
