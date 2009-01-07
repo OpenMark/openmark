@@ -100,7 +100,7 @@ requests for this file, so your database password should be safe.
 
 	<!-- Additional report plugins that are available. -->
 	<extrareports>
-		<report>std.TestReport</report>
+		<!-- <report>std.MyCustomReport</report> -->
 	</extrareports>
 
 	<!-- If you want debug information in logs, remove some of these comments. -->
