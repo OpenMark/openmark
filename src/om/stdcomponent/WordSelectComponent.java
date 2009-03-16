@@ -506,13 +506,14 @@ public class WordSelectComponent extends QComponent
 	}
 	
 	/**
-	 * Highlights all the correctly selected words contained within an sw tag
-	 * of the given id with a grey background(full colour mode) 
+	 * Highlights all the correctly selected words contained within 
+	 * all the sw tags with a grey background(full colour mode) 
 	 * and a dotted underline. Can be used in conjuction with 
 	 * secondHilightSWWords, where it takes precedence and with 
 	 * clearSelection. Note, if used with clearSelection 
 	 * then highlightCorrectSWWords MUST be called first.
 	 * Intended for use with final feedback.
+	 * @param swId the id of the block of words to clear.
 	 */
 	public void highlightCorrectSWWords() {
 		
@@ -525,14 +526,13 @@ public class WordSelectComponent extends QComponent
 	}
 	
 	/**
-	 * Highlights all the correctly selected words contained within 
-	 * all the sw tags with a grey background(full colour mode) 
+	 * Highlights all the correctly selected words contained within an sw tag
+	 * of the given id with a grey background(full colour mode) 
 	 * and a dotted underline. Can be used in conjuction with 
 	 * secondHilightSWWords, where it takes precedence and with 
 	 * clearSelection. Note, if used with clearSelection 
 	 * then highlightCorrectSWWords MUST be called first.
 	 * Intended for use with final feedback.
-	 * @param swId the id of the block of words to clear.
 	 */
 	public void highlightCorrectSWWords(String swId) {
 		WordBlock wb = wordsById.get(swId);
