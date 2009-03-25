@@ -22,7 +22,7 @@ import om.helper.SimpleQuestion1;
 
 public class Oceanfloor extends SimpleQuestion1
 {
-  private static String[] order= {"a6", "a7", "a0", "a2", "a5", "a3", "a4", "a1"}; // this will be altered below
+  private final static String[] order= {"a6", "a7", "a0", "a2", "a5", "a3", "a4", "a1"};
 
   protected void init() throws OmException
   {

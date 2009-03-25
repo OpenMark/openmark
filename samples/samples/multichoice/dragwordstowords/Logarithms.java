@@ -33,7 +33,7 @@ public class Logarithms extends SimpleQuestion1
 
   protected void init() throws OmException
   {
-    Random r = new Random();
+    Random r = getRandom();
     iVariant = r.nextInt(2);
     iVariant++;
     iVariant %= 2;

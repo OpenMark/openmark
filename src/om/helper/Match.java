@@ -22,6 +22,7 @@ import util.misc.Strings;
 /**
  * The <code>Match</code> class is used to test if a string satisfies a
  * set word pattern matching rules.
+ * 
  * <p>
  * Examples:<br>
  * <pre>
@@ -55,6 +56,7 @@ public class Match
    * Constructs a pattern matching object, and calls setPattern(pattern) .
    * @param pattern
    * @see #setPattern
+   * @deprecated As of 1.7.2 by PMatch march 2009
    */
   public Match(String pattern)
   {

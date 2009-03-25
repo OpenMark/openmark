@@ -100,11 +100,14 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 				{
 					int isFinished=rs.getInt(4);
 					int isAdmin=rs.getInt(5);
-
-					if (isAdmin != 1 && isFinished == 1)
+					//slw2 march 09
+					String pi = rs.getString(2);
+					boolean isDummy=pi.toLowerCase().startsWith("q");
+					//we dont do admins, and we dont do dummy students which start with a Q
+					//slw2 march 09
+					if (isAdmin != 1 && !isDummy && isFinished == 1) //need the test on pi just to be on safe side
 					{
 						// Complete attempt, so get score and send it.
-						String pi = rs.getString(2);
 						long randomSeed = rs.getLong(7);
 						int fixedVariant = rs.getInt(8);
 						int ti = rs.getInt(9);

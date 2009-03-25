@@ -54,9 +54,9 @@ public class q1 extends SimpleQuestion1
 	private static final String LETTERS_EE[] = {"2", "3", "1", "2", "3"};
 	private static final String LETTERS_G[] = {"c_2", "c_3", "c_1", "c_2", "c_3"};
 
-	private static String equation;
-	private static String cStr;
-	private static String e2Str;
+	private String equation;
+	private String cStr;
+	private String e2Str;
 
 	/** Selected question */
 	private int iVariant;

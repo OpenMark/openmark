@@ -23,7 +23,7 @@ import om.helper.SimpleQuestion1;
 /** Example of JME usage */
 public class jmeQuestion extends SimpleQuestion1
 {
-	private static String sSmiles;
+	private String sSmiles;
 
 	protected void init() throws OmException
 	{
