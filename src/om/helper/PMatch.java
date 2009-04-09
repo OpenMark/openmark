@@ -402,8 +402,6 @@ public class PMatch
 			rsp2 = rsp;
 		} while (rsp1 != rsp2);
 			
-//System.out.println(rsp);		
-		
 		// start by breaking the response into sentences
 		// before this can be done we need to differentiate
 		// full stops at the end of sentences from
@@ -425,12 +423,10 @@ public class PMatch
 		do {
 	    	if (Pattern.matches(".*([a-zA-Z]\uBAD0 [a-zA-Z]).*", rsp)) {
 	    		rsp1 = rsp;
-//	    		System.out.println("truee");		
 	    		p = Pattern.compile("[a-zA-Z]\uBAD0 [a-zA-Z]");
 	    		m = p.matcher(rsp);
 	    		m.find();
 	    		rsp = rsp1.substring(0,m.start()+1) + "\uBAD1" + rsp1.substring(m.start()+3);
-//	    		System.out.println(rsp);
 	    	}
 	    } while (Pattern.matches(".*([a-zA-Z]\uBAD0 [a-zA-Z]).*", rsp));
 
@@ -438,12 +434,10 @@ public class PMatch
 		do {
 	    	if (Pattern.matches(".*([a-zA-Z]\uBAD0[a-zA-Z]).*", rsp)) {
 	    		rsp1 = rsp;
-	    		System.out.println("truee");		
 	    		p = Pattern.compile("[a-zA-Z]\uBAD0[a-zA-Z]");
 	    		m = p.matcher(rsp);
 	    		m.find();
 	    		rsp = rsp1.substring(0,m.start()+1) + "\uBAD1" + rsp1.substring(m.start()+2);
-	    		System.out.println(rsp);
 	    	}
 	    } while (Pattern.matches(".*([a-zA-Z]\uBAD0[a-zA-Z]).*", rsp));
 		
@@ -451,12 +445,10 @@ public class PMatch
 		do {
 	    	if (Pattern.matches(".*([a-zA-Z] \uBAD0[a-zA-Z]).*", rsp)) {
 	    		rsp1 = rsp;
-	    		System.out.println("truee");		
 	    		p = Pattern.compile("[a-zA-Z] \uBAD0[a-zA-Z]");
 	    		m = p.matcher(rsp);
 	    		m.find();
 	    		rsp = rsp1.substring(0,m.start()+1) + "\uBAD1" + rsp1.substring(m.start()+3);
-	    		System.out.println(rsp);
 	    	}
 	    } while (Pattern.matches(".*([a-zA-Z] \uBAD0[a-zA-Z]).*", rsp));
 
@@ -466,7 +458,6 @@ public class PMatch
 		// now break into sentences on the char set above
 		sentences = breakIntoTokens(rsp, '\uBAD1');
 
-//		System.out.println("rsp length" + rsp.length() + " sentences length " + sentences.length);
 		// and put back any remaining full stops - hopefully as decimal points
 		if (rsp.length() > 0) { 
 			if (sentences.length > 0) {
@@ -475,18 +466,13 @@ public class PMatch
 				}
 			}
 		}
-//		for (i = 0; i < sentences.length; ++i) {
-//			System.out.println("#" + i + ":" + sentences[i] + ":");
-//		}
 		
-//		System.out.println(sentences.length);
 		setResponseWords(0);
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
 	private void setResponseWords(int whichSentence) {
 		
-//		System.out.println(sentences[whichSentence]);
 		words = breakIntoTokens(sentences[whichSentence], ' ');
 	}
 	////////////////////////////////////////////////////////////////////////////////
@@ -505,15 +491,6 @@ public class PMatch
 	private boolean matchWordEx(String word, String chars) {
 		String parts[] = breakIntoTokens(chars, '|');
 		
-//!! unnecessary if final character of word is a full stop and the penultimate character
-// is not a digit, remove it
-//		if ((word.charAt(word.length()-1) == '.')
-//			&& Character.isLetter(word.length()-2)) {
-//			word = word.substring(0, word.length()-1);
-//			System.out.println(word);
-//		}
-//		System.out.println(word);
-
 		for (int i = 0; i < parts.length; i++) {
 			String pattern = substituteWildCards(parts[i]);
 			if (matchWord(word, pattern)) return true;
@@ -568,7 +545,7 @@ public class PMatch
 		if (chars.charAt(0) == ampersand.charAt(0)) return index; // "&&" is the same as "&"
     
 		int endMatch = chars.indexOf(ampersand.charAt(0));
-		if (endMatch != -1) chars = chars.substring(0, endMatch);
+		if (endMatch != -1) chars = chars.substring(0, endMatch+1);
     
 		for (int i = index; i < word.length(); i++) {
 			if (matchWord(word.substring(i), chars)) return i;
@@ -580,13 +557,14 @@ public class PMatch
 	 * Encodes special matching options characters of '#', '&', '|' and '_' as
 	 * "unlikely" unicode characters (from Korean character set).
 	 * (also de-escapes any escaped wildcard characters).
-	 * This code reliess on these unicode characters not being present in the
+	 * This code relies on these unicode characters not being present in the
 	 * the pattern string; a pretty safe assumption because the typical usage
 	 * will only use characters in the ASCII range i.e. 0x00 to 0x7F
 	 */
 	private static final String tempC = "\uBAD1";	// Hangul syllable
 	private static final String hash = "\uBAD2";	// Hangul syllable
 	private static final String ampersand = "\uBAD3";	// Hangul syllable
+//	private static final String ampersand = ")";	// Hangul syllable
 	private static final String verticalBar = "\uBAD4";	// Hangul syllable
 	private static final String underscore = "\uBAD5";	// Hangul syllable
 	
@@ -616,7 +594,7 @@ public class PMatch
 	 * extremely unlikely unicode character, then reverting these characters
 	 * in the tokenized strings.
 	 */
-	static private String[] breakIntoTokens(String text, char delimiter) {
+	private String[] breakIntoTokens(String text, char delimiter) {
     
 		String sDelimiter = "" + delimiter;
 		if (delimiter == '|') sDelimiter = "\\|"; // needs escaping for regex
@@ -862,7 +840,7 @@ public class PMatch
 	 * secondMismatch allows for a second spelling mistake in words of more than 8 characters
 	 */
 
-	public boolean secondMismatch(int wordPtr, String currentSubPattern, int start, int currentWordLength) {
+	private boolean secondMismatch(int wordPtr, String currentSubPattern, int start, int currentWordLength) {
 		boolean	lmatched = false;
 		int	id;
 		StringBuilder lSb= new StringBuilder(100);
@@ -879,7 +857,6 @@ public class PMatch
 					&& (lSb.charAt(id) != ampersand.charAt(0))) {
 					lSb.deleteCharAt(id);
 					lSb.insert(id, hash.charAt(0));
-//System.out.println("second extra replace:" + lSb);				
 					lmatched = matchWordEx(words[wordPtr], lSb.toString());
 		  
 					if (lmatched) {
@@ -895,7 +872,6 @@ public class PMatch
 				lSb.replace(0, currentWordLength + 1, currentSubPattern);
 				
 				lSb.insert(id, hash.charAt(0));
-//System.out.println("second extra character:" + lSb);				
 
 				lmatched = matchWordEx(words[wordPtr], lSb.toString());
 			
@@ -912,7 +888,6 @@ public class PMatch
 				if ((lSb.charAt(id) != hash.charAt(0))
 				&& (lSb.charAt(id) != ampersand.charAt(0))) {
 					lSb.deleteCharAt(id);
-//System.out.println("second character fewer:" + lSb);				
 				
 					lmatched = matchWordEx(words[wordPtr], lSb.toString());
 	  
@@ -958,7 +933,6 @@ public class PMatch
 			// check remaining sentences
 			for (sentencePtr = 0; sentencePtr < sentences.length; sentencePtr++) {
 				setResponseWords(sentencePtr);
-				//System.out.println("length:" + sentences.length + "pointer:" + sentencePtr);
 				if (matchSentence()) return(true);
 			}
 			return(false);

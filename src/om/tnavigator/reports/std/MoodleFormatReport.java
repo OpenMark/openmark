@@ -17,6 +17,7 @@ import om.tnavigator.*;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.reports.*;
 import om.tnavigator.scores.CombinedScore;
+import om.tnavigator.scores.AttemptForPI;
 
 /**
  * This report exports test scores in the format expected by the Moodle &gt;=1.9 gradebook.
@@ -71,7 +72,33 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 			batchid = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 			title = testId + " results for export to Moodle";
 		}
+		
+	private void outputScoresForPI(AttemptForPI bestAttempt,TabularReportWriter reportWriter)
+		{
 
+		
+		String assignmentid=bestAttempt.getassignmentid();
+		CombinedScore score=bestAttempt.getScore();
+		String pi=bestAttempt.getPI();
+		try
+		{
+			// Output a row of the report for each axis.
+			for (String axis : score.getAxes()) {
+				Map<String, String> row = new HashMap<String, String>();
+				if (axis != null)
+				{
+					assignmentid = bestAttempt.getassignmentid() + "." + axis;
+				}
+				row.put("student", pi);
+				row.put("assignment", assignmentid);
+				row.put("score", score.getScore(axis) + "");
+				reportWriter.printRow(row);
+			}	
+		} catch (Exception e) {
+			throw new OmUnexpectedException("Error outputting report.", e);
+		}
+		
+		}
 		/* (non-Javadoc)
 		 * @see om.tnavigator.reports.TabularReportBase#generateReport(om.tnavigator.reports.TabularReportWriter)
 		 */
@@ -94,56 +121,93 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 				// * Within categories (finished/unfinished), sorting by PI
 				// I achieve this by setting the sort order and dropping all but the first
 				// result for each PI.
-				Set<String> pisDone = new HashSet<String>();
-				ResultSet rs = ns.getOmQueries().queryTestAttempters(dat, testId);
+				ResultSet rs = ns.getOmQueries().queryTestAttemptersByPIandFinishedASC(dat, testId);
+				//create empty lists
+				boolean startflag=true;
+				String lastpi="";
+				int isAdmin=0;
+				AttemptForPI BestAttempt = new AttemptForPI("",0,null,"",false);
+
 				while(rs.next())
 				{
-					int isFinished=rs.getInt(4);
-					int isAdmin=rs.getInt(5);
-					//slw2 march 09
+					isAdmin=rs.getInt(5);
 					String pi = rs.getString(2);
 					boolean isDummy=pi.toLowerCase().startsWith("q");
+
+					//ns.getLog().logDebug("*************** pi " + pi);
 					//we dont do admins, and we dont do dummy students which start with a Q
-					//slw2 march 09
-					if (isAdmin != 1 && !isDummy && isFinished == 1) //need the test on pi just to be on safe side
+					if (isAdmin != 1 && pi != "" && !isDummy) //need the test on pi just to be on safe side
 					{
-						// Complete attempt, so get score and send it.
+						
+						//first we deal with the previous student and output it if necesary
+						if (!pi.equals(lastpi) && !(startflag) && !pi.equals(""))
+						{
+							// ok, we need to process and output last student if they finished
+							// startflag is there so we dont process the first student yet
+			
+							if(BestAttempt.gethasFinished())
+							{
+									outputScoresForPI(BestAttempt,reportWriter);	
+									ns.getLog().logDebug("Output score for  " +BestAttempt.getPI() +
+											" score " + BestAttempt.gettestScore() );
+							}
+							//reset BestAttempt
+							BestAttempt = new AttemptForPI("",0,null,"",false);
+
+						}
+						//we checked wether to output this one, so reset the startflag 
+					    startflag=false;
+						
+						// now we get on with checking this student
+						int ti = rs.getInt(9);
+						int isFinished=rs.getInt(4);
 						long randomSeed = rs.getLong(7);
 						int fixedVariant = rs.getInt(8);
-						int ti = rs.getInt(9);
-						if (pisDone.contains(pi))
-						{
-							// We have already processed a more recent attempt by this user.
-							continue;
-						}
-
-						ns.getLog().logDebug("Adding results for " + pi +
-								" to the moodle report. (ti = " + ti + ")");
+						
+						//not an admin so go with it
+						//is this pi the same as the last? if it isnt we need to process it
+						//ns.getLog().logDebug("pi *" + pi +
+						//		"* lastpi *" + lastpi + "* ti " + ti );
 
 						// Create TestRealisation
 						TestRealisation testRealisation = TestRealisation.realiseTest(
-								def, randomSeed, fixedVariant, testId, ti
-						);
-
+								def, randomSeed, fixedVariant, testId, ti);	
 						// Use it to get the score.
+						String assignmentid = testRealisation.getTestId();
+						
 						CombinedScore score = testRealisation.getScore(new NavigatorServlet.RequestTimings(), ns, ns.getDatabaseAccess(), ns.getOmQueries());
-
-						// Output a row of the report for each axis.
-						for (String axis : score.getAxes()) {
-							Map<String, String> row = new HashMap<String, String>();
-							String assignmentid = testRealisation.getTestId();
-							if (axis != null)
-							{
-								assignmentid += "." + axis;
+						//set up out test attempt ready for the list
+						// despite the comments in the getscore declaration., using null causes a java exception
+						// so we use the get axis ordered and pick of the first one.
+						
+						String defaultAxis=null;
+						for (String axis : score.getAxesOrdered()) {
+							//  get the score for the first one, which is the default
+							ns.getLog().logDebug("axis " + axis );
+							defaultAxis=axis;
+							break;
 							}
-							row.put("student", pi);
-							row.put("assignment", assignmentid);
-							row.put("score", score.getScore(axis) + "");
-							reportWriter.printRow(row);
-						}
-						pisDone.add(pi);
+
+						double thisscore=score.getScore(defaultAxis);					
+						ns.getLog().logDebug("this attempt " + pi +
+								" score " + thisscore );	
+						//set values for the current attempt then compare with th best attempt so far
+						AttemptForPI ThisAttempt = new AttemptForPI(pi,thisscore,score,assignmentid,isFinished==1);
+		
+						BestAttempt.SetIfGreater(ThisAttempt);
+						lastpi=pi;
 					}
 				}
+				// now output the last student as long as they aren't an admin
+				if (BestAttempt.gethasFinished())
+				{	
+					outputScoresForPI(BestAttempt,reportWriter);
+					ns.getLog().logDebug("Output score for  " +BestAttempt.getPI() +
+							" score " + BestAttempt.gettestScore() );
+				}
+
+				//
+				
 			} catch (Exception e) {
 				throw new OmUnexpectedException("Error generating report.", e);
 			}

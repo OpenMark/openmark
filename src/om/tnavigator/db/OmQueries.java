@@ -272,6 +272,23 @@ public abstract class OmQueries
 			"WHERE deploy="+Strings.sqlQuote(testID)+" " +
 			"ORDER BY finished DESC,pi,clock DESC");
 	}
+	
+	/**
+	 * Get a list of all the people who have attempted a particular test, ordered by PI
+	 * @param dat the transaction within which the query should be executed.
+	 * @param testID the deploy file ID.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
+	public ResultSet queryTestAttemptersByPIandFinishedASC(DatabaseAccess.Transaction dat,String testID)
+	  throws SQLException
+	{
+		return dat.query(
+			"SELECT oucu,pi,clock,finished,admin,finishedclock,rseed,variant,ti " +
+			"FROM " + getPrefix() + "tests t " +
+			"WHERE deploy="+Strings.sqlQuote(testID)+" " +
+			"ORDER BY pi,finished DESC,clock ASC");
+	}
 
 	/**
 	 * Get a list of all the questions attempts for all questions in a test.
