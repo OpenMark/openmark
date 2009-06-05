@@ -40,6 +40,12 @@
 		-->
 	<property name="xerceshome" value=""/>
 	
+	<!-- 
+		Set location for JEuclid jars, required for MathML component. These jars should
+		come from jeuclid-minimal-3.1.5\repo.
+		-->	
+	<property name="jeuclidhome" value=""/>
+	
 
 	<!-- 
 		2. Other locations
@@ -132,6 +138,9 @@
 				</fileset>
 				<fileset dir="${jafhome}">
 					<include name="activation.jar"/>
+				</fileset>
+				<fileset dir="${jeuclidhome}">
+					<include name="*.jar"/>
 				</fileset>
 				<fileset dir="${javamailhome}">
 					<include name="mail.jar"/>
@@ -260,6 +269,9 @@
 			<fileset dir="${axishome}/lib">
 				<include name="*.jar"/>
 			</fileset>
+			<fileset dir="${jeuclidhome}">
+				<include name="*.jar"/>
+			</fileset>
 		</copy>
 		<jar jarfile="${build}/webapps/om-qe.war" basedir="${build}/webapps/om-qe"/>
 	</target>
@@ -296,6 +308,9 @@
 	<target name="tnavigator" depends="tnavigator-base">
 		<copy todir="${build}/webapps/om-tn/WEB-INF/lib">
 			<fileset dir="${axishome}/lib">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${jeuclidhome}">
 				<include name="*.jar"/>
 			</fileset>
 			<fileset dir="${jafhome}">
@@ -422,6 +437,9 @@
 					<include name="servlet-api.jar"/>
 				</fileset>		
 				<fileset dir="${axishome}/lib">
+					<include name="*.jar"/>
+				</fileset>
+				<fileset dir="${jeuclidhome}">
 					<include name="*.jar"/>
 				</fileset>
 				<fileset dir="${jafhome}">

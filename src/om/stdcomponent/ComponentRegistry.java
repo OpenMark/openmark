@@ -50,12 +50,13 @@ public class ComponentRegistry
 		LayoutGridComponent.class,
 		LinkComponent.class,
 		ListComponent.class,
+		MathMLEquationComponent.class,
 		RadioBoxComponent.class,
 		RightComponent.class,
 		TableComponent.class,
 		TextComponent.class,
 		TextEquationComponent.class,
-		WordSelectComponent.class
+		WordSelectComponent.class		
 		// Do not include root component as it can't be created from a tag
 	};
 

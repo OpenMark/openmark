@@ -1,0 +1,10 @@
+.om .mequation
+{
+  display:inline;
+}
+.om .mequation img /* bit dodgy */
+{
+  border:0;
+  padding:0;
+  margin:0;
+}
