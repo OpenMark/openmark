@@ -1977,7 +1977,7 @@ public class NavigatorServlet extends HttpServlet
 	{
 		response.setHeader("Pragma","No-cache");
 		response.setHeader("Cache-Control","no-store");
-		response.setHeader("Expires","Thu, 01 Jan 1970 00:00:00 GMT");
+		response.setHeader("Expires","Thu, 01 Jan 1970 00:00:00 GMT");		
 	}
 
 	private void processFinalTags(RequestTimings rt,UserSession us,Element eParent,Element eTarget, CombinedScore ps,
@@ -3244,13 +3244,24 @@ public class NavigatorServlet extends HttpServlet
 
 		response.setContentType("text/css");
 		response.setCharacterEncoding("UTF-8");
-		response.setHeader("Cache-Control","max-age="+RESOURCEEXPIRETIME);
+		stopBrowserCaching(response);
 		response.getWriter().write(sCSS);
 		response.getWriter().close();
+	}	
+	
+	/**
+	 * Set the http headers to stop browsers caching the resources. 
+	 * This fixes the random questions problems which occur on the second run; 
+	 * Problems were due to cached javascript files, now new javascript files 
+	 * will be reloaded for new set of questions.
+	 * @param response the response to add headers
+	 */
+	private void stopBrowserCaching(HttpServletResponse response) {		
+		response.setHeader("Cache-Control", "must-revalidate");   
+		response.addHeader("Cache-Control", "no-cache");   
+		response.addHeader("Cache-Control", "no-store");   
+		response.setDateHeader("Expires", 0);
 	}
-
-	/** Resources expire after 1 hour */
-	private final static long RESOURCEEXPIRETIME=60*60;
 
 	// Method is NOT synchronized on UserSession
 	private void handleResource(String sResource,UserSession us,HttpServletRequest request,HttpServletResponse response)
@@ -3269,7 +3280,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 		response.setContentType(r.getMimeType());
 		response.setContentLength(r.getContent().length);
-		response.setHeader("Cache-Control","max-age="+RESOURCEEXPIRETIME);
+		stopBrowserCaching(response);
 		if(r.getEncoding()!=null)
 			response.setCharacterEncoding(r.getEncoding());
 		response.getOutputStream().write(r.getContent());
