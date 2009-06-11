@@ -47,8 +47,8 @@ public class Text extends Item
 
 	/** True if this text block is first in its parent */
 	private boolean bFirst;
-
-	private Map<Integer, Font> fonts = new HashMap<Integer, Font>(3);
+	
+	private Map<Integer, Font> fonts = new HashMap<Integer, Font>(5);
 
 	/**
 	 * @return Original text of input (used for handling parameters in software
@@ -57,7 +57,7 @@ public class Text extends Item
 	public String getOriginalText()
 	{
 		return sOriginalText;
-	}
+	}	
 
 	private static class Run
 	{
@@ -68,6 +68,8 @@ public class Text extends Item
 			iStyle = style;
 		}
 	}
+	
+	
 
 	@Override
 	public void render(Graphics2D g2,int iX,int iY)
@@ -293,6 +295,18 @@ public class Text extends Item
 		else
 			return true;
 	}
+	
+	//Returns true if any one of parent items is Bold.
+	private boolean isTextBold() {
+		Item parent = getParent();
+		while (parent != null) {
+			if(parent instanceof Bold) {
+				return true;
+			}
+			parent = parent.getParent();
+		}		
+		return false;
+	}
 
 	private static boolean isSpecialChar(char c, Font f)
 	{
@@ -320,7 +334,15 @@ public class Text extends Item
 		int currentStyle = -1;
 		for (int pos = 0; pos < sText.length(); pos++) {
 			char c = sText.charAt(pos);
-			int style = styleForChar(c, f);
+			int style = styleForChar(c, f);	
+			//Change the style to Bold if isTextBold() returns true.
+			if (isTextBold() && style != THIS_IS_A_ZED) {
+				if (style == SPECIAL_CHAR_FONT) {
+					style = SPECIAL_CHAR_BOLD_FONT;
+				} else {
+					style = Font.BOLD;
+				}
+			}
 			if (style == currentStyle) {
 				// Style stays the same, just add to the current run.
 				currentRun.append(c);
@@ -336,7 +358,11 @@ public class Text extends Item
 				// Now process the new character.
 				if (style == THIS_IS_A_ZED) {
 					// Special case. Each z goes in a run on its own.
-					lRuns.add(new Run("z", Font.ITALIC));
+					if (isTextBold()) {
+						lRuns.add(new Run("z", Font.BOLD));
+					} else {
+						lRuns.add(new Run("z", Font.ITALIC));
+					}
 					currentStyle = -1;
 				} else {
 					// Start a new run of the specified style.
@@ -352,8 +378,10 @@ public class Text extends Item
 
 	private void createFonts() {
 		fonts.put(Font.PLAIN, getFont(Font.PLAIN));
+		fonts.put(Font.BOLD, getFont(Font.BOLD));
 		fonts.put(Font.ITALIC, getFont(Font.ITALIC));
-		fonts.put(SPECIAL_CHAR_FONT, getSpecialCharacterFont());
+		fonts.put(SPECIAL_CHAR_FONT, getSpecialCharacterFont(Font.PLAIN));
+		fonts.put(SPECIAL_CHAR_BOLD_FONT, getSpecialCharacterFont(Font.BOLD));
 	}
 
 	@Override
@@ -427,4 +455,5 @@ public class Text extends Item
 		f.addItemClass("int_text",new ItemCreator()
 			{	public Item newItem()	 {	return new Text();	}	});
 	}
+	
 }

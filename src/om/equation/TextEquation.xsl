@@ -34,6 +34,9 @@
 	
 	<xsl:variable name="FIRST" select="substring($TEXT,1,1)"/>
 	<xsl:choose>
+		<xsl:when test="ancestor::bold">
+			<b><xsl:value-of select="$FIRST"/></b>
+		</xsl:when>	
 		<xsl:when test="contains($LETTERS,$FIRST) and $ITALIC='y'">
 			<i><xsl:value-of select="$FIRST"/></i>
 		</xsl:when>	

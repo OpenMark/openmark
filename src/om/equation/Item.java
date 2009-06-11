@@ -30,6 +30,10 @@ abstract class Item
 {
 	/** Constant used instead of Font.PLAIN or Font.ITALIC, to indicate characters that need to be drawn in the special characters font. */
 	protected final static int SPECIAL_CHAR_FONT = 0x1000000; // Hopefully this will never be used by any Font.XXX constant.
+	
+	protected final static int SPECIAL_CHAR_BOLD_FONT = 0x3000000;
+	
+	protected final static String SPECIAL_CHAR_FONTFAMILY = "Lucida Sans Unicode";
 
 	/** Parent item */
 	private Item iParent;
@@ -364,16 +368,21 @@ abstract class Item
 	 */
 	public final Font getFont(int iStyle)
 	{
-		if (iStyle == SPECIAL_CHAR_FONT) return getSpecialCharacterFont();
-		return new Font(getFontFamily(),iStyle,getZoomed(convertTextSize(getTextSize())));
+		if (iStyle == SPECIAL_CHAR_FONT) {
+			return getSpecialCharacterFont(Font.PLAIN);
+		} else if (iStyle == SPECIAL_CHAR_BOLD_FONT) {
+			return getSpecialCharacterFont(Font.BOLD);
+		} else {
+			return new Font(getFontFamily(),iStyle,getZoomed(convertTextSize(getTextSize())));
+		}
 	}
 
 	/**
 	 * @return Font used for special characters (those not in the font that was asked for). 
 	 */
-	public final Font getSpecialCharacterFont()
+	public final Font getSpecialCharacterFont(int style)
 	{
-		return new Font("Lucida Sans Unicode", Font.PLAIN, getZoomed(convertTextSize(getTextSize())));
+		return new Font(SPECIAL_CHAR_FONTFAMILY, style, getZoomed(convertTextSize(getTextSize())));
 	}
 
 	/**

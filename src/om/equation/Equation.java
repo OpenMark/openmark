@@ -112,6 +112,7 @@ public class Equation extends Line
 	private static ItemFactory ifDefault=new ItemFactory();
 	static
 	{
+		Bold.register(ifDefault);
 		Brackets.register(ifDefault);
 		Equation.register(ifDefault);
 		Fraction.register(ifDefault);
