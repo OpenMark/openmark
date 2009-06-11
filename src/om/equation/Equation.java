@@ -117,6 +117,7 @@ public class Equation extends Line
 		ContourIntegral.register(ifDefault);
 		Equation.register(ifDefault);
 		Fraction.register(ifDefault);
+		Hat.register(ifDefault);
 		Integral.register(ifDefault);
 		Line.register(ifDefault);
 		MBox.register(ifDefault);
