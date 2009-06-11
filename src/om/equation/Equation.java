@@ -114,6 +114,7 @@ public class Equation extends Line
 	{
 		Bold.register(ifDefault);
 		Brackets.register(ifDefault);
+		ContourIntegral.register(ifDefault);
 		Equation.register(ifDefault);
 		Fraction.register(ifDefault);
 		Integral.register(ifDefault);
