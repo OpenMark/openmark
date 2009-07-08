@@ -27,7 +27,8 @@ public class ComponentRegistry
 	{
 		// When adding extra standard components, put them here
 		AdvancedFieldComponent.class,
-		AudioComponent.class,
+		AppletComponent.class,
+		AudioComponent.class,		
 		BoxComponent.class,
 		BreakComponent.class,
 		ButtonComponent.class,

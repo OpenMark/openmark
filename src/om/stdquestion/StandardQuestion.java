@@ -594,6 +594,24 @@ public abstract class StandardQuestion implements Question
 			throw new OmDeveloperException("Component is not a <jme>: "+sID);
 		}
 	}
+	
+	/**
+	 * @param sID ID of Applet component
+	 * @return Component object
+	 * @throws OmDeveloperException If it doesn't exist or isn't correct type
+	 */
+	protected AppletComponent getApplet(String sID) throws OmDeveloperException
+	{
+		try
+		{
+			return (AppletComponent)getComponent(sID);
+		}
+		catch(ClassCastException cce)
+		{
+			throw new OmDeveloperException("Component is not a <applet>: "+sID);
+		}
+	}
+	
 	/**
 	 * @param sID ID of component
 	 * @return Component object
