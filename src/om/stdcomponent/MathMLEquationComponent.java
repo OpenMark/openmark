@@ -24,12 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sourceforge.jeuclid.MutableLayoutContext;
 import net.sourceforge.jeuclid.context.LayoutContextImpl;
 import net.sourceforge.jeuclid.context.Parameter;
 import net.sourceforge.jeuclid.converter.Converter;
+import net.sourceforge.jeuclid.parser.Parser;
 import om.OmDeveloperException;
 import om.OmException;
 import om.OmFormatException;
@@ -49,9 +49,30 @@ import util.xml.XML;
 /**
  * Represents equations described in MathML format. Uses JEuclid to render
  * equations as images. MathML player plugins are not required for the browsers
- * as the rendering is done on server side using JEuclid.
+ * as the rendering is done on server side using <a href="http://jeuclid.sourceforge.net/">JEuclid</a>.
+ * <p>
  * Writing MathML for complex equations can be tedious; TeX to MathML converters
  * or other known MathML authoring tools can be used to generate MathML. 
+ * </p>
+ * <h2>XML usage</h2>
+ * &lt;mequation&gt;
+ * 	&lt;![CDATA[
+ * 		&lt;math&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;/math&gt;
+	]]&gt;
+ * &lt;/mequation&gt;
+ * <p>
+ * Note: Font size, colour and other style changes can be made using style attributes in MathML,
+ * But, these style settings are strongly discouraged as they affect the accessibility of the question. 
+ * </p>
+ * <h2>Properties</h2>
+ * <table border="1">
+ * <tr><th>Property</th><th>Values</th><th>Effect</th></tr>
+ * <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
+ * <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
+ * <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates children</td></tr>
+ * <tr><td>lang</td><td>(string)</td><td>Specifies the language of the content, like the HTML lang attribute. For example 'en' = English, 'el' - Greek, ...</td></tr>
+ * <tr><td>alt</td><td>(string)</td><td>Alternative text for those who can't read the bitmap</td></tr>
+ * </table>
  */
 public class MathMLEquationComponent extends QComponent {
 
@@ -114,6 +135,13 @@ public class MathMLEquationComponent extends QComponent {
 
 		// Get the actual equation
 		String currentEq = getQuestion().applyPlaceholders(equation);
+		
+		// If DOCTYPE is not provided, set the default.
+		// This is required to process the MathML operators such as &PlusMinus;,&Integral; etc
+		if (currentEq.indexOf("DOCTYPE") == -1) {
+			currentEq = "<!DOCTYPE math PUBLIC \"-//W3C//DTD MathML 2.0//EN\" \"http://www.w3.org/TR/MathML2/dtd/mathml2.dtd\">"
+					+ currentEq;
+		}
 
 		if (plain) {
 			Element eDiv = qc.createElement("div");
@@ -138,6 +166,8 @@ public class MathMLEquationComponent extends QComponent {
 
 			List<String> serifFonts = new ArrayList<String>();
 			serifFonts.add(DEFAULT_FONT_FAMILY);
+			serifFonts.add("DejaVu Serif");
+			serifFonts.add("serif");
 
 			context.setParameter(Parameter.FONTS_SERIF, serifFonts);
 			context.setParameter(Parameter.MATHSIZE, Float
@@ -149,19 +179,18 @@ public class MathMLEquationComponent extends QComponent {
 			String sFilename = "meq" + (currentEq.hashCode() + cBackground.hashCode() * 3
 									 + cForeground.hashCode() * 7 
 									 + (new Double(dZoom)).hashCode() * 11) + ".png";
-
-			// get a new xml document builder factory to build an xml document
-			// for the mathml
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			
 			// the xml document to contain the mathml
 			Document document;
 			// the image to return
 			BufferedImage image;
-			try {
-				// init a new xml document
-				DocumentBuilder builder = factory.newDocumentBuilder();
+			try {				
+				// get JEuclid's MathML parser
+				Parser mathMLParser = Parser.getInstance();
+				// Retrieve a DocumentBuilder suitable for MathML parsing
+				DocumentBuilder builder = mathMLParser.getDocumentBuilder();
 				// parse the mathml
-				document = builder.parse(new InputSource(new StringReader(currentEq)));
+				document = builder.parse(new InputSource(new StringReader(currentEq)));	
 			} catch (Exception e) {
 				throw new OmFormatException("Invalid MathML (not well-formed)", e);
 			}
