@@ -23,16 +23,29 @@ import java.util.regex.Matcher;
 
 /**
  * <p>The OpenMark <code>PMatch</code> (pattern match) class is used to test
- * if a student response string satisfies a specified response match.</p>
+ * if a student response string matches a specified response pattern.</p>
  * 
  * <p>PMatch extends the older OpenMark Match routine
  * <ul>
  * <li>to allow misspellings of a single character or two characters for longer words</li>
- * <li>to support proximity of words</li>
- * <li>to define the containing unit as a sentence</li>
+ * <li>to support the proximity of words</li>
  * </ul>
  * </p>
- * 
+ *
+ * <p>Changes since OpenMark 1.7.2<br>
+ * <ul>
+ * <li>Experience has shown that the proximity function delivers much of
+ * what was achieved by splitting the response into sentences before matching.
+ * Consequently PMatch has been refined such that it now considers the whole
+ * response but the proximity function only applies to words in the same
+ * sentence.</li>
+ * <li>Word groups are now available in OR sequences.</li>
+ * <li>character transposition has been added to the misspellings that are catered for</li>
+ * <li>the misspellings rules ignore wildcards when calculating the length of the
+ * pattern to be matched.</li>
+ * </ul>
+ * </p>
+ * <p>Changes from Match()</p>
  * <p><b>Match users should beware</b> that:
  * <ul>
  * <li>In PMatch the response is set and then matched against multiple patterns
@@ -66,8 +79,8 @@ import java.util.regex.Matcher;
  * <p>The basic unit that PMatch operates on is the word, where a word is defined
  * as a sequence of characters between spaces.</p>
  * 
- * <p>The containing unit is the sentence. All words in the pattern must be in
- * the same sentence.</p>
+ * <p>The response is treated as a whole with the exception that words that
+ * are required to be in proximity must also be in the same sentence.</p>
  * 
  * <p>PMatch matches what it is given. Whether case does or does not matter is
  * left to the author to decide and to handle using normal Java methods. Typically
@@ -91,33 +104,41 @@ import java.util.regex.Matcher;
  * searched for are accepted.</td></tr>
  * <tr><td>misspelling: allowReplaceChar</td><td>mr</td><td>Will match a word
  * where one character is different to those specified in the pattern. The pattern
- * word must be 4 characters or greater for replacement to kick in. Authors are
+ * word must be 4 characters or greater, excluding wildcards, for replacement
+ * to kick in. Authors are
+ * expected to omit allowExtraChars when using this option.</td></tr>
+ * <tr><td>misspelling: allowTransposeTwoChars</td><td>mt</td><td>Will match a word
+ * where two characters are transposed. The pattern
+ * word must be 4 characters or greater, excluding wildcards, for transposition
+ * to kick in. Authors are
  * expected to omit allowExtraChars when using this option.</td></tr>
  * <tr><td>misspelling: allowExtraChar</td><td>mx</td><td>Will match a word where
  * one character is extra to those specified in the pattern. The pattern word must
- * be 3 characters or greater for extra to kick in. Authors are expected to omit
+ * be 3 characters or greater, excluding wildcards, for extra to kick in.
+ * Authors are expected to omit
  * allowExtraChars when using this option.</td></tr>
  * <tr><td>misspelling: allowFewerChar</td><td>mf</td><td>Will match a word where
  * one character is missing from those specified in the pattern. The pattern word
- * must be 4 characters or greater for fewer to kick in. Without this 'no' would
+ * must be 4 characters or greater, excluding wildcards, for fewer to kick in. Without this 'no' would
  * be reduced to just matching  'n' or 'o'. Authors are expected to omit
  * allowExtraChars when using this option.</td></tr>
- * <tr><td>misspelling</td><td>m</td><td>This combines the three ways of
- * misspelling a word described above i.e. m is equivalent to mxfr. Authors are
+ * <tr><td>misspelling</td><td>m</td><td>This combines the four ways of
+ * misspelling a word described above i.e. m is equivalent to mxfrt. Authors are
  * expected to omit allowExtraChars when using this option.</td></tr>
  * <tr><td>misspellings</td><td>m2</td><td>Allows two misspellings, as defined by
- * option 'm', in words of 8 characters or more. Authors are expected to omit
+ * option 'm', in pattern words of 8 characters or more, excluding wildcards. Authors are expected to omit
  * allowExtraChars when using this option.</td></tr>
- * <tr><td>allowProximityOf0</td><td>p0</td><td>No words are allowed in between
+ * <tr><td>allowProximityOf0</td><td>p0</td><td>No words, or full stops, are allowed in between
  * any words specified in the proximity sequence.</td></tr>
  * <tr><td>allowProximityOf1</td><td>p1</td><td>One word is allowed in between any
- * two words specified in the proximity sequence.</td></tr>
+ * two words specified in the proximity sequence. The words must not span sentences.</td></tr>
  * <tr><td>allowProximityOf2</td><td>p2</td><td>(Default value) Two words are
- * allowed in between any two words specified in the proximity sequence.</td></tr>
+ * allowed in between any two words specified in the proximity sequence. The words
+ * must not span sentences.</td></tr>
  * <tr><td>allowProximityOf3</td><td>p3</td><td>Three words are allowed in between
- * any two words specified in the proximity sequence.</td></tr>
+ * any two words specified in the proximity sequence. The words must not span sentences.</td></tr>
  * <tr><td>allowProximityOf4</td><td>p4</td><td>Four words are allowed in between
- * any two words specified in the proximity sequence.</td></tr>
+ * any two words specified in the proximity sequence. The words must not span sentences.</td></tr>
  * </table></p>
  * 
  * <p>Within a word 'special characters' provide more localised control of the
@@ -129,8 +150,16 @@ import java.util.regex.Matcher;
  * <tr><td>Word OR</td><td>|</td><td>| between words indicates that either word
  * will be matched. | delimits words and acts as the logical OR.</td></tr>
  * <tr><td>Proximity control</td><td>_</td><td>Words must be in the order given
- * and with no more than n (where n is 0 - 4) intervening words. _ delimits words
+ * and with no more than n (where n is 0 - 4) intervening words. All words under
+ * the proximity control must be in the same sentence. _ delimits words
  * and also acts as logical 'AND'. </td></tr>
+ * <tr><td>Word groups</td><td>[]</td><td>[] enables
+ * multiple words to be accepted as an alternative to other single words in
+ * OR lists.
+ * [] may not be nested. Single words may be OR'd inside [].
+ * Where a word group is preceded or followed by the
+ * proximity control the word group is governed by the
+ * proximity control rule that the words must be in the order given.</td></tr>
  * <tr><td>Single character wildcard</td><td>#</td><td>Matches any single
  * character.</td></tr>
  * <tr><td>Multiple character wildcard</td><td>&</td><td>Matches any sequence of
@@ -160,7 +189,10 @@ import java.util.regex.Matcher;
  * <tr><td>tom, harry and sid</td><td>mow</td><td>tom|dick harry|sid</td>
  * <td>true. The pattern requires either tom or dick AND harry or sid. Note that
  * 'tom,' is only allowed because m allows the extra character, the comma, in
- * tom.</td></tr>
+ * 'tom,'.</td></tr>
+ * <tr><td>tom was mesmerised by maud</td><td>mow</td><td>[tom maud]|[sid jane]</td>
+ * <td>true. The pattern requires either (tom and maud) or (sid and jane).
+ * </td></tr>
  * <tr><td>rick</td><td>empty</td><td>#ick</td><td>true. The first character can
  * be anything.</td></tr>
  * <tr><td>harold</td><td>empty</td><td>har&</td><td>true. Any sequence of
@@ -191,7 +223,7 @@ import java.util.regex.Matcher;
  * options of allowAnyChars, allowAnyWords, allowAnyOrder and the word OR feature
  * all date back to Leeds Author Language.</p>
  * 
- * <p>In 1976 the CALCHEM project which was a hosted by the Computer Based Learning
+ * <p>In 1976 the CALCHEM project which was hosted by the Computer Based Learning
  * Unit, the Chemistry Department at Leeds University and the Computer Centre of
  * Sheffield Polytechnic (now Sheffield Hallam University) produced a portable
  * version of Leeds Author Language.</p>
@@ -201,8 +233,8 @@ import java.util.regex.Matcher;
  * Imperial College. The single and multiple character wildcards were added at this
  * time.</p>
  * 
- * <p>The misspelling and proximity additions and the containing unit of the
- * sentence were added as part of the Open University COLMSCT projects looking at
+ * <p>The misspelling, proximity and Word groups in 'or' lists additions
+ * were added as part of the Open University COLMSCT projects looking at
  * free text response matching during 2006 - 2009.</p>
  * 
 */
@@ -210,20 +242,19 @@ public class PMatch
 {
 	/**
 	  * This field controls whether or not extra characters in a word are to be
-	  * permitted. For example, if the pattern is "abc" and this field is
-	  * set to a value of <code>true</code>, this will successfully match with strings
-	  * such as "abcde" or "abacab". If this field is set to a value of <code>false</code>
-	  * , only the string "abc" will match the pattern "abc".<p>
-	  * This field has a default value of <code>true</code>.
+	  * permitted. For example, if the pattern is "abc" and this field is set to
+	  * a value of <code>true</code>, this will successfully match with strings
+	  * such as "abcde" or "abacab". If this field is set to a value of
+	  * <code>false</code>, only the string "abc" will match the pattern "abc".
 	  */
 	private boolean allowExtraChars = true;
 
 	/**
-	  * This field controls whether or not words in the match string must appear in
-	  * the same order as the words in the pattern. For example, if the pattern
-	  * is "Mary had a little lamb" and this field is set to a value of <code>true</code>,
-	  * this will successfully match with strings such as "Mary lamb had a little".<p>
-	  * This field has a default value of <code>true</code>.
+	  * This field controls whether or not words in the match string must appear
+	  * in the same order as the words in the pattern. For example, if the
+	  * pattern is "Mary had a little lamb" and this field is set to a value of
+	  * <code>true</code>, this will successfully match with strings such as
+	  * "a little lamb had Mary".
 	  */
 	private boolean allowAnyWordOrder = true;
 
@@ -232,8 +263,7 @@ public class PMatch
 	  * are permitted in the match string. For example, if the pattern
 	  * is "banana" and this field is set to a value of <code>true</code>,
 	  * this will successfully match with strings such as "Eat a banana today".
-	  * <p>
-	  * This field has a default value of <code>true</code>.
+	  * 
 	  */
 	private boolean allowExtraWords = true;
 
@@ -241,6 +271,7 @@ public class PMatch
 	  * allowReplaceChar
 	  * allowExtraChar
 	  * allowFewerChar
+	  * allowTransposeTwoChars
 	  * These fields enable minor typing/spelling mistakes to be accounted for.
 	  *    - if allowReplaceChar is true then one character in the word may be
 	  *      incorrect and the match will still succeed 
@@ -248,19 +279,21 @@ public class PMatch
 	  *      can be present and the match will still succeed 
 	  *    - if allowFewerChar is true then a single character from the word may
 	  *      be missing and the match will still succeed 
+	  *    - if allowTransposeTwoChars is true then a two neighbouring characters
+	  *      in the word may be transposed and the match will still succeed 
 	  *    - if allowTwoMispellings is true then for words containing 8 or more
-	  *      characters two misspellings may occur and the match will still succeed 
-	  * <p>
-	  * These fields have default values of <code>false</code>.
+	  *      characters two misspellings may occur and the match will still
+	  *      succeed 
 	  */
 	private boolean allowReplaceChar = false;
 	private boolean allowExtraChar = false;
 	private boolean allowFewerChar = false;
+	private boolean allowTransposeTwoChars = false;
 	private boolean allowTwoMisspellings = false;
 
 	/**
 	 * p0, p1, p2, p3, p4 are the proximity settings that specify the number of
-	 * words that are allowed in between words specified in a proximity sequence.
+	 * words that are allowed in-between words specified in a proximity sequence.
 	 * If none of p0-p4 are specified then the default is taken as p2.
 	 */
 	private int	 	patternProximity[], proximityDistance = 3;
@@ -271,8 +304,9 @@ public class PMatch
 	  * Together with an array to specify if words must be in proximity
 	  */
 	private String 	patternWords[];
-	private String	sentences[];
 	private String	words[];
+	private	int		wordsLessEndSentences;
+
 	/**
 	  * Constructs a response object via setResponse()
 	  * @param String response
@@ -284,7 +318,7 @@ public class PMatch
 	}
 
 	/**
-	  * Constructs an empty response object which will be filled in later
+	  * Constructs an empty response object which will be filled later
 	  * using setResponse().
 	  */
 	public PMatch() {
@@ -296,12 +330,14 @@ public class PMatch
 	 * The pattern is a set of one or more words (each word separated by a space).
 	 * To get a match, all of the words in the pattern must match with a word
 	 * in the string you are matching against. Extra control of the matching
-	 * process can be achieved using the '&', '#' '|' and '_' characters. If you want
-	 * to use these characters literally, precede them with the two backslash characters.
+	 * process can be achieved using the '&', '#' '|' and '_' characters. If you
+	 * want to use these characters literally, precede them with the two
+	 * backslash characters.
 	 * <br>
-	 * '&' means match any string. <br>
+	 * '&' means match any string (including empty). <br>
 	 * '#' means match any character. <br>
 	 * '|' match with the preceding OR the next word. <br>
+	 * '[]' means treat the Word group as an alternative in an 'or' list
 	 * '_' match if the linked words exist in the given order and with no more than
 	 *     two intervening words. <br>
 	 * See the examples above for details of usage.
@@ -344,6 +380,7 @@ public class PMatch
 		// and break into words
 		patternWords = breakIntoTokens(pstr, ' ');
 	}
+	////////////////////////////////////////////////////////////////////////////////
 
 	public void setMatchingOptions(String matchingOptions) {
 		String mo = matchingOptions.toLowerCase();
@@ -364,32 +401,37 @@ public class PMatch
 		if (mo.contains("w")) allowExtraWords = true;
 		else allowExtraWords = false;
 
-		allowReplaceChar = false;
 		allowExtraChar = false;
 		allowFewerChar = false;
+		allowReplaceChar = false;
+		allowTransposeTwoChars = false;
+    	allowTwoMisspellings = false;
 
-        if (Pattern.matches("m2[^xfr]*", mo)) {
+        if (Pattern.matches("m2[^xfrt]*", mo)) {
         	allowExtraChar = true;
         	allowFewerChar = true;
         	allowReplaceChar = true;
+    		allowTransposeTwoChars = true;
         	allowTwoMisspellings = true;
         }
         else if (Pattern.matches("m[^xfr]*", mo)) {
         	allowExtraChar = true;
         	allowFewerChar = true;
         	allowReplaceChar = true;
+    		allowTransposeTwoChars = true;	// April 2009
         }
         else {
         	if (Pattern.matches(".*m.*[x].*", mo)) {allowExtraChar = true;}
         	if (Pattern.matches(".*m.*[f].*", mo)) {allowFewerChar = true;}
         	if (Pattern.matches(".*m.*[r].*", mo)) {allowReplaceChar = true;}
+        	if (Pattern.matches(".*m.*[t].*", mo)) {allowTransposeTwoChars = true;}
         	if (Pattern.matches(".*m.*[2].*", mo)) {allowTwoMisspellings = true;}
         }
 	}
 	////////////////////////////////////////////////////////////////////////////////
 
 	public void setResponse(String response) {
-		int		i;
+		int	i;
 		String	rsp, rsp1, rsp2;
 		Pattern p;
 		Matcher m;
@@ -402,78 +444,69 @@ public class PMatch
 			rsp2 = rsp;
 		} while (rsp1 != rsp2);
 			
-		// start by breaking the response into sentences
-		// before this can be done we need to differentiate
-		// full stops at the end of sentences from
+		// start by differentiating the end of sentences
+		// from all other full stops:
 		//	- decimal points
 		//	- indicators of abbreviations such as i.e.
 
 		// first of all the full stop '.' means 'any character' in regular expressions
 		// so we'll start by replacing it with something out of the ordinary
-		rsp = rsp.replace('.', '\uBAD0');	// char replace doesn't use reg. ex.
+		rsp = rsp.replace('.', '\uBAD1');	// char replace doesn't use reg. ex.
 											// substitute with Hangul (Korean) symbol
 		// now replace i.e. etc.
-		rsp = rsp.replaceAll("i\uBAD0e\uBAD0", "ie");	// i.e.
-		rsp = rsp.replaceAll("ie\uBAD0", "ie");	// ie.
-		rsp = rsp.replaceAll("e\uBAD0g\uBAD0", "eg");	// e.g.
-		rsp = rsp.replaceAll("eg\uBAD0", "eg");	// eg.
-		rsp = rsp.replaceAll("etc\uBAD0", "etc");	// etc.
+		rsp = rsp.replaceAll("i\uBAD1e\uBAD1", "ie");	// i.e.
+		rsp = rsp.replaceAll("ie\uBAD1", "ie");	// ie.
+		rsp = rsp.replaceAll("e\uBAD1g\uBAD1", "eg");	// e.g.
+		rsp = rsp.replaceAll("eg\uBAD1", "eg");	// eg.
+		rsp = rsp.replaceAll("etc\uBAD1", "etc");	// etc.
 
-		// replace <letter>.<space> <letter> with a character (\uBAD1) to denote end sentence 
+		// replace <letter>.<space> with a character (\uBAD0) to denote end sentence 
 		do {
-	    	if (Pattern.matches(".*([a-zA-Z]\uBAD0 [a-zA-Z]).*", rsp)) {
+	    	if (Pattern.matches(".*([a-zA-Z]\uBAD1 ).*", rsp)) {
 	    		rsp1 = rsp;
-	    		p = Pattern.compile("[a-zA-Z]\uBAD0 [a-zA-Z]");
+	    		p = Pattern.compile("[a-zA-Z]\uBAD1 ");
 	    		m = p.matcher(rsp);
 	    		m.find();
-	    		rsp = rsp1.substring(0,m.start()+1) + "\uBAD1" + rsp1.substring(m.start()+3);
+	    		rsp = rsp1.substring(0,m.start()+1) + " \uBAD0 " + rsp1.substring(m.start()+3);
 	    	}
-	    } while (Pattern.matches(".*([a-zA-Z]\uBAD0 [a-zA-Z]).*", rsp));
-
-		// replace <letter>.<letter> with a character (\uBAD1) to denote end sentence 
-		do {
-	    	if (Pattern.matches(".*([a-zA-Z]\uBAD0[a-zA-Z]).*", rsp)) {
-	    		rsp1 = rsp;
-	    		p = Pattern.compile("[a-zA-Z]\uBAD0[a-zA-Z]");
-	    		m = p.matcher(rsp);
-	    		m.find();
-	    		rsp = rsp1.substring(0,m.start()+1) + "\uBAD1" + rsp1.substring(m.start()+2);
-	    	}
-	    } while (Pattern.matches(".*([a-zA-Z]\uBAD0[a-zA-Z]).*", rsp));
+	    } while (Pattern.matches(".*([a-zA-Z]\uBAD1 ).*", rsp));
 		
-		// replace <letter> .<letter> with a character (\uBAD1) to denote end sentence 
+		// replace <letter>.<letter> with a character (\uBAD0) to denote end sentence 
 		do {
-	    	if (Pattern.matches(".*([a-zA-Z] \uBAD0[a-zA-Z]).*", rsp)) {
+	    	if (Pattern.matches(".*([a-zA-Z]\uBAD1[a-zA-Z]).*", rsp)) {
 	    		rsp1 = rsp;
-	    		p = Pattern.compile("[a-zA-Z] \uBAD0[a-zA-Z]");
+	    		p = Pattern.compile("[a-zA-Z]\uBAD1[a-zA-Z]");
 	    		m = p.matcher(rsp);
 	    		m.find();
-	    		rsp = rsp1.substring(0,m.start()+1) + "\uBAD1" + rsp1.substring(m.start()+3);
+	    		rsp = rsp1.substring(0,m.start()+1) + " \uBAD0 " + rsp1.substring(m.start()+2);
 	    	}
-	    } while (Pattern.matches(".*([a-zA-Z] \uBAD0[a-zA-Z]).*", rsp));
+	    } while (Pattern.matches(".*([a-zA-Z]\uBAD1[a-zA-Z]).*", rsp));
+		
+		// replace <letter> .<letter> with a character (\uBAD0) to denote end sentence 
+		do {
+	    	if (Pattern.matches(".*([a-zA-Z] \uBAD1[a-zA-Z]).*", rsp)) {
+	    		rsp1 = rsp;
+	    		p = Pattern.compile("[a-zA-Z] \uBAD1[a-zA-Z]");
+	    		m = p.matcher(rsp);
+	    		m.find();
+	    		rsp = rsp1.substring(0,m.start()+1) + " \uBAD0 " + rsp1.substring(m.start()+3);
+	    	}
+	    } while (Pattern.matches(".*([a-zA-Z] \uBAD1[a-zA-Z]).*", rsp));
 
-		if (rsp.endsWith("\uBAD0"))	// remove full stop replacement from end of response
+		if (rsp.endsWith("\uBAD1"))	// remove full stop replacement from end of response
 			rsp = rsp.substring(0, rsp.length() - 1); 
-
-		// now break into sentences on the char set above
-		sentences = breakIntoTokens(rsp, '\uBAD1');
 
 		// and put back any remaining full stops - hopefully as decimal points
 		if (rsp.length() > 0) { 
-			if (sentences.length > 0) {
-				for (i = 0; i < sentences.length; ++i) {
-					sentences[i] = sentences[i].replace('\uBAD0', '.');
-				}
-			}
+			rsp = rsp.replace('\uBAD1', '.');
 		}
-		
-		setResponseWords(0);
-	}
-	////////////////////////////////////////////////////////////////////////////////
-	
-	private void setResponseWords(int whichSentence) {
-		
-		words = breakIntoTokens(sentences[whichSentence], ' ');
+
+		words = breakIntoTokens(rsp, ' ');
+		wordsLessEndSentences = words.length;
+		for (i = 0; i < rsp.length(); ++i) {
+			if (rsp.charAt(i) == altEndSentence)
+				wordsLessEndSentences--;
+		}
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
@@ -483,7 +516,6 @@ public class PMatch
 	 * @param response
 	 * @return if the response matches the pattern, this method returns a
 	 * value of <code>true</code>, otherwise it returns <code>false</code>.
-	 *
 	 *
 	 * Calls matchWord for each or-ed word in chars.
 	 * ('or-ed' combinations are delimited by the '|' character)
@@ -497,6 +529,7 @@ public class PMatch
 		}
 		return false;
 	}
+	////////////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * Checks if the specified word contains all the characters in 'chars'
@@ -534,6 +567,7 @@ public class PMatch
 		}
 		return allowExtraChars ? true : (index == word.length());
 	}
+	////////////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * For a pattern word containing the '&' wildcard, we need to look-ahead to
@@ -552,6 +586,7 @@ public class PMatch
 		}
 		return index;
 	}
+	////////////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * Encodes special matching options characters of '#', '&', '|' and '_' as
@@ -561,13 +596,13 @@ public class PMatch
 	 * the pattern string; a pretty safe assumption because the typical usage
 	 * will only use characters in the ASCII range i.e. 0x00 to 0x7F
 	 */
+	
 	private static final String tempC = "\uBAD1";	// Hangul syllable
 	private static final String hash = "\uBAD2";	// Hangul syllable
 	private static final String ampersand = "\uBAD3";	// Hangul syllable
-//	private static final String ampersand = ")";	// Hangul syllable
 	private static final String verticalBar = "\uBAD4";	// Hangul syllable
 	private static final String underscore = "\uBAD5";	// Hangul syllable
-	
+
 	private String substituteWildCards(String chars) {
 		chars = Strings.replace(chars, "\\#", tempC);
 		chars = Strings.replace(chars, "#", hash);
@@ -587,6 +622,7 @@ public class PMatch
 
 		return chars;
 	}
+	////////////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * This is a variant of Util.breakIntoTokens except this version preserves
@@ -606,24 +642,30 @@ public class PMatch
 		}
 		return tokens;
 	}
+	////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * match works within sentences
+	 * match works on whole replies but proximity only works within sentences
 	 * 
 	 */
-	private boolean matchSentence() {
+	private boolean matchMain(String pattern) {
 		boolean	matched;
 		boolean	justUnwound = false;	// when having to unwind a proximity sequence
+		boolean	unwindProximity = false;
+		char	ch;
 		int		proximityCounter;		// tracks how many words are left in required proximity
 		int 	correct = 0;			// matches found
 		int 	ip = 0, iw = 0;			// ip points to patternWords, iw points to words; 
-		int		ic, currentWordLength = 0;;
+		int		ic, currentWordLengthExcludingWildcards = 0;
+		int		currentWordLengthIncludingWildcards = 0;
 		int		isub;
 		StringBuilder currentSb = new StringBuilder(100);
 		String 	subPatternWords[];
 		String	currentSubPatternWord = "";
 
-		if (words.length < patternWords.length) return false;
+		setPattern(pattern);
+
+		if (wordsLessEndSentences < patternWords.length) return false;
 		if (!allowExtraWords && words.length != patternWords.length) return false;
 
 		int ptrWords[] = new int[words.length]; // array to hold info. on which words have been matched already
@@ -653,30 +695,23 @@ public class PMatch
 			
 			// while there are still words to consider and we're not outside the proximity
 			while ((iw < words.length) && (proximityCounter > 0)) {
+				// if the next word is an EndOfSentence that's the end
+				// of the proximity boundary as proximities cannot span
+				// sentences
+				if (words[iw].equals("" + altEndSentence + "")) {
+					// unwind this proximity sequence
+					if (proximityCounter < 5) // indicates that we're in a proximity match
+						unwindProximity = true;
+				}
+
 				// if the word has already been matched it can't be used to 
 				// satisfy a second match
-				if (ptrWords[iw] != -1) {
-					// this code section is repeated below
-					// if a word can't be used it still counts when calculating the proximity
+				else if (ptrWords[iw] != -1) {
 					proximityCounter--;
-			        
+
 					if (proximityCounter == 0) {
 						// unwind this proximity sequence
-						// go backwards searching for start of sequence
-						while ((ip > 0) && (patternProximity[ip - 1] == proximityDistance)) {
-							ip--;
-							correct--;
-						}
-						for (int i = (words.length - 1); i > 0; --i) {
-							if (ptrWords[i] >= ip) {
-								iw = i;
-								ptrWords[i] = -1;
-							}
-						}
-						ip--;
-						iw++;
-						justUnwound = true;
-						break;
+						unwindProximity = true;
 					}
 				}
 				else if (ptrWords[iw] == -1) {
@@ -686,19 +721,23 @@ public class PMatch
 					}
 	
 					// if 'normal' match failed try misspellings if allowed
-					if ((!matched) && (allowReplaceChar || allowExtraChar || allowFewerChar)) {  
+					if ((!matched) && (allowReplaceChar
+									|| allowExtraChar
+									|| allowFewerChar
+									|| allowTransposeTwoChars)) {  
 
 						subPatternWords = breakIntoTokens(patternWords[ip], '|');
 
 						subPatternLabel:
 							for (isub = 0; isub < subPatternWords.length; isub++) {
 								currentSubPatternWord = subPatternWords[isub];
-								currentWordLength = currentSubPatternWord.length();
+								currentWordLengthExcludingWildcards = countSubPatternChars(currentSubPatternWord);// currentSubPatternWord.length();
+								currentWordLengthIncludingWildcards = currentSubPatternWord.length();
 								currentSb.delete(0, 100);
 						  
-								if (!matched && allowReplaceChar && (currentSubPatternWord.length() > 3)) {
-									for (ic = 0; ic < currentWordLength; ic++) {
-										currentSb.replace(0, currentWordLength, currentSubPatternWord);
+								if (!matched && allowReplaceChar && (currentWordLengthExcludingWildcards > 3)) {
+									for (ic = 0; ic < currentWordLengthIncludingWildcards; ic++) {
+										currentSb.replace(0, currentWordLengthIncludingWildcards, currentSubPatternWord);
 										if ((currentSb.charAt(ic) != hash.charAt(0))
 												&& (currentSb.charAt(ic) != ampersand.charAt(0))) {
 											currentSb.deleteCharAt(ic);
@@ -713,9 +752,27 @@ public class PMatch
 									}
 								}
 
-								if (!matched && allowExtraChar && (currentSubPatternWord.length() > 2)) {
-									for (ic = 0; ic < currentWordLength + 1; ic++) {
-										currentSb.replace(0, currentWordLength + 1, currentSubPatternWord);
+								if (!matched && allowTransposeTwoChars && (currentWordLengthExcludingWildcards > 3)) {
+									for (ic = 0; ic < currentWordLengthIncludingWildcards - 1; ic++) {
+										currentSb.replace(0, currentWordLengthIncludingWildcards, currentSubPatternWord);
+									if ((currentSb.charAt(ic) != hash.charAt(0))
+												&& (currentSb.charAt(ic) != ampersand.charAt(0))) {
+											ch = currentSb.charAt(ic);
+											currentSb.deleteCharAt(ic);
+											currentSb.insert(ic+1, ch);
+											
+											matched = matchWordEx(words[iw], currentSb.toString());
+								  
+											if (matched) {
+												break subPatternLabel;
+											}
+										}
+									}
+								}
+
+								if (!matched && allowExtraChar && (currentWordLengthExcludingWildcards > 2)) {
+									for (ic = 0; ic < currentWordLengthIncludingWildcards + 1; ic++) {
+										currentSb.replace(0, currentWordLengthIncludingWildcards + 1, currentSubPatternWord);
 										currentSb.insert(ic, hash.charAt(0));
 
 										matched = matchWordEx(words[iw], currentSb.toString());
@@ -726,9 +783,9 @@ public class PMatch
 									}
 								}
 
-								if (!matched && allowFewerChar && (currentSubPatternWord.length() > 3)) {
-									for (ic = 0; ic < currentWordLength; ic++) {
-										currentSb.replace(0, currentWordLength + 2, currentSubPatternWord);
+								if (!matched && allowFewerChar && (currentWordLengthExcludingWildcards > 3)) {
+									for (ic = 0; ic < currentWordLengthIncludingWildcards; ic++) {
+										currentSb.replace(0, currentWordLengthIncludingWildcards + 2, currentSubPatternWord);
 										if ((currentSb.charAt(ic) != hash.charAt(0))
 												&& (currentSb.charAt(ic) != ampersand.charAt(0))) {
 											currentSb.deleteCharAt(ic);
@@ -743,21 +800,22 @@ public class PMatch
 								}
 							} // end of subpattern loop
 						subPatternLabel2:
-							if ((!matched) && (currentWordLength > 7) && (allowTwoMisspellings)) {
+							if ((!matched) && (currentWordLengthExcludingWildcards > 7) && (allowTwoMisspellings)) {
 								for (isub = 0; isub < subPatternWords.length; isub++) {
 									currentSubPatternWord = subPatternWords[isub];
-									currentWordLength = currentSubPatternWord.length();
+									currentWordLengthExcludingWildcards = countSubPatternChars(currentSubPatternWord);
+									currentWordLengthIncludingWildcards = currentSubPatternWord.length();
 									currentSb.delete(0, 100);
 					  
-									if (!matched && allowReplaceChar && (currentSubPatternWord.length() > 3)) {
-										for (ic = 0; ic < currentWordLength; ic++) {
-											currentSb.replace(0, currentWordLength, currentSubPatternWord);
+									if (!matched && allowReplaceChar && (currentWordLengthExcludingWildcards > 3)) {
+										for (ic = 0; ic < currentWordLengthIncludingWildcards; ic++) {
+											currentSb.replace(0, currentWordLengthIncludingWildcards, currentSubPatternWord);
 											if ((currentSb.charAt(ic) != hash.charAt(0))
 													&& (currentSb.charAt(ic) != ampersand.charAt(0))) {
 												currentSb.deleteCharAt(ic);
 												currentSb.insert(ic, hash.charAt(0));
 										
-												matched = secondMismatch(iw, currentSb.toString(), ic+1, currentWordLength);
+												matched = secondMismatch(iw, currentSb.toString(), ic+1, currentWordLengthIncludingWildcards);
 							  
 												if (matched) {
 													break subPatternLabel2;
@@ -766,12 +824,31 @@ public class PMatch
 										}
 									}
 
-									if (!matched && allowExtraChar && (currentSubPatternWord.length() > 2)) {
-										for (ic = 0; ic < currentWordLength + 1; ic++) {
-											currentSb.replace(0, currentWordLength + 1, currentSubPatternWord);
+									// April 2009
+									if (!matched && allowTransposeTwoChars && (currentWordLengthExcludingWildcards > 3)) {
+										for (ic = 0; ic < currentWordLengthIncludingWildcards - 1; ic++) {
+											currentSb.replace(0, currentWordLengthIncludingWildcards, currentSubPatternWord);
+											if ((currentSb.charAt(ic) != hash.charAt(0))
+													&& (currentSb.charAt(ic) != ampersand.charAt(0))) {
+												ch = currentSb.charAt(ic);
+												currentSb.deleteCharAt(ic);
+												currentSb.insert(ic+1, ch);
+												
+												matched = secondMismatch(iw, currentSb.toString(), ic+1, currentWordLengthIncludingWildcards);
+									  
+												if (matched) {
+													break subPatternLabel2;
+												}
+											}
+										}
+									}
+
+									if (!matched && allowExtraChar && (currentWordLengthExcludingWildcards > 2)) {
+										for (ic = 0; ic < currentWordLengthIncludingWildcards + 1; ic++) {
+											currentSb.replace(0, currentWordLengthIncludingWildcards + 1, currentSubPatternWord);
 											currentSb.insert(ic, hash.charAt(0));
 
-											matched = secondMismatch(iw, currentSb.toString(), ic+1, currentWordLength+1);
+											matched = secondMismatch(iw, currentSb.toString(), ic+1, currentWordLengthIncludingWildcards+1);
 									
 											if (matched) {
 												break subPatternLabel2;
@@ -779,14 +856,14 @@ public class PMatch
 										}
 									}
 
-									if (!matched && allowFewerChar && (currentSubPatternWord.length() > 3)) {
-										for (ic = 0; ic < currentWordLength; ic++) {
-											currentSb.replace(0, currentWordLength + 2, currentSubPatternWord);
+									if (!matched && allowFewerChar && (currentWordLengthExcludingWildcards > 3)) {
+										for (ic = 0; ic < currentWordLengthIncludingWildcards; ic++) {
+											currentSb.replace(0, currentWordLengthIncludingWildcards + 2, currentSubPatternWord);
 											if ((currentSb.charAt(ic) != hash.charAt(0))
 													&& (currentSb.charAt(ic) != ampersand.charAt(0))) {
 												currentSb.deleteCharAt(ic);
 										
-												matched = secondMismatch(iw, currentSb.toString(), ic+1, currentWordLength-1);
+												matched = secondMismatch(iw, currentSb.toString(), ic+1, currentWordLengthIncludingWildcards-1);
 							  
 												if (matched) {
 													break subPatternLabel2;
@@ -805,35 +882,39 @@ public class PMatch
 						break;
 					}
 					else {
-						// this is a repeat of the code section at the start of this function
 						proximityCounter--;
 									        
 						if (proximityCounter == 0) {
 							// unwind this proximity sequence
-							// go backwards searching for start of sequence
-							while ((ip > 0) && (patternProximity[ip - 1] == proximityDistance)) {
-								ip--;
-								correct--;
-							}
-							for (int i = (words.length - 1); i > 0; --i) {
-								if (ptrWords[i] >= ip) {
-									iw = i;
-									ptrWords[i] = -1;
-								}
-							}
-							ip = ip - 1;
-							iw = iw + 1;
-							justUnwound = true;
-							break;
+							unwindProximity = true;
 						}
 					}
 				}
+				if (unwindProximity) {
+					// go backwards searching for start of sequence
+					while ((ip > 0) && (patternProximity[ip - 1] == proximityDistance)) {
+						ip--;
+						correct--;
+					}
+					for (int i = (words.length - 1); i > 0; --i) {
+						if (ptrWords[i] >= ip) {
+							iw = i;
+							ptrWords[i] = -1;
+						}
+					}
+					ip = ip - 1;
+					iw = iw + 1;
+					justUnwound = true;
+					// reset controlling variable
+					unwindProximity = false;
+					break;
 
+				}
 				iw++;
 			}
 		}
 		return (correct == patternWords.length);
-	} // end of matchSentence
+	} // end of matchMain
 	////////////////////////////////////////////////////////////////////////////////
 
 	/**
@@ -842,6 +923,7 @@ public class PMatch
 
 	private boolean secondMismatch(int wordPtr, String currentSubPattern, int start, int currentWordLength) {
 		boolean	lmatched = false;
+		char	ch2; // April 2009
 		int	id;
 		StringBuilder lSb= new StringBuilder(100);
 	  
@@ -857,6 +939,26 @@ public class PMatch
 					&& (lSb.charAt(id) != ampersand.charAt(0))) {
 					lSb.deleteCharAt(id);
 					lSb.insert(id, hash.charAt(0));
+					lmatched = matchWordEx(words[wordPtr], lSb.toString());
+		  
+					if (lmatched) {
+						return(true);
+					}
+				}
+			}
+		}
+		if (allowTransposeTwoChars) {
+			// allow second extra transposition
+			for (id = start; id < currentWordLength - 1; id++) {
+				lSb.delete(0, 100);
+				lSb.replace(0, currentWordLength, currentSubPattern);
+				
+				if ((lSb.charAt(id) != hash.charAt(0))
+					&& (lSb.charAt(id) != ampersand.charAt(0))) {
+					ch2 = lSb.charAt(id);
+					lSb.deleteCharAt(id);
+					lSb.insert(id+1, ch2);
+					
 					lmatched = matchWordEx(words[wordPtr], lSb.toString());
 		  
 					if (lmatched) {
@@ -899,14 +1001,13 @@ public class PMatch
 		}
 		return(false);
 	}
-
 	///////////////////////////////////////////////////////////////////////////////
 		
 	/**
 	 * match checks the response provided against an established pattern using the
 	 * matching options and special characters specified
 	 * 
-	 * match works within sentences i.e. a match cannot span sentences
+	 * match works on whole reply
 	 */
 			
 	public boolean match(String matchingOptions, String pattern) {
@@ -914,29 +1015,180 @@ public class PMatch
 		setMatchingOptions(matchingOptions);
 		return match(pattern);
 	}
-			
 	////////////////////////////////////////////////////////////////////////////////
+
+	private static final char   altEndSentence = '\uBAD0';		// Hangul syllable
+	private static final String altWordSeparator = "\uBAD6";	// Hangul syllable
+	private static final String altProxSeparator = "\uBAD7";	// Hangul syllable
+	private static final String altOrSeparator = "\uBAD8";		// Hangul syllable
 			
 	public boolean match(String pattern) {
-		int		sentencePtr;
+		int		braPtr = -1, ketPtr = -1;
 
-		setPattern(pattern);
-
-		// sentence[0] is already loaded into words[]
-		if (sentences.length <= 1) {
-			if (matchSentence()) return(true);
-			return(false); // the norm; few responses are > 1 sentence
-		}
-		else {
-			// it's rare to match multiple sentences
-			// so this is the exception not the norm
-			// check remaining sentences
-			for (sentencePtr = 0; sentencePtr < sentences.length; sentencePtr++) {
-				setResponseWords(sentencePtr);
-				if (matchSentence()) return(true);
+		boolean			bracketedSequenceFound;
+		int				bracketedSequenceCount = 0;
+		int				i;
+		String			lPattern;
+		StringBuilder	sb = new StringBuilder(100);
+		
+		// start by searching for word sequences contained in [] which are
+		// alternatives to other single words or other sequences in []
+		
+		sb.delete(0, 100);
+		sb.insert(0, pattern);
+		do {
+			bracketedSequenceFound = false;
+			braPtr = sb.indexOf("[", ketPtr+1);
+			ketPtr = sb.indexOf("]", braPtr+1);
+			if ((braPtr >= 0) && (ketPtr > braPtr)) { // replace all spaces inside [] by altWordSeparator
+				bracketedSequenceFound = true;
+				bracketedSequenceCount++;
+				for (i = braPtr+1; i < ketPtr; ++i) {
+					if (sb.charAt(i) == ' ') sb.replace(i, i+1, altWordSeparator);
+					else if (sb.charAt(i) == '_') sb.replace(i, i+1, altProxSeparator);
+					else if (sb.charAt(i) == '|') sb.replace(i, i+1, altOrSeparator);
+				}
+				// remove []
+				sb.deleteCharAt(ketPtr);
+				sb.deleteCharAt(braPtr);
+				ketPtr = ketPtr - 2;
 			}
-			return(false);
+		} while (bracketedSequenceFound);
+		
+		if (bracketedSequenceCount == 0) { // single match without alternative phrases starts here
+			return(matchMain(pattern));
 		}
-	} // end of match()
+		else { // this match has alternative phrases that require splitting
+			lPattern = sb.toString();
+			return(splitAndMatch(lPattern));
+		}
+	}	// end of match()
+	////////////////////////////////////////////////////////////////////////////////
+	
+	public boolean splitAndMatch(String pattern) {
+		// pattern contains sequences in [] as alternatives
+		// this routine splits apart these alternatives
+		// and rebuilds them in patterns that only have single words
+		// as alternatives
+		int		i, j, k, wordsWithAlternativeSequencesCount = 0;
+		int		whichWordsHaveAlternativeSequence[], chosenAlternative[];
+		int	 	lpatternProximity[];
+		int		patternNumber, patternCount = 1;
+		int		wordCount = 0;
+		String	mpattern = "", patternWordsAndSequences[];
+
+		// need to track proximity settings before breaking things apart 
+		// count the words to set the appropriate array size
+		for (i = 0; i < pattern.length(); ++i) {
+			if ((pattern.charAt(i) == ' ')
+			 || (pattern.charAt(i) == '_')) ++wordCount;
+		}
+		// create arrays to hold information
+		whichWordsHaveAlternativeSequence = new int[wordCount+1];
+		chosenAlternative = new int[wordCount+1];
+		lpatternProximity = new int[wordCount+1];
+		
+		// now set the word count back to zero and this time count and mark the words for proximity
+		wordCount = 0;
+		// identify word sequences that must be in proximity
+		for (i = 0; i < pattern.length(); ++i) {
+			if (pattern.charAt(i) == ' ') {
+				lpatternProximity[wordCount] = 999;
+				++wordCount;
+			}
+			else if (pattern.charAt(i) == '_') {
+				lpatternProximity[wordCount] = proximityDistance;
+				++wordCount;
+			}
+		}
+
+		// now replace _ by ' '
+		pattern = pattern.replaceAll("_"," ");
+		patternWordsAndSequences = breakIntoTokens(pattern, ' ');
+
+		// count no of words that have alternatives that include []
+		for (i = 0; i < patternWordsAndSequences.length; ++i) {
+			if (((patternWordsAndSequences[i].indexOf(altWordSeparator.charAt(0),0) >= 0)
+				|| (patternWordsAndSequences[i].indexOf(altProxSeparator.charAt(0),0) >= 0))
+				&& ((patternWordsAndSequences[i].indexOf('|',0) >= 0))) {
+				wordsWithAlternativeSequencesCount++;
+				// count no of alternative words and phrases
+				j = -2;
+				do {
+					whichWordsHaveAlternativeSequence[i]++;
+					j = patternWordsAndSequences[i].indexOf('|',j+1);
+				} while (j > -1);
+			}
+		}
+
+		// calculate number of possible patterns
+		for (i = 0; i < patternWordsAndSequences.length; ++i) {
+			if (whichWordsHaveAlternativeSequence[i] > 0)
+				patternCount = patternCount * whichWordsHaveAlternativeSequence[i];
+		}
+			
+		// rebuild patterns ready for matching
+		for (patternNumber = 1; patternNumber <= patternCount; ++patternNumber) {
+			// calculate which alternatives to use from each whichWordHasAlternatives
+				
+			j = patternNumber;
+			k = patternCount;
+			for (i = 0; i < patternWordsAndSequences.length; ++i) {
+				if (whichWordsHaveAlternativeSequence[i] > 0) {
+					k = k/whichWordsHaveAlternativeSequence[i];
+					chosenAlternative[i] = (int)(j-1)/(k)+1;
+					j = j-(chosenAlternative[i]-1)*(k);
+				}
+			}
+			mpattern = "";
+			for (i = 0; i < patternWordsAndSequences.length; ++i) {
+				if (whichWordsHaveAlternativeSequence[i] == 0)
+					mpattern = mpattern + patternWordsAndSequences[i];
+				else
+					mpattern = mpattern + extractPhrase(chosenAlternative[i], patternWordsAndSequences[i]);
+				if (lpatternProximity[i] == proximityDistance)
+					mpattern = mpattern + "_";
+				else
+					mpattern = mpattern + " ";
+			}
+			mpattern = mpattern.replaceAll(altWordSeparator," ");
+			mpattern = mpattern.replaceAll(altProxSeparator,"_");
+			mpattern = mpattern.replaceAll(altOrSeparator,"|");
+
+			if (matchMain(mpattern)) {
+				return(true);
+			}
+		}
+		return(false);
+	} // end of splitAndMatch()
+	////////////////////////////////////////////////////////////////////////////////
+
+	private String extractPhrase(int which, String lPattern) {
+	String lPhrases[];
+	lPhrases = breakIntoTokens(lPattern, '|');
+	return(lPhrases[which-1]);
+}
+	////////////////////////////////////////////////////////////////////////////////
+
+	/** count characters in a subpattern, excluding wildcards
+	  * @param String subPattern
+	  * returns length
+	 **/
+	private int countSubPatternChars(String sPattern) {
+	int	iptr, fullLength, length;
+	
+	fullLength = sPattern.length();
+	length = fullLength;
+	
+	iptr = 0;
+	do {
+		if ((sPattern.charAt(iptr) == '#')
+			|| (sPattern.charAt(iptr) == '&')) {
+			--length;
+		}
+		++iptr;
+	} while (iptr < fullLength);
+	return(length);
+	}
 
 }
