@@ -23,6 +23,8 @@ import util.misc.Strings;
  * The <code>Match</code> class is used to test if a string satisfies a
  * set word pattern matching rules.
  * 
+ * <b>This class should no longer be used and has been replaced by PMatch</B>
+ * 
  * <p>
  * Examples:<br>
  * <pre>
@@ -49,6 +51,7 @@ import util.misc.Strings;
  * m.match("photasynthesis"); // returns false
  * </pre>
  * (Note: This is Chris Denham's code. I just copied it in here. --sam)
+ * @deprecated As of 1.7.2 by PMatch march 2009
  */
 public class Match
 {
@@ -56,7 +59,6 @@ public class Match
    * Constructs a pattern matching object, and calls setPattern(pattern) .
    * @param pattern
    * @see #setPattern
-   * @deprecated As of 1.7.2 by PMatch march 2009
    */
   public Match(String pattern)
   {
