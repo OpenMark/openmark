@@ -20,10 +20,11 @@ package om.helper;
 import util.misc.Strings;
 
 /**
+ * <b>This class should no longer be used and has been replaced by PMatch</b>
+ * <p>
  * The <code>Match</code> class is used to test if a string satisfies a
  * set word pattern matching rules.
  * 
- * <b>This class should no longer be used and has been replaced by PMatch</B>
  * 
  * <p>
  * Examples:<br>
