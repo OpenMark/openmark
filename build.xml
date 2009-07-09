@@ -338,7 +338,7 @@
 		<zip destfile="${build}/openmark_${buildversion}_src.zip">
 			<fileset dir=".">
 				<exclude name="bin/**"/>
-				<exclude name="trunk-archive**"/>
+				<exclude name="trunk-archive/**"/>
 				<exclude name="deploy.xml"/>
 			</fileset>
 		</zip>
