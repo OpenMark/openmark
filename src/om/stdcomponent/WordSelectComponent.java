@@ -29,7 +29,14 @@ import org.w3c.dom.*;
 import util.xml.XML;
 
 /**
-A paragraph of plain text with selectable words
+<p>A paragraph of plain text with selectable words.</p>
+<p>Users of this component may wish to award partial marks if substantial numbers of words have to be found.
+For example to recognise that students may have got close to the correct answer, i.e. getting 19 words out
+of 20 on the last attempt, a score of 0 which SimpleQuestion1 would give seems harsh. Whereas using the
+partial scoring method, depending on when they got to the 19 they would score something perhaps 40 - 60%.</p>
+<p>OU authors should see omqstns\src\fels\lib\partialquestion1 and the nearby questions that use it such as 
+omqstns\src\felsSMH\q01.</p>
+
 <h2>XML usage</h2>
 <pre>&lt;wordselect id="paragraph_1"&gt;
 	Some text that is not part of the answer 
