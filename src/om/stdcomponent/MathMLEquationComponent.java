@@ -54,6 +54,9 @@ import util.xml.XML;
  * Writing MathML for complex equations can be tedious; TeX to MathML converters
  * or other known MathML authoring tools can be used to generate MathML. 
  * </p>
+ * <p>
+ * For more on MathML please see <a href="http://www.w3.org/TR/MathML2/">MathML2 Specification</a>.
+ * </p>
  * <h2>XML usage</h2>
  * &lt;mequation&gt;
  * 	&lt;![CDATA[
