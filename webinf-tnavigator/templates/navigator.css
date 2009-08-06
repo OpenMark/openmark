@@ -201,8 +201,13 @@ html.zoom20 #progress .question,html.zoom20 #progress .text,html.zoom20 #progres
 
 #progress .question,#progress .text
 {
+  display:inline-block;
+  margin:2px; 
+}
+/* inline-block is not supported by IE6 & IE7, this is required to override it */
+.winie-6 #progress .question,.winie-7 #progress .question,.winie-6 #progress .text,.winie-7 #progress .text
+{
   display:inline;
-  margin:2px;
 }
 #progress .question a,#progress .question span,#progress .text a,#progress .text span
 {
