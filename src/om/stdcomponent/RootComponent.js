@@ -118,6 +118,7 @@ var isKHTML=navigator.userAgent.indexOf('KHTML')!=-1;
 var isGecko=!isKHTML && navigator.userAgent.indexOf('Gecko/')!=-1;
 var isOpera=navigator.userAgent.indexOf('Opera')!=-1;
 var isIE=!isOpera && navigator.userAgent.match('.*MSIE.*Windows.*');
+var isIE7OrBelow=!isOpera && navigator.userAgent.match('.*MSIE [1-7].*Windows.*');
 var isGecko18;
 if(isGecko)
 {
