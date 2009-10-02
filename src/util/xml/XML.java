@@ -1609,10 +1609,8 @@ public abstract class XML
 	 * @param sAttribute Desired attribute name
 	 * @param sValue Desired attribute value
 	 * @return First element matching that specification
-	 * @throws XMLException If element can't be found
 	 */
 	public static boolean hasChildWithAttribute(Node nParent,String sTag,String sAttribute,String sValue)
-		throws XMLException
 	{
 		// Try all children
 		for(Node n=nParent.getFirstChild();n!=null;n=n.getNextSibling())
