@@ -733,7 +733,7 @@ public abstract class QComponent
 			{
 				if(pd.sRestriction!=null && !sValue.matches(pd.sRestriction))
 					throw new OmFormatException(
-						"<"+eThis.getTagName()+">: property '"+a.getName()+"' has an invalid value");
+						"<"+eThis.getTagName()+">: property '"+a.getName()+"' has an invalid value " + sValue);
 				mProperties.put(sName,sValue);
 			}
 			else if(pd.cType==Integer.class)
