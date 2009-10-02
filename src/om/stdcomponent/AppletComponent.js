@@ -26,9 +26,9 @@ function appClick(resourcesPath,id,idprefix,app,clssNm,w,h,params)
     return;
   }
   appPopup=window.open("",idprefix+"appl"+id,"width="+
-    (isIE ? ""+w : ""+h) +
+    (isIE ? ""+w : ""+(w+5)) +
     ",height="+
-    (isIE ? ""+(w+5) : ""+(h+5))+
+    (isIE ? ""+h : ""+(h+5))+
     ",menubar=no,resizable=yes,scrollbars=no,dependent=yes");
 
   appPopup.document.write(
