@@ -233,4 +233,12 @@ public class Strings
 		}
 		return sb.toString();
 	}
+	
+	/**
+	 * @param str
+	 * @return true if the str is null or empty
+	 */
+	public static boolean isEmpty(String str) {
+		return str == null || str.length() == 0;
+	}
 }
