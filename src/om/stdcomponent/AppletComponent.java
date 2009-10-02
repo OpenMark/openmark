@@ -60,7 +60,9 @@ import util.xml.XML;
  * (may be relative path including /; may not be absolute path beginning /)
  * Applet jar should be packaged with question jar.</td></tr>
  * <tr><td>className</td><td>(string)</td><td>Name of main applet class.</td></tr>
- * <tr><td>params</td><td>(string)</td><td>Parameters for the applet.</td></tr>
+ * <tr><td>params</td><td>(string)</td><td>Parameter string for the applet. eg. params="param1=xxx,param2=yyy".
+ * "params" is a predefined parameter in applet component, use getParameter("params") in your applet 
+ * to get the parameter string and split that into individual paramaters.</td></tr>
  * <tr><td>width</td><td>(string)</td><td>Width of the applet window.</td></tr>
  * <tr><td>height</td><td>(string)</td><td>Height of the applet window.</td></tr>
  * </table>
