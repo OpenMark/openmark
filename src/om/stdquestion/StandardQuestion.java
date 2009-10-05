@@ -65,6 +65,7 @@ public abstract class StandardQuestion implements Question
 	/** If not null, this indicates that a fixed variant is in use */
 	private NotSoRandom nsr=null;
 
+	private static final int MAGIC_RANDOM_SEED_INCREMENT = 12637946;
 
 
 	// Interface implementation and related
@@ -410,9 +411,54 @@ public abstract class StandardQuestion implements Question
 	 */
 	public Random getRandom(String sGroup)
 	{
-		if(nsr!=null) return nsr;
+		return getRandom(sGroup, true);
+	}
+	
+	/**
+	 * Obtains a random number generator based on the seed, attempts and
+	 * navigatorVersion passed by the test navigator. If 'incrementSeed' 
+	 * is false attempts and navigatorVersion wont be used to get the random 
+	 * number generator.	
+	 * @param sGroup Group name (arbitrary string)
+	 * @param incrementSeed If true, then increments the random seed passed by 
+	 * the test navigator
+	 * @return Random number generator
+	 */
+	private Random getRandom(String sGroup, boolean incrementSeed)
+	{
+		// Returns NotSoRandom object if fixed variant is used.
+		if (nsr != null) {
+			return nsr;
+		}		
+		long randomSeed = ip.getRandomSeed();
+		
+		// Increment seed if the request is from OpenMark test navigator only
+		if (ip.getNavigatorVersion() != null && incrementSeed) {
+			int seedIncrement = MAGIC_RANDOM_SEED_INCREMENT;
+			if (OmVersion.compareVersions(ip.getNavigatorVersion(), "1.3.0") <= 0) {
+				seedIncrement = 1;
+			}
+			randomSeed = randomSeed + ip.getAttempt() * seedIncrement;
+		}
+		
 		long lHash=sGroup.hashCode();
-		return new Random(ip.getRandomSeed() ^ lHash);
+		return new Random(randomSeed ^ lHash);
+	}
+
+	/**	
+	 * Returns a variant number between 0 (inclusive) and maxVariant (exclusive).
+	 * Use this method to get the next variant of a question in sequence. 
+	 * For the first attempt it returns a random variant and for the repeat 
+	 * attempts it returns next variants in sequence, when the last variant is 
+	 * reached it cycles back to the beginning.
+	 * @param maxVariant
+	 * @return variant number
+	 */
+	public int getNextVariant(int maxVariant) {
+		// Passing false for the 'incrementSeed' parameter to get the same 
+		// random number generator for all question attempts.
+		Random r = getRandom(getClass().getName(), false);
+		return (r.nextInt(maxVariant) + ip.getAttempt() - 1) % maxVariant;
 	}
 
 	/** Special 'random' number generator that actually always returns the same int */

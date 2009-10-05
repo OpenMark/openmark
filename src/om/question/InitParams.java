@@ -50,6 +50,12 @@ public class InitParams
 	private int iFixedVariant=-1;
 
 	private QEngineConfig qeConfig;
+	
+	/** Question attempt */
+	private int attempt=1;
+	
+	/** The version of the Om test navigator software that started the attempt. */
+	private String navigatorVersion;
 
 	/**
 	 * Construct and set values.
@@ -60,10 +66,13 @@ public class InitParams
 	 * @param bPlainMode Plain mode on/off
 	 * @param cl ClassLoader for resources
 	 * @param iFixedVariant Fixed question variant (-1 for normal)
+	 * @param attempt Question attempt
+	 * @param navigatorVersion version of the OpenMark test navigator 
 	 * @param config 
 	 */
 	public InitParams(long lRandomSeed,String sFixedColourFG,String sFixedColourBG,
-		double dZoom,boolean bPlainMode,ClassLoader cl,int iFixedVariant, QEngineConfig config)
+		double dZoom,boolean bPlainMode,ClassLoader cl,int iFixedVariant, QEngineConfig config, 
+		int attempt, String navigatorVersion)
 	{
 		this.lRandomSeed=lRandomSeed;
 		this.sFixedColourFG=sFixedColourFG;
@@ -73,6 +82,8 @@ public class InitParams
 		this.cl=cl;
 		this.iFixedVariant=iFixedVariant;
 		this.qeConfig = config;
+		this.attempt = attempt;
+		this.navigatorVersion = navigatorVersion;
 	}
 
 	/**
@@ -132,6 +143,20 @@ public class InitParams
 	public QEngineConfig getQEngineConfig() {
 		return qeConfig;
 	}
+	
+	/**
+	 * @return question attempt number
+	 */
+	public int getAttempt() {
+		return attempt;
+	}
+
+	/**
+	 * @return navigatorVersion version number of the Om test navigator.
+	 */
+	public String getNavigatorVersion() {
+		return navigatorVersion;
+	}	
 
 	// TODO Add information about the jar files for any shared packages so we
 	// can go find any additional question component classes (see

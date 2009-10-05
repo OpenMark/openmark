@@ -68,8 +68,6 @@ public class NavigatorServlet extends HttpServlet
 	/** If developer hasn't set the value. Should match the definition in om.question.Results. */
 	public final static int ATTEMPTS_UNSET=-99;
 
-	private static final int MAGIC_RANDOM_SEED_INCREMENT = 12637946;
-
 	/** Database access */
 	DatabaseAccess da;
 	/** @return the DatabaseAccess object used by this servlet. */
@@ -1819,12 +1817,12 @@ public class NavigatorServlet extends HttpServlet
 
 		// Question parameters
 		NameValuePairs p=new NameValuePairs();
-		int seedIncrement = MAGIC_RANDOM_SEED_INCREMENT;
-		if (OmVersion.compareVersions(us.navigatorVersion, "1.3.0") <= 0) {
-			seedIncrement = 1;
-		}
-		long randomSeed = us.getRandomSeed()+iAttempt*seedIncrement;
-		p.add("randomseed",randomSeed+"");
+
+		long randomSeed = us.getRandomSeed();
+		p.add("randomseed", Long.toString(randomSeed));
+		p.add("attempt", Integer.toString(iAttempt));
+		p.add("navigatorVersion", us.navigatorVersion);
+		
 		String sAccess=getAccessibilityCookie(request);
 		if(sAccess.indexOf("[plain]")!=-1)
 			p.add("plain","yes");

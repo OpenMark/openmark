@@ -141,6 +141,8 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 			if(initialParamNames.length!=initialParamValues.length)
 				throw new OmException("Parameter name and value arrays of different length");
 			long lRandomSeed=0;
+			int attempt = 1;
+			String navigatorVersion = null;
 			boolean bGotRandomSeed=false;
 			String sFixedFG=null,sFixedBG=null;
 			boolean bPlain=false;
@@ -156,6 +158,14 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 				{
 					lRandomSeed=Long.parseLong(sValue);
 					bGotRandomSeed=true;
+				} 
+				else if(sName.equals("attempt"))
+				{
+					attempt=Integer.parseInt(sValue);
+				}
+				else if(sName.equals("navigatorVersion"))
+				{
+					navigatorVersion=sValue;
 				}
 				else if(sName.equals("fixedfg"))
 				{
@@ -188,7 +198,7 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 			// Create and initialise question
 			QuestionCache.QuestionInstance qi=qc.newQuestion(qk);
 			Question q=qi.q;
-			InitParams ip=new InitParams(lRandomSeed,sFixedFG,sFixedBG,dZoom,bPlain,qi.ccl,iFixedVariant,this);
+			InitParams ip=new InitParams(lRandomSeed,sFixedFG,sFixedBG,dZoom,bPlain,qi.ccl,iFixedVariant,this, attempt, navigatorVersion);
 			Rendering r=q.init(qc.getMetadata(qk),ip);
 
 			// Generate session details and store in map

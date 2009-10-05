@@ -467,7 +467,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 				String sBG="bw".equals(sAccess) ? "#000000" : null;
 
 				ipInProgress=new InitParams(randomSeed,
-					sFG,sBG,dZoom,bPlain,cclInProgress,iVariant, this);
+					sFG,sBG,dZoom,bPlain,cclInProgress,iVariant, this, 1, OmVersion.getVersion());
 				Rendering r=qInProgress.init(rr.dMeta,ipInProgress);
 
 				// Try starting the question a few times, and ensure we get the same result each time.
