@@ -400,7 +400,10 @@ em.warning
 {
   background:#eee;
 }
-
+.basicpage table tr.error
+{
+  background:#ff9999;
+}
 
 .displayoptions .examples .option img
 {

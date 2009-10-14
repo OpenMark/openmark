@@ -21,11 +21,15 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import om.*;
+import om.OmException;
+import om.OmFormatException;
+import om.OmUnexpectedException;
 import om.tnavigator.auth.UserDetails;
 
 import org.w3c.dom.Document;
@@ -167,7 +171,7 @@ public class TestDeployment
 	}
 
 	/** @return One of the TYPE_xx constants */
-	int getType()
+	public int getType()
 	{
 		return iType;
 	}
@@ -495,6 +499,18 @@ public class TestDeployment
 			throw new OmUnexpectedException(e);
 		}
 	}
+	
+	/**
+	 * @param tagName Date tag
+	 * @return Java Date object. Returns null if tag doesn't exist.
+	 * @throws OmFormatException 
+	 */
+	public Date getActualDate(String tagName) throws OmFormatException {
+		if (!XML.hasChild(eDates, tagName)) {
+			return null;
+		}
+		return getActualDate(tagName, "00:00:00");		
+	}
 
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
@@ -605,6 +621,86 @@ public class TestDeployment
 		} else {
 			return "";
 		}
+	}
+	
+	/**
+	 * @return List of usernames who can access the test
+	 */
+	public List<String> getAllowedUsernames() {
+		ArrayList<String> usernames = new ArrayList<String>();
+		if(!XML.hasChild(eAccess, "users")) return usernames;
+		try {
+			Element[] eUsers=XML.getChildren(XML.getChild(eAccess,"users"));
+			for (Element eUser : eUsers) {
+				if ("oucu".equals(eUser.getTagName()) || "username".equals(eUser.getTagName())) {
+					usernames.add(XML.getText(eUser));
+				}				
+			}
+		} catch (XMLException e) {
+			// Can't happen as we just checked hasChild
+			throw new OmUnexpectedException(e);
+		}
+		return usernames;
+	}
+	
+	/**
+	 * @return List of allowed user authids
+	 */
+	public List<String> getAllowedUserAuthids() {
+		ArrayList<String> userAuthids = new ArrayList<String>();
+		if(!XML.hasChild(eAccess, "users")) return userAuthids;
+		try {
+			Element[] eUsers=XML.getChildren(XML.getChild(eAccess,"users"));
+			for (Element eUser : eUsers) {
+				if ("authid".equals(eUser.getTagName())) {
+					userAuthids.add(XML.getText(eUser));
+				}				
+			}
+		} catch (XMLException e) {
+			// Can't happen as we just checked hasChild
+			throw new OmUnexpectedException(e);
+		}
+		return userAuthids;
+	}
+	
+	/**
+	 * @return List of all admin usernames
+	 */
+	public List<String> getAdminUsernames() {
+		ArrayList<String> adminUsernames = new ArrayList<String>();
+		if(!XML.hasChild(eAccess, "admins")) return adminUsernames;
+		try {
+			Element[] eUsers=XML.getChildren(XML.getChild(eAccess,"admins"));
+			for (Element eUser : eUsers) {
+				if ("oucu".equals(eUser.getTagName()) || "username".equals(eUser.getTagName())) {
+					adminUsernames.add(XML.getText(eUser));
+				}				
+			}
+		} catch (XMLException e) {
+			// Can't happen as we just checked hasChild
+			throw new OmUnexpectedException(e);
+		}
+		return adminUsernames;
+	}
+	
+	/** 
+	 * @return List of admin authids
+	 */
+	public List<String> getAdminAuthids() {
+		ArrayList<String> adminAuthids = new ArrayList<String>();
+		if(!XML.hasChild(eAccess, "admins")) return adminAuthids;
+		try {
+			Element[] eUsers=XML.getChildren(XML.getChild(eAccess,"admins"));
+			for (Element eUser : eUsers) {
+				if ("authid".equals(eUser.getTagName())) {
+					adminAuthids.add(XML.getText(eUser));
+				}				
+			}
+		} catch (XMLException e) {
+			// Can't happen as we just checked hasChild
+			throw new OmUnexpectedException(e);
+		}
+		return adminAuthids;
 	}
 
 	// Information required to support legacy OU systems

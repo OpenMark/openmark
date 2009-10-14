@@ -19,14 +19,23 @@ package om.tnavigator;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.*;
-import java.util.*;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import om.tnavigator.db.OmQueries;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import util.misc.Strings;
 import util.xml.XML;
 
 /** Loads navigator configuration file. */
@@ -77,11 +86,17 @@ public class NavigatorConfig
 	private String dbClass;
 
 	/** Extra report plugins */
-	private String[] extraReports;
+	private String[] extraReports;	
 
 	/** Parameters for auth */
 	private Map<String,String> authParams=null;
-
+	
+	/** Additional databases */
+	private Map<String, ExtraDatabase> extraDatabases = new HashMap<String, ExtraDatabase>();
+	
+	/** Standard admin usernames that may be required to be present in test deploy files */
+	private List<String> standardAdmins = new ArrayList<String>();
+	
 	String getAuthClass()
 	{
 		return authClass;
@@ -95,7 +110,7 @@ public class NavigatorConfig
 	String getDBPrefix()
 	{
 		return dbPrefix;
-	}
+	}	
 
 	private static Map<String,String> getParams(Element parent) throws IOException
 	{
@@ -251,7 +266,7 @@ public class NavigatorConfig
 		else
 		{
 			extraReports = new String[0];
-		}
+		}		
 
 		if(XML.hasChild(eRoot,"debugflags"))
 		{
@@ -273,6 +288,31 @@ public class NavigatorConfig
 		{
 			alertMailTo=alertMailCC=new String[0];
 		}
+		
+		if(XML.hasChild(eRoot,"extradatabases")) {
+			Element eExtraDB=XML.getChild(eRoot, "extradatabases");
+			Element[] eEDbs=XML.getChildren(eExtraDB, "database");
+			for(Element e : eEDbs) {
+				String key = XML.getText(e, "key");
+				if (!Strings.isEmpty(key)) {
+					extraDatabases.put(key, 
+							new ExtraDatabase(key, XML.getText(e, "driverclass"), 
+							XML.getText(e, "connectionurl"), XML.getText(e, "username"),
+							XML.getText(e, "password")));
+				}
+			}
+		}		
+		
+		if(XML.hasChild(eRoot, "standardadmins")) {
+			Element[] eUsers=XML.getChildren(XML.getChild(eRoot,"standardadmins"));
+			for (Element eUser : eUsers) {
+				// OUCU is what the OU calls usernames
+				if ("oucu".equals(eUser.getTagName()) || "username".equals(eUser.getTagName())) {
+					standardAdmins.add(XML.getText(eUser));
+				}				
+			}
+		}
+		
 	}
 
 	/** @return Full JDBC URL of database including username and password */
@@ -367,5 +407,64 @@ public class NavigatorConfig
 	public String[] getAlertMailCC()
 	{
 		return alertMailCC;
+	}
+	
+	/**
+	 * Get addtional database details from <extradatabases> tag.
+	 * @param key for the database configuration
+	 * @return database details
+	 */
+	public ExtraDatabase getExtraDatabase(String key) {		
+		return extraDatabases.get(key);
+	}
+	
+	/**
+	 * @return array of standard admin usernames
+	 */
+	public String[] getStandardAdminUsernames() {
+		return standardAdmins.toArray(new String[0]);
+	}
+	
+	/** Additional database details */
+	public static class ExtraDatabase {		
+		private String key;
+		
+		private String driverClass;
+		
+		private String connectionUrl;
+		
+		private String username;
+		
+		private String password;
+		
+		public ExtraDatabase(String key, String driverClass,
+				String connectionUrl, String username, String password) {
+			this.key = key;
+			this.driverClass = driverClass;
+			this.connectionUrl = connectionUrl;
+			this.username = username;
+			this.password = password;
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public String getDriverClass() {
+			return driverClass;
+		}
+
+		public String getConnectionUrl() {
+			return connectionUrl;
+		}
+
+		public String getUsername() {
+			return username;
+		}
+
+		public String getPassword() {
+			return password;
+		}		
+		
 	}
 }

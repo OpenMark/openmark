@@ -113,7 +113,11 @@ public class HtmlReportWriter extends TabularReportWriter
 	{
 		Element tableRow = XML.createChild(tableBody, "tr"); 
 		row++;
-		tableRow.setAttribute("class", row%2 == 0 ? "even" : "odd");
+		if ("yes".equals(data.get("error"))) {
+			tableRow.setAttribute("class", "error");
+		} else {
+			tableRow.setAttribute("class", row%2 == 0 ? "even" : "odd");
+		}	
 		for (TabularReportBase.ColumnDefinition column : columns)
 		{
 			Element cell = XML.createChild(tableRow, "td");

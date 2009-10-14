@@ -34,7 +34,7 @@ public class TestDefinition
 {
 	private Document dTest;
 	private String sName;
-	private Element eContent,eFinal;
+	private Element eContent,eFinal,eOptions, eConfirm;
 	private boolean bNavigation,bRedoQuestion,bRedoQuestionAuto,
 	  bRedoTest,bFreeSummary,bFreeStop,bSummaryScores,bSummaryAttempts,bSummaryQuestions,
 	  bQuestionNames,bEndSummary;
@@ -75,7 +75,7 @@ public class TestDefinition
 
 			if(XML.hasChild(dTest.getDocumentElement(),"confirm"))
 			{
-				Element eConfirm=XML.getChild(dTest.getDocumentElement(),"confirm");
+				eConfirm=XML.getChild(dTest.getDocumentElement(),"confirm");
 				eConfirmParagraphs=dTest.createElement("div");
 				for(Node n=eConfirm.getFirstChild();n!=null;n=n.getNextSibling())
 				{
@@ -100,7 +100,7 @@ public class TestDefinition
 			if(sConfirmTitle==null)
 				sConfirmTitle="Are you ready to submit the test?";
 
-			Element eOptions=XML.getChild(dTest.getDocumentElement(),"options");
+			eOptions=XML.getChild(dTest.getDocumentElement(),"options");
 			bNavigation="yes".equals(eOptions.getAttribute("navigation"));
 			bRedoQuestion="yes".equals(eOptions.getAttribute("redoquestion"));
 			bRedoQuestionAuto="yes".equals(eOptions.getAttribute("redoquestionauto"));
@@ -129,9 +129,61 @@ public class TestDefinition
 			throw new OmFormatException("Error processing test definition: "+f,xe);
 		}
 	}
+	
+	/**
+	 * Get the value of options attribute.
+	 * @param attrbName Name of options attribute
+	 * @return Value of the attribute
+	 */
+	public String getOptionsAttribute(String attrbName) {
+		if (eOptions == null) {
+			return null;
+		}
+		return eOptions.getAttribute(attrbName);
+	}
+	
+	/**
+	 * @return true if confirm tag exists
+	 */
+	public boolean hasConfirmTag() {
+		return eConfirm != null;
+	}
+
+	/**
+	 * @return true if confirm button exists
+	 */
+	public boolean hasConfirmButton() {
+		return eConfirm != null && eConfirm.hasAttribute("button");
+	}
+
+	/**
+	 * Get the value of final summary tag attribute.
+	 * @param attribute name
+	 * @return attribute value
+	 */
+	public String getFinalSummaryAttribute(String name) {
+		if (eFinal == null || !XML.hasChild(eFinal, "summary")) {
+			return null;
+		}
+		String value = null;
+		try {
+			Element eSummary = XML.getChild(eFinal, "summary");
+			value = eSummary.getAttribute(name);
+		} catch (XMLException e) {
+			return null;
+		}
+		return value;
+	}
+	
+	/**
+	 * @return true if <rescore marks="100"/> exists under test content.
+	 */
+	public boolean hasOverallPercentage() {
+		return XML.hasChildWithAttribute(eContent, "rescore", "marks", "100");
+	}
 
 	/** @return Name of test */
-	String getName()
+	public String getName()
 	{
 		return sName;
 	}
@@ -218,6 +270,24 @@ public class TestDefinition
 		else
 			throw new OmFormatException("Unexpected tag in <questions>: '"+sParentTag+"'");
 		return g;
+	}
+	
+	/**
+	 * Get all question ids from test file.
+	 * @return List of question ids
+	 * @throws OmFormatException
+	 */
+	public List<String> getAllQuestionIds() throws OmFormatException {		
+		Element[] eQuestions = XML.getElementArray(dTest.getElementsByTagName("question"));
+		List<String> ids = new ArrayList<String>(eQuestions.length);
+		for (Element eQuestion : eQuestions) {
+			try {
+				ids.add(XML.getRequiredAttribute(eQuestion,"id"));
+			} catch (XMLException e) {
+				throw new OmFormatException("Id attribute missing in <question> tag");
+			}
+		}
+		return ids;
 	}
 
 	boolean isNavigationAllowed()
