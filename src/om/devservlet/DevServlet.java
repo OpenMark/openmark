@@ -18,26 +18,49 @@
 package om.devservlet;
 
 import java.awt.GraphicsEnvironment;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
 import om.OmException;
 import om.OmVersion;
 import om.helper.QEngineConfig;
-import om.question.*;
+import om.question.ActionParams;
+import om.question.ActionRendering;
+import om.question.InitParams;
+import om.question.Question;
+import om.question.Rendering;
+import om.question.Resource;
+import om.question.Results;
+import om.question.Score;
 import om.stdquestion.StandardQuestion;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import util.misc.*;
+import util.misc.ClosableClassLoader;
+import util.misc.Exceptions;
+import util.misc.IO;
+import util.misc.Strings;
+import util.misc.UserAgent;
 import util.xml.XHTML;
 import util.xml.XML;
 
@@ -56,6 +79,10 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 	 * which give the id and the version. */
 	private final static Pattern QUESTIONID_REGEXP = Pattern.compile(
 			"([_a-z][_a-z0-9]*(?:\\.[_a-z][_a-z0-9]*)+)\\.(\\d+\\.\\d+)");
+	
+	/** Package names should not have upper-case letters and underscores. */
+	private final static Pattern PACKAGE_REGEXP = Pattern.compile("[^A-Z_]+");
+	
 	/** In-progress question (null if none) */
 	private Question qInProgress=null;
 
@@ -199,6 +226,34 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 			// Ignore exception, they must have closed browser or something
 		}
 	}
+	
+	private void showErrorMessage(HttpServletRequest request,HttpServletResponse response, String message) {		
+		try {
+			response.setContentType("text/html");
+			response.setCharacterEncoding("UTF-8");
+			PrintWriter pw = response.getWriter();		
+			pw.println(
+				"<html>" +
+				"<head>" +
+				"<title>Error - OpenMark-S (Om) question development </title>" +
+				"<style type='text/css'>\n"+
+				"body { font: 12px Verdana, sans-serif; }\n" +
+				"a { color: black; }\n" +
+				"#errorbox { margin-bottom:20px; border:1px solid red; padding:10px; }\n"+				
+				"</style>"+
+				"</head>"+
+				"<body>" +
+				"<div id='errorbox'>" +
+				"<p>" + message + "</p>" +
+				"<a href='.'>[List]</a> "+
+				"</div>" +
+				"</body></html>"
+				);
+			pw.close();	
+		} catch (IOException e) {
+			// Ignore exception, they must have closed browser or something
+		}
+	}
 
 	private void handleFront(boolean bPost,HttpServletRequest request,HttpServletResponse response)
 		throws Exception
@@ -211,7 +266,22 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 				if (extraPackage.length()>0) {
 					extraPackages += "  <includepackage>"+extraPackage+"</includepackage>\n";
 				}
+			}			
+			if (Strings.isEmpty(request.getParameter("package"))) {
+				showErrorMessage(request, response, "Package name should not be empty.");
+				return;
 			}
+			if (Strings.isEmpty(request.getParameter("source"))) {
+				showErrorMessage(request, response, "Source tree should not be empty.");
+				return;
+			}
+			Matcher matcher = PACKAGE_REGEXP.matcher(request.getParameter("package"));			
+			if (!matcher.matches()) {
+				showErrorMessage(request, response, "Package name should not " +
+						"have upper-case letters and underscores.");
+				return;
+			}
+			
 			File fNew=new File(
 				qdQuestions.getQuestionsFolder(),request.getParameter("package")+".xml");
 			Writer w=new OutputStreamWriter(new FileOutputStream(fNew),"UTF-8");
