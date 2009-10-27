@@ -325,7 +325,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 			"  OpenMark-S (Om) question development ("+OmVersion.getVersion()+")" +
 			"</h1>" +
 			"<div id='questionbox'>" +
-			"<h2>Defined questions</h2>"+
+			"<h2>Defined questions - <a href=\"buildall\">Build all</a></h2>"+
 			"<ul id='questions'>"+
 			"</ul>"+
 			"</div>" +
@@ -390,6 +390,17 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 		response.setContentType("text/html");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter pw=response.getWriter();
+		pw.write(
+				"<html>" +
+				"<head>" +
+				"<title>Building " + sQuestion + "</title>" +
+				"<style type='text/css'>" +
+				"body { font: 10px Andale Mono, Lucida Console, monospace; }" +
+				".out,.err { white-space:pre; }"+
+				".err { color:#900; }"+
+				"</style>"+
+				"</head>" +
+				"<body>");
 		boolean bSuccess=qdQuestions.getQuestionDefinition(sQuestion).build(pw);
 		if(bSuccess)
 		{
@@ -402,10 +413,48 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 		else
 		{
 			pw.println(
-				"<p><a href='javascript:location.reload()'>Rebuild</a></p>");
+				"<p>[<a href='javascript:location.reload()'>Rebuild</a>] &nbsp; [" +
+				"<a href='../../'>List</a>]</p>");			
 		}
 		pw.println("</body></html>");
 		pw.close();
+	}
+	
+	private void handleBuildAll(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		resetQuestion();
+		
+		response.setContentType("text/html");
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter pw=response.getWriter();
+		QuestionDefinition[] questionDefs = qdQuestions.getQuestionDefinitions();
+		
+		pw.write(
+				"<html>" +
+				"<head>" +
+				"<title>Building all questions</title>" +
+				"<style type='text/css'>" +
+				"body { font: 10px Andale Mono, Lucida Console, monospace; }" +
+				".out,.err { white-space:pre; }"+
+				".err { color:#900; }"+
+				"</style>"+
+				"</head>" +
+				"<body>");
+		
+		for (int i = 0; i < questionDefs.length; i++) {
+			QuestionDefinition qd = questionDefs[i];
+			pw.println("<p><b>" + (i+1) + ". " + qd.getID()+ "</b> - [<a href='./'>List</a>]</p>");
+			
+			try {
+				qd.build(pw);
+			} catch (OmException e) {
+				pw.println("<pre>"+XHTML.escape(Exceptions.getString(
+						e,new String[]{"om"}),XHTML.ESCAPE_TEXT)+"</pre>");
+			}
+		}	
+		
+		pw.println("</body></html>");
+
 	}
 
 	private void handleRemove(String sRemainingPath,
@@ -705,6 +754,8 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 				handleRun(bPost,sPath.substring("/run/".length()),request,response);
 			else if(sPath.startsWith("/remove/"))
 				handleRemove(sPath.substring("/remove/".length()),request,response);
+			else if(sPath.startsWith("/buildall"))
+				handleBuildAll(request,response);
 			else
 			{
 				sendError(request,response,HttpServletResponse.SC_NOT_FOUND,

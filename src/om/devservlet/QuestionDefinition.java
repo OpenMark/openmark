@@ -109,9 +109,7 @@ public class QuestionDefinition
 	/**
 	 * Builds this question into the target jar file.
 	 * @param wProgress Writer that will receive progress information in HTML
-	 *   format. This code writes the starting &lt;html&gt;&lt;body&gt; tags,
-	 *   but not the closing ones which should be written after this method
-	 *   returns.
+	 *   format. 
 	 * @return True if build succeeded, false if it failed
 	 */
 	boolean build(Writer wProgress) throws OmException
@@ -180,18 +178,6 @@ public class QuestionDefinition
 				new String[] {"JAVA_HOME="+qdOwner.getJDKHome()},
 				// Working directory
 				qdOwner.getQuestionsFolder());
-
-			wProgress.write(
-				"<html>" +
-				"<head>" +
-				"<title>Building "+getID()+" ("+fJar.getAbsolutePath()+")</title>" +
-				"<style type='text/css'>" +
-				"body { font: 10px Andale Mono, Lucida Console, monospace; }" +
-				".out,.err { white-space:pre; }"+
-				".err { color:#900; }"+
-				"</style>"+
-				"</head>" +
-				"<body>");
 
 			ReadThread rtOut=new ReadThread(
 				new BufferedReader(new InputStreamReader(p.getInputStream())),
