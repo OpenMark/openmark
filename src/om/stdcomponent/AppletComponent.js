@@ -9,6 +9,7 @@ function appSet(id,idprefix,answer)
     preSubmit(input.form);
     input.form.submit();
   }
+  if(appPopup!=null){appPopup.close();}
 }
 
 function appInit(token)
@@ -25,10 +26,7 @@ function appClick(resourcesPath,id,idprefix,app,clssNm,w,h,params)
     appPopup.focus();
     return;
   }
-  appPopup=window.open("",idprefix+"appl"+id,"width="+
-    (isIE ? ""+w : ""+(w+5)) +
-    ",height="+
-    (isIE ? ""+h : ""+(h+5))+
+  appPopup=window.open("", idprefix+"appl"+id, "width="+w+",height="+ (h+50)+
     ",menubar=no,resizable=yes,scrollbars=no,dependent=yes");
 
   appPopup.document.write(
@@ -37,6 +35,7 @@ function appClick(resourcesPath,id,idprefix,app,clssNm,w,h,params)
     "<body style='border:0;margin:0;' onunload='try { window.opener.appPopup=null;} catch(e){}'>\n"+
     "<applet code='"+clssNm+"' name='APP' archive='"+resourcesPath+"/"+app+"' width='"+w+"' height='"+h+"'>\n"
     +"<PARAM name=\"params\" value=\""+params+"\">"
+    +"<PARAM name=\"previousanswer\" value=\""+document.getElementById(idprefix+"omval_"+id).value+"\">"
     +"The applet requires Java to be enabled and installed. Please enable Java, then close "+
     "this window and try again.\n"+
     "</applet>\n"+

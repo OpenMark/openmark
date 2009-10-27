@@ -150,6 +150,7 @@ public class AppletComponent extends QComponent
 		String sInputID=QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID();
 		eInput.setAttribute("name",sInputID);
 		eInput.setAttribute("id",sInputID);
+		eInput.setAttribute("value",sValue);
 		qc.addInlineXHTML(eInput);
 
 		if(isPropertySet(PROPERTY_ACTION)){
