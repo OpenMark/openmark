@@ -90,6 +90,9 @@ public class MathMLEquationComponent extends QComponent {
 
 	/** Actual content of required equation */
 	private String equation;
+	
+	/** Equation hash/filename last sent (to track whether we need to send it again) */
+	private String sentFilename=null;
 
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName() {
@@ -183,29 +186,35 @@ public class MathMLEquationComponent extends QComponent {
 									 + cForeground.hashCode() * 7 
 									 + (new Double(dZoom)).hashCode() * 11) + ".png";
 			
-			// the xml document to contain the mathml
-			Document document;
-			// the image to return
-			BufferedImage image;
-			try {				
-				// get JEuclid's MathML parser
-				Parser mathMLParser = Parser.getInstance();
-				// Retrieve a DocumentBuilder suitable for MathML parsing
-				DocumentBuilder builder = mathMLParser.getDocumentBuilder();
-				// parse the mathml
-				document = builder.parse(new InputSource(new StringReader(currentEq)));	
-			} catch (Exception e) {
-				throw new OmFormatException("Invalid MathML (not well-formed)", e);
+			// Make actual image if needed
+			if(!sFilename.equals(sentFilename))
+			{			
+				// the xml document to contain the mathml
+				Document document;
+				// the image to return
+				BufferedImage image;
+				try {				
+					// get JEuclid's MathML parser
+					Parser mathMLParser = Parser.getInstance();
+					// Retrieve a DocumentBuilder suitable for MathML parsing
+					DocumentBuilder builder = mathMLParser.getDocumentBuilder();
+					// parse the mathml
+					document = builder.parse(new InputSource(new StringReader(currentEq)));	
+				} catch (Exception e) {
+					throw new OmFormatException("Invalid MathML (not well-formed)", e);
+				}
+				try {
+					// get JEuclid to render the image from the xml document's
+					// mathml into an image
+					image = Converter.getInstance().render(document, context);
+				} catch (Exception e) {
+					throw new OmFormatException("Invalid MathML (JEuclid conversion failure)", e);
+				}
+	
+				qc.addResource(sFilename, "image/png", QContent.convertPNG(image));
+				
+				sentFilename=sFilename;			
 			}
-			try {
-				// get JEuclid to render the image from the xml document's
-				// mathml into an image
-				image = Converter.getInstance().render(document, context);
-			} catch (Exception e) {
-				throw new OmFormatException("Invalid MathML (JEuclid conversion failure)", e);
-			}
-
-			qc.addResource(sFilename, "image/png", QContent.convertPNG(image));
 
 			Element eEnsureSpaces = qc.createElement("div");
 			eEnsureSpaces.setAttribute("class", "mequation");
