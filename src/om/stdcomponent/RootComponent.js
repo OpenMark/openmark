@@ -200,6 +200,24 @@ function fixEvent(e)
 	return e;
 }
 
+function getUrlParameter(name)
+{
+	var regexStr = "[\\?&]"+name+"=([^&#]*)";  
+	var regex = new RegExp(regexStr);  
+	var match = regex.exec(window.location.href);  
+	if(match==null)    
+		return "";  
+	else    
+		return match[1];
+}
+
+function isAutoFocusOn()
+{
+	var focusOn = true;
+	if(getUrlParameter('autofocus')=='off')
+		focusOn = false;
+	return focusOn;
+}
 
 // Keep track of focusable objects
 var focusList=new Array();
@@ -210,7 +228,7 @@ function addFocusable(id,expr)
 	o.id=id;
 	o.expr=expr;
 
-	if(focusList.length==0)
+	if(focusList.length==0 && isAutoFocusOn())
 	{
 		addOnLoad(function() {
 		setTimeout(o.expr+'.focus();setTimeout("window.scroll(0,0);",0)',100);

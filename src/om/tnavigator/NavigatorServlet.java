@@ -985,6 +985,11 @@ public class NavigatorServlet extends HttpServlet
 						handleStart(rt,sTestID,us,Integer.parseInt(sCommand.substring(9)),request, response);
 						return;
 					}
+					if(sCommand.startsWith("?autofocus="))
+					{
+						handleStart(rt,sTestID,us,-1, request, response);
+						return;
+					}
 				}
 
 				// Beyond here, we must be logged into a test to continue
