@@ -1,4 +1,4 @@
-OpenMark online assessment confirmation - %%NAME%%
+OU submission confirmation - %%NAME%%
 Thank you for submitting your answers to:
 
 %%NAME%%
