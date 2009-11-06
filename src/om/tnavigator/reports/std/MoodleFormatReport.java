@@ -83,14 +83,10 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 		try
 		{
 			// Output a row of the report for each axis.
-			for (String axis : score.getAxes()) {
-				Map<String, String> row = new HashMap<String, String>();
-				if (axis != null)
-				{
-					assignmentid = bestAttempt.getassignmentid() + "." + axis;
-				}
+			for (String axis : score.getAxesOrdered()) {
+				Map<String, String> row = new HashMap<String, String>();				
 				row.put("student", pi);
-				row.put("assignment", assignmentid);
+				row.put("assignment", axis != null ? assignmentid + "." + axis : assignmentid);
 				row.put("score", score.getScore(axis) + "");
 				reportWriter.printRow(row);
 			}	
