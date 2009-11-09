@@ -127,7 +127,11 @@ public class YAxisItem extends AxisItemBase
 			fX=getWorld().convertXFloat(dX),
 			fY=getWorld().convertYFloat(dPoint);
 
-		Line2D l=new Line2D.Float(fX,fY,fX+iSize,fY);
+		Line2D l;
+		if(bPos)
+			l=new Line2D.Float(fX,fY,fX+iSize,fY);
+		else
+			l=new Line2D.Float(fX-iSize,fY,fX,fY);
 		g2.draw(l);
 	}
 
