@@ -8,7 +8,9 @@
 <div id="summarytable"/>
 <p>
 	<form action="?end" method="post">
-		<input type="submit" name="end" value="%%BUTTON%%"/>
+		<input type="submit" name="end" value="%%BUTTON%%" onclick="javascript: 
+			return confirm('You are about to close this attempt. Once you close the attempt you will no longer be able '
+					+ 'to complete any questions that are marked \'Not completed\'.');"/>
 	</form>
 </p>
 <p id="return">
