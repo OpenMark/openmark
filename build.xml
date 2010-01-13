@@ -46,6 +46,9 @@
 		-->	
 	<property name="jeuclidhome" value=""/>
 	
+	<!-- Set location for jazzy-core.jar file -->
+	<property name="jazzyhome" value=""/>
+	
 
 	<!-- 
 		2. Other locations
@@ -140,6 +143,9 @@
 					<include name="activation.jar"/>
 				</fileset>
 				<fileset dir="${jeuclidhome}">
+					<include name="*.jar"/>
+				</fileset>
+				<fileset dir="${jazzyhome}">
 					<include name="*.jar"/>
 				</fileset>
 				<fileset dir="${javamailhome}">
@@ -272,6 +278,9 @@
 			<fileset dir="${jeuclidhome}">
 				<include name="*.jar"/>
 			</fileset>
+			<fileset dir="${jazzyhome}">
+				<include name="*.jar"/>
+			</fileset>
 		</copy>
 		<jar jarfile="${build}/webapps/om-qe.war" basedir="${build}/webapps/om-qe"/>
 	</target>
@@ -311,6 +320,9 @@
 				<include name="*.jar"/>
 			</fileset>
 			<fileset dir="${jeuclidhome}">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${jazzyhome}">
 				<include name="*.jar"/>
 			</fileset>
 			<fileset dir="${jafhome}">
@@ -440,6 +452,9 @@
 					<include name="*.jar"/>
 				</fileset>
 				<fileset dir="${jeuclidhome}">
+					<include name="*.jar"/>
+				</fileset>
+				<fileset dir="${jazzyhome}">
 					<include name="*.jar"/>
 				</fileset>
 				<fileset dir="${jafhome}">
