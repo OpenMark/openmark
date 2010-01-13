@@ -457,7 +457,12 @@ public abstract class StandardQuestion implements Question
 	public int getNextVariant(int maxVariant) {
 		// Passing false for the 'incrementSeed' parameter to get the same 
 		// random number generator for all question attempts.
-		Random r = getRandom(getClass().getName(), false);
+		Random r = getRandom(getClass().getName(), false);		
+		if (r instanceof NotSoRandom) {
+			// If it is an instanceof NotSoRandom that means variant is fixed 
+			// for testing, do not increment the variant
+			return r.nextInt(maxVariant);
+		}
 		return (r.nextInt(maxVariant) + ip.getAttempt() - 1) % maxVariant;
 	}
 
