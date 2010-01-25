@@ -3510,6 +3510,11 @@ public class NavigatorServlet extends HttpServlet
 		// but I think the more standard header would be as below
 		String sClientIP=request.getHeader("client_ip");
 		if(sClientIP==null) sClientIP=request.getHeader("Client-IP");
+		if(sClientIP==null) sClientIP=request.getHeader("X_FORWARDED_FOR");
+		if(sClientIP!=null)
+			l.logDebug("IPCHECK","Non-null "+sClientIP);
+		else
+			l.logDebug("IPCHECK","Bad IP check "+sClientIP);
 		if(sClientIP!=null)
 			return isIPInList(InetAddress.getByName(sClientIP), nc.getTrustedAddresses());
 
@@ -3534,7 +3539,12 @@ public class NavigatorServlet extends HttpServlet
 		// but I think the more standard header would be as below
 		String sClientIP=request.getHeader("client_ip");
 		if(sClientIP==null) sClientIP=request.getHeader("Client-IP");
+		if(sClientIP==null) sClientIP=request.getHeader("X_FORWARDED_FOR");
 		if(sClientIP!=null)
+			l.logDebug("IPCHECK","Non-null "+sClientIP);
+		else
+			l.logDebug("IPCHECK","Bad IP check "+sClientIP);
+		if(sClientIP!=null)		
 			return isIPInList(InetAddress.getByName(sClientIP), nc.getSecureAddresses());
 
 		// No load-balancer? OK.
