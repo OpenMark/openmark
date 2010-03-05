@@ -78,11 +78,17 @@ CREATE TABLE dbo.prefix_actions (
   PRIMARY KEY CLUSTERED(qi,seq)
 );
 
+CREATE TABLE dbo.prefix_navconfig (
+  name VARCHAR(64) NOT NULL PRIMARY KEY,
+  value VARCHAR(64)
+  
+);
+
 CREATE TABLE dbo.prefix_params (
   qi INT NOT NULL FOREIGN KEY REFERENCES prefix_questions,
   seq SMALLINT NOT NULL,
   paramname VARCHAR(255),
-  paramvalue NVARCHAR(2048),
+  paramvalue NVARCHAR(4000),
   PRIMARY KEY CLUSTERED(qi,seq,paramname)  
 );
 

@@ -3,6 +3,7 @@ om.devservlet
 om.equation
 om.graph
 om.helper
+om.helper.spellcheck
 om.loadtest
 om.qengine
 om.question

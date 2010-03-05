@@ -21,10 +21,14 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import om.OmVersion;
 import om.tnavigator.db.DatabaseAccess.Transaction;
+import om.tnavigator.Log;
 
 import util.misc.IO;
 import util.misc.Strings;
+import util.misc.NavVersion;
+import util.misc.NameValuePairs;
 
 /**
  * Used to obtain a version of the SQL queries used in Om for a given database.
@@ -142,7 +146,19 @@ public abstract class OmQueries
 			"FROM " + getPrefix() + "questions q " +
 			"WHERE q.ti="+ti+" AND q.finished>=1");
 	}
-
+	
+	/** get the name/value pairs in the navconfig table
+	 * @param dat the transaction within which the query should be executed.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
+	public ResultSet queryNavConfig(DatabaseAccess.Transaction dat)
+	  throws SQLException
+	{
+		return dat.query(
+			"SELECT name,value FROM " + getPrefix() + "navconfig");
+	}
+	
 	/**
 	 * Get the list of info pages a user has seen within a test attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -673,6 +689,18 @@ public abstract class OmQueries
 	/**
 	 * Update the testpostition in the tests table.
 	 * @param dat the transaction within which the query should be executed.
+	 * @param version Database version, comes from the navigator version.
+	 * @throws SQLException
+	 */
+	public void updateDBversion(DatabaseAccess.Transaction dat,String version)
+	  throws SQLException
+	{
+		dat.update("UPDATE " + getPrefix() + "navconfig SET value="+version+" WHERE name=\'dbversion\'");
+	}
+	
+	/**
+	 * Update the testpostition in the tests table.
+	 * @param dat the transaction within which the query should be executed.
 	 * @param ti test instance id.
 	 * @param position the new testposition
 	 * @throws SQLException
@@ -761,8 +789,10 @@ public abstract class OmQueries
 	 * @param dat the transaction within which the query should be executed.
 	 * @throws SQLException If there is an error in setting up tables
 	 * @throws IOException
+	 * @throws IllegalArgumentException
+
 	 */
-	public void checkTables(DatabaseAccess.Transaction dat) throws SQLException,IOException
+	public void checkTables(DatabaseAccess.Transaction dat,Log l) throws SQLException,IOException,IllegalArgumentException
 	{
 		// If not tables exist yet, create them all.
 		if(!tableExists(dat,"tests"))
@@ -771,11 +801,21 @@ public abstract class OmQueries
 			return;
 		}
 
+
+		/* first add a navigator config table if not already there */
+		
+				
 		// Otherwise, look to see if the database needs upgrading is specific ways.
 		if (!columnExistsInTable(dat, "tests", "navigatorversion"))
 		{
 			upgradeDatabaseTo131(dat);
 		}
+		/* add the navconfig table if it does not exxist */
+		upgradeDatabaseToAddNavConfig(dat,l);
+		/* now use the parameter in the navigator config table to perform and DB upgrades */
+		upgradeDatabaseToLatest(dat,l);
+		
+
 	}
 
 	private void createDatabaseTables(DatabaseAccess.Transaction dat) throws SQLException,IOException
@@ -812,8 +852,143 @@ public abstract class OmQueries
 
 	protected void upgradeDatabaseTo131(DatabaseAccess.Transaction dat) throws SQLException
 	{
+		try
+		{
 		dat.update("ALTER TABLE " + getPrefix() + "tests ADD COLUMN navigatorversion CHAR(16)");
 		dat.update("UPDATE " + getPrefix() + "tests SET navigatorversion = '1.3.0'");
 		dat.update("ALTER TABLE " + getPrefix() + "tests ALTER COLUMN navigatorversion SET NOT NULL");
+		}
+		catch (SQLException e)
+		{
+			throw new SQLException(e);
+		}
 	}
+	
+	protected void upgradeDatabaseToAddNavConfig(DatabaseAccess.Transaction dat,Log l) throws SQLException
+	{
+		// check for the existance of the navconfig table and create it if it doesnt exist
+		if(!tableExists(dat,"navconfig"))
+		{
+			l.logDebug("DatabaseUpgrade","Running upgradeDatabaseToAddNavConfig - creating table nav_config");
+			try
+			{
+			dat.update("CREATE TABLE dbo." + getPrefix() + 
+					"navconfig (  name VARCHAR(64) NOT NULL PRIMARY KEY," +
+					"value VARCHAR(64))");
+			dat.update("INSERT INTO " + getPrefix() + "navconfig VALUES('dbversion','')");
+			}
+			catch (SQLException e)
+			{
+				throw new SQLException(e);
+				
+			}
+		}
+	}
+	/* ok, add database updates here , it would probabaly be better to add this to a config file rather than hard code, but its sooooo rare
+	 * that I think here will suffice
+	 * @param dat database connection
+	 * @param l Log
+	 * @throws IllegalArgumentException
+	 * @throws SQLException
+	 * */
+	
+	protected void upgradeDatabaseToLatest(DatabaseAccess.Transaction dat, Log l) throws SQLException,IllegalArgumentException
+	{
+
+		/* add all database updates here
+		 * first get the database version by reading the navconfig table
+		 */		
+		String currversion=OmVersion.getVersion();	
+		l.logDebug("DatabaseUpgrade "+currversion);
+
+		NavVersion DBversion = new NavVersion("");
+				
+		/* read the navconfig table into a namepair list */
+		ResultSet rs=queryNavConfig(dat);
+		
+		NameValuePairs navconfigDB=new NameValuePairs();
+		while(rs.next())
+		{ 
+			navconfigDB.add(rs.getString(1),rs.getString(2));
+		}
+		
+		/* now find the version */
+		String Names[]=navconfigDB.getNames();
+		String Values[]=navconfigDB.getValues();
+		/* read the current version from the database */
+		for (int i=0;i<Names.length;i++)
+		{
+			if (Names[i].compareToIgnoreCase("dbversion")==0)
+			{
+				DBversion.setVersion(Values[i]);
+			}
+		}
+		/* if the current database version is less than the navigator version, check for updates */
+		if(DBversion.isLessThanStr(currversion))
+		{
+			/* make sure these are listed in version order, because the function updates the DB version as we go */			
+			l.logDebug("DatabaseUpgrade", "Applying database upgrades, version before update "+DBversion.getVersion());
+			
+			updateDatabase("1.10.1",DBversion,
+			"ALTER TABLE " + getPrefix() + "params ALTER COLUMN paramvalue NVARCHAR(4000)",
+			l,dat);
+					
+			/* finally having applied all the updates set the DB version to the current */
+			l.logDebug("DatabaseUpgrade", "Update DB version to current "+currversion);
+			dat.update("UPDATE " + getPrefix() + "navconfig SET value = \'"+currversion+"\' where name=\'dbversion\'");
+		}
+		else
+		{
+			l.logDebug("DatabaseUpgrade", "Database up to date at version "+DBversion.getVersion()+" no updates attempted.");
+		}
+	}
+/**
+*checks the version stored in the database against a pre-defined version and performs the appropriate database
+*upgrade
+ * @param version the version that the DB versions is compared against, hard coded by developer in call
+ * @param dbv the database version read from the database
+ * @param update the database update to perform
+ * @param l log
+ * @param dat database connection
+ * @throws SQLException
+ *  @throws IllegalArgumentException
+ */
+
+	public void updateDatabase(String version, NavVersion dbv, String update,Log l,DatabaseAccess.Transaction dat) throws SQLException,IllegalArgumentException
+	{
+		/* now get the version in the navigator.xml file 
+		/* now apply the updates one at a time , first we apply the historic one */
+		try 
+		{		
+			if (dbv.isLessThanStr(version))
+			{
+				l.logDebug("DatabaseUpgrade","Database version less than "+version);
+				try
+				{
+					/* perform the update */
+					dat.update(update);
+					/* if that worked, update the database version */
+					dat.update("UPDATE " + getPrefix() + "navconfig SET value = \'"+version+"\' where name=\'dbversion\'");
+				}
+				catch(SQLException e)
+				{	
+					l.logError("DatabaseUpgrade",e.getMessage() + "Unable to perform database upgrade for DB less than "+version);
+					throw new SQLException(e);
+				}
+			}
+			else
+			{
+				l.logDebug("DatabaseUpgrade","UpgradeDatabaseToLatest no upgrade necessary for "+version);
+			}
+	
+		}
+		catch (IllegalArgumentException e)
+		{
+			l.logError("DatabaseUpgrade",e.getMessage() + "Invalid versions in attempt to compare to database version "+version);
+			throw new IllegalArgumentException(e);
+	
+		}
+	}
+
+
 }

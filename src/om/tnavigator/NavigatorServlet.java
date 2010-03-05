@@ -182,7 +182,7 @@ public class NavigatorServlet extends HttpServlet
 		try
 		{
 			dat=da.newTransaction();
-			oq.checkTables(dat);
+			oq.checkTables(dat,l);
 		}
 		catch(Exception e)
 		{
@@ -2779,6 +2779,20 @@ public class NavigatorServlet extends HttpServlet
 			mReplace.put("EXTRA",endOfURL(request));
 			mReplace.put("BUTTON",us.getTestDefinition().getConfirmButtonLabel());
 			mReplace.put("CONFIRMPARAS",us.getTestDefinition().getConfirmParagraphs());
+			//only ask for a confirm if the question is assessed
+			
+			if ((us.getTestDeployment().getType() == TestDeployment.TYPE_ASSESSED_REQUIRED) || 
+			(us.getTestDeployment().getType()== TestDeployment.TYPE_ASSESSED_OPTIONAL))
+			{
+			mReplace.put("CONFIRMSUBMIT","javascript:return confirm(\'You are about to close this attempt. Once you close the attempt you will no longer be able to " +
+					"complete any questions that are marked \\\'Not completed\\\'.\');");
+			}
+			else
+			{
+				mReplace.put("CONFIRMSUBMIT","");
+			}
+
+			
 			if(bTimeOver)
 				XML.remove(XML.find(d,"id","return"));
 			else

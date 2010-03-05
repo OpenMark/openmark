@@ -78,11 +78,17 @@ CREATE TABLE prefix_actions (
   PRIMARY KEY(qi,seq)
 );
 
+CREATE TABLE prefix_navconfig (
+  name VARCHAR(64) NOT NULL PRIMARY KEY,
+  value VARCHAR(64)
+  
+);
+
 CREATE TABLE prefix_params (
   qi INTEGER NOT NULL REFERENCES prefix_questions,
   seq SMALLINT NOT NULL,
   paramname VARCHAR(255),
-  paramvalue VARCHAR(2048),
+  paramvalue VARCHAR(4000),
   PRIMARY KEY(qi,seq,paramname)  
 );
 
