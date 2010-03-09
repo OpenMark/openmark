@@ -3008,7 +3008,7 @@ public class NavigatorServlet extends HttpServlet
 						"while a page is loading.", null);
 				}
 			}
-			else if(sValue.length() > 2048)
+			else if(sValue.length() > 4000)
 			{
 				sendError(us,request,response,
 					HttpServletResponse.SC_FORBIDDEN,
