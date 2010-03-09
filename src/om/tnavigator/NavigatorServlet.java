@@ -2784,8 +2784,8 @@ public class NavigatorServlet extends HttpServlet
 			if ((us.getTestDeployment().getType() == TestDeployment.TYPE_ASSESSED_REQUIRED) || 
 			(us.getTestDeployment().getType()== TestDeployment.TYPE_ASSESSED_OPTIONAL))
 			{
-			mReplace.put("CONFIRMSUBMIT","javascript:return confirm(\'You are about to close this attempt. Once you close the attempt you will no longer be able to " +
-					"complete any questions that are marked \\\'Not completed\\\'.\');");
+			mReplace.put("CONFIRMSUBMIT","javascript:return confirm(\'You are about to complete this test. Once completed you will no longer be able to " +
+					"return to any questions that are marked \\\'Not completed\\\'.\');");
 			}
 			else
 			{
