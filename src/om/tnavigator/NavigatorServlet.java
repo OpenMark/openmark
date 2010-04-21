@@ -3515,20 +3515,30 @@ public class NavigatorServlet extends HttpServlet
 	 */
 	public boolean checkLocalIP(HttpServletRequest request) throws UnknownHostException
 	{
-		// IP address must be in OU
-		if(!isIPInList(InetAddress.getByName(request.getRemoteAddr()), nc.getTrustedAddresses())) return false;
 
-		// Check originating address, if it went through the load balancer
+		// Check originating address, if it went through the netscaler
 
 		// students.open.ac.uk actually provides the one with the underline,
 		// but I think the more standard header would be as below
+			
 		String sClientIP=request.getHeader("client_ip");
 		if(sClientIP==null) sClientIP=request.getHeader("Client-IP");
-		if(sClientIP==null) sClientIP=request.getHeader("X_FORWARDED_FOR");
+		if(sClientIP==null) sClientIP=request.getHeader("X_FORWARDED_FOR");		
+
 		if(sClientIP!=null)
-			l.logDebug("IPCHECK","Non-null "+sClientIP);
+			l.logDebug("IPCHECK","(local) Non-null "+sClientIP);
 		else
-			l.logDebug("IPCHECK","Bad IP check "+sClientIP);
+		{
+			l.logDebug("IPCHECK","(local) Bad IP check "+sClientIP);		
+			for (Enumeration hdrs=request.getHeaderNames(); hdrs.hasMoreElements();) 
+			{
+			    String headerName = (String)hdrs.nextElement();
+			    l.logDebug("name = "+ headerName + " value= "+ request.getHeader(headerName)); 
+			}
+		}
+		// IP address must be in OU
+		if(!isIPInList(InetAddress.getByName(sClientIP), nc.getTrustedAddresses())) return false;
+
 		if(sClientIP!=null)
 			return isIPInList(InetAddress.getByName(sClientIP), nc.getTrustedAddresses());
 
@@ -3545,19 +3555,31 @@ public class NavigatorServlet extends HttpServlet
 	public boolean checkSecureIP(HttpServletRequest request) throws UnknownHostException
 	{
 		// IP address must be in OU
-		if(!isIPInList(InetAddress.getByName(request.getRemoteAddr()), nc.getSecureAddresses())) return false;
 
 		// Check originating address, if it went through the load balancer
 
 		// students.open.ac.uk actually provides the one with the underline,
 		// but I think the more standard header would be as below
+
+
 		String sClientIP=request.getHeader("client_ip");
 		if(sClientIP==null) sClientIP=request.getHeader("Client-IP");
 		if(sClientIP==null) sClientIP=request.getHeader("X_FORWARDED_FOR");
 		if(sClientIP!=null)
-			l.logDebug("IPCHECK","Non-null "+sClientIP);
+			l.logDebug("IPCHECK","(secure) Non-null "+sClientIP);
 		else
-			l.logDebug("IPCHECK","Bad IP check "+sClientIP);
+		{
+			l.logDebug("IPCHECK","(secure) Bad IP check "+sClientIP);
+			for (Enumeration hdrs=request.getHeaderNames(); hdrs.hasMoreElements();) 
+			{
+			    String headerName = (String)hdrs.nextElement();
+			    l.logDebug("name = "+ headerName + " value= "+ request.getHeader(headerName)); 
+			}
+		}
+		
+		
+		if(!isIPInList(InetAddress.getByName(sClientIP), nc.getSecureAddresses())) return false;
+
 		if(sClientIP!=null)		
 			return isIPInList(InetAddress.getByName(sClientIP), nc.getSecureAddresses());
 
@@ -4228,6 +4250,12 @@ public class NavigatorServlet extends HttpServlet
 	 * @param exception Any exception that should be reported (null if none)
 	 * @throws StopException Always, to abort processing
 	 */
+	public void LogDebug(String mess)
+	{
+		l.logDebug( mess);		
+	}
+	
+	
 	public void sendError(UserSession us, HttpServletRequest request, HttpServletResponse response,
 			int code, boolean isBug, boolean keepSession,
 			String backToTest, String title, String message, Throwable exception)
