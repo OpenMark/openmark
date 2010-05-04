@@ -35,32 +35,25 @@ import util.xml.XMLException;
 Represents an iframe
 <p/>
 <h2>XML usage</h2>
-&lt;iframe id="myFrame" src="http://www.site/page.html" alt="txt" width="100" height="80"/&gt;
+&lt;iframe id="myFrame" src="http://www.site/page.html" width="100" height="80"/&gt;
 <p/>
-or (for html file in question jar):
+&lt;!-- or (for html file in question jar):
 <p/>
-&lt;iframe id="myFrame" src="http://www.site/page.html" alt="txt" width="100" height="80"/&gt;
+&lt;iframe id="myFrame" src="http://www.site/page.html" width="100" height="80"/&gt;--&gt;
 <p/>
 <h2>Properties</h2>
 <table border="1">
 <tr><th>Property</th><th>Values</th><th>Effect</th></tr>
 <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
-<tr><td>alt</td><td>(string)</td><td>Alternative text for those who can't use the actual image</td></tr>
 <tr><td>width</td><td>(int)</td><td>default displayed width in pixels (optional)</td></tr>
 <tr><td>height</td><td>(int)</td><td>default displayedheight in pixels (optional)</td></tr>
 <tr><td>src</td><td>(string)</td><td>html src contents of iframe</td></tr>
 </table>
-<h3>Changing which applet is shown</h3>
-The src and the alt-text can be changed from Java via a call to
-<br/>
-setApplet(String src, String altText)
 */
 public class IFrameComponent extends QComponent
 {
 	public static final String PROPERTY_ACTION="action";
 
-	private static final String FLASH_MIMETYPE = "application/x-shockwave-flash";
-	private static final String EXPRESSINSTALL_SWF = "expressinstall.swf";
 	private static final String PROPERTY_SRC="src";
 	private static final String PROPERTY_WIDTH="width";
 	private static final String PROPERTY_HEIGHT="height";
@@ -70,9 +63,6 @@ public class IFrameComponent extends QComponent
 	{
 		return "iframe";
 	}
-
-	/** Property for the alt text. */
-	public final static String PROPERTY_ALT="alt";
 
 	/** path to image file */
 	private String sSrc=null; // Currently-loaded file
@@ -100,7 +90,7 @@ public class IFrameComponent extends QComponent
 	@Override
 	protected String[] getRequiredAttributes()
 	{
-		return new String[] {PROPERTY_ALT,PROPERTY_SRC, PROPERTY_WIDTH,PROPERTY_HEIGHT};
+		return new String[] {PROPERTY_SRC, PROPERTY_WIDTH,PROPERTY_HEIGHT};
 	}
 
 	/** Specifies possible attributes */
@@ -109,7 +99,6 @@ public class IFrameComponent extends QComponent
 	{
 		super.defineProperties();
 		defineString(PROPERTY_ACTION);
-		defineString(PROPERTY_ALT);
 		defineString(PROPERTY_SRC);
 		defineInteger(PROPERTY_WIDTH);
 		defineInteger(PROPERTY_HEIGHT);
@@ -143,7 +132,9 @@ public class IFrameComponent extends QComponent
 		sToken="t"+getQuestion().getRandom().nextInt()+getID().hashCode();
 
 		external=getString(PROPERTY_SRC).substring(0,4).equalsIgnoreCase("http");
-
+		/* external means the page is not in the question jar, we want to keep this definition
+		 * because internal pages can send data back to OM, externals cant - SECURITY!! 
+		 */
 		if(!external)getQuestion().checkCallback(getString(PROPERTY_ACTION));
 	}
 
@@ -155,16 +146,14 @@ public class IFrameComponent extends QComponent
 	}
 
 	/**
-	 * Sets the src file path and alt text.
+	 * Sets the src file path.
 	 * <p>
 	 * @param sSrc New value for src
-	 * @param sAlt New value for screenreader alternative
 	 * @throws OmDeveloperException -- when?
 	 */
-	public void setSrc(String sSrc, String sAlt) throws OmDeveloperException
+	public void setSrc(String sSrc) throws OmDeveloperException
 	{
 		setString(PROPERTY_SRC, sSrc);
-		setString(PROPERTY_ALT, sAlt);
 	}
 
 	@Override
@@ -172,69 +161,56 @@ public class IFrameComponent extends QComponent
 	{
 
 		double dZoom=getQuestion().getZoom();
-/*		if(bPlain)
-		{
-			// Put text equivalent
-			Element eDiv=qc.createElement("div");
-			qc.addInlineXHTML(eDiv);
-			XML.createText(eDiv,getString(PROPERTY_ALT));
-			qc.addTextEquivalent(getString(PROPERTY_ALT));
-		}
-		else
-		{//*/
+
 			iWidth = getInteger("width");
 			iHeight = getInteger("height");
 
-				sSrc=getString(PROPERTY_SRC);
-				//get image mime type
-				String sFL = sSrc.toLowerCase();
-
+			sSrc=getString(PROPERTY_SRC);
+			
 			// iframe tag
 			int
 			iActualWidth=(int)(iWidth*dZoom+0.5),
 			iActualHeight=(int)(iHeight*dZoom+0.5);
 			
-//		eInput.setAttribute("onclick","appClick('%%RESOURCES%%','"+getID()+"','"+QDocument.ID_PREFIX+"'" +
-//				",'"+sFilePath+"','"+className+"',"+iWidth+","+iHeight+",'"+params+"')");
-//		qc.addInlineXHTML(eInput);
-//		if(isEnabled())	qc.informFocusable(sButtonID,bPlain);
-
-		Element eInput=qc.createElement("input");
-		eInput.setAttribute("type","hidden");
-
-		String sInputID=QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID();
-
-		eInput.setAttribute("name",sInputID);
-		eInput.setAttribute("id",sInputID);
-		qc.addInlineXHTML(eInput);
-
-
-		if(isPropertySet(PROPERTY_ACTION) && !external)
-		{
-			eInput=qc.createElement("input");
+			Element eInput=qc.createElement("input");
 			eInput.setAttribute("type","hidden");
-			String sActionID=QDocument.ID_PREFIX+QDocument.ACTION_PREFIX+getID();
-			eInput.setAttribute("name",sActionID);
-			eInput.setAttribute("id",sActionID);
-			eInput.setAttribute("value","submit");
-			eInput.setAttribute("disabled","disabled"); // Disabled unless submitted this way
-			qc.addInlineXHTML(eInput);
-		}
 
-		if(bInit && !external)		{
-			try
+			String sInputID=QDocument.ID_PREFIX+QDocument.VALUE_PREFIX+getID();
+	
+			eInput.setAttribute("name",sInputID);
+			eInput.setAttribute("id",sInputID);
+			qc.addInlineXHTML(eInput);
+	
+			/*if not external, set sup tag that conatisn information that is passed from
+			user to OM. we dont do this if frame source is not in the question jar
+			*/
+			
+			if(isPropertySet(PROPERTY_ACTION) && !external)
 			{
-				qc.addResource(sSrc,"html", getQuestion().loadResource(sSrc));
+				eInput=qc.createElement("input");
+				eInput.setAttribute("type","hidden");
+				String sActionID=QDocument.ID_PREFIX+QDocument.ACTION_PREFIX+getID();
+				eInput.setAttribute("name",sActionID);
+				eInput.setAttribute("id",sActionID);
+				eInput.setAttribute("value","submit");
+				eInput.setAttribute("disabled","disabled"); // Disabled unless submitted this way
+				qc.addInlineXHTML(eInput);
 			}
-			catch(IllegalArgumentException e)
-			{
-				throw new OmException("Error loading html",e);
+			/* setting up the tag */
+			if(bInit && !external)		{
+				try
+				{
+					qc.addResource(sSrc,"html", getQuestion().loadResource(sSrc));
+				}
+				catch(IllegalArgumentException e)
+				{
+					throw new OmException("Error loading html",e);
+				}
+				catch(IOException e)
+				{
+					throw new OmException("Error loading html",e);
+				}
 			}
-			catch(IOException e)
-			{
-				throw new OmException("Error loading html",e);
-			}
-		}
 
 			Element eEnsureSpaces=qc.createElement("iframe");
 			eEnsureSpaces.setAttribute("src",(external?"":"%%RESOURCES%%/")+sSrc);
@@ -243,25 +219,21 @@ public class IFrameComponent extends QComponent
 			eEnsureSpaces.setAttribute("width",""+iActualWidth);
 			eEnsureSpaces.setAttribute("frameborder","0");
 			qc.addInlineXHTML(eEnsureSpaces);
-
-		if(!external){
-			qc.addTextEquivalent("<br/>");
-			Element okTag=qc.createElement("input");
-			okTag.setAttribute("type","button");
-			okTag.setAttribute("id","enterB");
-			okTag.setAttribute("value"," Enter answer ");
-			okTag.setAttribute("onclick", 
-//			" alert('"+sInputID+"'+document.getElementById('IF"+getID()+"').document.getElementById('response').innerHTML
-//			document.getElementById('response').innerHTML );"
-//			+
-			"sendResponse('"
-				+sInputID+"','"+QDocument.ID_PREFIX+"',"
-//				+"document.getElementById('IF"+getID()+"').contentDocument.getElementById('response').innerHTML"
-				+"'IF"+getID()+"'"
-				+");"
-				);
-			qc.addInlineXHTML(okTag);
-		}
+			/* setting up enter answer button tag for passing information */
+			if(!external){
+				qc.addTextEquivalent("<br/>");
+				Element okTag=qc.createElement("input");
+				okTag.setAttribute("type","button");
+				okTag.setAttribute("id","enterB");
+				okTag.setAttribute("value"," Enter answer ");
+				okTag.setAttribute("onclick", 
+				"sendResponse('"
+					+sInputID+"','"+QDocument.ID_PREFIX+"',"
+					+"'IF"+getID()+"'"
+					+");"
+					);
+				qc.addInlineXHTML(okTag);
+			}
 
 			// If there's a space before, add one here too (otherwise IE eats it)
 			if(bSpaceBefore)
@@ -289,4 +261,4 @@ public class IFrameComponent extends QComponent
 	}
 	
 	
-} // end of Image Component class
+} // end of iframe Component class

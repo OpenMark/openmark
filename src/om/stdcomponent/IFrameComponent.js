@@ -1,6 +1,6 @@
+// if internal web page, then send contents of response div tag to OM
 function sendResponse(id,idprefix,iff)
 {
-//alert(""+id+" "+iff);
 	var answer="", docw=document.getElementById(iff).contentWindow, docc;
 	if(docw==null)docc=document.getElementById(iff).contentDocument;
 	else docc=docw.document;
