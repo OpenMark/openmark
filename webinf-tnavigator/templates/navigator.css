@@ -211,7 +211,7 @@ html.zoom20 #progress .question,html.zoom20 #progress .text,html.zoom20 #progres
 }
 #progress .question a,#progress .question span,#progress .text a,#progress .text span
 {
-  border:1px solid #888;
+  border:1px solid #221037; /* fix for bug 9640 */
 /*FIXED*/ border-color:%%FG%%;
 }
 
