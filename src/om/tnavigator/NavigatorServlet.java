@@ -2511,6 +2511,9 @@ public class NavigatorServlet extends HttpServlet
 	private void serveQuestionPage(RequestTimings rt,UserSession us,TestQuestion tq,String sXHTML,
 			boolean notReallyQuestion,HttpServletRequest request, HttpServletResponse response) throws IOException,OmException
 	{
+		int sn=getSectionNum(us,tq);
+		int WhatSect=(sn> 0)?sn:0;
+	
 		us.sSequence=Math.random()+"";
 		if (!notReallyQuestion) {
 		sXHTML = "<form method='post' action='./' autocomplete='off'>" +
@@ -2518,34 +2521,121 @@ public class NavigatorServlet extends HttpServlet
 				sXHTML +
 				"</form>";
 		}
+		// Either not using names, or question is unnamed
+		// check for numberbysection and use that if specified
+		String qnh="Question";
+		String sQuestionref=qnh;
+		if (us.getTestDefinition().getQuestionNumberHeader().compareTo("")> 0)
+		{
+			 qnh=us.getTestDefinition().getQuestionNumberHeader();
+					//qnh=WhatSect+"."+qnh+"
+			 sQuestionref=qnh+" "+getSectionNum(us,tq)+"."+getNumInSection(us,tq);
+			// sQuestionref=qnh+" "+getSectionNum(us,tq)+"."+tq.getNumber();
 
+		}
+		else
+		{
+			sQuestionref=qnh+" "+tq.getNumber();		
+
+		}
+		
+		// if its a defult question, then include the (of XXX) but if nbs is specified then dont
+	    String ofmax1=(us.getTestDefinition().isNumberBySection()) ? "":
+					"("+tq.getNumber()+"of "+getQuestionMax(us)+")";					
+		String ofmax2=(us.getTestDefinition().isNumberBySection()) ? "":
+				"(of "+getQuestionMax(us)+")";
+	
+		 
 		if(us.isSingle())
 		{
+			
+					
 			Element eMetadata=getQuestionMetadata(rt,tq.getID(),
 				getLatestVersion(tq.getID(),tq.getVersion()).toString());
-			serveTestContent(us,XML.hasChild(eMetadata,"title") ? XML.getText(eMetadata,"title") : "Question","",
+			serveTestContent(us,XML.hasChild(eMetadata,"title") ? XML.getText(eMetadata,"title") : qnh,"",
 					null,us.sProgressInfo,sXHTML,true, request, response, false);
 		}
 		else
 		{
+		    
 			if(us.getTestDefinition()!=null && us.getTestDefinition().areQuestionsNamed())
 			{
 				Element eMetadata=getQuestionMetadata(rt,tq.getID(),
 					getLatestVersion(tq.getID(),tq.getVersion()).toString());
+
 				if(XML.hasChild(eMetadata,"title"))
 				{
-					serveTestContent(us,XML.getText(eMetadata,"title"),"("+tq.getNumber()+" of "+getQuestionMax(us)+")",
+					serveTestContent(us,XML.getText(eMetadata,"title"),ofmax1,
 							us.bAdmin ? tq.getID() : null,us.sProgressInfo,sXHTML,true, request, response, notReallyQuestion);
 					return;
 				}
-			}
-
-			// Either not using names, or question is unnamed
-			serveTestContent(us,"Question "+tq.getNumber(),"(of "+getQuestionMax(us)+")",
-				us.bAdmin ? tq.getID() : null,us.sProgressInfo,sXHTML,true, request, response, notReallyQuestion);
+			}	
+			serveTestContent(us,sQuestionref,ofmax2,us.bAdmin ? tq.getID() : null,us.sProgressInfo,sXHTML,true, request, response, notReallyQuestion);
 		}
 	}
 
+	private static int getSectionNum(UserSession us,TestQuestion tq) throws OmException
+	{
+		// check all the leaves and when you find one that matches, return the section 
+		// number its in
+		int iSectionNum=-1;
+		String sCurrentSection="zzzz";
+		TestLeaf tl=us.getTestLeavesInOrder()[0];
+
+		for(int i=0;i<us.getTestLeavesInOrder().length;i++)
+		{
+			tl=us.getTestLeavesInOrder()[i];
+			// Check if new section
+			if( (tl.getSection()!=null && !tl.getSection().equals(sCurrentSection))
+				|| (tl.getSection()==null && sCurrentSection!=null) )
+			{
+				if (sCurrentSection!=null )iSectionNum++;
+				
+				sCurrentSection=tl.getSection();
+				
+				if ( sCurrentSection!=null && sCurrentSection.compareTo(tq.getSection())> 0)
+				{
+					return iSectionNum;			
+				}
+			}
+			//if(us.getTestLeavesInOrder()[i] instanceof TestQuestion)
+
+		}
+		throw new OmException("No questions??");
+	}
+	
+
+	private static int getNumInSection(UserSession us,TestQuestion tq) throws OmException
+	{
+		int iSectionNum=0;
+		int iNumInSection=0;
+		String sCurrentSection="";
+		TestLeaf tl=us.getTestLeavesInOrder()[0];
+
+		for(int i=0;i<us.getTestLeavesInOrder().length;i++)
+		{
+			tl=us.getTestLeavesInOrder()[i];
+			// Check if new section
+			if( (tl.getSection()!=null && !tl.getSection().equals(sCurrentSection))
+				|| (tl.getSection()==null && sCurrentSection!=null) )
+			{
+				iNumInSection=0;
+				sCurrentSection=tl.getSection();
+			}
+			if(tl instanceof TestQuestion)
+			{			
+				iNumInSection++;			
+
+				//getNumber is wrong, need to get the numb
+				if (((TestQuestion) tl).getNumber() == tq.getNumber())
+				{
+					return iNumInSection;
+				}
+			}
+
+		}
+		throw new OmException("No questions??");
+	}
 	/**
 	 * Performs database initialisation for current question so that a new attempt
 	 * may start. Does not actually start a question session.
@@ -3148,6 +3238,8 @@ public class NavigatorServlet extends HttpServlet
 		}
 		throw new OmException("No questions??");
 	}
+	
+
 
 	/**
 	 * Moves to the next question, skipping those that are unavailable or that
@@ -3578,11 +3670,18 @@ public class NavigatorServlet extends HttpServlet
 		}
 		
 		
-		if(!isIPInList(InetAddress.getByName(sClientIP), nc.getSecureAddresses())) return false;
+		if(!isIPInList(InetAddress.getByName(sClientIP), nc.getSecureAddresses())) 
+			{
+			l.logDebug("IPCHECK","(secure) returning false");
+			return false;
+			}
 
 		if(sClientIP!=null)		
-			return isIPInList(InetAddress.getByName(sClientIP), nc.getSecureAddresses());
+		{
+			l.logDebug("IPCHECK","(secure) checking s in IP list");
 
+			return isIPInList(InetAddress.getByName(sClientIP), nc.getSecureAddresses());
+		}
 		// No load-balancer? OK.
 		return true;
 	}
@@ -3593,6 +3692,7 @@ public class NavigatorServlet extends HttpServlet
 	 */
 	private boolean isIPInList(InetAddress ia, String[] addresses)
 	{
+		l.logDebug("IPCHECK","isIPInList");
 		byte[] ab=ia.getAddress();
 		if(ab.length==16)
 		{
@@ -3639,8 +3739,12 @@ public class NavigatorServlet extends HttpServlet
 					}
 				}
 			}
-			if(ok) return true;
+			if(ok) {
+				l.logDebug("IPCHECK","isIPInList- true");
+				return true;
+			}
 		}
+		l.logDebug("IPCHECK","isIPInList - false");
 		return false;
 	}
 
@@ -3902,7 +4006,7 @@ public class NavigatorServlet extends HttpServlet
 	{
 		String sAccessibility=getAccessibilityCookie(request);
 		boolean plainMode=sAccessibility.indexOf("[plain]")!=-1;
-
+		
 		if(us.getFixedVariant()>=0) sAuxTitle+=" [variant "+us.getFixedVariant()+"]";
 
 		// Create basic template
@@ -4016,6 +4120,9 @@ public class NavigatorServlet extends HttpServlet
 				boolean bAllowNavigation=us.bAdmin || us.getTestDefinition().isNavigationAllowed();
 
 				boolean bFirstInSection=true;
+				boolean bNotFirstNonInfoInSection=true;
+				int iFirstInSection=0;
+
 				for(int i=0;i<us.getTestLeavesInOrder().length;i++)
 				{
 					TestLeaf tl=us.getTestLeavesInOrder()[i];
@@ -4047,6 +4154,8 @@ public class NavigatorServlet extends HttpServlet
 							}
 						}
 						bFirstInSection=true;
+						bNotFirstNonInfoInSection=true;
+						iFirstInSection=0;
 					}
 
 					if(bFirstInSection)
@@ -4065,6 +4174,16 @@ public class NavigatorServlet extends HttpServlet
 						bCurrent=(i==us.getTestPosition()),
 						bDone=tl.isDone(),
 						bAvailable=tl.isAvailable();
+					
+					// if we are restarting numbering at beginning of each section, then check if
+					// its the first non-info item in the section
+					if (us.getTestDefinition().isNumberBySection() & bNotFirstNonInfoInSection & !bText)
+					{						
+						iFirstInSection=((TestQuestion)tl).getNumber()-1;
+						bNotFirstNonInfoInSection=false;
+					
+					}
+
 					if(!bDone)bAllDone=false;
 					boolean bLink=(!bCurrent || us.getTestDefinition().isRedoQuestionAllowed())
 						&& bAllowNavigation && bAvailable;
@@ -4080,7 +4199,7 @@ public class NavigatorServlet extends HttpServlet
 						XML.createText(eThingy,
 							bText
 							? (((TestInfo)tl).getTitle())
-							:	((TestQuestion)tl).getNumber()+"");
+							:	((TestQuestion)tl).getNumber()-iFirstInSection+"");
 						if(bCurrent)
 						{
 							XML.createText(eThingy," (current)");
@@ -4102,7 +4221,7 @@ public class NavigatorServlet extends HttpServlet
 
 						Element eThingy=XML.createChild(eThis,bLink?"a":"span");
 						eThingy.setAttribute("class","t");
-						XML.createText(eThingy,bText?"Info":((TestQuestion)tl).getNumber()+"");
+						XML.createText(eThingy,bText?"Info":((TestQuestion)tl).getNumber()-iFirstInSection+" ");
 
 						if(bLink) eThingy.setAttribute("href","?jump="+i);
 					}
