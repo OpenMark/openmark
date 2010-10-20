@@ -37,9 +37,9 @@ public class TestDefinition
 	private Element eContent,eFinal,eOptions, eConfirm;
 	private boolean bNavigation,bRedoQuestion,bRedoQuestionAuto,
 	  bRedoTest,bFreeSummary,bFreeStop,bSummaryScores,bSummaryAttempts,bSummaryQuestions,
-	  bQuestionNames,bEndSummary;
+	  bQuestionNames,bEndSummary,bNumberBySection;
 	private int iNavLocation;
-	private String sLabelSet="";
+	private String sLabelSet="",sQuestionNumberHeader="";
 
 	private Element eConfirmParagraphs;
 	private String sConfirmButton,sConfirmTitle;
@@ -113,6 +113,7 @@ public class TestDefinition
 			bQuestionNames="yes".equals(eOptions.getAttribute("questionnames"));
 			bEndSummary=!"no".equals(eOptions.getAttribute("endsummary"));
 			bSummaryQuestions=!"no".equals(eOptions.getAttribute("summaryquestions"));
+			bNumberBySection="yes".equals(eOptions.getAttribute("numberbysection"));
 			String navLocation = eOptions.getAttribute("navlocation");
 			if(navLocation.equals("left"))
 				iNavLocation=NAVLOCATION_LEFT;
@@ -122,6 +123,7 @@ public class TestDefinition
 				iNavLocation=NAVLOCATION_BOTTOM;
 
 			if(eOptions.hasAttribute("labelset")) sLabelSet=eOptions.getAttribute("labelset");
+			if(eOptions.hasAttribute("questionnumberheader")) sQuestionNumberHeader=eOptions.getAttribute("questionnumberheader");
 
 		}
 		catch(XMLException xe)
@@ -344,7 +346,11 @@ public class TestDefinition
 	{
 		return bEndSummary;
 	}
-
+	boolean isNumberBySection()
+	{
+		return bNumberBySection;
+	}
+	
 	int getNavLocation()
 	{
 		return iNavLocation;
@@ -371,5 +377,10 @@ public class TestDefinition
 	String getLabelSet()
 	{
 		return sLabelSet;
+	}
+	
+	String getQuestionNumberHeader()
+	{
+		return sQuestionNumberHeader;
 	}
 }
