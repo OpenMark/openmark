@@ -1310,6 +1310,11 @@ public class NavigatorServlet extends HttpServlet
 		boolean bIncludeQuestions,boolean bIncludeAttempts,boolean bIncludeScore) throws Exception
 	{
 		Node nTableParent,nPlainParent=null;
+		
+		// check whether too renumber within section
+		
+		boolean bisNumberBySection=us.getTestDefinition().isNumberBySection();
+		
 		if(bPlain)
 		{
 			Element eSkip=XML.createChild(nParent,"a");
@@ -1345,6 +1350,8 @@ public class NavigatorServlet extends HttpServlet
 		Element eAbbr=XML.createChild(eTH,"abbr");
 		XML.createText(eAbbr,"#");
 		eAbbr.setAttribute("title","Question number");
+		
+			
 		if(bIncludeQuestions)
 		{
 			eTH=XML.createChild(eTR,"th");
@@ -1386,6 +1393,7 @@ public class NavigatorServlet extends HttpServlet
 
 			// Build table
 			int iCurrentQuestion=1;
+			int iOutputCurrentQuestionNumber=1;
 			int iMaxQuestion=0;
 			String sLastQuestion=null;
 			String sDisplayedSection=null; // Section heading that has already been displayed
@@ -1403,18 +1411,26 @@ public class NavigatorServlet extends HttpServlet
 				// Get section
 				String sSection=rs.getString(7);
 
-				// If we didn't put out an answer for current question, chuck one out now
+				//check if we need to restart the numbering of the questions
+				if (bisNumberBySection && !(sPreviousSection==null || sPreviousSection.equals(sDisplayedSection)))
+				{
+					iOutputCurrentQuestionNumber=0 ;
+				}				
 				if(iQuestionNumber>iCurrentQuestion)
 				{
+					// If we didn't put out an answer for current question, chuck one out now
+					iOutputCurrentQuestionNumber++;
+
 					sDisplayedSection=addSectionRow(
 							bPlain, bIncludeQuestions, bIncludeAttempts, bIncludeScore,
 							nPlainParent, eTable, asAxes,sPreviousSection,sDisplayedSection);
 					addUnfinishedRow(
 							us, bPlain, bIncludeQuestions, bIncludeAttempts, bIncludeScore,
 							nPlainParent, eTable,
-							iCurrentQuestion, sLastQuestion);
+							iCurrentQuestion, iOutputCurrentQuestionNumber,sLastQuestion);
 
 					iCurrentQuestion++;
+
 					// This only works because there always will be at least one line per
 					// question thanks to the LEFT JOIN
 				}
@@ -1425,24 +1441,33 @@ public class NavigatorServlet extends HttpServlet
 				if(rs.getInt(2)!=0)
 				{
 					// Woo! We have an answer
+					
+					iOutputCurrentQuestionNumber++;
+
 					sDisplayedSection=addSectionRow(
 							bPlain, bIncludeQuestions, bIncludeAttempts, bIncludeScore,
 							nPlainParent, eTable, asAxes, sSection,sDisplayedSection);
 
+					if (bisNumberBySection && !(sPreviousSection==null) && !( sPreviousSection.equals(sDisplayedSection)))
+					{
+						iOutputCurrentQuestionNumber=1 ;
+					}				
 					eTR=XML.createChild(eTable,"tr");
 					eTR.setAttribute("class","answered");
-					XML.createText(eTR,"td",""+iCurrentQuestion);
+					XML.createText(eTR,"td",""+iOutputCurrentQuestionNumber);
 					Element ePlainRow=null;
 					if(bPlain)
 					{
 						ePlainRow=XML.createChild(nPlainParent,"div");
-						XML.createText(ePlainRow,"Question "+iCurrentQuestion+". ");
+						XML.createText(ePlainRow,"Question "+iOutputCurrentQuestionNumber+". ");
 					}
 
 					if(bIncludeQuestions)
 					{
 						String sQ=rs.getString(3),sA=rs.getString(4);
-						XML.createText(eTR,"td",sQ);
+						String socqn=Integer.toString(iOutputCurrentQuestionNumber);
+						//XML.createText(eTR,"td",sQ);
+						XML.createText(eTR,"td",socqn );
 						XML.createText(eTR,"td",sA);
 						if(bPlain)
 						{
@@ -1469,14 +1494,22 @@ public class NavigatorServlet extends HttpServlet
 
 			// If we didn't do the last one, put that out
 			if(iCurrentQuestion<=iMaxQuestion)
-			{
+			{				
+				//check if we need to restart the numbering of the questions
+				if (bisNumberBySection && !(sPreviousSection==null) && !sPreviousSection.equals(sDisplayedSection))
+
+				{
+					iOutputCurrentQuestionNumber=1 ;
+				}				
 				sDisplayedSection=addSectionRow(
-						bPlain, bIncludeQuestions, bIncludeAttempts, bIncludeScore,
-						nPlainParent, eTable, asAxes, sPreviousSection,sDisplayedSection);
+					bPlain, bIncludeQuestions, bIncludeAttempts, bIncludeScore,
+					nPlainParent, eTable, asAxes, sPreviousSection,sDisplayedSection);
+				
+				
 				addUnfinishedRow(
 						us, bPlain, bIncludeQuestions, bIncludeAttempts, bIncludeScore,
 						nPlainParent, eTable,
-						iCurrentQuestion, sLastQuestion);
+						iCurrentQuestion, iOutputCurrentQuestionNumber,sLastQuestion);
 			}
 
 			if(bIncludeScore)
@@ -1538,16 +1571,16 @@ public class NavigatorServlet extends HttpServlet
 		return sSection;
 	}
 
-	private void addUnfinishedRow(UserSession us, boolean bPlain, boolean bIncludeQuestions, boolean bIncludeAttempts, boolean bIncludeScore, Node nPlainParent, Element eTable, int iCurrentQuestion, String sLastQuestion) throws OmFormatException
+	private void addUnfinishedRow(UserSession us, boolean bPlain, boolean bIncludeQuestions, boolean bIncludeAttempts,boolean bIncludeScore, Node nPlainParent, Element eTable,int iCurrentQuestion, int iOutputCurrentQuestionNumber, String sLastQuestion) throws OmFormatException
 	{
 		Element eTR=XML.createChild(eTable,"tr");
 		Element ePlainRow=null;
 		eTR.setAttribute("class","unanswered");
-		XML.createText(eTR,"td",""+iCurrentQuestion);
+		XML.createText(eTR,"td",""+iOutputCurrentQuestionNumber);
 		if(bPlain)
 		{
 			ePlainRow=XML.createChild(nPlainParent,"div");
-			XML.createText(ePlainRow,"Question "+iCurrentQuestion+". ");
+			XML.createText(ePlainRow,"Question "+iOutputCurrentQuestionNumber+". ");
 		}
 
 		if(bIncludeQuestions)
@@ -2574,34 +2607,37 @@ public class NavigatorServlet extends HttpServlet
 		}
 	}
 
-	private static int getSectionNum(UserSession us,TestQuestion tq) throws OmException
+	private static int getSectionNum(UserSession us,TestQuestion tq)throws OmException
 	{
 		// check all the leaves and when you find one that matches, return the section 
 		// number its in
-		int iSectionNum=-1;
-		String sCurrentSection="zzzz";
+		int iSectionNum=0;
+		String sCurrentSection="";
 		TestLeaf tl=us.getTestLeavesInOrder()[0];
 
 		for(int i=0;i<us.getTestLeavesInOrder().length;i++)
 		{
 			tl=us.getTestLeavesInOrder()[i];
-			// Check if new section
-			if( (tl.getSection()!=null && !tl.getSection().equals(sCurrentSection))
-				|| (tl.getSection()==null && sCurrentSection!=null) )
+			if( (tl.getSection()!=null && sCurrentSection!=null))
 			{
-				if (sCurrentSection!=null )iSectionNum++;
-				
+			// if this section is differenct
+				if(!tl.getSection().equals(sCurrentSection))
+				{
+					iSectionNum++;
+				}
+				if(tl instanceof TestQuestion)
+				{					
+
+					if (((TestQuestion) tl).getNumber() == tq.getNumber())
+					{							
+							return iSectionNum;			
+					}
+				}
 				sCurrentSection=tl.getSection();
 				
-				if ( sCurrentSection!=null && sCurrentSection.compareTo(tq.getSection())> 0)
-				{
-					return iSectionNum;			
-				}
 			}
-			//if(us.getTestLeavesInOrder()[i] instanceof TestQuestion)
-
 		}
-		throw new OmException("No questions??");
+		throw new OmException("No questions?? ");
 	}
 	
 
