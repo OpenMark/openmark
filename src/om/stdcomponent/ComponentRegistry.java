@@ -44,6 +44,7 @@ public class ComponentRegistry
 		FlashComponent.class,
 		GapComponent.class,
 		IfComponent.class,
+		IFrameComponent.class,
 		ImageComponent.class,
 		IndentComponent.class,
 		JMEComponent.class,
