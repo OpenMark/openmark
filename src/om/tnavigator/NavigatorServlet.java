@@ -1393,7 +1393,7 @@ public class NavigatorServlet extends HttpServlet
 
 			// Build table
 			int iCurrentQuestion=1;
-			int iOutputCurrentQuestionNumber=1;
+			int iOutputCurrentQuestionNumber=0;
 			int iMaxQuestion=0;
 			String sLastQuestion=null;
 			String sDisplayedSection=null; // Section heading that has already been displayed
@@ -1494,7 +1494,8 @@ public class NavigatorServlet extends HttpServlet
 
 			// If we didn't do the last one, put that out
 			if(iCurrentQuestion<=iMaxQuestion)
-			{				
+			{			
+				iOutputCurrentQuestionNumber++;
 				//check if we need to restart the numbering of the questions
 				if (bisNumberBySection && !(sPreviousSection==null) && !sPreviousSection.equals(sDisplayedSection))
 
@@ -2544,9 +2545,9 @@ public class NavigatorServlet extends HttpServlet
 	private void serveQuestionPage(RequestTimings rt,UserSession us,TestQuestion tq,String sXHTML,
 			boolean notReallyQuestion,HttpServletRequest request, HttpServletResponse response) throws IOException,OmException
 	{
-		int sn=getSectionNum(us,tq);
-		int WhatSect=(sn> 0)?sn:0;
-	
+		// get the section number if we are numbering by section
+		
+
 		us.sSequence=Math.random()+"";
 		if (!notReallyQuestion) {
 		sXHTML = "<form method='post' action='./' autocomplete='off'>" +
@@ -2561,9 +2562,7 @@ public class NavigatorServlet extends HttpServlet
 		if (us.getTestDefinition().getQuestionNumberHeader().compareTo("")> 0)
 		{
 			 qnh=us.getTestDefinition().getQuestionNumberHeader();
-					//qnh=WhatSect+"."+qnh+"
 			 sQuestionref=qnh+" "+getSectionNum(us,tq)+"."+getNumInSection(us,tq);
-			// sQuestionref=qnh+" "+getSectionNum(us,tq)+"."+tq.getNumber();
 
 		}
 		else
@@ -4382,7 +4381,10 @@ public class NavigatorServlet extends HttpServlet
 		labelReplace.put(sKey,m);
 		return m;
 	}
-
+	public void LogDebug(String mess)
+	{
+		l.logDebug( mess);		
+	}
 	/**
 	 * Sends an error to the student, logs it, and kills their session. Does not
 	 * return but throws a StopException in order to abort further processing.
@@ -4405,10 +4407,7 @@ public class NavigatorServlet extends HttpServlet
 	 * @param exception Any exception that should be reported (null if none)
 	 * @throws StopException Always, to abort processing
 	 */
-	public void LogDebug(String mess)
-	{
-		l.logDebug( mess);		
-	}
+
 	
 	
 	public void sendError(UserSession us, HttpServletRequest request, HttpServletResponse response,
