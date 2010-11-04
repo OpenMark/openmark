@@ -2555,29 +2555,8 @@ public class NavigatorServlet extends HttpServlet
 				sXHTML +
 				"</form>";
 		}
-		// Either not using names, or question is unnamed
-		// check for numberbysection and use that if specified
 		String qnh="Question";
-		String sQuestionref=qnh;
-		if (us.getTestDefinition().getQuestionNumberHeader().compareTo("")> 0)
-		{
-			 qnh=us.getTestDefinition().getQuestionNumberHeader();
-			 sQuestionref=qnh+" "+getSectionNum(us,tq)+"."+getNumInSection(us,tq);
-
-		}
-		else
-		{
-			sQuestionref=qnh+" "+tq.getNumber();		
-
-		}
-		
-		// if its a defult question, then include the (of XXX) but if nbs is specified then dont
-	    String ofmax1=(us.getTestDefinition().isNumberBySection()) ? "":
-					"("+tq.getNumber()+"of "+getQuestionMax(us)+")";					
-		String ofmax2=(us.getTestDefinition().isNumberBySection()) ? "":
-				"(of "+getQuestionMax(us)+")";
-	
-		 
+		String sQuestionref=qnh; 
 		if(us.isSingle())
 		{
 			
@@ -2589,6 +2568,27 @@ public class NavigatorServlet extends HttpServlet
 		}
 		else
 		{
+			// Either not using names, or question is unnamed
+			// check for numberbysection and use that if specified
+
+			if (us.getTestDefinition().getQuestionNumberHeader().compareTo("")> 0)
+			{
+				 qnh=us.getTestDefinition().getQuestionNumberHeader();
+				 sQuestionref=qnh+" "+getSectionNum(us,tq)+"."+getNumInSection(us,tq);
+
+			}
+			else
+			{
+				sQuestionref=qnh+" "+tq.getNumber();		
+
+			}
+			
+			// if its a defult question, then include the (of XXX) but if nbs is specified then dont
+		    String ofmax1=(us.getTestDefinition().isNumberBySection()) ? "":
+						"("+tq.getNumber()+"of "+getQuestionMax(us)+")";					
+			String ofmax2=(us.getTestDefinition().isNumberBySection()) ? "":
+					"(of "+getQuestionMax(us)+")";
+		
 		    
 			if(us.getTestDefinition()!=null && us.getTestDefinition().areQuestionsNamed())
 			{
