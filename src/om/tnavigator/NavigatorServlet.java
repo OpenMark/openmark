@@ -3643,15 +3643,18 @@ public class NavigatorServlet extends HttpServlet
 	public boolean checkLocalIP(HttpServletRequest request) throws UnknownHostException
 	{
 
-		// Check originating address, if it went through the netscaler
+
+
+			// Check originating address, if it went through the netscaler
 
 		// students.open.ac.uk actually provides the one with the underline,
 		// but I think the more standard header would be as below
-			
 		String sClientIP=request.getHeader("client_ip");
 		if(sClientIP==null) sClientIP=request.getHeader("Client-IP");
 		if(sClientIP==null) sClientIP=request.getHeader("X_FORWARDED_FOR");		
-
+		//check to see if its local and not via the netscaler
+		if(sClientIP==null)  sClientIP=request.getRemoteAddr();		
+		
 		if(sClientIP!=null)
 			l.logDebug("IPCHECK","(local) Non-null "+sClientIP);
 		else
@@ -3692,6 +3695,9 @@ public class NavigatorServlet extends HttpServlet
 		String sClientIP=request.getHeader("client_ip");
 		if(sClientIP==null) sClientIP=request.getHeader("Client-IP");
 		if(sClientIP==null) sClientIP=request.getHeader("X_FORWARDED_FOR");
+		//check to see if its local and not via the netscaler
+		if(sClientIP==null)  sClientIP=request.getRemoteAddr();		
+		
 		if(sClientIP!=null)
 			l.logDebug("IPCHECK","(secure) Non-null "+sClientIP);
 		else
