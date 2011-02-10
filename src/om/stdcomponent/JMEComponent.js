@@ -25,7 +25,7 @@ function jmeClick(resourcesPath,id,idprefix)
     jmePopup.focus();
     return;
   }
-  jmePopup=window.open("",idprefix+"jme"+id,"width="+
+  jmePopup=window.open("",idprefix.replace(/\W/,"_")+"jme"+id,"width="+
     (isIE ? "284" : "288") +
     ",height="+
     (isIE ? "347" : "350")+

@@ -26,7 +26,7 @@ function appClick(resourcesPath,id,idprefix,app,clssNm,w,h,params)
     appPopup.focus();
     return;
   }
-  appPopup=window.open("", idprefix+"appl"+id, "width="+w+",height="+ (h+50)+
+  appPopup=window.open("", idprefix.replace(/\W/,"_")+"appl"+id, "width="+w+",height="+ (h+50)+
     ",menubar=no,resizable=yes,scrollbars=no,dependent=yes");
 
   appPopup.document.write(
