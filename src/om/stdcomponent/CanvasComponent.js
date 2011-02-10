@@ -28,6 +28,7 @@ function getCanvas(canvasId,idPrefix)
   }
 }
 
+
 function canvasMarkerInit(canvasId,idPrefix,labelJS,originX,originY,factorX,factorY)
 {
   // Get marker, canvas, and x/y fields and init marker object
@@ -58,7 +59,10 @@ function canvasMarkerInit(canvasId,idPrefix,labelJS,originX,originY,factorX,fact
       var parent=marker.labelDiv.parentNode;
       if(parent) parent.removeChild(marker.labelDiv);
     }
-
+	//ie7 doesnt do the offset properly
+    canvas.img.trueoffsetleft=trueoffsetleft(canvas.img);
+    canvas.img.trueoffsettop=trueoffsettop(canvas.img);
+    
     // Add label
     if(label)
     {
@@ -69,8 +73,8 @@ function canvasMarkerInit(canvasId,idPrefix,labelJS,originX,originY,factorX,fact
       div.style.fontSize=canvas.labelSize+"px";
       div.style.lineHeight=canvas.labelSize+"px";
       div.style.position="absolute";
-      div.style.top=(py+canvas.img.offsetTop-(canvas.labelSize+6))+"px";
-      div.style.left=(px+canvas.img.offsetLeft+canvas.labelSize)+"px";
+      div.style.top=(py+canvas.img.trueoffsetTop-(canvas.labelSize+6))+"px";
+      div.style.left=(px+canvas.img.trueoffsetLeft+canvas.labelSize)+"px";
       div.style.width="200px";
       div.style.textAlign="left";
 
@@ -106,12 +110,14 @@ function canvasMarkerInit(canvasId,idPrefix,labelJS,originX,originY,factorX,fact
 
 function canvasGetMarkerX(marker)
 {
-  return marker.offsetLeft-marker.mCanvas.img.offsetLeft+marker.mCanvas.imageOffsetX;
+  return marker.offsetLeft-marker.mCanvas.img.trueoffsetLeft+marker.mCanvas.imageOffsetX;
 }
+
 function canvasGetMarkerY(marker)
 {
-  return marker.offsetTop-marker.mCanvas.img.offsetTop+marker.mCanvas.imageOffsetY;
+  return marker.offsetTop-marker.mCanvas.img.trueoffsetTop+marker.mCanvas.imageOffsetY;
 }
+
 
 function canvasMarkerKeydown(e,marker)
 {
@@ -177,10 +183,10 @@ function canvasMarkerMove(e,marker)
   if(!marker.mDown) return;
 
   // Get x/y relative to canvas
-  var canvasX=(e.mPageX-marker.mStartX)+
-	marker.mStartLeft-marker.mCanvas.img.offsetLeft+marker.mCanvas.imageOffsetX;
+   var canvasX=(e.mPageX-marker.mStartX)+
+	marker.mStartLeft-trueoffsetleft(marker.mCanvas.img)+marker.mCanvas.imageOffsetX;
   var canvasY=(e.mPageY-marker.mStartY)+
-	marker.mStartTop-marker.mCanvas.img.offsetTop+marker.mCanvas.imageOffsetY;
+	marker.mStartTop-trueoffsettop(marker.mCanvas.img)+marker.mCanvas.imageOffsetY;
 
   canvasSetPos(marker,canvasX,canvasY);
 }
@@ -198,8 +204,10 @@ function canvasSetPos(marker,canvasX,canvasY)
   marker.mY.value=canvasY;
 
   // Update position
-  marker.style.left=(1*canvasX+marker.mCanvas.img.offsetLeft-marker.mCanvas.imageOffsetX)+"px";
-  marker.style.top=(1*canvasY+marker.mCanvas.img.offsetTop-marker.mCanvas.imageOffsetY)+"px";
+// the -8 and -18 are fudges
+marker.style.left=(1*canvasX+trueoffsetleft(marker.mCanvas.img)-marker.mCanvas.imageOffsetX)+"px";
+marker.style.top=(1*canvasY+trueoffsettop(marker.mCanvas.img)-marker.mCanvas.imageOffsetY)+"px";
+
 
   // Update label
   marker.updateLabel();

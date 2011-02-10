@@ -119,6 +119,9 @@ var isGecko=!isKHTML && navigator.userAgent.indexOf('Gecko/')!=-1;
 var isOpera=navigator.userAgent.indexOf('Opera')!=-1;
 var isIE=!isOpera && navigator.userAgent.match('.*MSIE.*Windows.*');
 var isIE7OrBelow=!isOpera && navigator.userAgent.match('.*MSIE [1-7].*Windows.*');
+var isIE7=!isOpera && navigator.userAgent.match('.*MSIE 7.*Windows.*');
+
+
 var isGecko18;
 if(isGecko)
 {
@@ -299,4 +302,58 @@ if(window.isDevServlet===undefined || !window.isDevServlet)
 			}
 		}
 	});
+}
+
+function trueoffsetleft(El)
+{
+	if(isIE7)
+	{
+		var lastleft=0;
+		var cl=0;
+		var curLeft=0;
+		obj=El;
+		if(obj.offsetParent) {
+			curLeft = obj.offsetLeft
+			
+			while (obj = obj.offsetParent) {
+			   lastleft=cl;
+			   if(obj == document.body) break;
+			    curLeft += obj.offsetLeft;	
+			    cl=obj.offsetLeft;
+			}
+		}		
+		return(curLeft-lastleft);
+	}
+	else
+	{
+		return(El.offsetLeft);
+	}
+}
+
+function trueoffsettop(El)
+{
+	if(isIE7)
+	{
+
+		var curTop=0;
+		var lasttop=0;
+		var ct=0;
+		obj=El;
+	    if (obj.offsetParent) {
+	        curTop = obj.offsetTop
+	        while (obj = obj.offsetParent) {
+	        	lasttop=ct;
+	           //alert("objName= "+obj.id+"  offsetLeft= "+obj.offsetLeft+"  offsetTop= "+obj.offsetTop);
+	            if(obj == document.body) break;
+	            curTop += obj.offsetTop;
+	            ct=obj.offsetTop;
+	            
+	        }
+	    }
+		return(curTop-lasttop);
+	}
+	else
+	{	
+		return(El.offsetTop);
+	}
 }
