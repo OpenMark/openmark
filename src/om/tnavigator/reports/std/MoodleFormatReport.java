@@ -132,8 +132,9 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 
 					//ns.getLog().logDebug("*************** pi " + pi);
 					//we dont do admins, and we dont do dummy students which start with a Q
-					if (isAdmin != 1 && pi != "" && !isDummy) //need the test on pi just to be on safe side
-					{
+					//comment out as we are now going to export dummy and admin
+					//if (isAdmin != 1 && pi != "" && !isDummy) //need the test on pi just to be on safe side
+					//{
 						
 						//first we deal with the previous student and output it if necesary
 						if (!pi.equals(lastpi) && !(startflag) && !pi.equals(""))
@@ -193,7 +194,7 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 						BestAttempt.SetIfGreater(ThisAttempt);
 						lastpi=pi;
 					}
-				}
+				//}
 				// now output the last student as long as they aren't an admin
 				if (BestAttempt.gethasFinished())
 				{	
