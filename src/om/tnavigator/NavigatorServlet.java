@@ -1398,7 +1398,7 @@ public class NavigatorServlet extends HttpServlet
 			String sLastQuestion=null;
 			String sDisplayedSection=null; // Section heading that has already been displayed
 			String sPreviousSection=null; // Section of last row (null if none)
-
+			
 			while(rs.next())
 			{
 				// Keep track of max number
@@ -1407,12 +1407,13 @@ public class NavigatorServlet extends HttpServlet
 
 				// Ignore answers after we're looking for next question
 				if(iQuestionNumber<iCurrentQuestion) continue;
-
+				
 				// Get section
 				String sSection=rs.getString(7);
-
+				boolean checkForNumberingRestart = bisNumberBySection && !(sPreviousSection==null || sPreviousSection.equals(sDisplayedSection));
 				//check if we need to restart the numbering of the questions
-				if (bisNumberBySection && !(sPreviousSection==null || sPreviousSection.equals(sDisplayedSection)))
+				//if (bisNumberBySection && !(sPreviousSection==null || sPreviousSection.equals(sDisplayedSection)))
+				if (checkForNumberingRestart) 
 				{
 					iOutputCurrentQuestionNumber=0 ;
 				}				
@@ -3731,73 +3732,8 @@ public class NavigatorServlet extends HttpServlet
 	 * @param ia An address
 	 * @return True if that address is in an OU IP range
 	 */
-	private boolean isIPInList(InetAddress ia, String[] addresses)
-	{
-		l.logDebug("IPCHECK","isIPInList");
-		byte[] ab=ia.getAddress();
-		if(ab.length==16)
-		{
-			// Check that IPv6 addresses are actually representations of IPv4 -
-			// these have lots of zeros then either 0000 or FFFF, then the number
-			for(int i=0;i<10;i++)
-				if(ab[i]!=0) return false;
-			if(!(
-				(ab[10]==0xff && ab[11]==0xff) ||
-				(ab[10]==0 && ab[11]==0) )) return false;
-			byte[] abNew=new byte[4];
-			System.arraycopy(ab,12,abNew,0,4);
-		}
-		else if(ab.length!=4) throw new Error(
-			"InetAddress that wasn't 4 or 16 bytes long?!");
-
-		for(int i=0;i<addresses.length;i++)
-		{
-			String[] bytes=addresses[i].split("\\.");
-			boolean ok=true;
-			for(int pos=0;pos<4;pos++)
-			{
-				// * allows anything
-				if(bytes[pos].equals("*")) continue;
-
-				int actual=getUnsigned(ab[pos]);
-
-				// Plain number, not a range
-				if(bytes[pos].indexOf('-')==-1)
-				{
-					if(actual!=Integer.parseInt(bytes[pos]))
-					{
-						ok=false;
-						break;
-					}
-				}
-				else // Range
-				{
-					String[] range=bytes[pos].split("-");
-					if(actual<Integer.parseInt(range[0]) || actual > Integer.parseInt(range[1]))
-					{
-						ok=false;
-						break;
-					}
-				}
-			}
-			if(ok) {
-				l.logDebug("IPCHECK","isIPInList- true");
-				return true;
-			}
-		}
-		l.logDebug("IPCHECK","isIPInList - false");
-		return false;
-	}
-
-	/**
-	 * @param b Byte value
-	 * @return The unsigned version of that byte
-	 */
-	private int getUnsigned(byte b)
-	{
-		int i=b;
-		if(i>=0) return i;
-		return 256+i;
+	private boolean isIPInList(InetAddress ia, String[] addresses) {
+		return IPAddressCheckUtil.isIPInList(ia, addresses, l);
 	}
 
 	private void handleShared(String sFile,HttpServletRequest request,HttpServletResponse response)

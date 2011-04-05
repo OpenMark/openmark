@@ -21,7 +21,7 @@
 		<concat destfile="${build}/allsource.java">
 			<fileset dir="${source}" includes="${questionpackage}/**/*.java" />
 		</concat>
-		<loadfile srcFile="${build}/allsource.java" property="allsource"/>
+		<loadfile srcFile="${build}/allsource.java" property="allsource" />
 
 		<condition property="nonstatic-finals">
 			<matches string="${allsource}" singleline="true" multiline="true"

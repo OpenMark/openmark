@@ -814,7 +814,6 @@ public abstract class OmQueries
 		upgradeDatabaseToAddNavConfig(dat,l);
 		/* now use the parameter in the navigator config table to perform and DB upgrades */
 		upgradeDatabaseToLatest(dat,l);
-		
 
 	}
 
@@ -936,12 +935,25 @@ public abstract class OmQueries
 			/* finally having applied all the updates set the DB version to the current */
 			l.logDebug("DatabaseUpgrade", "Update DB version to current "+currversion);
 			dat.update("UPDATE " + getPrefix() + "navconfig SET value = \'"+currversion+"\' where name=\'dbversion\'");
+			
+			applyUpdateForEmailNotification(dat, l, DBversion);
+			
 		}
 		else
 		{
 			l.logDebug("DatabaseUpgrade", "Database up to date at version "+DBversion.getVersion()+" no updates attempted.");
 		}
 	}
+	
+	private void applyUpdateForEmailNotification(DatabaseAccess.Transaction dat,
+		Log l, NavVersion DBversion) throws SQLException,IllegalArgumentException {
+		if (!columnExistsInTable(dat, "tests", "dateWarningEmailSent")) {
+			updateDatabase("1.12",DBversion,
+				"ALTER TABLE " + getPrefix() + "tests ADD dateWarningEmailSent DATETIME",
+				l,dat);
+		}
+	}
+	
 /**
 *checks the version stored in the database against a pre-defined version and performs the appropriate database
 *upgrade

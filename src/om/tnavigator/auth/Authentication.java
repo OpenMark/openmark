@@ -23,10 +23,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+public interface Authentication {
 
-/** Interface to handle authentication */
-public interface Authentication
-{
 	/**
 	 * Obtains details for the user and checks that they are authenticated.
 	 * If getUncheckedUserDetails would have returned valid data, but
@@ -79,6 +77,12 @@ public interface Authentication
 
   /** Constant used for 'submit confirmation' email */
   public final static int EMAIL_CONFIRMSUBMIT=1;
+  
+  /**
+   * Used in accordance with reminding students that they need to submit their
+   *  test for marking.
+   */
+  static int SUBMISSION_REMINDER=2;
 
   /**
    * Sends email to a user. Email will only be sent according to the defined

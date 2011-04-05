@@ -40,8 +40,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
+import om.DisplayUtils;
 import om.OmException;
 import om.OmVersion;
+import om.devservlet.deployment.DeploymentRequestHandler;
+import om.devservlet.deployment.RenderedOutput;
 import om.helper.QEngineConfig;
 import om.question.ActionParams;
 import om.question.ActionRendering;
@@ -53,6 +56,7 @@ import om.question.Results;
 import om.question.Score;
 import om.stdquestion.StandardQuestion;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -69,8 +73,8 @@ import util.xml.XML;
  * for any production or public demonstration use. Only supports one instance
  * of one question at a time.
  */
-public class DevServlet extends HttpServlet implements QEngineConfig
-{
+public class DevServlet extends HttpServlet implements QEngineConfig {
+
 	/** Constant for specifying the number of text boxes for typing package names in the interface. */
 	private final static int NUM_EXTRA_PACKAGE_SLOTS = 3;
 	/** Number of times the question is started, to check that it is using the random seed correctly. */
@@ -83,6 +87,8 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 	/** Package names should not have upper-case letters and underscores. */
 	private final static Pattern PACKAGE_REGEXP = Pattern.compile("[^A-Z_]+");
 	
+	public static String SPECIFIC_QUESTION_DEPLOYMENT = "specificQuestionDeployment";
+
 	/** In-progress question (null if none) */
 	private Question qInProgress=null;
 
@@ -306,22 +312,8 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 
 		// Create basic template
 		Document d=XML.parse(
-			"<xhtml>" +
-			"<head>" +
-			"<title>OpenMark-S (Om) question development</title>"+
-			"<style type='text/css'>\n"+
-			"body { font: 12px Verdana, sans-serif; }\n" +
-			"h1 { font: bold 14px Verdana, sans-serif; }\n" +
-			"a { color: black; }\n" +
-			"h2 { font: 14px Verdana, sans-serif; }\n" +
-			"#create,#questionbox { margin-bottom:20px; border:1px solid #888; padding:10px; }\n"+
-			"#create span { float:left; width:20em; margin-top: 5px }\n" +
-			"#create span.fields { width:auto; }\n" +
-			"#create div { clear:left; }\n"+
-			"</style>"+
-			"</head>"+
-			"<body>"+
-			"<h1>" +
+			DisplayUtils.header()
+			+ "<h1>" +
 			"  OpenMark-S (Om) question development ("+OmVersion.getVersion()+")" +
 			"</h1>" +
 			"<div id='questionbox'>" +
@@ -341,7 +333,8 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 			"<div><input type='submit' name='action' id='submit' value='Create'/></div>"+
 			"<p>This creates a new question definition file (.xml) in the questions " +
 			"folder of your Om webapp.</p>"+
-			"</form>"+
+			"</form>"
+			+ renderDeploymentLink() +
 			"</body>"+
 			"</xhtml>");
 
@@ -368,9 +361,23 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 			Element eRemove=XML.createChild(eQ,"a");
 			eRemove.setAttribute("href","remove/"+encodedName+"/");
 			XML.createText(eRemove,"(Remove)");
+			XML.createText(eQ," ");
+			
+			if(aqd[iQuestion].hasJar()) {
+				Element eDeploy=XML.createChild(eQ,"a");
+				eDeploy.setAttribute("href","deploy/"+encodedName+"/");
+				XML.createText(eDeploy,"(Deploy)");
+			}
 		}
 
 		XHTML.output(d,request,response,"en");
+	}
+
+	private String renderDeploymentLink() {
+		StringBuilder sb = new StringBuilder("<div id='questionbox'>")
+			.append("<a href=\"deploy?clear=true\">Make Multiple Questions Live.</a>")
+			.append("</div>");
+		return sb.toString();
 	}
 
 	private void handleBuild(String sRemainingPath,
@@ -756,6 +763,8 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 				handleRemove(sPath.substring("/remove/".length()),request,response);
 			else if(sPath.startsWith("/buildall"))
 				handleBuildAll(request,response);
+			else if(sPath.startsWith("/deploy"))
+				handleDeploy(bPost, request, response, sPath);
 			else
 			{
 				sendError(request,response,HttpServletResponse.SC_NOT_FOUND,
@@ -765,8 +774,32 @@ public class DevServlet extends HttpServlet implements QEngineConfig
 		catch(Throwable t)
 		{
 			sendError(request,response,
-				HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"Error handling request","An exception occurred.", t);
+				HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+				"Error handling request","An exception occurred.", t);
 		}
+	}
+
+	private void handleDeploy(boolean post, HttpServletRequest request,
+		HttpServletResponse response, String sPath) throws Exception {
+		String output = null;
+		RequestHandler rh = new DeploymentRequestHandler();
+		RequestAssociates ra = getRequestAssociates(sPath, post);
+		RequestResponse rr = rh.handle(getServletContext(), request, response, ra);
+		if (null != rr ? rr instanceof RenderedOutput : false) {
+			output = ((RenderedOutput) rr).toString();
+		}
+		Document d = XML.parse(StringUtils.isNotEmpty(output)? output.getBytes()
+			: handleEmptyDeploymentRendering());
+		XHTML.output(d, request, response, "en");
+	}
+
+	private RequestAssociates getRequestAssociates(String sPath, boolean post) {
+		return new RequestAssociates(sPath, post, configuration);
+	}
+
+	private byte[] handleEmptyDeploymentRendering() {
+		return new String("The result from the deployment was null."
+			+ "  Please check the logs.").getBytes();
 	}
 
 	private void handleQuestion(String idVersion, HttpServletRequest request, HttpServletResponse response)

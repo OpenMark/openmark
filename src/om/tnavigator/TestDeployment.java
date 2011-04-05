@@ -69,6 +69,53 @@ public class TestDeployment
 	/** True if the test should send out confirm emails */
 	private boolean bSubmitEmail;
 
+	private static final int DEFAULT_NUMBER_OF_QUESTIONS = 1;
+
+	private static final int DEFAULT_FORBID_EXTENSION = 7;
+
+	private int iForbidExtensionValue = DEFAULT_FORBID_EXTENSION;
+
+	private static String NUMBER_OF_QUESTIONS = "numberofquestions";
+
+	private static String FORBID_EXTENSION = "forbidextension";
+
+	private int numberOfQuestions = DEFAULT_NUMBER_OF_QUESTIONS;
+
+	private static String EMAIL_STUDENTS = "emailstudents";
+
+	private static String MODULE = "module";
+
+	private static String ICMA = "icma";
+
+	private String module;
+
+	private String icma;
+
+	public String getModule() {
+		return module;
+	}
+
+	public String getIcma() {
+		return icma;
+	}
+
+	public int getiForbidExtensionValue() {
+		return iForbidExtensionValue;
+	}
+
+	public int getNumberOfQuestions() {
+		return numberOfQuestions;
+	}
+
+	/**
+	 * Checks to see if the test is using the emailstudents facility.
+	 * @return
+	 */
+	public boolean isUsingEmailStudents() {
+		Integer n = getiForbidExtensionValue();
+		return null != n ? n > 0 : false;
+	}
+
 	/**
 	 * Constructs test definition and checks format.
 	 * @param f File to use
@@ -115,6 +162,8 @@ public class TestDeployment
 			{
 				iType=TYPE_NOTASSESSED;
 			}
+
+			handleEmailStudentsNode(eRoot);
 
 			if(XML.hasChild(eRoot,"email"))
 			{
@@ -168,6 +217,45 @@ public class TestDeployment
 		{
 			throw new OmFormatException("Error processing "+sErrorIdentifier,xe);
 		}
+	}
+
+	private void handleEmailStudentsNode(Element eRoot) throws XMLException {
+		if (null != eRoot) {
+			if (XML.hasChild(eRoot, EMAIL_STUDENTS)) {
+				Element e = XML.getChild(eRoot, EMAIL_STUDENTS);
+				if (null != e) {
+					if (XML.hasChild(e, NUMBER_OF_QUESTIONS)) {
+						numberOfQuestions = retrieveValue(e, NUMBER_OF_QUESTIONS);
+					}
+					if (XML.hasChild(e, FORBID_EXTENSION)) {
+						Integer n = retrieveValue(e, FORBID_EXTENSION);
+						iForbidExtensionValue = null != n ? n : 0;
+					} else {
+						iForbidExtensionValue = DEFAULT_FORBID_EXTENSION;
+					}
+					module = retrieveTextValue(e, MODULE);
+					icma = retrieveTextValue(e, ICMA);
+				}
+			}
+		}
+	}
+
+	private String retrieveTextValue(Element e, String name)
+		throws XMLException {
+		String value = null;
+		if (XML.hasChild(e, name)) {
+			value = XML.getText(XML.getChild(e, name));
+		}
+		return value;
+	}
+
+	private int retrieveValue(Element e, String name) throws XMLException {
+		Integer number = null;
+		String s = retrieveTextValue(e, name);
+		if (null != s ? s.length() > 0 : false) {
+			number = new Integer(s);
+		}
+		return number;
 	}
 
 	/** @return One of the TYPE_xx constants */
@@ -379,9 +467,14 @@ public class TestDeployment
 	 *   (always returns false if there is no forbid date)
 	 * @throws OmFormatException 
 	 */
-	public boolean isAfterForbidExtension() throws OmFormatException
-	{
-		return isAfterDate("forbid","23:59:59",false,null,System.currentTimeMillis()-4*60*60*1000);
+	public boolean isAfterForbidExtension() throws OmFormatException {
+		int reduceBy = 4;
+		if (isUsingEmailStudents()) {
+			int num = getiForbidExtensionValue();
+			reduceBy = num > 0 ? num * 24 : 4;
+		}
+		return isAfterDate("forbid","23:59:59",false,null,
+			System.currentTimeMillis()-reduceBy*60*60*1000);
 	}
 
 	/**
@@ -563,6 +656,37 @@ public class TestDeployment
 			return "";
 		}
 	}
+
+	/**
+	 * Used to display the date of the forbid extension for when a student is
+	 *  to be notified.
+	 * @return
+	 * @throws OmFormatException
+	 */
+	public String displayEmailStudentsForbidExtension()
+		throws OmFormatException {
+		String display = null;
+		Date closeDate = null;
+		if (isUsingEmailStudents()) {
+			Integer extensionValue = getiForbidExtensionValue();
+			if (null != extensionValue ? extensionValue > -1 : false) {
+				if (XML.hasChild(eDates, "close")) {
+					closeDate = getActualDate("close", "00:00:00");
+				} else if (XML.hasChild(eDates, "forbid")) {
+					closeDate = getActualDate("forbid", "00:00:00");
+				}
+				if (null != closeDate) {
+					long time = closeDate.getTime();
+					long extensionDate = time + (extensionValue * 24) *60*60*1000;
+					Date eDate = new Date(extensionDate);
+					SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
+					display = sdf.format(eDate);
+				}
+			}
+		}
+		return display;
+	}
+
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
 	 * @throws OmFormatException
