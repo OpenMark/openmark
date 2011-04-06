@@ -12,6 +12,16 @@
 <!ELEMENT test (title,options,content,confirm?,final)>
 
 
+<!--
+	Optional node ...
+	<emailstudents> contains ...
+		<numberofquestions>2</numberofquestions>
+		<forbidextension>4</forbidextension>
+		<module>K113-11B</module>
+		<icma>iCMA41</icma>
+	</emailstudents>
+	-->	
+<!ELEMENT emailstudents (numberofquestions?,forbidextension?,module?,icma?)>
 
 <!--
 	<options> specifies test options:
