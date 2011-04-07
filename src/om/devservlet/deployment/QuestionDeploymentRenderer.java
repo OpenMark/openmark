@@ -191,7 +191,7 @@ public class QuestionDeploymentRenderer {
 
 	private String renderConfirmationSubmission() {
 		return new StringBuffer()
-			.append("<div class=\"alert\">Click submit below to confirm.</div>")
+			.append("<div class=\"alert\">Click copy to server below to confirm.</div>")
 			.append(QuestionDeploymentRenderer.START_SELECTION_FORM)
 			.append("<input type=\"hidden\" name=\"")
 			.append(CONFIRMED_DEPLOYMENT)

@@ -360,7 +360,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	private void problemWithTestDankDirectory(String location,
 		RenderedOutput or) {
 		or.append(QuestionDeploymentRenderer.BRS)
-			.append(" - There was a problem with the testbank directory. ")
+			.append(" - There was a problem with the questionbank directory. ")
 			.append(" Either it does not exist or it can not be read : ")
 			.append(location);
 	}
