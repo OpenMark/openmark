@@ -11,6 +11,12 @@ import om.DisplayUtils;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Provides the visual represenation of the different options avaliable for the
+ *  deployment of the Question(s) selected. 
+ * @author Trevor Hinson
+ */
+
 public class QuestionDeploymentRenderer {
 
 	public static String DEPLOY_FILE_SUFFIX = ".jar";
