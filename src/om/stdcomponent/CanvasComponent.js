@@ -59,9 +59,9 @@ function canvasMarkerInit(canvasId,idPrefix,labelJS,originX,originY,factorX,fact
       var parent=marker.labelDiv.parentNode;
       if(parent) parent.removeChild(marker.labelDiv);
     }
-	//ie7 doesnt do the offset properly
-    canvas.img.trueoffsetleft=trueoffsetleft(canvas.img);
-    canvas.img.trueoffsettop=trueoffsettop(canvas.img);
+
+    canvas.img.trueoffsetLeft=trueoffsetleft(canvas.img);
+    canvas.img.trueoffsetTop=trueoffsettop(canvas.img);
     
     // Add label
     if(label)
@@ -107,15 +107,13 @@ function canvasMarkerInit(canvasId,idPrefix,labelJS,originX,originY,factorX,fact
 	marker.ondragstart=function() { return false; };
   }
 }
-
 function canvasGetMarkerX(marker)
 {
-  return marker.offsetLeft-marker.mCanvas.img.trueoffsetLeft+marker.mCanvas.imageOffsetX;
+  return marker.offsetLeft-trueoffsetleft(marker.mCanvas.img)+marker.mCanvas.imageOffsetX;
 }
-
 function canvasGetMarkerY(marker)
 {
-  return marker.offsetTop-marker.mCanvas.img.trueoffsetTop+marker.mCanvas.imageOffsetY;
+  return marker.offsetTop-trueoffsettop(marker.mCanvas.img)+marker.mCanvas.imageOffsetY;
 }
 
 
