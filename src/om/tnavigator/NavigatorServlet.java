@@ -2571,7 +2571,6 @@ public class NavigatorServlet extends HttpServlet
 		{
 			// Either not using names, or question is unnamed
 			// check for numberbysection and use that if specified
-
 			if (us.getTestDefinition().getQuestionNumberHeader().compareTo("")> 0)
 			{
 				 qnh=us.getTestDefinition().getQuestionNumberHeader();
@@ -2580,8 +2579,14 @@ public class NavigatorServlet extends HttpServlet
 			}
 			else
 			{
-				sQuestionref=qnh+" "+tq.getNumber();		
-
+				//sQuestionref=qnh+" "+tq.getNumber();		
+				if (us.getTestDefinition().isNumberBySection()) {
+					qnh = us.getTestDefinition().getQuestionNumberHeader();
+					sQuestionref = qnh + " " + getSectionNum(us, tq) + "."
+						+ getNumInSection(us, tq);
+				} else {
+					sQuestionref = qnh + " " + tq.getNumber();
+				}
 			}
 			
 			// if its a defult question, then include the (of XXX) but if nbs is specified then dont
