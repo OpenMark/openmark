@@ -2579,7 +2579,8 @@ public class NavigatorServlet extends HttpServlet
 			}
 			else
 			{
-				//sQuestionref=qnh+" "+tq.getNumber();		
+				//sQuestionref=qnh+" "+tq.getNumber();	
+				//we need to check on null as well as empty string
 				if (us.getTestDefinition().isNumberBySection()) {
 					qnh = us.getTestDefinition().getQuestionNumberHeader();
 					sQuestionref = qnh + " " + getSectionNum(us, tq) + "."
