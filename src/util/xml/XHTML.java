@@ -23,6 +23,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.*;
 
 /** Class creates XHTML format data from DOM nodes. */
@@ -32,6 +33,10 @@ public class XHTML
 	// no content
 	private static Collection<String> sMinimize=new HashSet<String>(Arrays.asList(
 			new String[] {"br","img","hr","meta","link","input"}));
+
+	private static String USER_AGENT = "User-Agent";
+
+	private static String MSIE_9 = "MSIE 9.";
 
 	/**
 	 * Saves an XHTML element to a Writer.
@@ -284,22 +289,40 @@ public class XHTML
 	 * @param response Response (MIME type will be set)
 	 * @return True if really using XHTML, false if HTML
 	 */
-	public static boolean setContentType(
-		HttpServletRequest request,HttpServletResponse response)
-	{
+	public static boolean setContentType(HttpServletRequest request,
+		HttpServletResponse response) {
 		// This is not the correct way to parse the Accept header
 		boolean bXHTML;
 		String sAccept=request.getHeader("Accept");
 		bXHTML=sAccept!=null && (sAccept.indexOf("application/xhtml+xml")!=-1);
 
-		if(bXHTML)
-			response.setContentType("application/xhtml+xml");
-		else
+		if(bXHTML) {
+			if (!isIE9(request)) {
+				response.setContentType("application/xhtml+xml");
+			}
+		} else {
 			response.setContentType("text/html");
-
+		}
 		response.setCharacterEncoding("UTF-8");
-
 		return bXHTML;
+	}
+
+	/**
+	 * Simply checks to identify if the request is from an IE9* browser.
+	 * @param request
+	 * @param response
+	 * @author Trevor Hinson
+	 */
+	public static boolean isIE9(HttpServletRequest request) {
+		boolean isIE9 = false;
+		if (null != request) {
+			String userAgent = request.getHeader(USER_AGENT);
+			if (StringUtils.isNotEmpty(userAgent)
+				? userAgent.contains(MSIE_9) : false) {
+				isIE9 = true;
+			}
+		}
+		return isIE9;
 	}
 
 	/**
@@ -310,14 +333,14 @@ public class XHTML
 	 * @param sLang Language code e.g. "en"
 	 * @throws IOException In event of I/O errors
 	 */
-	public static void output(
-		Document d,HttpServletRequest request,HttpServletResponse response,
-		String sLang)
-	  throws IOException
-	{
-	  XHTML.setContentType(request,response);
-	  PrintWriter pw=response.getWriter();
-	  XHTML.saveFullDocument(d,pw,false,sLang);
-	  pw.close();
+	public static void output(Document d,HttpServletRequest request,
+		HttpServletResponse response, String sLang) throws IOException {
+		if (isIE9(request)) {
+			response.addHeader("X-UA-Compatible", "IE=8");
+		}
+		XHTML.setContentType(request,response);
+		PrintWriter pw=response.getWriter();
+		XHTML.saveFullDocument(d,pw,false,sLang);
+		pw.close();
 	}
 }

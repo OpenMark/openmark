@@ -732,7 +732,7 @@ public class NavigatorServlet extends HttpServlet
 					// Check if we've already been redirected
 					for(NewSession ns : cookiesOffCheck)
 					{
-						if(ns.sAddr.equals(sAddr))
+						if(ns.sAddr.equals(sAddr) && (!"?restart".equals(sCommand) && !us.isSingle()))
 						{
 							sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
 									false,
@@ -2011,11 +2011,14 @@ public class NavigatorServlet extends HttpServlet
 	 * Do everything possible to the response to stop the browser's back button from working.
 	 * @param response the response to add headers too.
 	 */
-	public void breakBack(HttpServletResponse response)
-	{
+	public void breakBack(HttpServletRequest request,
+		HttpServletResponse response) {
 		response.setHeader("Pragma","No-cache");
 		response.setHeader("Cache-Control","no-store");
-		response.setHeader("Expires","Thu, 01 Jan 1970 00:00:00 GMT");		
+		response.setHeader("Expires","Thu, 01 Jan 1970 00:00:00 GMT");
+		if (XHTML.isIE9(request)) {
+			response.addHeader("X-UA-Compatible", "IE=8");
+		}
 	}
 
 	private void processFinalTags(RequestTimings rt,UserSession us,Element eParent,Element eTarget, CombinedScore ps,
@@ -2579,7 +2582,7 @@ public class NavigatorServlet extends HttpServlet
 			}
 			else
 			{
-				//sQuestionref=qnh+" "+tq.getNumber();	
+				//sQuestionref=qnh+" "+tq.getNumber();
 				//we need to check on null as well as empty string
 				if (us.getTestDefinition().isNumberBySection()) {
 					qnh = us.getTestDefinition().getQuestionNumberHeader();
@@ -3395,7 +3398,7 @@ public class NavigatorServlet extends HttpServlet
 
 		response.setContentType("text/css");
 		response.setCharacterEncoding("UTF-8");
-		stopBrowserCaching(response);
+		stopBrowserCaching(request, response);
 		response.getWriter().write(sCSS);
 		response.getWriter().close();
 	}	
@@ -3405,13 +3408,18 @@ public class NavigatorServlet extends HttpServlet
 	 * This fixes the random questions problems which occur on the second run; 
 	 * Problems were due to cached javascript files, now new javascript files 
 	 * will be reloaded for new set of questions.
+	 * 	 * @param request
 	 * @param response the response to add headers
 	 */
-	private void stopBrowserCaching(HttpServletResponse response) {		
+	private void stopBrowserCaching(HttpServletRequest request,
+		HttpServletResponse response) {		
 		response.setHeader("Cache-Control", "must-revalidate");   
 		response.addHeader("Cache-Control", "no-cache");   
 		response.addHeader("Cache-Control", "no-store");   
 		response.setDateHeader("Expires", 0);
+		if (XHTML.isIE9(request)) {
+			response.addHeader("X-UA-Compatible", "IE=8");
+		}
 	}
 
 	// Method is NOT synchronized on UserSession
@@ -3431,7 +3439,7 @@ public class NavigatorServlet extends HttpServlet
 		}
 		response.setContentType(r.getMimeType());
 		response.setContentLength(r.getContent().length);
-		stopBrowserCaching(response);
+		stopBrowserCaching(request, response);
 		if(r.getEncoding()!=null)
 			response.setCharacterEncoding(r.getEncoding());
 		response.getOutputStream().write(r.getContent());
@@ -4246,7 +4254,7 @@ public class NavigatorServlet extends HttpServlet
 		XML.replaceTokens(eQuestion,mReplace);
 
 		// Whew! Now send to user
-		breakBack(response);
+		breakBack(request, response);
 		XHTML.output(d,request,response,"en");
 	}
 
