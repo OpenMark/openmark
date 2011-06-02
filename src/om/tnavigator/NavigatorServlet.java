@@ -732,11 +732,13 @@ public class NavigatorServlet extends HttpServlet
 					// Check if we've already been redirected
 					for(NewSession ns : cookiesOffCheck)
 					{
-						if(ns.sAddr.equals(sAddr) && (!"?restart".equals(sCommand) && !us.isSingle()))
+						if(ns.sAddr.equals(sAddr) && (!"?restart".equals(sCommand)))
 						{
-							sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
-									false,
-									false,null, "Unable to create session cookie", "In order to use this website you must enable cookies in your browser settings.", null);
+							if (null != us ? !us.isSingle() : false) {
+								sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
+										false,
+										false,null, "Unable to create session cookie", "In order to use this website you must enable cookies in your browser settings.", null);
+							}
 						}
 					}
 

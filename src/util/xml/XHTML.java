@@ -299,6 +299,8 @@ public class XHTML
 		if(bXHTML) {
 			if (!isIE9(request)) {
 				response.setContentType("application/xhtml+xml");
+			} else {
+				response.setContentType("text/html");
 			}
 		} else {
 			response.setContentType("text/html");
