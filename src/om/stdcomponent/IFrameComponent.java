@@ -37,9 +37,9 @@ Represents an iframe
 <h2>XML usage</h2>
 &lt;iframe id="myFrame" src="http://www.site/page.html" width="100" height="80"/&gt;
 <p/>
-&lt;!-- or (for html file in question jar):
+or (for an html file contained in question jar):
 <p/>
-&lt;iframe id="myFrame" src="http://www.site/page.html" width="100" height="80"/&gt;--&gt;
+&lt;iframe id="myFrame" src="page.html" width="100" height="80" showResponse="yes"/&gt;
 <p/>
 <h2>Properties</h2>
 <table border="1">
@@ -57,6 +57,7 @@ public class IFrameComponent extends QComponent
 	private static final String PROPERTY_SRC="src";
 	private static final String PROPERTY_WIDTH="width";
 	private static final String PROPERTY_HEIGHT="height";
+	private static final String PROPERTY_SHOWRESPONSE="showResponse";///w
 
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
@@ -102,6 +103,9 @@ public class IFrameComponent extends QComponent
 		defineString(PROPERTY_SRC);
 		defineInteger(PROPERTY_WIDTH);
 		defineInteger(PROPERTY_HEIGHT);
+		defineString(PROPERTY_SHOWRESPONSE);///w
+		
+
 	}
 
 	/** parses internals of tag to create java component*/
@@ -124,18 +128,20 @@ public class IFrameComponent extends QComponent
 		}
 	}
 
-	boolean external;
+	boolean external, showResponse;///w
 
 	@Override
 	protected void initSpecific(Element eThis) throws OmException
 	{
 		sToken="t"+getQuestion().getRandom().nextInt()+getID().hashCode();
 
+		showResponse=!getString(PROPERTY_SHOWRESPONSE).equalsIgnoreCase("no");///w
+		
 		external=getString(PROPERTY_SRC).substring(0,4).equalsIgnoreCase("http");
 		/* external means the page is not in the question jar, we want to keep this definition
 		 * because internal pages can send data back to OM, externals cant - SECURITY!! 
 		 */
-		if(!external)getQuestion().checkCallback(getString(PROPERTY_ACTION));
+		if(!external && showResponse)getQuestion().checkCallback(getString(PROPERTY_ACTION));///w
 	}
 
 	/** @return SRC of Image
@@ -185,7 +191,7 @@ public class IFrameComponent extends QComponent
 			user to OM. we dont do this if frame source is not in the question jar
 			*/
 			
-			if(isPropertySet(PROPERTY_ACTION) && !external)
+			if(isPropertySet(PROPERTY_ACTION) && !external && showResponse)///w
 			{
 				eInput=qc.createElement("input");
 				eInput.setAttribute("type","hidden");
@@ -217,10 +223,15 @@ public class IFrameComponent extends QComponent
 			eEnsureSpaces.setAttribute("id","IF"+getID());
 			eEnsureSpaces.setAttribute("height",""+iActualHeight);
 			eEnsureSpaces.setAttribute("width",""+iActualWidth);
+			
+			eEnsureSpaces.setAttribute("marginwidth","0");///w
+			eEnsureSpaces.setAttribute("marginheight","0");///w
+			
 			eEnsureSpaces.setAttribute("frameborder","0");
 			qc.addInlineXHTML(eEnsureSpaces);
+			
 			/* setting up enter answer button tag for passing information */
-			if(!external){
+			if(!external && showResponse){///w
 				qc.addTextEquivalent("<br/>");
 				Element okTag=qc.createElement("input");
 				okTag.setAttribute("type","button");
