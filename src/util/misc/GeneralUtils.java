@@ -12,6 +12,8 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Properties;
 
 import om.Log;
@@ -213,6 +215,12 @@ public class GeneralUtils implements Serializable {
 			throw new UtilityException("Error creating log", x);
 		}
 		return log;
+	}
+
+	public static String timeNow(String format) {
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(cal.getTime());
 	}
 
 	public static String questionNamePrefix(String fileName) {
