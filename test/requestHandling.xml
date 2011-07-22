@@ -1,0 +1,73 @@
+<!--
+Simple configuration for the RequestHandler implementations.   
+
+Note that this can be superseeded with Spring configuration in the future if
+there is actually more need for inversion of control within the code base.  At
+the time of typing there is not a sufficient requirement to tie in such a
+dependency on external libraries.
+
+<invocationPath />
+REQUIRED
+This is used to specify the actual URL path from which to invoke the particular
+RequestHandler implementation.  Note therefore that these should be unique for
+all of the <requestHandler /> nodes within this configuration as they are not
+chained together.  That means that at this time there is only ONE requestHandler
+per invocationPath. 
+
+<fullClassName />
+REQUIRED
+This specifies the full package and class name of the class that implements the
+RequestHandler interface.  This is the class that will be dynamically
+classloaded in order to deal with all requests to the <invocationPath />
+
+<logPath />
+REQUIRED
+Specifies the location for the log files.
+
+<requiresSecureIP /> and <requiresTrustedIP />
+These are configuration settings that allow for individual requestHandlers to be
+subject to IP restrictions.  The IP addresses themselves are reused from those
+specified in the navigator.xml  So here the configuration simply takes a "true"
+or "false" string in order to tell the RequestManager implementation to check or
+not.  If set to "true" then the IP addresses with in the navigator.xml are
+tested against. 
+
+<requiresAuthentication />
+If the nodes value of this node is set to "true" then we utilise the
+navigator.xml configured Authentication BEFORE allowing the requestHandler to
+process.
+
+<adminUsersOnly />
+If this nodes value is set to "true" then we check those specified as <admins>
+within the navigator.xml and only allow access to them. 
+
+Trevor Hinson - 20062011
+ -->
+ 
+<requestHandlers>
+	<requestHandler>
+		<invocationPath>/extractor</invocationPath> <!-- required -->
+		<fullClassName>om.administration.extraction.TestInstanceExtractionRequestHandler</fullClassName> <!-- required -->
+		<displayName>Test Instance Extraction</displayName>
+		<description>Allows for the extraction of a particular TestInstance to data files that can then be analysed.</description>
+		<logPath>/</logPath>
+		<requiresSecureIP>false</requiresSecureIP>
+		<requiresTrustedIP>false</requiresTrustedIP>
+		<requiresAuthentication>false</requiresAuthentication>
+		<adminUsersOnly>false</adminUsersOnly>
+		<postToUrl>/om-admin/extractor</postToUrl>
+		<extractionFileNamePrefix>/extracted</extractionFileNamePrefix>
+		<TestInstanceTables>[oms-dev].[dbo].[nav_tests],[oms-dev].[dbo].[nav_testquestions],[oms-dev].[dbo].[nav_infopages],[oms-dev].[dbo].[nav_questions],[oms-dev].[dbo].[nav_sessioninfo]</TestInstanceTables>
+		<QuestionInstanceTables>[oms-dev].[dbo].[nav_actions],[oms-dev].[dbo].[nav_params],[oms-dev].[dbo].[nav_results],[oms-dev].[dbo].[nav_scores],[oms-dev].[dbo].[nav_customresults]</QuestionInstanceTables>
+		<!-- extractionUrl>/om-tn/extractor</extractionUrl-->
+	</requestHandler>
+	<requestHandler>
+		<invocationPath>/trevor/hinson</invocationPath>
+		<fullClassName>om.administration.extraction.TestInstanceExtractionRequestHandler</fullClassName>
+		<displayName>Test</displayName>
+		<description>Just a test</description>
+		<logPath>/</logPath>
+		<adminUsersOnly>false</adminUsersOnly>
+	</requestHandler>
+</requestHandlers>
+ 

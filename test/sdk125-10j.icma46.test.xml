@@ -1,0 +1,47 @@
+<!-- SDK125 iCMA46 10J -->
+<test>
+
+  <title>SDK125 Case Study 6 iCMA46</title>
+
+  <options navigation="yes" navlocation="left" freestop="yes" freesummary="yes" summaryquestions="no" summaryattempts="yes" labelset="science"/>
+
+  <content>
+
+    <info>
+      <title>Information</title>
+      <p>
+        The 8 questions in SDK125 iCMA46 assess your progress towards achieving course learning outcomes KU1, KU2, KU3, CS1, CS3 and KS5 as they apply to Case Study 6 (see the full list in Section 3 of the Course and Induction Week Guide.)
+        <br/><br/>
+        Guidelines on how to enter and check your answers are given in full in Assessment Booklet 1 and by clicking on the 'Help' button at the top right of the screen. You do not have to complete all the questions in one visit. As long as you do not click on the 'Submit' button, you can log off and return to complete more questions at a later date.
+        <br/><br/>
+        Most questions allow up to two attempts to get all parts of the question right, but some allow only one attempt; the number is given above each question. When you have only one attempt remaining, it will say 'This is your final attempt'.
+      </p>
+    </info>
+
+    <!--For the Moodle Grade Book-->
+    <rescore marks="100"/>
+
+    <question id="sdk125b6.question01s"/>
+    <question id="sdk125b6.question02s"/>
+    <question id="sdk125b6.question03s"/>
+    <question id="sdk125b6.question04s"/>
+    <question id="sdk125b6.question05f"/>
+    <question id="sdk125b6.question06s"/>
+    <question id="sdk125b6.question07s"/>
+    <question id="sdk125b6.question08s"/>
+    
+  </content>
+
+  <confirm button="Submit">
+    <title>Summary</title>
+    <p><b>If you intend to submit this assessment you must click on the 'Submit' button at the bottom of this page.</b> If you do not do this, your work will not be marked and you will not be deemed to have completed this assessment.</p>
+    <p>You are advised to check that you have completed all the questions before clicking on 'Submit'.</p>
+    <p>Here is an overall summary of your performance on this assessment:</p>
+  </confirm>
+
+  <final>
+    <p>Your SDK125 assessment has been submitted. You are advised to save or print this screen as a record of your submission. Your results for the individual questions were as follows:</p>
+    <summary attempts="yes"/>
+  </final>
+
+</test>
