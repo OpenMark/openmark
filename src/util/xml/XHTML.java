@@ -85,6 +85,7 @@ public class XHTML
 
 		// Close tag
 		w.write("</html>");
+		
 	}
 
 	/** Write the prologue of an XML file, up to the opening html tag (you must
@@ -104,12 +105,12 @@ public class XHTML
 	{
 		if(bIncludeXMLDeclaration)
 		  w.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		w.write("<!DOCTYPE html\n"+
+		  w.write("<!DOCTYPE html\n"+
 			"	PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"+
 			"	\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"+
-			"<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='"+sLang+"' lang='"+sLang+"'");
-
-		// Copy attributes
+			"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\""+sLang+"\" lang=\""+sLang+"\"");
+		
+//		// Copy attributes
 		if(eElement!=null)
 		{
 			NamedNodeMap nnm=eElement.getAttributes();
@@ -199,6 +200,7 @@ public class XHTML
 				w.write("<!-- [UNEXPECTED XML] "+n.getNodeType()+": "+n.getNodeValue()+" -->");
 			} break;
 		}
+		
 	}
 
 	/**
@@ -289,8 +291,9 @@ public class XHTML
 	 * @param response Response (MIME type will be set)
 	 * @return True if really using XHTML, false if HTML
 	 */
-	public static boolean setContentType(HttpServletRequest request,
-		HttpServletResponse response) {
+	public static boolean setContentType(
+		HttpServletRequest request,HttpServletResponse response)
+	{
 		// This is not the correct way to parse the Accept header
 		boolean bXHTML;
 		String sAccept=request.getHeader("Accept");
@@ -335,14 +338,18 @@ public class XHTML
 	 * @param sLang Language code e.g. "en"
 	 * @throws IOException In event of I/O errors
 	 */
-	public static void output(Document d,HttpServletRequest request,
-		HttpServletResponse response, String sLang) throws IOException {
+	public static void output(
+		Document d,HttpServletRequest request,HttpServletResponse response,
+		String sLang)
+	  throws IOException
+	{
 		if (isIE9(request)) {
 			response.addHeader("X-UA-Compatible", "IE=8");
 		}
-		XHTML.setContentType(request,response);
-		PrintWriter pw=response.getWriter();
-		XHTML.saveFullDocument(d,pw,false,sLang);
-		pw.close();
+	  XHTML.setContentType(request,response);
+	  PrintWriter pw=response.getWriter();
+	  XHTML.saveFullDocument(d,pw,false,sLang);
+	  
+	  pw.close();
 	}
 }

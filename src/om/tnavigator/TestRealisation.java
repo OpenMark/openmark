@@ -23,7 +23,6 @@ import java.util.Map;
 
 import om.OmException;
 import om.OmFormatException;
-import om.tnavigator.NavigatorServlet.QuestionVersion;
 import om.tnavigator.NavigatorServlet.RequestTimings;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
@@ -31,6 +30,8 @@ import om.tnavigator.scores.CombinedScore;
 
 import org.w3c.dom.Element;
 
+import util.misc.QuestionVersion;
+import util.misc.VersionUtil;
 import util.xml.XML;
 
 /**
@@ -55,9 +56,9 @@ public class TestRealisation {
 	private TestGroup rootTestGroup;
 
 	// Test items, linearised.
-	private TestLeaf[] testLeavesInOrder;
+	protected TestLeaf[] testLeavesInOrder;
 
-	private TestRealisation(TestGroup rootTestGroup, TestLeaf[] testLeavesInOrder,
+	protected TestRealisation(TestGroup rootTestGroup, TestLeaf[] testLeavesInOrder,
 			long randomSeed, int fixedVariant, String testId, int dbTi) {
 		this.rootTestGroup = rootTestGroup;
 		this.testLeavesInOrder = testLeavesInOrder;
@@ -238,7 +239,7 @@ public class TestRealisation {
 						// If they didn't take the question then either use the latest version
 						// overall or the latest specified major version
 						qv = ns.getLatestVersion(sQuestion,
-								iRequiredMajor==0 ? TestQuestion.VERSION_UNSPECIFIED : iRequiredMajor);
+								iRequiredMajor==0 ? VersionUtil.VERSION_UNSPECIFIED : iRequiredMajor);
 					}
 					questionVersions.put(sQuestion, qv);
 
@@ -255,45 +256,65 @@ public class TestRealisation {
 					else
 						scores.put(sAxis,(double)iScore);
 				}
+				
 			}
 		}
 		finally
 		{
 			rt.lDatabaseElapsed += dat.finish();
 		}
-
-		// Loop around all questions, setting up the score in each one.
-		for(Map.Entry<String, QuestionVersion> me : questionVersions.entrySet())
-		{
-			// Get create the score
-			String sQuestion = me.getKey();
-			QuestionVersion qv = me.getValue();
-			CombinedScore score = CombinedScore.fromArrays(questionScores.get(sQuestion),
-					ns.getMaximumScores(rt, sQuestion, qv.toString()));
-
-			// Attatch it to the appropriate TestQuestion.
-			for (int iQuestion=0;iQuestion<testLeavesInOrder.length;iQuestion++)
-			{
-				if (!(testLeavesInOrder[iQuestion] instanceof TestQuestion)) continue;
-				TestQuestion tq = (TestQuestion)testLeavesInOrder[iQuestion];
-				if (tq.getID().equals(sQuestion))
-				{
-					tq.setActualScore(score);
-					break;
-				}
-			}
-		}
+		
+		applyScores(questionVersions, questionScores, ns, rt);
 
 		// Sanity check: make sure all the questions have a score
-		for(int iQuestion=0;iQuestion<testLeavesInOrder.length;iQuestion++)
-		{
+		sanityCheckScores();
+
+		// Now calculate the total score
+		return rootTestGroup.getFinalScore();
+	}
+
+	/**
+	 * Sanity check: make sure all the questions have a score
+	 * @throws OmException
+	 */
+	protected void sanityCheckScores() throws OmException {
+		for(int iQuestion=0;iQuestion<testLeavesInOrder.length;iQuestion++) {
 			if(!(testLeavesInOrder[iQuestion] instanceof TestQuestion)) continue;
 			TestQuestion tq=(TestQuestion)testLeavesInOrder[iQuestion];
 			if(!tq.hasActualScore())
 				throw new OmException("Couldn't find score for question: "+tq.getID());
 		}
+	}
 
-		// Now calculate the total score
-		return rootTestGroup.getFinalScore();
+	protected void applyScores(Map<String, QuestionVersion> questionVersions,
+		Map<String, Map<String, Double>> questionScores, NavigatorServlet ns, RequestTimings rt)
+		throws Exception {
+		// Loop around all questions, setting up the score in each one.
+		for (Map.Entry<String, QuestionVersion> me : questionVersions.entrySet()) {
+			// Get create the score
+			String sQuestion = me.getKey();
+			QuestionVersion qv = me.getValue();
+			CombinedScore score = CombinedScore.fromArrays(
+				questionScores.get(sQuestion),
+				ns.getMaximumScores(rt, sQuestion, qv.toString()));
+			attatchToAppropriateTestQuestion(score, sQuestion);
+		}
+	}
+
+	/**
+	 * Attatches the score to the TestQuestion itself.
+	 * @param score
+	 * @param sQuestion
+	 */
+	protected void attatchToAppropriateTestQuestion(CombinedScore score,
+		String sQuestion) {
+		for (int iQuestion=0;iQuestion<testLeavesInOrder.length;iQuestion++) {
+			if (!(testLeavesInOrder[iQuestion] instanceof TestQuestion)) continue;
+			TestQuestion tq = (TestQuestion)testLeavesInOrder[iQuestion];
+			if (tq.getID().equals(sQuestion)) {
+				tq.setActualScore(score);
+				break;
+			}
+		}
 	}
 }

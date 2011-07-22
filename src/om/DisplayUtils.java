@@ -10,11 +10,12 @@ import org.apache.commons.lang.StringUtils;
  * TODO : this mixes the presentation logic with the business logic.  Look to
  *  refactor away into seperate presentational objects and pull from a seperate
  *  easy to change source. TMH.
+ * @author Trevor Hinson
  */
 
 public class DisplayUtils {
 
-	private static String LOCATION = "location";
+	public static String LOCATION = "location";
 
 	public static String header() {
 		return "<xhtml>" +

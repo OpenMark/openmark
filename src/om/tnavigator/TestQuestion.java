@@ -25,6 +25,7 @@ import om.tnavigator.scores.CombinedScore;
 
 import org.w3c.dom.Element;
 
+import util.misc.VersionUtil;
 import util.xml.XML;
 import util.xml.XMLException;
 
@@ -32,9 +33,8 @@ import util.xml.XMLException;
 /** Represents a question */
 class TestQuestion extends TestMarkedItem implements TestLeaf
 {
-	final static int VERSION_UNSPECIFIED=-1;
 	private String sID;
-	private int iVersion=VERSION_UNSPECIFIED;
+	private int iVersion=VersionUtil.VERSION_UNSPECIFIED;
 
 	private String sSection;
 	private int iNumber;

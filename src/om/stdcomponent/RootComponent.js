@@ -15,7 +15,7 @@ function myOnLoad()
 	setTimeout(myPostLoad,0);
 }
 
-window.onload=myOnLoad;
+//window.onload=myOnLoad;
 
 var postLoadEvents=new Array();
 function addPostLoad(handler)

@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import om.Log;
 import om.OmUnexpectedException;
 import om.OmVersion;
 import om.tnavigator.db.DatabaseAccess;
@@ -34,12 +35,16 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import util.misc.IO;
+import util.misc.IPAddressCheckUtil;
+import util.misc.RequestHelpers;
 import util.misc.Strings;
 import util.xml.XHTML;
 import util.xml.XML;
 
-class StatusPages
-{
+class StatusPages {
+
+	private static String PRE_PROCESSOR = "PRE_PROCESSOR";
+
 	private NavigatorServlet ns;
 	StatusPages(NavigatorServlet ns)
 	{
@@ -49,8 +54,7 @@ class StatusPages
 	void handle(String sSuffix,HttpServletRequest request,HttpServletResponse response)
 		throws Exception
 	{
-		if(!ns.checkLocalIP(request))
-		{
+		if (!IPAddressCheckUtil.checkLocalIP(request, ns.getLog(), ns.getNavigatorConfig())) {
 			ns.sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
 				false,false,null, "Forbidden", "This page may only be accessed within the internal network.", null);
 		}
@@ -184,7 +188,7 @@ class StatusPages
 				  ns.getServletContext().getRealPath("WEB-INF/templates/statuslog.xhtml.start")));
 			Map<String,String> mReplace=new HashMap<String,String>();
 			mReplace.put("DATE",sDate);
-			mReplace.put("ACCESS",ns.getAccessCSSAppend(request));
+			mReplace.put("ACCESS", RequestHelpers.getAccessCSSAppend(request));
 			URL uThis=ns.getNavigatorConfig().getThisTN();
 			mReplace.put("MACHINE",uThis.getHost().replaceAll(".open.ac.uk","")+uThis.getPath());
 			sStart=XML.replaceTokens(sStart,"%%",mReplace);
@@ -275,7 +279,7 @@ class StatusPages
 
 		Map<String,String> mReplace=new HashMap<String,String>();
 		mReplace.put("DATE",sDate);
-		mReplace.put("ACCESS",ns.getAccessCSSAppend(request));
+		mReplace.put("ACCESS", RequestHelpers.getAccessCSSAppend(request));
 		URL uThis=ns.getNavigatorConfig().getThisTN();
 		mReplace.put("MACHINE",uThis.getHost().replaceAll(".open.ac.uk","")+uThis.getPath());
 
@@ -482,6 +486,18 @@ class StatusPages
 		}
 	}
 
+	private void replacePreProcessingNode(Document d) {
+		Class<?> cla = ns.getNavigatorConfig().retrievePreProcessingRequestHandler();
+		Map<String,Object> m = new HashMap<String,Object>();
+		if (null == cla) {
+			m.put(PRE_PROCESSOR,
+				"No PreProcessor specified in the navigator.xml");
+		} else {
+			m.put(PRE_PROCESSOR, cla.toString());
+		}
+		XML.replaceTokens(d, m);
+	}
+
 	private void handleStatusHome(HttpServletRequest request,HttpServletResponse response)
 	throws Exception
 	{
@@ -491,10 +507,13 @@ class StatusPages
 		// Basic status
 
 		Map<String,Object> mReplace=new HashMap<String,Object>();
-		mReplace.put("ACCESS",ns.getAccessCSSAppend(request));
+		mReplace.put("ACCESS", RequestHelpers.getAccessCSSAppend(request));
 		ns.obtainPerformanceInfo(mReplace);
 		XML.replaceTokens(d,mReplace);
 
+		// PreProcessor Setup
+		replacePreProcessingNode(d);
+		
 		// QE performance
 		XML.find(d,"id","qeperformance").appendChild(
 			d.importNode((Node)mReplace.get("_qeperformance"),true));

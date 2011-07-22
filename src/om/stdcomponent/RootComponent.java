@@ -105,11 +105,11 @@ public class RootComponent extends QComponent
 
 		qc.addInlineXHTML(rootDiv);
 
-		if(!bPlain)
-		{
+		if(!bPlain) {
 			Element script=XML.createChild(rootDiv,"script");
 			script.setAttribute("type","text/javascript");
-			script.setAttribute("src","%%RESOURCES%%/script.js");
+			script.setAttribute("src","%%RESOURCES%%/script.js?" + System.currentTimeMillis());
+			//script.setAttribute("src","%%RESOURCES%%/script.js");
 		}
 
 		// See if there's a component that wants to go there

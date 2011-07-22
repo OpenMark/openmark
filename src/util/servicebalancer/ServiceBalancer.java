@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
+import om.Log;
 import om.OmUnexpectedException;
 import om.tnavigator.*;
 import om.tnavigator.NavigatorServlet.RequestTimings;

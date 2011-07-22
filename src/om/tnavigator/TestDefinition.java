@@ -34,7 +34,7 @@ public class TestDefinition
 {
 	private Document dTest;
 	private String sName;
-	private Element eContent,eFinal,eOptions, eConfirm;
+	protected Element eContent,eFinal,eOptions, eConfirm;
 	private boolean bNavigation,bRedoQuestion,bRedoQuestionAuto,
 	  bRedoTest,bFreeSummary,bFreeStop,bSummaryScores,bSummaryAttempts,bSummaryQuestions,
 	  bQuestionNames,bEndSummary,bNumberBySection;
@@ -44,8 +44,9 @@ public class TestDefinition
 	private Element eConfirmParagraphs;
 	private String sConfirmButton,sConfirmTitle;
 
-	static final int NAVLOCATION_BOTTOM=0,NAVLOCATION_LEFT=1,NAVLOCATION_WIDE=2;
+	public static final int NAVLOCATION_BOTTOM=0,NAVLOCATION_LEFT=1,NAVLOCATION_WIDE=2;
 
+	private static String SUMMARY_CONFIRMATION = "summaryConfirmation";
 
 	/**
 	 * Constructs test definition and checks format.
@@ -122,16 +123,36 @@ public class TestDefinition
 			else
 				iNavLocation=NAVLOCATION_BOTTOM;
 
-			if(eOptions.hasAttribute("labelset")) sLabelSet=eOptions.getAttribute("labelset");
-			if(eOptions.hasAttribute("questionnumberheader")) sQuestionNumberHeader=eOptions.getAttribute("questionnumberheader");
-
+			if(eOptions.hasAttribute("labelset")) {
+				sLabelSet=eOptions.getAttribute("labelset");
+			}
+			if(eOptions.hasAttribute("questionnumberheader")) {
+				sQuestionNumberHeader=eOptions.getAttribute("questionnumberheader");
+			}
 		}
 		catch(XMLException xe)
 		{
 			throw new OmFormatException("Error processing test definition: "+f,xe);
 		}
 	}
-	
+
+	/**
+	 * Provided addition for overriding the default confirmation provided by 
+	 *  the summary table.
+	 * @author Trevor Hinson
+	 */
+	public String retrieveSummaryConfirmation() throws XMLException {
+		String s = null;
+		if (null != dTest ?
+			XML.hasChild(dTest.getDocumentElement(), SUMMARY_CONFIRMATION) : false) {
+			Element e = XML.getChild(dTest.getDocumentElement(), SUMMARY_CONFIRMATION);
+			if (null != e) {
+				s = XML.getText(e);
+			}
+		}
+		return s;
+	}
+
 	/**
 	 * Get the value of options attribute.
 	 * @param attrbName Name of options attribute
@@ -211,7 +232,7 @@ public class TestDefinition
 	 * @param eThis This parent element
 	 * @throws OmFormatException If there's any problem with XML format
 	 */
-	private TestItem getTestItem(Random r,Element eThis,TestItem iParent) throws OmFormatException
+	protected TestItem getTestItem(Random r,Element eThis,TestItem iParent) throws OmFormatException
 	{
 		String sParentTag=eThis.getTagName();
 		Element[] aeChildren=XML.getChildren(eThis);
@@ -292,7 +313,7 @@ public class TestDefinition
 		return ids;
 	}
 
-	boolean isNavigationAllowed()
+	public boolean isNavigationAllowed()
 	{
 		return bNavigation;
 	}
@@ -322,7 +343,7 @@ public class TestDefinition
 		return bQuestionNames;
 	}
 
-	boolean doesSummaryIncludeScores()
+	public boolean doesSummaryIncludeScores()
 	{
 		return bSummaryScores;
 	}
@@ -346,12 +367,12 @@ public class TestDefinition
 	{
 		return bEndSummary;
 	}
-	boolean isNumberBySection()
+	public boolean isNumberBySection()
 	{
 		return bNumberBySection;
 	}
 	
-	int getNavLocation()
+	public int getNavLocation()
 	{
 		return iNavLocation;
 	}

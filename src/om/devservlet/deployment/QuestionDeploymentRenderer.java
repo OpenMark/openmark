@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import om.DisplayUtils;
+import om.RenderedOutput;
 
 import org.apache.commons.lang.StringUtils;
 

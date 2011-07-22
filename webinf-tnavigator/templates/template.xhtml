@@ -39,6 +39,15 @@
 setTimeout(
     'var f=document.getElementById("focusthis");'+
     'if(f) { f.focus(); setTimeout("window.scroll(0,0);",0); }',100);
+
+
+if (typeof myOnLoad != 'undefined') { // Any scope
+	if (window['myOnLoad'] != undefined) { // Global scope
+		if (window['myOnLoad'] != void 0) { // Old browsers
+			window.onload=myOnLoad;
+		}
+	}
+}
 </script>
 
 </body>

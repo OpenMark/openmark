@@ -18,30 +18,20 @@
 package om;
 
 /** Standard exception superclass */
-public class OmException extends Exception
-{
-	/**
-	 * @param sText Exception message (do not end in full stop)
-	 */
-	public OmException(String sText)
-	{
+public class OmException extends Exception {
+
+	private static final long serialVersionUID = 5308153185163640284L;
+
+	public OmException(String sText) {
 		super(sText);
 	}
 
-	/**
-	 * @param t Exception that caused this one
-	 */
-	public OmException(Throwable t)
-	{
+	public OmException(Throwable t) {
 		super(t);
 	}
 
-	/**
-	 * @param sText Exception message (do not end in full stop)
-	 * @param t Exception that caused this one
-	 */
-	public OmException(String sText,Throwable t)
-	{
-		super(sText,t);
+	public OmException(String sText, Throwable t) {
+		super(sText, t);
 	}
+
 }

@@ -20,7 +20,7 @@ package om.tnavigator.db;
 import java.sql.*;
 import java.util.*;
 
-import om.tnavigator.Log;
+import om.Log;
 
 /** Thread-safe database access code */
 public class DatabaseAccess
@@ -50,7 +50,7 @@ public class DatabaseAccess
 	private Log l;
 
 	/** Information about one connection */
-	private static class ConnectionInfo
+	public static class ConnectionInfo
 	{
 		/** Actual connection */
 		Connection c;
@@ -84,7 +84,7 @@ public class DatabaseAccess
 		 * Constructs internally.
 		 * @param ci Connection
 		 */
-		private Transaction(ConnectionInfo ci) { this.ci=ci; }
+		protected Transaction(ConnectionInfo ci) { this.ci=ci; }
 
 		/**
 		 * Runs an SQL query and returns a result set.

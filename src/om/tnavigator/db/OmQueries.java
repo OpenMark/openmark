@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import om.Log;
 import om.OmVersion;
+import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess.Transaction;
-import om.tnavigator.Log;
 
 import util.misc.IO;
 import util.misc.Strings;
@@ -37,6 +38,8 @@ import util.misc.NameValuePairs;
  */
 public abstract class OmQueries
 {
+	private static String AUTHORSHIP_CLASS_NAME = "om.tnavigator.request.authorship.StandardAuthorshipConfirmationRequestHandling";
+
 	private final String prefix;
 
 	/**
@@ -787,13 +790,14 @@ public abstract class OmQueries
 	 * Checks that database tables are present. If not, initialises tables
 	 * using createdb.sql from the same package as the database class.
 	 * @param dat the transaction within which the query should be executed.
+	 * @param l the log to be used.
+	 * @param nc providing details of the navigator configuration.
 	 * @throws SQLException If there is an error in setting up tables
 	 * @throws IOException
 	 * @throws IllegalArgumentException
-
 	 */
-	public void checkTables(DatabaseAccess.Transaction dat,Log l) throws SQLException,IOException,IllegalArgumentException
-	{
+	public void checkTables(DatabaseAccess.Transaction dat,Log l, NavigatorConfig nc)
+		throws SQLException,IOException,IllegalArgumentException {
 		// If not tables exist yet, create them all.
 		if(!tableExists(dat,"tests"))
 		{
@@ -813,7 +817,7 @@ public abstract class OmQueries
 		/* add the navconfig table if it does not exxist */
 		upgradeDatabaseToAddNavConfig(dat,l);
 		/* now use the parameter in the navigator config table to perform and DB upgrades */
-		upgradeDatabaseToLatest(dat,l);
+		upgradeDatabaseToLatest(dat,l, nc);
 
 	}
 
@@ -891,8 +895,8 @@ public abstract class OmQueries
 	 * @throws SQLException
 	 * */
 	
-	protected void upgradeDatabaseToLatest(DatabaseAccess.Transaction dat, Log l) throws SQLException,IllegalArgumentException
-	{
+	protected void upgradeDatabaseToLatest(DatabaseAccess.Transaction dat, Log l,
+		NavigatorConfig nc) throws SQLException,IllegalArgumentException {
 
 		/* add all database updates here
 		 * first get the database version by reading the navconfig table
@@ -937,14 +941,49 @@ public abstract class OmQueries
 			dat.update("UPDATE " + getPrefix() + "navconfig SET value = \'"+currversion+"\' where name=\'dbversion\'");
 			
 			applyUpdateForEmailNotification(dat, l, DBversion);
-			
+			applyAuthorshipUpdate(dat, l, DBversion, nc);
 		}
 		else
 		{
 			l.logDebug("DatabaseUpgrade", "Database up to date at version "+DBversion.getVersion()+" no updates attempted.");
 		}
 	}
-	
+
+	/**
+	 * Checks to see if the we have the preprocessor configured and if we do
+	 *  then we check to see if the database table is correctly setup.  If not
+	 *  then we try to set things up correctly at this point. 
+	 * @param dat
+	 * @param l
+	 * @param DBversion
+	 * @param nc
+	 * @throws SQLException
+	 * @throws IllegalArgumentException
+	 * @author Trevor Hinson
+	 */
+	private void applyAuthorshipUpdate(DatabaseAccess.Transaction dat, Log l,
+		NavVersion DBversion, NavigatorConfig nc)
+		throws SQLException, IllegalArgumentException {
+		Class<?> cla = nc.retrievePreProcessingRequestHandler();
+		if (null != cla ? AUTHORSHIP_CLASS_NAME.equals(cla.getName()) : false) {
+			if (!columnExistsInTable(dat, "tests", "authorshipConfirmation")) {
+				updateDatabase("1.12",DBversion,
+					"ALTER TABLE " + getPrefix() +
+					"tests ADD authorshipConfirmation INTEGER NOT NULL DEFAULT 0", l,dat);
+			}
+		}
+	}
+
+	/**
+	 * Looks to alter the database structure to add the column "dataWarningEmailSent"
+	 *  to the nav_tests table if it does not already exist.
+	 * @param dat
+	 * @param l
+	 * @param DBversion
+	 * @throws SQLException
+	 * @throws IllegalArgumentException
+	 * @author Trevor Hinson
+	 */
 	private void applyUpdateForEmailNotification(DatabaseAccess.Transaction dat,
 		Log l, NavVersion DBversion) throws SQLException,IllegalArgumentException {
 		if (!columnExistsInTable(dat, "tests", "dateWarningEmailSent")) {

@@ -113,7 +113,7 @@ public class UserTestReport implements OmTestReport {
 				if (answerSummary == null) answerSummary = "The question did not return this information.";
 				String actionSummary=rs.getString(8);
 				if (actionSummary == null) actionSummary = "The question did not return this information.";
-				String attemptString = NavigatorServlet.getAttemptsString(rs.getInt(9));
+				String attemptString = NavigatorServlet.getAttemptsString(rs.getInt(9), us.getTestDefinition());
 				if (rs.wasNull()) attemptString = "The question did not return this information.";
 				String sAxis=rs.getString(10);
 				String sAxisScore=rs.getString(11);

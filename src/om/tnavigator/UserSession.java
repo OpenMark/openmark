@@ -35,27 +35,27 @@ public class UserSession
 	String sCookie;
 
 	/** Question session ID for question engine */
-	OmServiceBalancer.OmServiceSession oss=null;
+	public OmServiceBalancer.OmServiceSession oss=null;
 
 	/** Sequence used to check you don't do things out of order */
 	String sSequence;
 
 	/** Time of session start */
-	long lSessionStart=System.currentTimeMillis();
+	public long lSessionStart=System.currentTimeMillis();
 
 	/** Time of last action in session */
 	private long lastActionTime = System.currentTimeMillis();
 
 	// Current test deployment.
-	private TestDeployment tdDeployment = null;
+	protected TestDeployment tdDeployment = null;
 
 	/** Current test definition (null for single question) */
-	private TestDefinition testDefinition = null;
+	protected TestDefinition testDefinition = null;
 
 	// The test realisation, that is, exactly what sections
 	// and questions make up the test for this user, given
 	// the random choices.
-	private TestRealisation testRealisation = null;
+	protected TestRealisation testRealisation = null;
 
 	/** Index within test items */
 	private int testPosition;
@@ -89,8 +89,8 @@ public class UserSession
 
 	/** Database ID for test, question, sequence */
 	private int dbTi;
-	int iDBqi;
-	int iDBseq;
+	public int iDBqi;
+	public int iDBseq;
 
 	/** True if they have finished the test */
 	private boolean bFinished;
@@ -128,10 +128,14 @@ public class UserSession
 	// A place where any extra information can be stored in the session.
 	private Map<String,Object> extraSessionInfo = new HashMap<String, Object>();
 
+	public int getICSSIndex() {
+		return new Integer(iCSSIndex).intValue();
+	}
+
 	/**
 	 * @param owner
 	 */
-	UserSession(NavigatorServlet owner, String cookie) {
+	protected UserSession(NavigatorServlet owner, String cookie) {
 		this.ns = owner;
 		this.lSessionStart = System.currentTimeMillis();
 		this.sCookie = cookie;
@@ -212,7 +216,7 @@ public class UserSession
 	/**
 	 * @return the tg
 	 */
-	TestGroup getRootTestGroup() {
+	protected TestGroup getRootTestGroup() {
 		return testRealisation.getRootTestGroup();
 	}
 
@@ -247,7 +251,7 @@ public class UserSession
 	/**
 	 * @return the iIndex
 	 */
-	int getTestPosition() {
+	public int getTestPosition() {
 		return testPosition;
 	}
 
@@ -262,14 +266,14 @@ public class UserSession
 	/**
 	 * @return the iDBti
 	 */
-	int getDbTi() {
+	public int getDbTi() {
 		return dbTi;
 	}
 
 	/**
 	 * @return the testDefinition
 	 */
-	TestDefinition getTestDefinition() {
+	public TestDefinition getTestDefinition() {
 		return testDefinition;
 	}
 

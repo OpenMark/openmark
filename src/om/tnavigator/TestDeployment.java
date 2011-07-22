@@ -90,8 +90,13 @@ public class TestDeployment
 	private String module;
 
 	private String icma;
-	
-	private boolean bhasEmailStudents=false;
+
+	public void setType(int n) {
+		if (TYPE_NOTASSESSED == n || TYPE_ASSESSED_REQUIRED == n
+			|| TYPE_ASSESSED_OPTIONAL == n) {
+			iType = n;
+		}
+	}
 
 	public String getModule() {
 		return module;
@@ -101,10 +106,10 @@ public class TestDeployment
 		return icma;
 	}
 
-
 	public int getiForbidExtensionValue() {
 		return iForbidExtensionValue;
 	}
+
 	public int getNumberOfQuestions() {
 		return numberOfQuestions;
 	}
@@ -114,10 +119,10 @@ public class TestDeployment
 	 * @return
 	 */
 	public boolean isUsingEmailStudents() {
-		return bhasEmailStudents;
+		Integer n = getiForbidExtensionValue();
+		return null != n ? n > 0 : false;
 	}
 
-	
 	/**
 	 * Constructs test definition and checks format.
 	 * @param f File to use
@@ -224,7 +229,6 @@ public class TestDeployment
 	private void handleEmailStudentsNode(Element eRoot) throws XMLException {
 		if (null != eRoot) {
 			if (XML.hasChild(eRoot, EMAIL_STUDENTS)) {
-				bhasEmailStudents=true;
 				Element e = XML.getChild(eRoot, EMAIL_STUDENTS);
 				if (null != e) {
 					if (XML.hasChild(e, NUMBER_OF_QUESTIONS)) {
@@ -232,7 +236,7 @@ public class TestDeployment
 					}
 					if (XML.hasChild(e, FORBID_EXTENSION)) {
 						Integer n = retrieveValue(e, FORBID_EXTENSION);
-						iForbidExtensionValue = null != n ? n : DEFAULT_FORBID_EXTENSION;
+						iForbidExtensionValue = null != n ? n : 0;
 					} else {
 						iForbidExtensionValue = DEFAULT_FORBID_EXTENSION;
 					}
@@ -474,7 +478,7 @@ public class TestDeployment
 		int reduceBy = 4;
 		if (isUsingEmailStudents()) {
 			int num = getiForbidExtensionValue();
-			reduceBy = num > 0 ? num * 24 : reduceBy;
+			reduceBy = num > 0 ? num * 24 : 4;
 		}
 		return isAfterDate("forbid","23:59:59",false,null,
 			System.currentTimeMillis()-reduceBy*60*60*1000);
@@ -669,15 +673,17 @@ public class TestDeployment
 	public String displayEmailStudentsForbidExtension()
 		throws OmFormatException {
 		String display = null;
-		Date FinishDate = null;
+		Date closeDate = null;
 		if (isUsingEmailStudents()) {
 			Integer extensionValue = getiForbidExtensionValue();
 			if (null != extensionValue ? extensionValue > -1 : false) {
-				if (XML.hasChild(eDates, "forbid")) {
-					FinishDate = getActualDate("forbid", "00:00:00");
+				if (XML.hasChild(eDates, "close")) {
+					closeDate = getActualDate("close", "00:00:00");
+				} else if (XML.hasChild(eDates, "forbid")) {
+					closeDate = getActualDate("forbid", "00:00:00");
 				}
-				if (null != FinishDate) {
-					long time = FinishDate.getTime();
+				if (null != closeDate) {
+					long time = closeDate.getTime();
 					long extensionDate = time + (extensionValue * 24) *60*60*1000;
 					Date eDate = new Date(extensionDate);
 					SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");

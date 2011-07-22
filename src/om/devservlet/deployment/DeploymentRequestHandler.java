@@ -6,20 +6,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import om.DisplayUtils;
-import om.devservlet.RequestAssociates;
-import om.devservlet.RequestHandler;
-import om.devservlet.RequestHandlingException;
-import om.devservlet.RequestResponse;
+import om.Log;
+import om.RenderedOutput;
+import om.RequestAssociates;
+import om.RequestHandler;
+import om.RequestHandlingException;
+import om.RequestResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Element;
 
+import util.misc.FinalizedResponse;
 import util.misc.GeneralUtils;
+import util.misc.StandardFinalizedResponse;
 import util.misc.UtilityException;
 import util.xml.XML;
 
@@ -47,8 +50,6 @@ public class DeploymentRequestHandler implements RequestHandler {
 
 	private static String DEPLOY = "deploy";
 
-	private ServletContext servletContext;
-
 	private RequestAssociates requestAssociates;
 
 	private HttpServletRequest request;
@@ -56,6 +57,8 @@ public class DeploymentRequestHandler implements RequestHandler {
 	private QuestionDeploymentRenderer questionDeploymentRenderer;
 
 	private String deployableQuestionLocation;
+
+	private Log log;
 
 	/**
 	 * Caters for the deploy option within the Question Developer.  Based on
@@ -69,20 +72,18 @@ public class DeploymentRequestHandler implements RequestHandler {
 	 * @throws RequestHandlingException
 	 * @author Trevor Hinson
 	 */
-	public RequestResponse handle(ServletContext context,
-		HttpServletRequest req, HttpServletResponse res,
-		RequestAssociates associates) throws RequestHandlingException {
-		if (null != context && null != req && null != res
-			&& null != associates ? associates.valid() : false) {
-			servletContext = context;
+	public RequestResponse handle(HttpServletRequest req,
+		HttpServletResponse res, RequestAssociates associates)
+		throws RequestHandlingException {
+		if (null != req && null != res && null != associates ? associates.valid() : false) {
 			requestAssociates = associates;
-			request = req;
-			deployableQuestionLocation = servletContext.getRealPath(QUESTIONS_PATH);
-			questionDeploymentRenderer = new QuestionDeploymentRenderer(
-				deployableQuestionLocation);
-			establishChoices();
-			List<String> names = pickUpDeploymentChoicesFromSession();
+			setUpDeployableQuestionLocation(associates);
 			try {
+				setUpLog();
+				questionDeploymentRenderer = new QuestionDeploymentRenderer(
+					deployableQuestionLocation);
+				establishChoices();
+				List<String> names = pickUpDeploymentChoicesFromSession();
 				return doDeploy() ? deploy(names) : renderPage(names);
 			} catch (QuestionDeploymentException x) {
 				throw new RequestHandlingException(x);
@@ -91,10 +92,56 @@ public class DeploymentRequestHandler implements RequestHandler {
 			throw new RequestHandlingException("The arguments did not match"
 				+ " what is required by this method.  No object can be null"
 				+ " and the RequestAssociate must be valid : "
-				+ "\n ServleetContext = " + context
 				+ "\n HttpServletRequest = " + req
 				+ "\n HttpServletResponse = " + res
 				+ "\n RequestAssociates = " + associates);
+		}
+	}
+
+	private void setUpDeployableQuestionLocation(RequestAssociates associates)
+		throws RequestHandlingException {
+		if (null != associates ? null != associates.getServletContext() : false) {
+			deployableQuestionLocation = associates.getServletContext()
+				.getRealPath(QUESTIONS_PATH);
+		} else {
+			throw new RequestHandlingException("Unable to continue :"
+				+ " RequestAssociates : " + associates);
+		}
+	}
+
+	private void setUpLog() throws QuestionDeploymentException {
+		Map<String, String> metaData = retrieveDeployMetaData();
+		if (null != metaData) {
+			String path = metaData.get(DeploymentEnum.HandleDeployLogTo.toString());
+			String debug = metaData.get(DeploymentEnum.HandleDeployShowDebug.toString());
+			if (StringUtils.isNotEmpty(path)) {
+				try {
+					log = GeneralUtils.getLog(getClass(), path,
+						"true".equalsIgnoreCase(debug) ? true : false);
+				} catch (UtilityException x) {
+					x.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Wraps the logging in order to first check that the Log object has been
+	 *  setup properly.
+	 * @param message
+	 * @param t
+	 * @param debug
+	 * @author Trevor Hinson
+	 */
+	private void log(String message, Throwable t, boolean debug) {
+		if (null != log) {
+			if (null != t) {
+				log.logError(message, t);
+			} else {
+				if (debug) {
+					log.logDebug(message);
+				}
+			}
 		}
 	}
 
@@ -138,11 +185,16 @@ public class DeploymentRequestHandler implements RequestHandler {
 	private boolean doDeploy() {
 		boolean deploy = false;
 		if (hasConfirmedDeployment()) {
+			log("Confirmation has been made for the deployment so continuing",
+				null, true);
 			if (requestAssociates.getPost()) {
 				deploy = true;
 			} else {
 				deploy = null != determineQuestionFromPath();
 			}
+		} else {
+			log("We have not confirmed the deployment so not continuing.",
+				null, true);
 		}
 		return deploy;
 	}
@@ -251,14 +303,16 @@ public class DeploymentRequestHandler implements RequestHandler {
 	 * @throws QuestionDeploymentException
 	 * @author Trevor Hinson
 	 */
-	public RenderedOutput doDeployment(List<String> names,
+	RenderedOutput doDeployment(List<String> names,
 		Map<String, String> metaData) throws QuestionDeploymentException {
 		RenderedOutput ro = new RenderedOutput();
+		log("Carrying out the deployment of " + names, null, true);
 		ro.append(DisplayUtils.header())
 			.append(QuestionDeploymentRenderer.DEPLOYMENT_RESULTS_PAGE_HEADING);
 		if (null != names ? names.size() > 0 && null != metaData : false) {
 			for (String name : names) {
 				if (StringUtils.isNotEmpty(name)) {
+					log("Handling : " + name, null, true);
 					QuestionHolder qh = generateQuestionHolder(name, metaData);
 					if (null != qh) {
 						RenderedOutput output = deploy(qh, metaData);
@@ -288,9 +342,11 @@ public class DeploymentRequestHandler implements RequestHandler {
 		Map<String, String> metaData) throws QuestionDeploymentException {
 		RenderedOutput or = new RenderedOutput();
 		try {
+			log("Picking up the QuestionTransporter ...", null, true);
 			QuestionTransporter qt = GeneralUtils.loadComponent(
 				QuestionTransporter.class, metaData.get(TRANSPORTER));
 			qt.deploy(qh, metaData, or);
+			qt.close(null);
 		} catch (UtilityException x) {
 			throw new QuestionDeploymentException(x);
 		}
@@ -420,4 +476,11 @@ public class DeploymentRequestHandler implements RequestHandler {
 		return metaData;
 	}
 
+	@Override
+	public FinalizedResponse close(Object o) throws UtilityException {
+		if (null != log) {
+			log.close();
+		}
+		return new StandardFinalizedResponse(true);
+	}
 }

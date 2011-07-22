@@ -32,15 +32,22 @@ import java.util.Set;
 
 import om.tnavigator.db.OmQueries;
 
+import org.apache.commons.lang.StringUtils;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import util.misc.Strings;
 import util.xml.XML;
+import util.xml.XMLException;
 
 /** Loads navigator configuration file. */
 public class NavigatorConfig
 {
+	private static String REQUEST_MANAGEMENT_NODE = "RequestManagement";
+
+	private static String REQUEST_BASED = "requestBased";
+
 	/** Om services */
 	private URL[] omServices;
 
@@ -96,19 +103,30 @@ public class NavigatorConfig
 	
 	/** Standard admin usernames that may be required to be present in test deploy files */
 	private List<String> standardAdmins = new ArrayList<String>();
-	
-	String getAuthClass()
-	{
+
+	private static String PRE_PROCESSOR = "preprocessor";
+
+	private Class<?> preProcessingRequestHandler;
+
+	private boolean requestManagementRequestBased;
+
+	public boolean isRequestManagementRequestBased() {
+		return requestManagementRequestBased;
+	}
+
+	public Class<?> retrievePreProcessingRequestHandler() {
+		return preProcessingRequestHandler;
+	}
+
+	public String getAuthClass() {
 		return authClass;
 	}
 
-	String getDBClass()
-	{
+	public String getDBClass() {
 		return dbClass;
 	}
 
-	String getDBPrefix()
-	{
+	public String getDBPrefix() {
 		return dbPrefix;
 	}	
 
@@ -188,8 +206,7 @@ public class NavigatorConfig
 	 * @param fConfig Config file
 	 * @throws IOException If there's any problem parsing the file etc.
 	 */
-	NavigatorConfig(File fConfig) throws IOException
-	{
+	public NavigatorConfig(File fConfig) throws IOException {
 		Document dConfig=XML.parse(fConfig);
 		Element eRoot=dConfig.getDocumentElement();
 
@@ -312,12 +329,71 @@ public class NavigatorConfig
 				}				
 			}
 		}
-		
+		establishPreProcessor(eRoot);
+		establishRequestManagementPosition(eRoot);
+	}
+
+	/**
+	 * Checks to see if there is a <RequestManagement> node set and if it has
+	 *  been configured with REQUEST_BASED.  If it has then the composite
+	 *  requestManagementRequestBased boolean is set to true.
+	 * @param eRoot
+	 * @author Trevor Hinson
+	 */
+	private void establishRequestManagementPosition(Element eRoot) {
+		String s = retrieveElementText(eRoot, REQUEST_MANAGEMENT_NODE);
+		if (StringUtils.isNotEmpty(s)
+			? REQUEST_BASED.equalsIgnoreCase(s) : false) {
+			requestManagementRequestBased = true;
+		}
+	}
+
+	/**
+	 * Identifies and returns the textContent of a specified Element child
+	 * 	within the provided eRoot element.  Wraps XML.getChild() with some
+	 *  additional checks.
+	 * @param eRoot
+	 * @param nodeName
+	 * @return
+	 * @author Trevor Hinson
+	 */
+	private String retrieveElementText(Element eRoot, String nodeName) {
+		String s = null;
+		if (null != eRoot && StringUtils.isNotEmpty(nodeName)
+			? XML.hasChild(eRoot, nodeName) : false) {
+			try {
+				Element e = XML.getChild(eRoot, nodeName);
+				s = e.getTextContent();
+			} catch (XMLException x) {
+				x.printStackTrace();
+			} catch (DOMException x) {
+				x.printStackTrace();
+			}
+		}
+		return s;
+	}
+
+	/**
+	 * Used to pick up the configured "pre processor" from the navigator.xml
+	 *  which is then invoked before other stages of the test rendering to the
+	 *  user.
+	 * @param eRoot
+	 * @author Trevor Hinson
+	 */
+	private void establishPreProcessor(Element eRoot) {
+		String pre = retrieveElementText(eRoot, PRE_PROCESSOR);
+		if (StringUtils.isNotEmpty(pre)) {
+			try {
+				preProcessingRequestHandler = getClass().getClassLoader()
+					.loadClass(pre);
+			} catch (ClassNotFoundException x) {
+				x.printStackTrace();
+			}
+		}
 	}
 
 	/** @return Full JDBC URL of database including username and password */
-	String getDatabaseURL(OmQueries oq) throws ClassNotFoundException
-	{
+	public String getDatabaseURL(OmQueries oq) throws ClassNotFoundException {
 		return oq.getURL(dbServer,dbName,dbUsername,dbPassword);
 	}
 

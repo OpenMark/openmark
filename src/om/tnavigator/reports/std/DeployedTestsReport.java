@@ -23,6 +23,7 @@ import om.tnavigator.reports.*;
 
 import org.w3c.dom.*;
 
+import util.misc.IPAddressCheckUtil;
 import util.xml.XML;
 import util.xml.XMLException;
 
@@ -175,7 +176,8 @@ public class DeployedTestsReport implements OmReport {
 		@Override
 		public List<ColumnDefinition> init(HttpServletRequest request) {
 			try {
-				linkToDownloads = ns.checkSecureIP(request);
+				linkToDownloads = IPAddressCheckUtil.checkSecureIP(
+					request, ns.getLog(), ns.getNavigatorConfig());
 			} catch (UnknownHostException e) {
 				// Ingore this, we just don't show the links in this case.
 			}

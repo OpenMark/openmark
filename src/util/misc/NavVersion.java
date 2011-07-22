@@ -22,8 +22,8 @@ import java.net.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import om.Log;
 import om.tnavigator.db.DatabaseAccess;
-import om.tnavigator.Log;
 
 
 /** get and process version details from the navconfig table */

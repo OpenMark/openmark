@@ -2,13 +2,17 @@ package om.devservlet.deployment;
 
 import java.util.Map;
 
+import om.RenderedOutput;
+
+import util.misc.GracefulFinalization;
+
 /**
  * Used in order to move actual Questions from the Question Developers local
  *  machine to the configured locations within the qengine.xml
  * @author Trevor Hinson
  */
 
-public interface QuestionTransporter {
+public interface QuestionTransporter extends GracefulFinalization {
 
 	/**
 	 * The implementation should take the Question and try to copy it to all

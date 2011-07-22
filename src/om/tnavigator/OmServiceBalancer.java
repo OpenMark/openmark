@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 
 import javax.xml.rpc.ServiceException;
 
+import om.Log;
 import om.axis.qengine.*;
 import om.tnavigator.NavigatorServlet.RequestTimings;
 
@@ -54,7 +55,7 @@ class OmServiceBalancer extends ServiceBalancer<OmService> {
 	 * has started, all calls are to the same service (and not really 'balanced'
 	 * any more).
 	 */
-	class OmServiceSession extends StickySession {
+	public class OmServiceSession extends StickySession {
 		/** Start return (retained only temporarily) */
 		private StartReturn srTemp;
 

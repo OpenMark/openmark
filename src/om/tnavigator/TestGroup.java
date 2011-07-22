@@ -32,7 +32,7 @@ import util.xml.XMLException;
 class TestGroup extends TestMarkedItem
 {
 	/** Items within this group */
-	private List<TestItem> lItems=new LinkedList<TestItem>();
+	protected List<TestItem> lItems=new LinkedList<TestItem>();
 
 	/** Title of group, or null if none */
 	private String sTitle=null;

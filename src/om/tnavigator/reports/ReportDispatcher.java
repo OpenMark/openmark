@@ -17,7 +17,11 @@
  */
 package om.tnavigator.reports;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +29,16 @@ import javax.servlet.http.HttpServletResponse;
 import om.OmException;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.UserSession;
-import om.tnavigator.reports.std.*;
+import om.tnavigator.reports.std.DeployedQuestionsReport;
+import om.tnavigator.reports.std.DeployedTestsReport;
+import om.tnavigator.reports.std.HomeTestReport;
+import om.tnavigator.reports.std.MonthlyUsageReport;
+import om.tnavigator.reports.std.MoodleFormatReport;
+import om.tnavigator.reports.std.QuestionTestReport;
+import om.tnavigator.reports.std.TestUsageReport;
+import om.tnavigator.reports.std.UserTestReport;
+import om.tnavigator.reports.std.VariantsTestReport;
+import util.misc.IPAddressCheckUtil;
 
 /**
  * Class for dispatching report requests.
@@ -137,8 +150,10 @@ public class ReportDispatcher
 		OmReport report = systemReports.get(reportName);
 		if (report != null)
 		{
-			if((report.isSecurityRestricted() && !ns.checkSecureIP(request)) ||
-					!ns.checkLocalIP(request))
+			if((report.isSecurityRestricted()
+				//&& !ns.checkSecureIP(request))
+				&& !IPAddressCheckUtil.checkSecureIP(request, ns.getLog(), ns.getNavigatorConfig()))
+				|| !IPAddressCheckUtil.checkLocalIP(request, ns.getLog(), ns.getNavigatorConfig()))
 			{
 				ns.sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
 					false,false,null, "Forbidden", "System reports may only be accessed from particular computers.", null);
@@ -170,8 +185,7 @@ public class ReportDispatcher
 			ns.sendError(us,request,response,
 				HttpServletResponse.SC_FORBIDDEN,false,false, null, "Forbidden", "You do not have permission to view reports.", null);
 		}
-		if(!ns.checkLocalIP(request))
-		{
+		if (!IPAddressCheckUtil.checkLocalIP(request, ns.getLog(), ns.getNavigatorConfig())) {
 			ns.sendError(us,request,response,HttpServletResponse.SC_FORBIDDEN,
 				false,false,null, "Forbidden", "Reports may only be accessed within the local network.", null);
 		}

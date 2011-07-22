@@ -41,10 +41,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
 import om.DisplayUtils;
+import om.Log;
 import om.OmException;
 import om.OmVersion;
+import om.RenderedOutput;
+import om.RequestAssociates;
+import om.RequestHandler;
+import om.RequestResponse;
+import om.devservlet.deployment.DeploymentEnum;
 import om.devservlet.deployment.DeploymentRequestHandler;
-import om.devservlet.deployment.RenderedOutput;
 import om.helper.QEngineConfig;
 import om.question.ActionParams;
 import om.question.ActionRendering;
@@ -62,9 +67,11 @@ import org.w3c.dom.Element;
 
 import util.misc.ClosableClassLoader;
 import util.misc.Exceptions;
+import util.misc.GeneralUtils;
 import util.misc.IO;
 import util.misc.Strings;
 import util.misc.UserAgent;
+import util.misc.UtilityException;
 import util.xml.XHTML;
 import util.xml.XML;
 
@@ -113,6 +120,8 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
     /** Used to store information read from the configuration file, and also things added
      * later by setConfiguration. */
     private Map<String, Object> configuration = new HashMap<String, Object>();
+
+	private Log deployLog;
 
 	/** Clear/reset question data */
 	private void resetQuestion()
@@ -171,7 +180,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				new ServiceException("Failed to load and parse configuration file.");
 			}
 		}
-
+		setUpHandleDeployLogging();
 		try
 		{
 			qdQuestions=new QuestionDefinitions(getServletContext());
@@ -182,17 +191,52 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 		}
 	}
 
+	/**
+	 * Picks up the details that have been setup within the qengine.xml and
+	 *  tries to establish a Log object to use from them.
+	 * @author Trevor Hinson
+	 */
+	private void setUpHandleDeployLogging() {
+		Object obj = getConfiguration(DeploymentEnum.HandleDeployLogTo.toString());
+		if (null != obj ? obj instanceof String : false) {
+			String logToLocation = (String) obj;
+			if (StringUtils.isNotEmpty(logToLocation)) {
+				String debug = "false";
+				Object show = getConfiguration(
+					DeploymentEnum.HandleDeployShowDebug.toString());
+				if (null != show ? show instanceof String : false) {
+					debug = (String) show;
+				}
+				try {
+					deployLog = GeneralUtils.getLog(DeploymentRequestHandler.class,
+						logToLocation,
+						"true".equalsIgnoreCase(debug) ? true : false);
+				} catch (UtilityException x) {
+					x.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Ensure that we close the debugLog if it has been setup.
+	 * @author Trevor Hinson
+	 */
+	public void destroy() {
+		if (null != deployLog) {
+			deployLog.close();
+		}
+	}
+
 	@Override
 	protected void doGet(HttpServletRequest request,HttpServletResponse response)
-		throws ServletException,IOException
-	{
+		throws ServletException,IOException {
 		handle(false,request,response);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,HttpServletResponse response)
-		throws ServletException,IOException
-	{
+		throws ServletException,IOException {
 		handle(true,request,response);
 	}
 
@@ -784,17 +828,21 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 		String output = null;
 		RequestHandler rh = new DeploymentRequestHandler();
 		RequestAssociates ra = getRequestAssociates(sPath, post);
-		RequestResponse rr = rh.handle(getServletContext(), request, response, ra);
+		RequestResponse rr = rh.handle(request, response, ra);
 		if (null != rr ? rr instanceof RenderedOutput : false) {
 			output = ((RenderedOutput) rr).toString();
 		}
+		rh.close(null);
 		Document d = XML.parse(StringUtils.isNotEmpty(output)? output.getBytes()
 			: handleEmptyDeploymentRendering());
 		XHTML.output(d, request, response, "en");
 	}
 
 	private RequestAssociates getRequestAssociates(String sPath, boolean post) {
-		return new RequestAssociates(sPath, post, configuration);
+		Map<String, Object> config = new HashMap<String, Object>();
+		config.putAll(configuration);
+		return new RequestAssociates(getServletContext(),
+			sPath, post, configuration);
 	}
 
 	private byte[] handleEmptyDeploymentRendering() {

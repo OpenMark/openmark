@@ -210,6 +210,16 @@
 			<include name="util/"/>			
 		</jar>
 
+		<jar jarfile="${build}/jars/om-administration.jar" basedir="${build}/compiled">
+			<include name="om/*"/>
+			<include name="om/administration/*"/>
+			<include name="om/administration/extraction/*"/>
+			<include name="om/administration/questionbank/*"/>
+			<include name="om/axis/qengine/"/>
+			<include name="om/tnavigator/"/>
+			<include name="util/"/>			
+		</jar>
+		
 	</target>
 	
 	
@@ -339,8 +349,57 @@
 	</target>
 
 	
-	<target name="all" depends="qengine,tnavigator,devserver" 
-		description="Build question engine, test navigator, and devserver webapps"/>
+	<!-- Build test navigator webapp -->
+	<target name="omAdministrator-base" depends="jar">
+		
+		<mkdir dir="${build}/webapps/om-admin"/>
+		<mkdir dir="${build}/webapps/om-admin/WEB-INF"/>
+		<mkdir dir="${build}/webapps/om-admin/WEB-INF/lib"/>
+		<mkdir dir="${build}/webapps/om-admin/logs"/>
+		
+		<copy todir="${build}/webapps/om-admin/WEB-INF">
+			<fileset dir="webinf-administration"/>
+		</copy>
+		<!-- Sample navigator.xml doesn't go in web-inf -->
+		<move file="${build}/webapps/om-admin/WEB-INF/navigator.sample.xml"
+			todir="${build}/webapps/om-admin/"/>
+		
+		<move file="${build}/webapps/om-admin/WEB-INF/requestHandling.xml"
+			todir="${build}/webapps/om-admin/"/>
+		
+		<copy todir="${build}/webapps/om-admin/WEB-INF/lib" file="${build}/jars/om-navigator.jar"/>
+		
+		<copy todir="${build}/webapps/om-admin/WEB-INF/lib" file="${build}/jars/om-administration.jar"/>
+		
+		<jar jarfile="${build}/webapps/om-admin.war" basedir="${build}/webapps/om-admin"/>
+		
+	</target>
+	<target name="omAdministrator" depends="omAdministrator-base">
+		<copy todir="${build}/webapps/om-admin/WEB-INF/lib">
+			<fileset dir="${axishome}/lib">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${jeuclidhome}">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${jazzyhome}">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${jafhome}">
+				<include name="activation.jar"/>
+			</fileset>
+			<fileset dir="${javamailhome}">
+				<include name="mail.jar"/>
+			</fileset>
+			<fileset dir="${xerceshome}">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+		<jar jarfile="${build}/webapps/om-admin.war" basedir="${build}/webapps/om-admin"/>
+	</target>
+	
+	<target name="all" depends="qengine,tnavigator,omAdministrator,devserver" 
+		description="Build question engine, test navigator, administrator and devserver webapps"/>
 	
 	<target name="all-nolibs" depends="qengine-nolibs,tnavigator-nolibs,devserver" 
 		description="Build question engine, test navigator, and devserver webapps without external libraries"/>

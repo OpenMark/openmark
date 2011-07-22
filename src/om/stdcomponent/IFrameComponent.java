@@ -21,15 +21,18 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import om.*;
+import om.OmDeveloperException;
+import om.OmException;
 import om.question.ActionParams;
-import om.stdquestion.*;
+import om.stdquestion.QComponent;
+import om.stdquestion.QContent;
+import om.stdquestion.QDocument;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
-import util.misc.IO;
 import util.xml.XML;
-import util.xml.XMLException;
 
 /**
 Represents an iframe

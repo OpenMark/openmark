@@ -7,16 +7,48 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Properties;
 
+import om.Log;
+
 import org.apache.commons.lang.StringUtils;
 
-import om.tnavigator.Log;
+public class GeneralUtils implements Serializable {
 
-public class GeneralUtils {
+	private static final long serialVersionUID = -4641935806195155600L;
+
+	private static String DOT = ".";
+
+	public static String toString(Object o) {
+		StringBuffer sb = new StringBuffer();
+		if (null != o) {
+			Method[] methods = o.getClass().getMethods();
+			for (int i = 0; i < methods.length; i++) {
+				Method m = methods[i];
+				if (null != m ? m.getName().startsWith("get") : false) {
+					Class<?>[] clas = m.getParameterTypes();
+					if (clas.length == 0) {
+						sb.append(" \n").append(m.getName()).append(" = ");
+						try {
+							sb.append(m.invoke(o, new Object[]{}));
+						} catch (IllegalArgumentException x) {
+							sb.append(x.getMessage());
+						} catch (IllegalAccessException x) {
+							sb.append(x.getMessage());
+						} catch (InvocationTargetException x) {
+							sb.append(x.getMessage());
+						}
+					}
+				}
+			}
+		}
+		return sb.toString();
+	}
 
 	public static File generateFile(String name, String content)
 		throws FileNotFoundException, IOException {
@@ -43,6 +75,37 @@ public class GeneralUtils {
 			out.write(buf, 0, r);
 		in.close();
 		out.close();
+	}
+
+	/**
+	 * Used to copy the contents of one directory to another.
+	 * @param sourceLocation
+	 * @param targetLocation
+	 * @throws IOException
+	 */
+	public static void copyDirectory(File sourceLocation, File targetLocation)
+		throws IOException {
+		if (sourceLocation.isDirectory()) {
+			if (!targetLocation.exists()) {
+				targetLocation.mkdir();
+			}
+			String[] children = sourceLocation.list();
+			for (int i = 0; i < children.length; i++) {
+				copyDirectory(new File(sourceLocation, children[i]), new File(
+						targetLocation, children[i]));
+			}
+		} else {
+			InputStream in = new FileInputStream(sourceLocation);
+			OutputStream out = new FileOutputStream(targetLocation);
+			// Copy the bits from instream to outstream
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+			in.close();
+			out.close();
+		}
 	}
 
 	public static Object invoke(Method m, Object obj, Object[] args)
@@ -151,4 +214,29 @@ public class GeneralUtils {
 		}
 		return log;
 	}
+
+	public static String questionNamePrefix(String fileName) {
+		String s = null;
+		if (StringUtils.isNotEmpty(fileName)) {
+			int n = fileName.lastIndexOf(DOT);
+			if (n > -1 ? fileName.length() > n + 1 : false) {
+				s = fileName.substring(0, n);
+				s = stripLastDot(s);
+				s = stripLastDot(s);
+			}
+		}
+		return s;
+	}
+
+	public static String stripLastDot(String str) {
+		String s = null;
+		if (StringUtils.isNotEmpty(str) ? str.contains(DOT) : false) {
+			int n = str.lastIndexOf(DOT);
+			if (n > -1 ? str.length() > n + 1 : false) {
+				s = str.substring(0, n);
+			}
+		}
+		return s;
+	}
+
 }
