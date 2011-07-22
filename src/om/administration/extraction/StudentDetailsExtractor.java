@@ -72,6 +72,10 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	private static String OPEN = "(";
 
 	private static String CLOSE = ")";
+	
+	private static String COL_TABLE_NAME = "table name";
+
+	public static final String FILENAME_DATE_FORMAT_NOW = ".yyyyMMdd.HHmmss";
 
 	private static List<String> tableNamesByTestInstance = new ArrayList<String>();
 
@@ -118,6 +122,9 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 					renderFromQuestionInstanceTables(imr, output, qii, er);
 					String fileNamePrefix = retrieve(metaData,
 						ExtractorEnums.extractionFileNamePrefix.toString());
+					//put a timestamp on it
+					String nowTime=GeneralUtils.timeNow(FILENAME_DATE_FORMAT_NOW);
+					fileNamePrefix=fileNamePrefix+nowTime;
 					writeToFile(fileNamePrefix, imr, output);
 					er.setResponseMessage(renderResultPage(fileNamePrefix));
 					er.setExtracted(true);
@@ -204,10 +211,11 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 		// Refactor into a TableDetailsRenderer ...
 		String renderCSVOutput(TableDetails td) {
 			StringBuffer sb = new StringBuffer();
-			sb.append(td.getTableName())
-				.append(getLineSeperator()).append(getLineSeperator())
-				.append(renderColumnNamesInCSVFormat(td))
-				.append(getLineSeperator()).append(getLineSeperator())
+			//sb.append(td.getTableName())
+			//	.append(getLineSeperator()).append(getLineSeperator())
+				sb.append(renderColumnNamesInCSVFormat(td))
+				.append(getLineSeperator())
+				//.append(getLineSeperator())
 				.append(renderDataSetInCSVFormat(td));
 			return sb.toString();
 		}
@@ -220,6 +228,8 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 		 */
 		StringBuffer renderColumnNamesInCSVFormat(TableDetails td) {
 			StringBuffer sb = new StringBuffer();
+			sb.append(COL_TABLE_NAME);
+			sb.append(COMMA);
 			for (Iterator<String> i = td.getColumns().iterator(); i.hasNext();) {
 				String name = i.next();
 				sb.append(name);
@@ -238,7 +248,10 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 		 */
 		StringBuffer renderDataSetInCSVFormat(TableDetails td) {
 			StringBuffer sb = new StringBuffer();
+			sb.append(td.getTableName());
+			sb.append(COMMA);
 			for (List<ExtractDataHolder> row : td.getData()) {
+				sb.append(td.getTableName());sb.append(COMMA);
 				for (Iterator<ExtractDataHolder> i = row.iterator(); i.hasNext();) {
 					ExtractDataHolder element =  i.next();
 					sb.append(element.getSqlRenderedValue());
