@@ -113,12 +113,7 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 		boolean hasSelected = hasSelectedQuestionsForRemoval(associates);
 		if (null != cr) {
 			if (hasSelected) {
-				ClearanceEnums enu = isUndo(associates);
-				if (null != enu ? enu.equals(ClearanceEnums.undo) : false) {
-					handleUndo(rr, associates, request, cr);
-				} else {
-					handleClearing(rr, associates, request, cr);
-				}
+				handleClearing(rr, associates, request, cr);
 			} else {
 				try {
 					RenderedCleaningResult rcr = clearanceResponseRenderer
@@ -134,45 +129,6 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 			identifySuperflousQuestions(associates, request, rr);
 		}
 		return rr;
-	}
-
-	protected void handleUndo(RequestResponse rr,
-		RequestAssociates associates, HttpServletRequest request,
-		ClearanceResponse cr) throws RequestHandlingException {
-		try {
-			CleanQuestionBanks cqb = getCleanQuestionBanks(associates);
-			Map<String, String> params = associates.getRequestParameters();
-			cr = cqb.undo(cr, params);
-			RenderedCleaningResult rcr = clearanceResponseRenderer
-				.renderUndoResponse(cr, associates, params);
-			if (null != rcr) {
-				rr.append(rcr.toString());
-			}
-			request.getSession().setAttribute(CLEARANCE_RESPONSE, null);
-		} catch (CleaningException x) {
-			throw new RequestHandlingException(x);
-		}
-	}
-
-	/**
-	 * Determines if the request specified an undo parameter or not.
-	 * 
-	 * @param ra
-	 * @author Trevor Hinson
-	 */
-	protected ClearanceEnums isUndo(RequestAssociates ra) {
-		ClearanceEnums enu = null;
-		if (null != ra ? null != ra.getRequestParameters() : false) {
-			Map<String, String> params = ra.getRequestParameters();
-			if (null != params ? params.size() > 0 : false) {
-				String value = params.get(ClearanceEnums.undo.toString());
-				if (StringUtils.isNotEmpty(value)
-					? ClearanceEnums.undo.toString().equals(value) : false) {
-					enu = ClearanceEnums.undo;
-				}
-			}
-		}
-		return enu;
 	}
 	
 	/**
@@ -237,6 +193,7 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 			if (null != rcr) {
 				rr.append(rcr.toString());
 			}
+			request.getSession().setAttribute(CLEARANCE_RESPONSE, null);
 		} catch (CleaningException x) {
 			throw new RequestHandlingException(x);
 		}

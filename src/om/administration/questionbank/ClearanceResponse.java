@@ -20,21 +20,6 @@ public class ClearanceResponse {
 	private Map<IdentifiedSuperfluousQuestion, RemovalIssueDetails> problemRemoving
 		= new HashMap<IdentifiedSuperfluousQuestion, RemovalIssueDetails>();
 
-	private Map<IdentifiedSuperfluousQuestion, UndoIssue> undoIssues;
-
-	public Map<IdentifiedSuperfluousQuestion, UndoIssue> getUndoIssues() {
-		if (null == undoIssues) {
-			undoIssues = new HashMap<IdentifiedSuperfluousQuestion, UndoIssue>();
-		}
-		return undoIssues;
-	}
-
-	public void addUndoIssue(IdentifiedSuperfluousQuestion q, UndoIssue ui) {
-		if (null != q && null != ui) {
-			getUndoIssues().put(q, ui);
-		}
-	}
-
 	public List<BrokenTestQuestionReferences> getBrokenTests() {
 		if (null == brokenTests) {
 			brokenTests = new ArrayList<BrokenTestQuestionReferences>(); 

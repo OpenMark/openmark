@@ -655,7 +655,7 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 						String questionName = key.substring(
 							ClearanceResponseRenderer.QUESTION_FORM_NAME_PREFIX
 								.length(), key.length());
-						clearOrUndo(cr, questionName, ce, value);
+						clear(cr, questionName, ce, value);
 					}
 				}
 			}
@@ -674,7 +674,7 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 	 * @throws CleaningException 
 	 * @author Trevor Hinson 
 	 */
-	protected void clearOrUndo(ClearanceResponse cr, String questionName,
+	protected void clear(ClearanceResponse cr, String questionName,
 		ClearanceEnums ce, String value) throws CleaningException {
 		if (null != cr && null != ce && StringUtils.isNotEmpty(questionName)) {
 			IdentifiedSuperfluousQuestion isq = cr
@@ -684,79 +684,6 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 				&& (null != questions ? questions.size() > 0 : false)) {
 				if (ClearanceEnums.clean.equals(ce)) {
 					archiveSelectedQuestions(questions, isq, cr, ce);
-				} else if (ClearanceEnums.undo.equals(ce)) {
-					undoSelectedQuestions(questions, isq, cr, ce);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Attempts to identify the question from within the archive and then move
-	 *  it to the parent directory.  If successful then the archived file will
-	 *  be removed.
-	 * 
-	 * @param questions
-	 * @param isq
-	 * @param cr
-	 * @param ce
-	 * @throws CleaningException
-	 * @author Trevor Hinson
-	 */
-	protected void undoSelectedQuestions(List<String> questions,
-		IdentifiedSuperfluousQuestion isq, ClearanceResponse cr,
-		ClearanceEnums ce) throws CleaningException {
-		if ((null != questions ? questions.size() > 0 : false) && null != isq
-			&& null != cr) {
-			for (String s : questions) {
-				if (StringUtils.isNotEmpty(s)) {
-					int n = s.lastIndexOf(File.separator);
-					if (n > -1) {
-						String parentLocation = s.substring(0, n);
-						File parentFile = new File(parentLocation);
-						if (parentFile.exists() && parentFile.isDirectory()) {
-							String archiveFolder = renderDate();
-							File archive = new File(
-								parentFile.getAbsolutePath() + File.separator
-									+ archiveFolder);
-							String fileName = s.substring(n, s.length());
-							moveUp(archive, fileName, cr, isq);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Identifies the file from the fileName argument within the archive
-	 *  directory and then moves the file up to the parent directory removing
-	 *  it from the archive after success.
-	 * 
-	 * @param archive
-	 * @param fileName
-	 * @param cr
-	 * @param isq
-	 * @author Trevor Hinson
-	 */
-	protected void moveUp(File archive, String fileName, ClearanceResponse cr,
-		IdentifiedSuperfluousQuestion isq) throws CleaningException {
-		if ((null != archive ? archive.exists() && archive.isDirectory() : false)
-			&& null != fileName) {
-			File[] files = archive.listFiles(new StandardFileFilter(fileName));
-			if (null != files ? files.length == 1 : false) {
-				File f = files[0];
-				File parent = archive.getParentFile();
-				if (null != parent ? parent.isDirectory()
-					&& parent.canWrite() : false) {
-					File target = new File(parent.getAbsolutePath()
-						+ File.separator + fileName);
-					try {
-						GeneralUtils.copyFile(f, target);
-						f.delete();
-					} catch (IOException x) {
-						cr.addUndoIssue(isq, new UndoIssue(x.getMessage(), x));
-					}
 				}
 			}
 		}

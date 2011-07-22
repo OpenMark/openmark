@@ -451,6 +451,7 @@ public class ClearanceResponseRenderer implements Serializable {
 	 * @param selected
 	 * @return
 	 * @throws CleaningException
+	 * @author Trevor Hinson
 	 */
 	RenderedCleaningResult renderRemovalResponse(ClearanceResponse cr,
 		RequestAssociates associates, Map<String, String> params)
@@ -459,13 +460,19 @@ public class ClearanceResponseRenderer implements Serializable {
 			null != cr ? cr.getProblemRemoving() : null, ClearanceEnums.clean);
 	}
 
-	RenderedCleaningResult renderUndoResponse(ClearanceResponse cr,
-		RequestAssociates associates, Map<String, String> params)
-		throws CleaningException {
-		return renderResponse(cr, associates, params,
-			null != cr ? cr.getUndoIssues() : null, ClearanceEnums.undo);
-	}
-
+	/**
+	 * Applies the merged template to a new RenderedCleaningResult and returns
+	 *  it. 
+	 * 
+	 * @param cr
+	 * @param associates
+	 * @param params
+	 * @param issues
+	 * @param enu
+	 * @return
+	 * @throws CleaningException
+	 * @author Trevor Hinson
+	 */
 	RenderedCleaningResult renderResponse(ClearanceResponse cr,
 		RequestAssociates associates, Map<String, String> params,
 		Map<IdentifiedSuperfluousQuestion, ?> issues, ClearanceEnums enu)
@@ -513,8 +520,8 @@ public class ClearanceResponseRenderer implements Serializable {
 				.append(UL);
 			for (IdentifiedSuperfluousQuestion q : issues.keySet()) {
 				Object value = issues.get(q);
-				if (null != value ? value instanceof ClearanceIssue : false) {
-					ClearanceIssue rid = (ClearanceIssue) value;
+				if (null != value ? value instanceof RemovalIssueDetails : false) {
+					RemovalIssueDetails rid = (RemovalIssueDetails) value;
 					sb.append(renderIdentifiedQuestion(q));
 					sb.append("Issue reported : ").append(rid.getSummary());
 				}
@@ -584,42 +591,26 @@ public class ClearanceResponseRenderer implements Serializable {
 				.append("The following questions were successfully removed :")
 				.append(B_CLOSE);
 			if (params.size() > 0) {
-				try {
-					sb.append(BR).append(UL).append(renderFormStart(ra));
-					for (String sel : params.values()) {
-						if (StringUtils.isNotEmpty(sel) ? !isIn(isq, sel) : false) {
-							if (!SUBMIT.equalsIgnoreCase(sel) && !RESET.equalsIgnoreCase(sel)) {
-								sb.append(LI);
-								InputFieldElements ife = new InputFieldElements();
-								ife.type = CHECK_BOX;
-								ife.name = sel;
-								ife.value = sel;
-								List<String> qu = QuestionBankCleaner.getQuestions(sel);
-								if (null != qu ? qu.size() > 0 : false) {
-									for (String s : qu) {
-										if (StringUtils.isNotEmpty(s)) {
-											sb.append(s).append(BR);
-										}
+				sb.append(BR).append(UL);
+				for (String sel : params.values()) {
+					if (StringUtils.isNotEmpty(sel) ? !isIn(isq, sel) : false) {
+						if (!SUBMIT.equalsIgnoreCase(sel) && !RESET.equalsIgnoreCase(sel)) {
+							sb.append(LI);
+							List<String> qu = QuestionBankCleaner.getQuestions(sel);
+							if (null != qu ? qu.size() > 0 : false) {
+								for (String s : qu) {
+									if (StringUtils.isNotEmpty(s)) {
+										sb.append(s).append(BR);
 									}
-								} else {
-									sb.append(sel).append(BR);
 								}
-								if (ClearanceEnums.clean.equals(enu)) {
-									sb.append(BR)
-									.append("Select and click undo below if required : ");
-									sb.append(renderInputField(ife));
-								}
-								sb.append(LI_CLOSE).append(BR).append(BR);
+							} else {
+								sb.append(sel).append(BR);
 							}
+							sb.append(LI_CLOSE).append(BR).append(BR);
 						}
 					}
-					if (ClearanceEnums.clean.equals(enu)) {
-						sb.append(BR).append(BR).append(renderSubmitButton("Undo"));
-					}
-					sb.append(CLOSE_FORM).append(UL_CLOSE);
-				} catch (RequestHandlingException x) {
-					throw new CleaningException(x);
 				}
+				sb.append(UL_CLOSE);
 			}
 		}
 		return sb;
