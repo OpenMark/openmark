@@ -275,8 +275,8 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 	}
 
 	public void testGetQuestionsSingled() throws Exception {
-		QuestionBankCleaner cqb = new QuestionBankCleaner();
-		List<String> results = cqb.getQuestions("sdk125b6.question06f.1.3.jar");
+		List<String> results = QuestionBankCleaner
+			.getQuestions("sdk125b6.question06f.1.3.jar");
 		assertNotNull(results);
 		assertTrue(results.size() == 1);
 	}
@@ -315,25 +315,6 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 			File f = archivedFiles[i];
 			f.delete();
 		}
-		assertTrue(archive.delete());
-	}
-
-	public void testUndo() throws Exception {
-		ClearanceResponse cr = new ClearanceResponse();
-		QuestionBankCleaner cqb = new QuestionBankCleaner();
-		assertNotNull(tempQuestionBankDirectoryOne);
-		File[] files = tempQuestionBankDirectoryOne.listFiles();
-		assertNotNull(files);
-		assertTrue(files.length > 0);
-		File fileToArchive = files[0];
-		assertNotNull(fileToArchive);
-		String archiveName = tempQuestionBankDirectoryOne.getAbsolutePath()
-			+ File.separator + cqb.renderDate();
-		System.out.println(archiveName);
-		File archive = new File(archiveName);
-		assertTrue(archive.mkdir());
-		cqb.archiveSelectedQuestions(fileToArchive, archive, cr, null);
-		cqb.moveUp(archive, fileToArchive.getName(), cr, null);
 		assertTrue(archive.delete());
 	}
 	
