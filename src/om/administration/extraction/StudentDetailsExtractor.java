@@ -248,8 +248,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 		 */
 		StringBuffer renderDataSetInCSVFormat(TableDetails td) {
 			StringBuffer sb = new StringBuffer();
-			sb.append(td.getTableName());
-			sb.append(COMMA);
+
 			for (List<ExtractDataHolder> row : td.getData()) {
 				sb.append(td.getTableName());sb.append(COMMA);
 				for (Iterator<ExtractDataHolder> i = row.iterator(); i.hasNext();) {
