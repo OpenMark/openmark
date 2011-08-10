@@ -66,7 +66,10 @@ public abstract class AbstractRequestHandler implements RequestHandler {
 	@Override
 	public FinalizedResponse close(Object o) throws UtilityException {
 		try {
-			getLog().close();
+			Log log = getLog();
+			if (null != log) {
+				log.close();
+			}
 		} catch (RequestHandlingException x) {
 			x.printStackTrace();
 		}

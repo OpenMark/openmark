@@ -1,6 +1,7 @@
 package om;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -28,7 +29,8 @@ import util.xml.XMLException;
  * A means of handling a users request through the configuration of different
  *  request handlers for the url path.  This class utilises the configured
  *  composite RequestHandlingConfiguration for delegating a users request
- *  appropriately. 
+ *  appropriately.
+ * 
  * @author Trevor Hinson
  */
 public class RequestDelegation implements RequestManagement {
@@ -109,6 +111,7 @@ public class RequestDelegation implements RequestManagement {
 	/**
 	 * Delegates processing to the identified RequestHandler implementation and
 	 *  handles the response from that.
+	 * 
 	 * @param request
 	 * @param response
 	 * @param rh
@@ -125,7 +128,18 @@ public class RequestDelegation implements RequestManagement {
 			RequestResponse rr = rh.handle(request, response, ra);
 			rh.close(null);
 			if (null != rr ? rr.isSuccessful() : false) {
-				output(request, response, rr.toString());
+				if (rr.asXHTML()) {
+					output(request, response, rr.toString());
+				} else {
+					try {
+						response.setContentType("application/xhtml+xml");
+						PrintWriter pw = response.getWriter();
+						pw.write(rr.toString());
+						pw.close();
+					} catch (IOException x) {
+						throw new RequestHandlingException(x);
+					}
+				}
 			} else {
 				throw new RequestHandlingException(
 					"The request was uncessessful : " + rr);
@@ -137,6 +151,7 @@ public class RequestDelegation implements RequestManagement {
 
 	/**
 	 * Streams the output back to the user using the legacy implementation.
+	 * 
 	 * @param request
 	 * @param response
 	 * @param output
@@ -159,6 +174,7 @@ public class RequestDelegation implements RequestManagement {
 	 * Checks the RequestHandlerSettings to see if we need to check for 
 	 *  requiestSecureIP or requiresTrustedIP.  If either of these are set to
 	 *  true then we carry out the test itself.
+	 * 
 	 * @param rhs
 	 * @param ra
 	 * @param request
@@ -203,6 +219,7 @@ public class RequestDelegation implements RequestManagement {
 	 *  RequestHandlerSettings and the RequestHandlerEnums.adminUsersOnly and
 	 *  if either are set to true then it delegates to the Authentication
 	 *  implementation to get hold of the users details and check on them.
+	 * 
 	 * @param request
 	 * @param response
 	 * @param rhs
@@ -250,6 +267,7 @@ public class RequestDelegation implements RequestManagement {
 	 * Adds the configuration from the RequestHandlerSettings to the RequestAssociates
 	 *  composite configuration map so that the settings may be used by the
 	 *  RequestHandler implementation.
+	 * 
 	 * @param rhs
 	 * @param associates
 	 * @author Trevor Hinson
@@ -269,6 +287,7 @@ public class RequestDelegation implements RequestManagement {
 	/**
 	 * Instantiates a new RequestHander implementation from the provided Class
 	 *  representation.
+	 * 
 	 * @param cla
 	 * @return
 	 * @throws RequestHandlingException

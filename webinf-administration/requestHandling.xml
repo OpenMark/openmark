@@ -79,5 +79,15 @@ Trevor Hinson - 20062011
 		<testBanks>/questionCleanerTests/testbank-one,/questionCleanerTests/testbank-two</testBanks>
 		<questionBanks>/questionCleanerTests/questionbank-one,/questionCleanerTests/questionbank-two</questionBanks>
 	</requestHandler>
+	<requestHandler>
+		<invocationPath>/applet-enquiry</invocationPath>
+		<fullClassName>om.enquiry.AppletRequestHandler</fullClassName>
+		<displayName>Applet Request</displayName>
+		<description>For catering for the Applet requesting settings, solutions and questions</description>
+		<logPath>/</logPath>
+		<QuestionLocations>WEB-INF/applet-questions</QuestionLocations>
+		<postToUrl>/om-admin/applet-enquiry</postToUrl>
+		<DisplayForm>true</DisplayForm>
+	</requestHandler>
 </requestHandlers>
  

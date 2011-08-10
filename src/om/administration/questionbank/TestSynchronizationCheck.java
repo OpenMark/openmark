@@ -30,6 +30,7 @@ public class TestSynchronizationCheck {
 	/**
 	 * Provides a list of the locations from which there is a valid TestDetails
 	 *  which represents if a Test is actually present in a given location.
+	 * 
 	 * @return
 	 * @author Trevor Hinson
 	 */
@@ -66,6 +67,7 @@ public class TestSynchronizationCheck {
 	/**
 	 * Checks to see if a question by the questionName argument is referenced
 	 *  within any of the composite TestDetails.
+	 * 
 	 * @param questionName
 	 * @return
 	 * @author Trevor Hinson
@@ -76,7 +78,8 @@ public class TestSynchronizationCheck {
 			if (null != testDetails) {
 				x : for (TestDetails td : testDetails.values()) {
 					if (null != td ? null != td.getQuestionsReferenced() : false) {
-						does = td.getQuestionsReferenced().containsQuestionReference(questionName);
+						does = td.getQuestionsReferenced()
+							.containsQuestionReference(questionName);
 						if (does) {
 							break x;
 						}
@@ -90,6 +93,7 @@ public class TestSynchronizationCheck {
 	/**
 	 * Checks that the Test itself is within each of the predetermined Test
 	 *  banks and returns true if that is the case.
+	 * 
 	 * @return
 	 * @author Trevor Hinson
 	 */
@@ -112,6 +116,7 @@ public class TestSynchronizationCheck {
 	/**
 	 * Simplified test against the number of TestDetails that this object is 
 	 *  associated with.
+	 * 
 	 * @return
 	 * @author Trevor Hinson
 	 */
@@ -121,7 +126,8 @@ public class TestSynchronizationCheck {
 
 	/**
 	 * Checks each of the associated TestDetails to determine if the questions
-	 *  that are referenced are in sync with each other. 
+	 *  that are referenced are in sync with each other.
+	 * 
 	 * @return
 	 * @author Trevor Hinson
 	 */
@@ -165,6 +171,7 @@ public class TestSynchronizationCheck {
 	/**
 	 * For use when invoked external to this class.  Provides an immutable
 	 *  collection response so to not effect the underlying references.
+	 * 
 	 * @return
 	 * @author Trevor Hinson
 	 */
@@ -173,7 +180,8 @@ public class TestSynchronizationCheck {
 		if (null != testDetails) {
 			for (TestDetails td : testDetails.values()) {
 				if (null != td ? null != td.getQuestionsReferenced() : false) {
-					List<String> names = td.getQuestionsReferenced().getNamesOfQuestions();
+					List<String> names = td.getQuestionsReferenced()
+						.getNamesOfQuestions();
 					if (null != names ? names.size() > 0 : false) {
 						referenced.addAll(names);
 					}
@@ -185,6 +193,7 @@ public class TestSynchronizationCheck {
 
 	/**
 	 * Overrides the existing location and sets it to false.
+	 * 
 	 * @param location
 	 * @author Trevor Hinson
 	 */

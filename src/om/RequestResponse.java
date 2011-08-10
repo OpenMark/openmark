@@ -26,6 +26,22 @@ public interface RequestResponse extends Serializable {
 	void setSuccessful(boolean b);
 
 	/**
+	 * By default an XHTML output should be returned.  However if the output
+	 *  needs to simply be sent then this needs to be set to false.
+	 * 
+	 * @return
+	 * @author Trevor Hinson
+	 */
+	boolean asXHTML();
+
+	/**
+	 * 
+	 * @param b
+	 * @author Trevor Hinson
+	 */
+	void setAsXHTML(boolean b);
+
+	/**
 	 * Apply an output response message.
 	 * @param output
 	 * @author Trevor Hinson

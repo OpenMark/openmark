@@ -261,15 +261,13 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 	}
 
 	public void testGetQuestionsEmpty() throws Exception {
-		QuestionBankCleaner cqb = new QuestionBankCleaner();
-		List<String> results = cqb.getQuestions("");
+		List<String> results = QuestionBankCleaner.getQuestions("");
 		assertNotNull(results);
 		assertTrue(results.size() == 0);
 	}
 
 	public void testGetQuestionsNulled() throws Exception {
-		QuestionBankCleaner cqb = new QuestionBankCleaner();
-		List<String> results = cqb.getQuestions(null);
+		List<String> results = QuestionBankCleaner.getQuestions(null);
 		assertNotNull(results);
 		assertTrue(results.size() == 0);
 	}
@@ -307,7 +305,7 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		System.out.println(archiveName);
 		File archive = new File(archiveName);
 		assertTrue(archive.mkdir());
-		cqb.archiveSelectedQuestions(fileToArchive, archive, cr, null);
+		cqb.archieveIndividualQuestion(fileToArchive, archive, cr, null);
 		assertFalse(fileToArchive.exists());
 		File[] archivedFiles = archive.listFiles();
 		assertTrue(archivedFiles.length == 1);

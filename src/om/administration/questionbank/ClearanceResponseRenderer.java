@@ -14,6 +14,7 @@ import java.util.Set;
 import om.RequestAssociates;
 import om.RequestHandlingException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import util.misc.IO;
@@ -22,8 +23,8 @@ import util.xml.XML;
 /**
  * Responsible for rendering the output from the ClearanceResponses.  This
  *  implementation uses a configured xhtml to then place details of the response
- *  into.  OM does not use technologies such as JSP/JSF etc at this time and
- *  this keeps in touch with that rather than bring in additional technology.
+ *  into.
+ * 
  * @author Trevor Hinson
  */
 
@@ -65,9 +66,11 @@ public class ClearanceResponseRenderer implements Serializable {
 
 	private static String BR = "<br />";
 
-	private static String H3 = "<h3>";
+	private static String HR = "<hr />";
 
-	private static String H3_CLOSE = "</h3>";
+	private static String H2 = "<h2>";
+
+	private static String H2_CLOSE = "</h2>";
 
 	private static String CLOSE_FORM = "</form>";
 
@@ -95,12 +98,13 @@ public class ClearanceResponseRenderer implements Serializable {
 					.append(renderFormStart(associates));
 				sb.append(renderSuperfluousQuestions(associates,
 					cr.getSuperfluousQuestions()));
-				sb.append(BR).append(BR).append(B).append("Analyse Fresh : ")
-					.append(B_CLOSE).append(renderResetCheckBox()).append(BR)
-					.append(BR);
+				sb.append(BR).append(BR).append(B).append("Analysis Refresh : ")
+					.append(B_CLOSE).append(renderResetCheckBox())
+					.append(renderSubmitButton())
+					.append(renderBrokenTestXML(cr.getBrokenTestXML()));
 				sb.append(renderOutOfSyncTests(cr.getOutOfSyncTests()));
-				sb.append(renderBrokenTests(cr.getBrokenTests()))
-					.append(renderSubmitButton()).append(CLOSE_FORM);
+				sb.append(renderBrokenTests(cr.getBrokenTests()));
+				sb.append(CLOSE_FORM);
 				rcr.append(mergeTemplate(sb, associates));
 			} catch (RequestHandlingException x) {
 				throw new CleaningException(x);
@@ -109,12 +113,23 @@ public class ClearanceResponseRenderer implements Serializable {
 		return rcr;
 	}
 
-	/**
-	 * Returns a rendered version of an XHTML submit button.
-	 * 
-	 * @return
-	 * @author Trevor Hinson
-	 */
+	protected StringBuffer renderBrokenTestXML(List<BrokenTestXML> broken) {
+		StringBuffer sb = new StringBuffer();
+		if (null != broken ? broken.size() > 0 : false) {
+			sb.append(HR).append(H2)
+				.append("Test XML that did not parse and therefore")
+				.append(" can not be analysed.").append(H2_CLOSE).append(UL);
+			for (BrokenTestXML b : broken) {
+				if (null != b) {
+					String path = FilenameUtils.separatorsToSystem(b.getFullPath());
+					sb.append(LI).append(path).append(LI_CLOSE).append(BR);
+				}
+			}
+			sb.append(UL_CLOSE);
+		}
+		return sb;
+	}
+
 	protected StringBuffer renderSubmitButton() {
 		InputFieldElements ife = new InputFieldElements();
 		ife.setEachAs(SUBMIT);
@@ -148,9 +163,10 @@ public class ClearanceResponseRenderer implements Serializable {
 		List<BrokenTestQuestionReferences> brokenTests) {
 		StringBuffer sb = new StringBuffer();
 		if (null != brokenTests ? brokenTests.size() > 0 : false) {
-			sb.append(H3).append("Tests that are \"broken\" because they reference")
+			sb.append(HR).append(H2)
+				.append("Tests that are \"broken\" because they reference")
 				.append(" Questions that do not exist in ALL of the question banks")
-				.append(H3_CLOSE).append(UL);
+				.append(H2_CLOSE).append(UL);
 			for (BrokenTestQuestionReferences ref : brokenTests) {
 				sb.append(LI).append(B).append(ref.getTestName()).append(B_CLOSE)
 					.append(BR);
@@ -165,7 +181,8 @@ public class ClearanceResponseRenderer implements Serializable {
 							.append("<b>However</b> the question itself is only found in : ")
 							.append(BR);
 						for (String loc : locations) {
-							sb.append(loc).append(BR);
+							sb.append(" - ").append(new File(loc).getAbsolutePath())
+								.append(BR);
 						}
 						sb.append(LI_CLOSE).append(UL_CLOSE).append(BR).append(BR);
 					} else {
@@ -270,9 +287,10 @@ public class ClearanceResponseRenderer implements Serializable {
 	protected StringBuffer renderOutOfSyncTests(List<TestSynchronizationCheck> tests) {
 		StringBuffer sb = new StringBuffer();
 		if (null != tests ? tests.size() > 0 : false) {
-			sb.append(H3).append("Out of Sync Tests.").append(H3_CLOSE).append(UL);
+			sb.append(HR).append(H2).append("Out of Sync Tests.").append(H2_CLOSE)
+				.append(UL);
 			for (TestSynchronizationCheck check : tests) {
-				if (null != check) {
+				if (null != check ? !check.isFoundInAllTestBanks() : false) {
 					sb.append(LI).append(renderIndividualTest(check))
 						.append(LI_CLOSE);
 				}
@@ -297,7 +315,8 @@ public class ClearanceResponseRenderer implements Serializable {
 			sb.append(" Was only found in : ").append(BR);
 			sb.append(UL);
 			for (String qn : check.getLocationsTestIsFoundIn()) {
-				sb.append(LI).append(qn).append(LI_CLOSE);
+				sb.append(LI).append(new File(qn).getAbsolutePath())
+					.append(LI_CLOSE);
 			}
 			sb.append(UL_CLOSE);
 		}
@@ -317,7 +336,7 @@ public class ClearanceResponseRenderer implements Serializable {
 		Map<String, IdentifiedSuperfluousQuestion> qs) throws RequestHandlingException {
 		StringBuffer sb = new StringBuffer();
 		if (null != qs ? qs.size() > 0 : false) {
-			sb.append(H3).append("Superfluous Questions").append(H3_CLOSE)
+			sb.append(H2).append("Superfluous Questions").append(H2_CLOSE)
 				.append(UL);
 			Integer pageNumber = QuestionBankCleaningRequestHandler
 				.identifyPagingNumber(associates);
@@ -552,7 +571,7 @@ public class ClearanceResponseRenderer implements Serializable {
 				ife.type = CHECK_BOX;
 				ife.value = s + consistentPathSeperatorForDisplay(s) + q.getName();
 				ife.name = QUESTION_FORM_NAME_PREFIX + q.getName();
-				sb.append(" - [").append(s).append("] ")
+				sb.append(" - [").append(new File(s).getAbsoluteFile()).append("] ")
 					.append(renderInputField(ife)).append(BR);
 			}
 			sb.append(LI_CLOSE);

@@ -20,6 +20,8 @@ public class RenderedOutput implements Serializable, RequestResponse {
 
 	private Object response;
 
+	private boolean asXHTML = true;
+
 	public Object getResponse() {
 		return response;
 	}
@@ -50,6 +52,16 @@ public class RenderedOutput implements Serializable, RequestResponse {
 	@Override
 	public boolean isSuccessful() {
 		return successful;
+	}
+
+	@Override
+	public boolean asXHTML() {
+		return asXHTML;
+	}
+
+	@Override
+	public void setAsXHTML(boolean b) {
+		asXHTML = b;
 	}
 
 }

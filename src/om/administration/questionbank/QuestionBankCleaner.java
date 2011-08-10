@@ -93,7 +93,8 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 					AllQuestionsPool allQuestionsPool = identifyAllQuestions(qbl
 							.getQuestionBanks());
 					if (null != tests ? tests.size() > 0 : false) {
-						TestQuestionsReferencedPool pool = new TestQuestionsReferencedPool();
+						TestQuestionsReferencedPool pool
+							= new TestQuestionsReferencedPool();
 						for (TestSynchronizationCheck testCheck : tests
 								.values()) {
 							addTestReferencedQuestions(testCheck, pool);
@@ -129,7 +130,8 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 		AllQuestionsPool questionPool, ClearanceResponse cr, Banks banks) {
 		if (null != testCheck && null != questionPool && null != cr
 			&& null != banks) {
-			Map<String, BrokenTestQuestionReferences> btqr = new HashMap<String, BrokenTestQuestionReferences>();
+			Map<String, BrokenTestQuestionReferences> btqr
+				= new HashMap<String, BrokenTestQuestionReferences>();
 			if (null != testCheck.getTestDetails()) {
 				for (String location : testCheck.getTestDetails().keySet()) {
 					TestDetails td = testCheck.getTestDetails().get(location);
@@ -148,7 +150,8 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 				}
 			}
 			if (btqr.size() > 0) {
-				Set<BrokenTestQuestionReferences> broRef = new HashSet<BrokenTestQuestionReferences>();
+				Set<BrokenTestQuestionReferences> broRef
+					= new HashSet<BrokenTestQuestionReferences>();
 				broRef.addAll(btqr.values());
 				cr.addBrokenTest(broRef);
 			}
@@ -157,8 +160,8 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 
 	/**
 	 * Looks to see if the questionName is found within the questionPool and if
-	 * found then tries to create a BrokenTestQuestionReference and place it
-	 * within the btqr Collection.
+	 *  not found then tries to create a BrokenTestQuestionReference and place
+	 *  it within the btqr Collection.
 	 * 
 	 * @param questionName
 	 * @param td
@@ -191,7 +194,7 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 								btqr.put(questionName, ref);
 							}
 							ref.addFullTestLocationPaths(td.getTestDefinition()
-									.getAbsolutePath());
+								.getAbsolutePath());
 							ref.add(latestVersion, set);
 						}
 					}
@@ -295,8 +298,9 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 									Set<String> locations = details
 										.getQuestionsWithVersionNumbering()
 										.get(fullName);
-									cr.addSuperfluousQuestion(new IdentifiedSuperfluousQuestion(
-										fullName, locations));
+									cr.addSuperfluousQuestion(
+										new IdentifiedSuperfluousQuestion(
+											fullName, locations));
 								}
 							}
 						}
@@ -397,8 +401,9 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 								da)) {
 							Set<String> locations = qpd
 								.getQuestionsWithVersionNumbering().get(fullName);
-							cr.addSuperfluousQuestion(new IdentifiedSuperfluousQuestion(
-								fullName, locations));
+							cr.addSuperfluousQuestion(
+								new IdentifiedSuperfluousQuestion(
+									fullName, locations));
 						}
 					}
 				}
@@ -452,7 +457,7 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 		boolean in = false;
 		if (null != testCheck) {
 			if (testCheck.isFoundInAllTestBanks()
-					&& testCheck.getNumberOfTestDetailsHeld() == ba.numberOfTestBanks) {
+				&& testCheck.getNumberOfTestDetailsHeld() == ba.numberOfTestBanks) {
 				in = testCheck.areAllReferencedQuestionsInSync();
 			}
 		}
@@ -591,7 +596,8 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 	 */
 	protected Map<String, TestSynchronizationCheck> identifyAllTests(
 		List<String> locations, ClearanceResponse cr) throws IOException {
-		Map<String, TestSynchronizationCheck> found = new HashMap<String, TestSynchronizationCheck>();
+		Map<String, TestSynchronizationCheck> found
+			= new HashMap<String, TestSynchronizationCheck>();
 		if (null != cr && (null != locations ? locations.size() > 0 : false)) {
 			for (String testLocation : locations) {
 				if (StringUtils.isNotEmpty(testLocation)) {
@@ -603,17 +609,22 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 							if (null != test ? test.canRead() : false) {
 								TestSynchronizationCheck checker = found
 									.get(test.getName());
-								if (null != checker) {
-									List<String> questions = retrieveCompositeQuestions(test);
-									checker.foundAt(testLocation, test,
-										new TestQuestionsReferenced(questions));
-								} else {
-									List<String> questions = retrieveCompositeQuestions(test);
-									checker = new TestSynchronizationCheck(locations);
-									checker.setName(test.getName());
-									checker.foundAt(testLocation, test,
-										new TestQuestionsReferenced(questions));
-									found.put(test.getName(), checker);
+								try {	
+									if (null != checker) {
+										List<String> questions = retrieveCompositeQuestions(test);
+										checker.foundAt(testLocation, test,
+											new TestQuestionsReferenced(questions));
+									} else {
+										List<String> questions = retrieveCompositeQuestions(test);
+										checker = new TestSynchronizationCheck(locations);
+										checker.setName(test.getName());
+										checker.foundAt(testLocation, test,
+											new TestQuestionsReferenced(questions));
+										found.put(test.getName(), checker);
+									}
+								} catch (IOException x) {
+									cr.addBrokenTestXML(
+										new BrokenTestXML(test.getAbsolutePath()));
 								}
 							}
 						}
@@ -644,8 +655,8 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 	 */
 	protected ClearanceResponse handleCleanOrUndo(ClearanceResponse cr,
 		ClearanceEnums ce, Map<String, String> params) throws CleaningException {
-		if ((null != params ? params.size() > 0 : false) && null != cr ? null != cr
-				.getSuperfluousQuestions() : false) {
+		if ((null != params ? params.size() > 0 : false)
+			&& null != cr ? null != cr.getSuperfluousQuestions() : false) {
 			for (String key : params.keySet()) {
 				String value = params.get(key);
 				if (StringUtils.isNotEmpty(key) && StringUtils.isNotEmpty(value)) {
@@ -713,7 +724,7 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 							File archive = new File(dir.getAbsolutePath()
 								+ File.separator + renderDate());
 							if (continueWithArchiving(archive, cr, isq)) {
-								archiveSelectedQuestions(f, archive, cr, isq);
+								archieveIndividualQuestion(f, archive, cr, isq);
 							}
 						}
 					}
@@ -758,7 +769,7 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 	 * @param isq
 	 * @author Trevor Hinson
 	 */
-	protected void archiveSelectedQuestions(File f, File archive,
+	protected void archieveIndividualQuestion(File f, File archive,
 		ClearanceResponse cr, IdentifiedSuperfluousQuestion isq) {
 		if (archive.exists() ? archive.isDirectory() : false) {
 			File archivedFile = new File(archive.getAbsolutePath()

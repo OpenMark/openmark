@@ -17,8 +17,20 @@ public class ClearanceResponse {
 
 	private List<BrokenTestQuestionReferences> brokenTests;
 	
+	private List<BrokenTestXML> brokenTestXML = new ArrayList<BrokenTestXML>();
+	
 	private Map<IdentifiedSuperfluousQuestion, RemovalIssueDetails> problemRemoving
 		= new HashMap<IdentifiedSuperfluousQuestion, RemovalIssueDetails>();
+
+	public List<BrokenTestXML> getBrokenTestXML() {
+		return brokenTestXML;
+	}
+
+	public void addBrokenTestXML(BrokenTestXML broken) {
+		if (null != broken) {
+			getBrokenTestXML().add(broken);
+		}
+	}
 
 	public List<BrokenTestQuestionReferences> getBrokenTests() {
 		if (null == brokenTests) {

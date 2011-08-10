@@ -132,6 +132,7 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 	/**
 	 * Here we delegate straight away to the RequestManagement implementation
 	 *  providing the constructed RequestAssociates object.
+	 * 
 	 * @param request
 	 * @param response
 	 * @throws ServletException
@@ -154,6 +155,7 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 	/**
 	 * Delegates to the ErrorManagement for sending the appropriate error
 	 *  details back to the user.
+	 * 
 	 * @param request
 	 * @param response
 	 * @param t
@@ -179,6 +181,7 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 	/**
 	 * This default implementation instantiates a new OMVisitor with the 
 	 *  ServletContext.  This should be overridden where needed.
+	 * 
 	 * @param ra
 	 * @return
 	 * @author Trevor Hinson
@@ -190,6 +193,7 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 	/**
 	 * Standard implementation just returns an empty map.  The concrete child
 	 *  instance of this class should override this as needed.
+	 * 
 	 * @param request
 	 * @param response
 	 * @param ra
@@ -211,7 +215,8 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 	}
 
 	/**
-	 * .
+	 * Builds a new ErrorMessageParts from the provided arguments.
+	 *  
 	 * @param t
 	 * @param ra
 	 * @return
