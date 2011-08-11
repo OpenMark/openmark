@@ -18,6 +18,9 @@
 package om.stdquestion;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import om.*;
@@ -449,5 +452,18 @@ public class QDocument
 		}
 		lGroups.add(sGroup);
 		return iCount;
+	}
+
+	/**
+	 * Return content hash for the JavaScript
+	 * @return
+	 */
+	public String getJSHash() {
+		try {
+			byte[] hash = MessageDigest.getInstance("SHA1").digest(sJS.getBytes());
+			return new BigInteger(1, hash).toString(16).substring(0, 8);
+		} catch (NoSuchAlgorithmException e) {
+			return "0";
+		}
 	}
 }
