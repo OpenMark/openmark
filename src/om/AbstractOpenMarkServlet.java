@@ -281,9 +281,15 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 		StringBuffer sb = new StringBuffer();
 		if (null != array) {
 			if (array instanceof String[]) {
-				for (int i = 0; i < ((String[]) array).length; i++) {
-					String str = ((String[]) array)[i];
-					sb.append(str);
+				int length = ((String[]) array).length;
+				if (length > 0) {
+					for (int i = 0; i < length; i++) {
+						String str = ((String[]) array)[i];
+						sb.append(str);
+						if (i < length -1) {
+							sb.append(",");
+						}
+					}
 				}
 			}
 		}

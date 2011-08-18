@@ -64,9 +64,9 @@ public class ClearanceResponseRenderer implements Serializable {
 
 	private static String B_CLOSE = "</b>";
 	
-	private static String LOUD = "<b><font COLOR=\"RED\">";
+	private static String LOUD = "<div style=\"font-size: 18px; color: #FF0000\">";
 	
-	private static String LOUD_CLOSE="</font></b><br/>";
+	private static String LOUD_CLOSE="</div><br/>";
 
 	private static String BR = "<br />";
 
@@ -81,7 +81,6 @@ public class ClearanceResponseRenderer implements Serializable {
 
 	private static String SUPERFLUOUS_CAUTION = "Questions identified below as superfluous, MAY be used by moodel quizes." +
 	" Ensure that the questions really ARE superfuous before deleting (eg check dates and remove older ones). note that questions can be recovered from the archive folder if necessary after removing from the questionbank";
-
 
 	private static String CLOSE_FORM = "</form>";
 

@@ -59,14 +59,23 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 
 	private static String ID = "id";
 
+	private static String COMMA = ",";
+
 	private static String DOT_TEST_DOT_XML = ".test.xml";
 
 	private FileFilter fileFilter = new StandardFileFilter(DOT_TEST_DOT_XML);
 
 	private FileFilter questionFilter = new StandardFileFilter(VersionUtil.DOT_JAR);
 	
-	private String archiveFilename=renderDate()+ FILENAME_SEPARATOR + renderTime();
+	private String archiveFilename = renderDate()+ FILENAME_SEPARATOR + renderTime();
 
+	private static Set<String> splitOn = new HashSet<String>();
+
+	static {
+		splitOn.add(VersionUtil.DOT_JAR);
+		splitOn.add(".txt");
+		splitOn.add(".xml");
+	}
 
 	public FileFilter getQuestionFilter() {
 		return questionFilter;
@@ -828,29 +837,46 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 	 * @return
 	 * @author Trevor Hinson
 	 */
-	public static List<String> getQuestions(String responseParameterValue) {
+	public static List<String> getQuestions(String requestParameterValue) {
 		List<String> names = new ArrayList<String>();
-		if (StringUtils.isNotEmpty(responseParameterValue)) {
-			String seperator = ClearanceResponseRenderer
-				.consistentPathSeperatorForDisplay(responseParameterValue);
-			String checkFor = VersionUtil.DOT_JAR + seperator;
-			if (responseParameterValue.contains(checkFor)) {
-				String[] bits = responseParameterValue.split(checkFor);
+		if (StringUtils.isNotEmpty(requestParameterValue)) {
+			String checkFor = splitter(requestParameterValue);
+			if (StringUtils.isNotEmpty(checkFor)) {
+				String[] bits = requestParameterValue.split(checkFor);
 				for (int i = 0; i < bits.length; i++) {
 					String bit = bits[i];
-					if (!bit.endsWith(VersionUtil.DOT_JAR)) {
-						bit = bit + VersionUtil.DOT_JAR;
+					if (!bit.endsWith(checkFor)) {
+						bit = bit + checkFor;
 					}
-					if (!bit.startsWith(seperator)) {
-						bit = seperator + bit;
+					if (bit.startsWith(COMMA)) {
+						bit = bit.substring(1, bit.length());
 					}
-					names.add(bit);
+					names.add(bit.trim());
 				}
-			} else if (responseParameterValue.contains(VersionUtil.DOT_JAR)) {
-				names.add(responseParameterValue);
 			}
 		}
 		return names;
+	}
+
+	/**
+	 * Determines a valid splitting suffix from within the String argument and
+	 *  then returns it.
+	 * 
+	 * @param s
+	 * @return
+	 * @author Trevor Hinson
+	 */
+	protected static String splitter(String s) {
+		String splitter = null;
+		if (StringUtils.isNotEmpty(s)) {
+			x : for (String val : splitOn) {
+				if (StringUtils.isNotEmpty(val) ? s.contains(val) : false) {
+					splitter = val;
+					break x;
+				}
+			}
+		}
+		return splitter;
 	}
 
 	@Override
