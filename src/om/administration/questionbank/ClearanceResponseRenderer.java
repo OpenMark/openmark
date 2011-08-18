@@ -63,6 +63,10 @@ public class ClearanceResponseRenderer implements Serializable {
 	private static String B = "<b>";
 
 	private static String B_CLOSE = "</b>";
+	
+	private static String LOUD = "<b><font COLOR=\"RED\">";
+	
+	private static String LOUD_CLOSE="</font></b><br/>";
 
 	private static String BR = "<br />";
 
@@ -71,6 +75,13 @@ public class ClearanceResponseRenderer implements Serializable {
 	private static String H2 = "<h2>";
 
 	private static String H2_CLOSE = "</h2>";
+	
+	private static String SUBMIT_CAUTION = "Selecting the tick box and pressing submit will cause the selected questions " +
+			"and tests to be removed from the test and question banks. Please be sure you have selected correctly";
+
+	private static String SUPERFLUOUS_CAUTION = "Questions identified below as superfluous, MAY be used by moodel quizes." +
+	" Ensure that the questions really ARE superfuous before deleting (eg check dates and remove older ones). note that questions can be recovered from the archive folder if necessary after removing from the questionbank";
+
 
 	private static String CLOSE_FORM = "</form>";
 
@@ -95,7 +106,8 @@ public class ClearanceResponseRenderer implements Serializable {
 			try {
 				rcr = new RenderedCleaningResult();
 				StringBuffer sb = new StringBuffer()
-					.append(renderFormStart(associates));
+					.append(renderFormStart(associates))
+					.append(LOUD).append(SUBMIT_CAUTION).append(LOUD_CLOSE);
 				sb.append(renderSuperfluousQuestions(associates,
 					cr.getSuperfluousQuestions()));
 				sb.append(BR).append(BR).append(B).append("Analysis Refresh : ")
@@ -129,6 +141,7 @@ public class ClearanceResponseRenderer implements Serializable {
 		}
 		return sb;
 	}
+
 
 	protected StringBuffer renderSubmitButton() {
 		InputFieldElements ife = new InputFieldElements();
@@ -338,6 +351,7 @@ public class ClearanceResponseRenderer implements Serializable {
 		if (null != qs ? qs.size() > 0 : false) {
 			sb.append(H2).append("Superfluous Questions").append(H2_CLOSE)
 				.append(UL);
+			sb.append(LOUD).append(SUPERFLUOUS_CAUTION).append(LOUD_CLOSE);
 			Integer pageNumber = QuestionBankCleaningRequestHandler
 				.identifyPagingNumber(associates);
 			Integer numberPerPage = getNumberPerPage(associates);
@@ -499,7 +513,7 @@ public class ClearanceResponseRenderer implements Serializable {
 		RenderedCleaningResult rcr = null;
 		if (null != cr) {
 			rcr = new RenderedCleaningResult();
-			StringBuffer sb = renderIssueDetails(params, issues, enu, associates);
+			StringBuffer sb = renderIssueDetails(params, issues, enu, associates,cr);
 			rcr.append(mergeTemplate(sb, associates));
 		}
 		return rcr;
@@ -532,7 +546,7 @@ public class ClearanceResponseRenderer implements Serializable {
 	 */
 	protected StringBuffer renderIssueDetails(Map<String, String> params,
 		Map<IdentifiedSuperfluousQuestion, ?> issues, ClearanceEnums enu,
-		RequestAssociates ra) throws CleaningException {
+		RequestAssociates ra,ClearanceResponse cr) throws CleaningException {
 		StringBuffer sb = new StringBuffer();
 		if (null != issues ? issues.size() > 0 : false) {
 			sb.append(B).append("Issues ...").append(B_CLOSE).append(BR)
@@ -547,7 +561,7 @@ public class ClearanceResponseRenderer implements Serializable {
 			}
 			sb.append(UL_CLOSE);
 		}
-		return appendSelected(params, sb, issues.keySet(), ra, enu);
+		return appendSelected(params, sb, issues.keySet(), ra, enu,cr);
 	}
 
 	/**
@@ -604,10 +618,12 @@ public class ClearanceResponseRenderer implements Serializable {
 	 */
 	protected StringBuffer appendSelected(Map<String, String> params, StringBuffer sb,
 		Set<IdentifiedSuperfluousQuestion> isq, RequestAssociates ra,
-		ClearanceEnums enu) throws CleaningException {
+		ClearanceEnums enu,ClearanceResponse cr) throws CleaningException {
 		if (null != params && null != sb && null != isq) {
 			sb.append(BR).append(BR).append(B)
-				.append("The following questions were successfully removed :")
+				.append("The following questions were successfully removed")
+				.append(BR)
+				.append("archived to ").append(cr.getArchiveDirsAsString()).append(") :")
 				.append(B_CLOSE);
 			if (params.size() > 0) {
 				sb.append(BR).append(UL);

@@ -21,7 +21,36 @@ public class ClearanceResponse {
 	
 	private Map<IdentifiedSuperfluousQuestion, RemovalIssueDetails> problemRemoving
 		= new HashMap<IdentifiedSuperfluousQuestion, RemovalIssueDetails>();
+	
 
+	private List<String> archiveDirs= new ArrayList<String>();
+	
+	
+	public List<String> getArchiveDirs() {
+		return archiveDirs;
+	}
+	
+	public String getArchiveDir(int i) {
+		return archiveDirs.get(i);
+	}
+
+	public String getArchiveDirsAsString() {
+		String archiveDir=null;
+		if (this.archiveDirs.size() >0 ){
+			archiveDir=this.archiveDirs.get(0);
+			for (int i = 1; i < this.archiveDirs.size(); i++) {
+				archiveDir=archiveDir+",";
+				archiveDir=archiveDir + this.archiveDirs.get(i);
+			}
+		}
+		return archiveDir;
+	}
+ 
+	public void addUniqArchiveDir(String archiveDir) {
+		if (null != archiveDir && !this.archiveDirs.contains(archiveDir)) {		
+			this.archiveDirs.add(archiveDir);
+		}
+	}
 	public List<BrokenTestXML> getBrokenTestXML() {
 		return brokenTestXML;
 	}

@@ -44,6 +44,10 @@ import util.xml.XML;
 public class QuestionBankCleaner implements CleanQuestionBanks {
 
 	private static String DIRECTORY_DATE_FORMAT = "yyyyMMdd";
+	
+	private static String DIRECTORY_TIME_FORMAT = "HHmm";
+	
+	private static String FILENAME_SEPARATOR = "_";
 
 	private static String TEST = "test";
 
@@ -60,6 +64,9 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 	private FileFilter fileFilter = new StandardFileFilter(DOT_TEST_DOT_XML);
 
 	private FileFilter questionFilter = new StandardFileFilter(VersionUtil.DOT_JAR);
+	
+	private String archiveFilename=renderDate()+ FILENAME_SEPARATOR + renderTime();
+
 
 	public FileFilter getQuestionFilter() {
 		return questionFilter;
@@ -721,8 +728,10 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 						File dir = f.getParentFile();
 						if (null != dir ? dir.isDirectory() && dir.canWrite()
 								: false) {
-							File archive = new File(dir.getAbsolutePath()
-								+ File.separator + renderDate());
+							String archiveDirName=dir.getAbsolutePath()+File.separator+this.archiveFilename;
+							/* if this is a new archive folder add it to the list */
+							cr.addUniqArchiveDir(archiveDirName);
+							File archive = new File(archiveDirName);
 							if (continueWithArchiving(archive, cr, isq)) {
 								archieveIndividualQuestion(f, archive, cr, isq);
 							}
@@ -731,6 +740,7 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 				}
 			}
 		}
+
 	}
 
 	/**
@@ -801,6 +811,15 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 		return new SimpleDateFormat(DIRECTORY_DATE_FORMAT).format(new Date());
 	}
 
+	/**
+	 * Simply renders todays time to a String in the DIRECTORY_DATE_FORMAT
+	 * 
+	 * @return
+	 * @author sarah wood
+	 */
+	protected String renderTime() {
+		return new SimpleDateFormat(DIRECTORY_TIME_FORMAT).format(new Date());
+	}
 	/**
 	 * Retrieves the actual selected question details from that provided in the
 	 * request from the user.
