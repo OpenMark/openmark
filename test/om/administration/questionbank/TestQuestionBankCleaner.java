@@ -272,13 +272,35 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		assertTrue(results.size() == 0);
 	}
 
+	public void testGetQuestionsIncorrect() throws Exception {
+		List<String> results = QuestionBankCleaner.getQuestions("/tester1/sdfasdf");
+		assertNotNull(results);
+		assertTrue(results.size() == 0);
+	}
+
 	public void testGetQuestionsSingled() throws Exception {
+		String lookFor = "/questionBank1/sdk125b6.question06f.1.3.jar";
 		List<String> results = QuestionBankCleaner
-			.getQuestions("sdk125b6.question06f.1.3.jar");
+			.getQuestions(lookFor);
 		assertNotNull(results);
 		assertTrue(results.size() == 1);
+		String s = results.get(0);
+		assertNotNull(s);
+		assertEquals(s, lookFor);
 	}
-	
+
+	public void testGetQuestionsMultiples() throws Exception {
+		List<String> results = QuestionBankCleaner
+			.getQuestions("/tester1/sdk125b6.question06f.1.3.jar, /tester2/sdk125b6.question06f.1.3.jar");
+		assertNotNull(results);
+		assertTrue(results.size() == 2);
+		for (String s : results) {
+			System.out.println(s);
+			assertTrue(!s.startsWith(","));
+			assertTrue(!s.startsWith(" "));
+		}
+	}
+
 	public void testIdentifySyncOfTest() throws Exception {
 		ClearanceResponse cr = new ClearanceResponse();
 		QuestionBankCleaner cqb = new QuestionBankCleaner();
