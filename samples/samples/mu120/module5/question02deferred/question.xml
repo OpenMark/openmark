@@ -1,0 +1,70 @@
+<question class="samples.mu120.module5.question02deferred.Q2D">
+
+    <scoring>
+        <marks>1</marks>
+    </scoring>
+
+    <layout>
+        <row height="380"/>
+        <column width="290"/>
+        <column width="302"/>  
+    </layout>
+  
+    <!-- Defines the question box -->
+    <box gridx="0" gridy="0" id="inputbox" display="no" background="input">
+        The pie chart below shows the preferences of a group of OU students
+        about how they would prefer to communicate with their tutor.
+        What percentage prefers __T__?
+        <gap/>
+        <gap/>
+        <canvas id="piechart" width="256" height="144"/>
+        <gap/>
+
+        <indent>
+            <editfield id="response" label="enter value" cols="6"/>%
+        </indent>
+        <gap/> 
+        <gap/>
+    </box>
+
+    <!-- Defines the right-hand answer box, which is initially hidden  -->
+    <box gridx="1" gridy="0" id="answerbox" display="no" background="answer">
+
+        <t id="wrong">Your answer is incorrect.<gap/></t>
+        <t id="right">Your answer is correct.<gap/></t>
+
+        <t id="feedback">
+            <t id="nonumber">
+                You must enter a number for the percentage.
+                <gap/>
+            </t>
+            <t id="toosmall">
+                Your percentage is too small.
+                <gap/>
+            </t>
+            <t id="toolarge">
+                Your percentage is too big.
+                <gap/>
+            </t>
+        </t>
+
+        <t id="answer">
+            There __SLICES__ shaded for students who prefer __T__.
+            Since there are 8 slices, each slice is 100% ÷ 8 .
+            <break/>
+            Hence each slice represents 12.5% of the students.
+            <break/>
+            So this represents __N__ × 12.5%
+            <break/>
+            which is __ANS__%
+            <gap/>
+        </t>
+
+        <t id="reference">
+            Please see MU120 Preparatory Resource Book B section 5.2.2
+            <gap/>
+        </t>
+
+    </box>
+
+</question>

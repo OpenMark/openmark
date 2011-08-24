@@ -387,6 +387,11 @@ public class QDocument
 				find(asParams[iParam].substring(ACTION_PREFIX.length())).formCallAction(
 					ap.getParameter(asParams[iParam]),ap);
 		}
+
+		// Finally, handle the conventional 'attempt finishing' data.
+		if (Arrays.asList(asParams).contains("-finish")) {
+			getQuestion().finish();
+		}
 	}
 
 	/**

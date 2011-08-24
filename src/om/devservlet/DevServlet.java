@@ -50,6 +50,7 @@ import om.RequestHandler;
 import om.RequestResponse;
 import om.devservlet.deployment.DeploymentEnum;
 import om.devservlet.deployment.DeploymentRequestHandler;
+import om.helper.FakeHttpServletRequest;
 import om.helper.QEngineConfig;
 import om.question.ActionParams;
 import om.question.ActionRendering;
@@ -550,7 +551,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 		String sAfter=sRemainingPath.replaceAll("^[^/]*/?(.*)$","$1");
 
 		// Must access page with / at end
-		if("".equals(sAfter) && !request.getRequestURI().endsWith("/"))
+		if("".equals(sAfter) && !sRemainingPath.endsWith("/"))
 		{
 			response.sendRedirect(request.getRequestURI()+"/");
 			return;
@@ -606,9 +607,20 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			return;
 		}
 
-		// Different question
 		if(!bPost)
 		{
+
+			// Eqivalent of Submit all and finish from Moodle.
+			if (sAfter.startsWith("finish"))
+			{
+				Map<String, String> fakeParams = new HashMap<String, String>();
+				fakeParams.put("-finish", "1");
+				handleRun(true, sQuestion + "/",
+						new FakeHttpServletRequest(request, fakeParams), response);
+				return;
+			}
+
+			// Different question
 			int iVariant=-1;
 			long randomSeed = System.currentTimeMillis();
 			if(sAfter.startsWith("v"))
@@ -908,6 +920,11 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				"[<a href='../../'>List</a>] <small>[<a href='./?save'>Save</a>]</small>" +
 			"</h1>"+
 			"<form method='post' action='./' id='question' autocomplete='off' class='om'/>"+
+			"<h1 style='font: bold 14px Verdana'>" +
+				"For testing deferred feedback questions [" +
+					"<a href='#' onclick='document.getElementById(\"question\").submit()'>Next (save)</a> " +
+					"<a href='./finish'>Submit all and finish</a>]" +
+			"</h1>" +
 			"<pre id='results' style='clear:both'/>"+
 			"<pre id='log'/>"+
 			((new File("c:/hack.js")).exists()

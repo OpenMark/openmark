@@ -201,6 +201,14 @@ public abstract class StandardQuestion implements Question
 	}
 
 	/**
+	 * Override to handle Submit all and finish from Moodle, and similar.
+	 * @throws OmException For any error
+	 */
+	protected void finish() throws OmException
+	{
+	}
+
+	/**
 	 * Fix placeholders just before returning output.
 	 * @param r Output about to be returned
 	 */
