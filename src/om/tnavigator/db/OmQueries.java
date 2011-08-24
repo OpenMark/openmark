@@ -754,6 +754,8 @@ public abstract class OmQueries
 		return "current_timestamp";
 	}
 
+	protected abstract String dateTimeFieldType();
+
 	/**
 	 * @param quotedString String surrounded in quotes and quoted as appropriate
 	 *   for normal SQL.
@@ -851,6 +853,9 @@ public abstract class OmQueries
 				throw new SQLException("SQL statement:\n\n"+sStatement+"\n\n"+se.getMessage());
 			}
 		}
+
+		// At the end of the install, set the database version.
+		dat.update("INSERT INTO " + getPrefix() + "navconfig (name, value) VALUES ('dbversion', \'" + OmVersion.getVersion() + "\')");
 	}
 
 	protected void upgradeDatabaseTo131(DatabaseAccess.Transaction dat) throws SQLException
@@ -932,22 +937,31 @@ public abstract class OmQueries
 			/* make sure these are listed in version order, because the function updates the DB version as we go */			
 			l.logDebug("DatabaseUpgrade", "Applying database upgrades, version before update "+DBversion.getVersion());
 			
-			updateDatabase("1.10.1",DBversion,
-			"ALTER TABLE " + getPrefix() + "params ALTER COLUMN paramvalue NVARCHAR(4000)",
-			l,dat);
-					
+			updateDatabase("1.10.1", DBversion,
+					alterStringColumnWidthSQL("params", "paramvalue", 4000),
+					l,dat);
+
+			applyUpdateForEmailNotification(dat, l, DBversion);
+			applyAuthorshipUpdate(dat, l, DBversion, nc);
+
 			/* finally having applied all the updates set the DB version to the current */
 			l.logDebug("DatabaseUpgrade", "Update DB version to current "+currversion);
 			dat.update("UPDATE " + getPrefix() + "navconfig SET value = \'"+currversion+"\' where name=\'dbversion\'");
-			
-			applyUpdateForEmailNotification(dat, l, DBversion);
-			applyAuthorshipUpdate(dat, l, DBversion, nc);
 		}
 		else
 		{
 			l.logDebug("DatabaseUpgrade", "Database up to date at version "+DBversion.getVersion()+" no updates attempted.");
 		}
 	}
+
+	/**
+	 * Genreate the SQL required to change the size of a varchar column.
+	 * @param table the table name
+	 * @param column the column name
+	 * @param newWidth the new width
+	 * @return 
+	 */
+	protected abstract String alterStringColumnWidthSQL(String table, String column, int newWidth);
 
 	/**
 	 * Checks to see if the we have the preprocessor configured and if we do
@@ -988,7 +1002,7 @@ public abstract class OmQueries
 		Log l, NavVersion DBversion) throws SQLException,IllegalArgumentException {
 		if (!columnExistsInTable(dat, "tests", "dateWarningEmailSent")) {
 			updateDatabase("1.12",DBversion,
-				"ALTER TABLE " + getPrefix() + "tests ADD dateWarningEmailSent DATETIME",
+				"ALTER TABLE " + getPrefix() + "tests ADD dateWarningEmailSent " + dateTimeFieldType(),
 				l,dat);
 		}
 	}

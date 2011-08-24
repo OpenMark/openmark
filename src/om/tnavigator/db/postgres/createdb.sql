@@ -18,7 +18,7 @@ CREATE TABLE prefix_tests (
   testposition SMALLINT NOT NULL,
   finishedclock TIMESTAMP WITH TIME ZONE,
   navigatorversion CHAR(16) NOT NULL,
-  dateWarningEmailSent DATETIME
+  dateWarningEmailSent TIMESTAMP WITH TIME ZONE
 ); 
 
 CREATE INDEX prefix_tests_deploy ON prefix_tests (deploy);

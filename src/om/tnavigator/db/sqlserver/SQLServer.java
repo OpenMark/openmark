@@ -66,9 +66,20 @@ public class SQLServer extends OmQueries
 	}
 
 	@Override
+	protected String alterStringColumnWidthSQL(String table, String column, int newWidth) {
+		return "ALTER TABLE " + getPrefix() + table +" ALTER COLUMN " + column + " NVARCHAR(" + newWidth + ")";
+	}
+
+	@Override
 	protected String currentDateFunction()
 	{
 		return "GETDATE()";
+	}
+
+	@Override
+	protected String dateTimeFieldType()
+	{
+		return "DATETIME";
 	}
 
 	@Override

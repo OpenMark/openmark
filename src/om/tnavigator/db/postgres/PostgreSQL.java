@@ -56,11 +56,22 @@ public class PostgreSQL extends OmQueries
 		return "jdbc:postgresql://"+server+"/"+database+"?user="+username+"&password="+password;
 	}
 
+	@Override
+	protected String alterStringColumnWidthSQL(String table, String column, int newWidth) {
+		return "ALTER TABLE " + getPrefix() + table +" ALTER COLUMN " + column + " TYPE VARCHAR(" + newWidth + ")";
+	}
+
 	protected String getCurrentDateFunction()
 	{
 		return "CURRENT_TIMESTAMP";
 	}
  
+	@Override
+	protected String dateTimeFieldType()
+	{
+		return "TIMESTAMP WITH TIME ZONE";
+	}
+
 	/* (non-Javadoc)
 	 * @see om.tnavigator.db.OmQueries#extractMonthFromTimestamp(java.lang.String)
 	 */
