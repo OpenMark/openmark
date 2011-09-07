@@ -15,6 +15,8 @@ public class VersionUtil {
 
 	public static String suffix = ".([0-9]+).([0-9]+).jar";
 
+	public static String xmlSuffix = ".([0-9]+).([0-9]+).omxml";
+
 	public static String DOT_JAR = ".jar";
 
 	public static String DOT = ".";
@@ -36,27 +38,43 @@ public class VersionUtil {
 		throws OmException {
 		boolean bFound = false;
 		Pattern p = Pattern.compile(sQuestionID + suffix);
+		Pattern xp = Pattern.compile(sQuestionID + xmlSuffix);
+		String found = null;
 		for (int i = 0; i < af.length; i++) {
+			Matcher toUse = null;
 			// See if it's the question we're looking for
 			Matcher m = p.matcher(af[i].getName());
-			if (!m.matches())
+			Matcher xm = xp.matcher(af[i].getName());
+			boolean mMatched = m.matches();
+			boolean xmMatched = xm.matches();
+			if (!mMatched && !xmMatched) {
 				continue;
-			
-			//bFound = isGreater(m, qv, iRequiredVersion);
-			int iMajor = Integer.parseInt(m.group(1)), iMinor = Integer
-				.parseInt(m.group(2));
-			if (
-			// Major version is better than before and either matches version or
-			// unspec
-			(iMajor > qv.iMajor && (iRequiredVersion == iMajor || iRequiredVersion == VERSION_UNSPECIFIED))
-				||
-				// Same major version as before, better minor version
-				(iMajor == qv.iMajor && iMinor > qv.iMinor)) {
-				qv.iMajor = iMajor;
-				qv.iMinor = iMinor;
-				bFound = true;
+			} else {
+				if (mMatched) {
+					toUse = m;
+				} else if (xmMatched) {
+					toUse = xm;
+				}
+			}
+			if (null != toUse) {
+				//bFound = isGreater(m, qv, iRequiredVersion);
+				int iMajor = Integer.parseInt(toUse.group(1)), iMinor = Integer
+					.parseInt(toUse.group(2));
+				if (
+				// Major version is better than before and either matches version or
+				// unspec
+				(iMajor > qv.iMajor && (iRequiredVersion == iMajor || iRequiredVersion == VERSION_UNSPECIFIED))
+					||
+					// Same major version as before, better minor version
+					(iMajor == qv.iMajor && iMinor > qv.iMinor)) {
+					qv.iMajor = iMajor;
+					qv.iMinor = iMinor;
+					found = af[i].getName();
+					bFound = true;
+				}
 			}
 		}
+		System.out.println("FOUND : " + found);
 		return bFound;
 	}
 

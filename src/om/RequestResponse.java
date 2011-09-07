@@ -47,4 +47,8 @@ public interface RequestResponse extends Serializable {
 	 * @author Trevor Hinson
 	 */
 	StringBuffer append(String output);
+
+	byte[] output();
+
+	void setByteOutput(byte[] bytes);
 }

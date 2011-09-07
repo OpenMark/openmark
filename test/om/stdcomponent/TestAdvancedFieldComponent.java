@@ -1,9 +1,6 @@
 package om.stdcomponent;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.io.StringBufferInputStream;
 
 import om.question.InitParams;
 import om.question.Rendering;
@@ -35,6 +32,7 @@ public class TestAdvancedFieldComponent extends AbstractComponentTesting {
 		assertNotNull(xhtml);
 		String output = XML.saveString(xhtml);
 		assertNotNull(output);
+		// System.out.println(output);
 		assertTrue(output.contains("%%IDPREFIX%%omval_eInput"));
 		Element e = XML.getNestedChild(xhtml, "input");
 		assertNotNull(e);
@@ -63,6 +61,48 @@ public class TestAdvancedFieldComponent extends AbstractComponentTesting {
 
 	}
 
-	
+	public void testDetermineOutputTypeEmpty() throws Exception {
+		AdvancedFieldComponent comp = new AdvancedFieldComponent();
+		AdvancedFieldComponent.SubSupEnum enu = comp.determineOutputType("");
+		assertNull(enu);
+	}	
 
+	public void testDetermineOutputTypeIncorrect() throws Exception {
+		AdvancedFieldComponent comp = new AdvancedFieldComponent();
+		AdvancedFieldComponent.SubSupEnum enu = comp.determineOutputType("not");
+		assertNull(enu);
+	}
+
+	public void testDetermineOutputTypeValidBoth() throws Exception {
+		AdvancedFieldComponent comp = new AdvancedFieldComponent();
+		AdvancedFieldComponent.SubSupEnum enu = comp.determineOutputType(
+			AdvancedFieldComponent.BOTH);
+		assertNotNull(enu);
+		assertTrue(AdvancedFieldComponent.SubSupEnum.both.equals(enu));
+	}
+
+	public void testDetermineOutputTypeValidSuperscript() throws Exception {
+		AdvancedFieldComponent comp = new AdvancedFieldComponent();
+		AdvancedFieldComponent.SubSupEnum enu = comp.determineOutputType(
+			AdvancedFieldComponent.SUPERSCRIPT);
+		assertNotNull(enu);
+		assertTrue(AdvancedFieldComponent.SubSupEnum.superscript.equals(enu));
+	}
+
+	public void testDetermineOutputTypeValidSubscript() throws Exception {
+		AdvancedFieldComponent comp = new AdvancedFieldComponent();
+		AdvancedFieldComponent.SubSupEnum enu = comp.determineOutputType(
+			AdvancedFieldComponent.SUBSCRIPT);
+		assertNotNull(enu);
+		assertTrue(AdvancedFieldComponent.SubSupEnum.subscript.equals(enu));
+		System.out.println("res : " + enu);
+	}
+
+	public void testCapitaliseFirstCharacter() throws Exception {
+		AdvancedFieldComponent comp = new AdvancedFieldComponent();
+		String initial = AdvancedFieldComponent.SubSupEnum.superscript.toString();
+		String res = comp.capitaliseFirstCharacter(initial);
+		assertNotNull(res);
+		assertEquals("Superscript", res);
+	}
 }

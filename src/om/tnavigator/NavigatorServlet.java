@@ -55,6 +55,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
+import om.AbstractOpenMarkServlet;
 import om.Log;
 import om.OmException;
 import om.OmFormatException;
@@ -63,7 +64,9 @@ import om.OmVersion;
 import om.PreProcessingRequestHandler;
 import om.RenderedOutput;
 import om.RequestAssociates;
+import om.RequestHandler;
 import om.RequestHandlingException;
+import om.RequestParameterNames;
 import om.RequestResponse;
 import om.ShutdownManager;
 import om.axis.qengine.CustomResult;
@@ -78,6 +81,7 @@ import om.tnavigator.auth.AuthenticationInstantiationException;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.reports.ReportDispatcher;
+import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 import om.tnavigator.scores.CombinedScore;
 
 import org.apache.commons.lang.StringUtils;
@@ -792,6 +796,11 @@ public class NavigatorServlet extends HttpServlet {
 				return;
 			}
 
+			if (sPath.contains("tiny_mce/") || sPath.contains("subsup.html")) {
+				handleTinyMCEResponse(sPath, bPost, request, response);
+				return;
+			}
+			
 			// Handle requests that go via the authentication system
 			if (sPath.startsWith("/!auth/")) {
 				if (!getAuthentication().handleRequest(sPath.substring("/!auth/".length()),
@@ -3825,6 +3834,9 @@ public class NavigatorServlet extends HttpServlet {
 		byte[] abQuestion = IO.loadBytes(new FileInputStream(file));
 		if (what.equals("question")) {
 			response.setContentType("application/x-openmark");
+			if (file.getName().endsWith(".omxml")) {
+				response.setContentType("application/x-openmark-dynamics");
+			}
 		} else {
 			response.setContentType("application/xml");
 			response.setCharacterEncoding("UTF-8");
@@ -3838,6 +3850,9 @@ public class NavigatorServlet extends HttpServlet {
 	private void handleQuestion(String sIDVersion, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		File file = new File(questionBankFolder, sIDVersion + ".jar");
+		if (!file.exists()) {
+			file = new File(questionBankFolder, sIDVersion + ".omxml");
+		}
 		handleTestOrQuestion(file, "question", request, response);
 	}
 
@@ -3956,6 +3971,36 @@ public class NavigatorServlet extends HttpServlet {
 		}
 		m.appendTail(sb);
 		return sb.toString();
+	}
+
+	/**
+	 * Caters for the request for the TinyMCE associated files in the typical 
+	 *  OpenMark pattern.
+	 * 
+	 * @param path
+	 * @param post
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 * @author Trevor Hinson
+	 */
+	private void handleTinyMCEResponse(String path, boolean post,
+		HttpServletRequest request, HttpServletResponse response)
+		throws Exception {
+		Map<String, Object> config = new HashMap<String, Object>();
+		config.put(RequestParameterNames.logPath.toString(),
+			getServletContext().getContextPath());
+		RequestAssociates ra = new RequestAssociates(getServletContext(), path,
+			post, config);
+		Map<String, String> params = AbstractOpenMarkServlet.getParameters(request);
+		params.put(TinyMCERequestHandler.FILE_PATH, path);
+		ra.setRequestParameters(params);
+		RequestHandler rh = new TinyMCERequestHandler();
+		RequestResponse rr = rh.handle(request, response, ra);
+		rr.output();
+		OutputStream os = response.getOutputStream();
+		os.write(rr.output());
+		os.close();
 	}
 
 	private void handleNavigatorCSS(String sAccessBit,

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.*;
 import java.util.*;
 
+import javax.activation.URLDataSource;
 import javax.servlet.ServletContext;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
@@ -76,8 +77,7 @@ public class OmService implements ServiceLifecycle, QEngineConfig
     private Map<String, Object> configuration = new HashMap<String, Object>();
 
     /** Information about a single question session */
-	private static class QuestionSession
-	{
+	private static class QuestionSession {
 		String sSession;
 		Question q;
 		long lLastUsedTime;
@@ -198,7 +198,7 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 			// Create and initialise question
 			QuestionCache.QuestionInstance qi=qc.newQuestion(qk);
 			Question q=qi.q;
-			InitParams ip=new InitParams(lRandomSeed,sFixedFG,sFixedBG,dZoom,bPlain,qi.ccl,iFixedVariant,this, attempt, navigatorVersion);
+			InitParams ip=new InitParams(lRandomSeed,sFixedFG,sFixedBG,dZoom,bPlain,(ClassLoader) qi.omclc,iFixedVariant,this, attempt, navigatorVersion);
 			Rendering r=q.init(qc.getMetadata(qk),ip);
 
 			// Generate session details and store in map
@@ -299,7 +299,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 		}
 	}
 
-
 	private void obtainQuestion(String questionBaseURL,QuestionCache.QuestionKey qk) throws OmException
 	{
 		if(!qc.containsQuestion(qk))
@@ -320,12 +319,14 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 					HttpURLConnection huc=(HttpURLConnection)u.openConnection();
 					HTTPS.considerCertificatesValid(huc);
 					HTTPS.allowDifferentServerNames(huc);
-					abJar=IO.loadBytes(huc.getInputStream());
+					//abJar=IO.loadBytes(huc.getInputStream());
+					URLDataSource uds = new URLDataSource(u);
+					abJar = IO.loadBytes(uds.getInputStream());
+					String contentType = uds.getContentType();
+					qk.setContentType(contentType);
 				}
-
 				// Put it in cache
 				qc.saveQuestion(qk,abJar);
-
 			}
 			catch(MalformedURLException e)
 			{
@@ -338,57 +339,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 					sContentURL,e);
 			}
 		}
-	}
-
-	/**
-	 * Stops a given question session, freeing up resources.
-	 * <p>
-	 * If a question session is not stopped after a given timeout (possibly 24
-	 * hours) since last {@link #start(String,String,String,String[],String[],String[])} or
-	 * {@link #process(String, String[], String[])}, the question
-	 * engine should automatically time-out the session.
-	 * <p>
-	 * API METHOD: This method signature must not be changed in future (after
-	 * initial release) unless careful attention is paid to simultaneous changes
-	 * of Test Navigator. In general, if additional parameters or return values
-	 * are added, a new method should be defined.
-	 * @param questionSession
-	 * @throws OmException
-	 */
-	public void stop(String questionSession) throws OmException
-	{
-		setServletForThread();
-		try
-		{
-			synchronized(this)
-			{
-				QuestionSession qs=mQuestionSessions.get(questionSession);
-				if(qs==null) throw new OmException("Unknown question session");
-				if(qs.bInUse) throw new OmException("Question cannot be stopped mid-call");
-
-				closeSession(qs);
-			}
-		}
-		catch(Throwable t)
-		{
-			throw handleException("stop",t);
-		}
-		finally
-		{
-			unsetServletForThread();
-		}
-	}
-
-	/**
-	 * Removes a given session from the internal memory
-	 * @throws OmException If something goes wrong
-	 */
-	private void closeSession(QuestionSession qs) throws OmException
-	{
-		qs.q.close();
-		qc.returnQuestion(qs.q);
-
-		mQuestionSessions.remove(qs.sSession);
 	}
 
 	/**
@@ -475,12 +425,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 		}
 	}
 
-	private static OmException handleException(String sMethod,Throwable t)
-	{
-		return new OmException("[[BEGINEXCEPTION]]"+
-			Exceptions.getString(t,new String[] {"om"})+"[[ENDEXCEPTION]]");
-	}
-
 	public void init(Object oContext) throws ServiceException
 	{
 		System.gc();
@@ -490,27 +434,21 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 		osSingleton=this;
 
 		// Get the ServletContext.
-		try
-		{
+		try {
 			ServletEndpointContext sec=(ServletEndpointContext)oContext;
 			sc=sec.getServletContext();
-			qc=new QuestionCache(new File(sc.getRealPath("questioncache")));
-		}
-		catch(Throwable t)
-		{
+			String classPath = sc.getRealPath("WEB-INF/lib");
+			qc=new QuestionCache(new File(sc.getRealPath("questioncache")), classPath);
+		} catch(Throwable t) {
 			throw new ServiceException(t);
 		}
 
 		// Ensure we are running in headless mode.
-		try
-		{
+		try {
 			System.setProperty("java.awt.headless", "true");
+		} catch(Throwable t) {
 		}
-		catch(Throwable t)
-		{
-		}
-		if(!GraphicsEnvironment.isHeadless())
-		{
+		if(!GraphicsEnvironment.isHeadless()) {
 			throw new ServiceException("Your application server must be set to run in " +
 				"headless mode. Add the following option to the Java command line that " +
 				"launches it: -Djava.awt.headless=true");
@@ -539,6 +477,62 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 			}
 		})).start();
 	}
+
+	private static OmException handleException(String sMethod,Throwable t) {
+		return new OmException("[[BEGINEXCEPTION]]"+
+			Exceptions.getString(t,new String[] {"om"})+"[[ENDEXCEPTION]]");
+	}
+
+	/**
+	 * Stops a given question session, freeing up resources.
+	 * <p>
+	 * If a question session is not stopped after a given timeout (possibly 24
+	 * hours) since last {@link #start(String,String,String,String[],String[],String[])} or
+	 * {@link #process(String, String[], String[])}, the question
+	 * engine should automatically time-out the session.
+	 * <p>
+	 * API METHOD: This method signature must not be changed in future (after
+	 * initial release) unless careful attention is paid to simultaneous changes
+	 * of Test Navigator. In general, if additional parameters or return values
+	 * are added, a new method should be defined.
+	 * @param questionSession
+	 * @throws OmException
+	 */
+	public void stop(String questionSession) throws OmException
+	{
+		setServletForThread();
+		try
+		{
+			synchronized(this)
+			{
+				QuestionSession qs=mQuestionSessions.get(questionSession);
+				if(qs==null) throw new OmException("Unknown question session");
+				if(qs.bInUse) throw new OmException("Question cannot be stopped mid-call");
+
+				closeSession(qs);
+			}
+		}
+		catch(Throwable t)
+		{
+			throw handleException("stop",t);
+		}
+		finally
+		{
+			unsetServletForThread();
+		}
+	}
+
+	/**
+	 * Removes a given session from the internal memory
+	 * @throws OmException If something goes wrong
+	 */
+	private void closeSession(QuestionSession qs) throws OmException
+	{
+		qs.q.close();
+		qc.returnQuestion(qs.q);
+
+		mQuestionSessions.remove(qs.sSession);
+	}	
 
 	/** Thread that periodically expires unused sessions */
 	private void checkThread()
@@ -650,9 +644,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 		return servletForThread.get();
 	}
 
-	/**
-	 * 
-	 */
 	private void unsetServletForThread() {
 		servletForThread.set(null);
 	}

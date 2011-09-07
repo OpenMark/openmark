@@ -27,7 +27,8 @@ import java.util.jar.JarFile;
  * read a resource.
  */
 public class ClosableClassLoader extends ClassLoader
-{
+	implements OmClassLoaderContract {
+
 	/** Jar file */
 	private JarFile jf;
 
@@ -64,6 +65,9 @@ public class ClosableClassLoader extends ClassLoader
 		jf=null;
 	}
 
+	public Class<?> identifyClass(String sName) throws ClassNotFoundException {
+		return findClass(sName);
+	}
 
 	@Override
 	protected synchronized Class<?> findClass(String sName) throws ClassNotFoundException
@@ -90,6 +94,10 @@ public class ClosableClassLoader extends ClassLoader
 		{
 			throw new ClassNotFoundException("Error finding: "+sName,ioe);
 		}
+	}
+
+	public URL identifyResource(String sName) {
+		return findResource(sName);
 	}
 
 	@Override

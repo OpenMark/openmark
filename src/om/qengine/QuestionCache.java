@@ -17,9 +17,18 @@
  */
 package om.qengine;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
 
 import om.OmDeveloperException;
@@ -27,10 +36,11 @@ import om.OmException;
 import om.question.Question;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import util.misc.ClosableClassLoader;
+import util.misc.DynamicOMClassLoader;
 import util.misc.IO;
+import util.misc.OmClassLoaderContract;
 import util.xml.XML;
 
 /**
@@ -39,8 +49,14 @@ import util.xml.XML;
  * Note that all methods in here take a 'question key' parameter ({@link om.qengine.QuestionCache.QuestionKey});
  * this is a combination of the question ID and version.
  */
-public class QuestionCache
-{
+public class QuestionCache {
+
+	private static String dynamicQuestionType = "application/x-openmark-dynamics";
+
+	private static String DOT_JAR = ".jar";
+
+	private static String DOT_OMXML = ".omxml";
+
 	/** Map of String (question key) -> QuestionStuff */
 	private Map<QuestionKey, QuestionStuff> mActiveQuestions1=new HashMap<QuestionKey, QuestionStuff>();
 
@@ -50,35 +66,74 @@ public class QuestionCache
 	/** Folder where questions are cached */
 	private File fFolder;
 
-	QuestionCache(File f)
-	{
+	private static Map<String, QuestionLoader> questionLoaders = new HashMap<String, QuestionLoader>();
+
+	private static String FAILED_CLASSLOADER_MESSAGE
+		= "Failed to start question classloader for: ";
+
+	private String classPath;
+
+	QuestionCache(File f, String cPath) {
 		if(!f.exists()) f.mkdirs();
 		this.fFolder=f;
+		if (!cPath.endsWith(File.separator)) {
+			cPath = cPath + File.separator;
+		}
+		classPath = cPath;
+		questionLoaders.put(QuestionTypeEnum.jar.toString(),
+			new JarQuestionLoader());
+		questionLoaders.put(QuestionTypeEnum.dynamic.toString(),
+			new DynamicQuestionsLoader(classPath));
+		Collections.unmodifiableMap(questionLoaders);
 	}
 
 	/** Holds stuff related to a particular question (ID) */
-	private static class QuestionStuff
-	{
+	protected static class QuestionStuff {
 		Class<?> c=null;
-		ClosableClassLoader ccl;
+		//ClosableClassLoader ccl;
+		OmClassLoaderContract omclc;
 		Document dMeta;
 		List<Question> lActive=new LinkedList<Question>();
+	}
+
+	public static class QuestionInstance {
+		Question q;
+//		ClosableClassLoader cclX;
+		OmClassLoaderContract omclc;
 	}
 
 	/**
 	 * Questions are referenced in the cache by their ID and version. A question
 	 * key combines both these, with a full stop between.
 	 */
-	static class QuestionKey
-	{
+	static class QuestionKey {
+
 		private String sQuestionID,sVersion;
 
+		private String contentType;
+		
+		private String fileExtension() {
+			String extension = DOT_JAR;
+			if (isDynamicQuestion()) {
+				extension = DOT_OMXML;
+			}
+			return extension;
+		}
+		
+		public boolean isDynamicQuestion() {
+			return null != contentType
+				? dynamicQuestionType.equals(contentType) : false;
+		}
+		
+		public void setContentType(String s) {
+			contentType = s;
+		}
+		
 		/**
 		 * @param sQuestionID ID of question
 		 * @param sVersion Version string
 		 */
-		QuestionKey(String sQuestionID,String sVersion)
-		{
+		QuestionKey(String sQuestionID,String sVersion) {
 			this.sQuestionID=sQuestionID;
 			this.sVersion=sVersion;
 		}
@@ -89,6 +144,7 @@ public class QuestionCache
 		{
 			return (sQuestionID+sVersion).hashCode();
 		}
+		
 		@Override
 		public boolean equals(Object obj)
 		{
@@ -108,7 +164,8 @@ public class QuestionCache
 		 */
 		public String getFileName()
 		{
-			return getURLPart()+".jar";
+			//return getURLPart()+".jar";
+			return getURLPart() + fileExtension();
 		}
 		/**
 		 * @return url fragment for this question.
@@ -121,6 +178,22 @@ public class QuestionCache
 	}
 
 	/**
+	 * Picks up the approiate QuestionLoader based on the
+	 *  QuestionCache.QuestionKey argument.
+	 * 
+	 * @param qk
+	 * @return
+	 * @author Trevor Hinson
+	 */
+	protected QuestionLoader getQuestionLoader(QuestionCache.QuestionKey qk) {
+		QuestionLoader ql = questionLoaders.get(QuestionTypeEnum.jar.toString());
+		if (qk.isDynamicQuestion()) {
+			ql = questionLoaders.get(QuestionTypeEnum.dynamic.toString());
+		}
+		return ql;
+	}
+
+	/**
 	 * Returns metadata for a particular question ID. Must not be called unless
 	 * it is certain that the question is loaded (i.e. after newQuestion, before
 	 * returnQuestion).
@@ -128,29 +201,25 @@ public class QuestionCache
 	 * @return Metadata
 	 * @throws OmException If question isn't loaded
 	 */
-	synchronized Document getMetadata(QuestionKey qk) throws OmException
-	{
+	synchronized Document getMetadata(QuestionKey qk) throws OmException {
 		checkNotShutdown();
 		// Find question ID in first map
 		QuestionStuff qs=mActiveQuestions1.get(qk);
-		if(qs==null)
-		{
+		if (qs == null) {
 			// TODO Make it so it can cache the metadata somehow
 			// Load question temporarily just for metadata
 			File fJar=getFile(qk);
 			if(!fJar.exists()) throw new OmException("Question '"+qk+
 				"' does not exist");
-			try
-			{
+			try {
 				JarFile jf=new JarFile(fJar);
 				InputStream is=jf.getInputStream(jf.getEntry("question.xml"));
 				Document dMeta=XML.parse(IO.loadBytes(is));
 				jf.close();
 				return dMeta;
-			}
-			catch(IOException ioe)
-			{
-				throw new OmException("Error loading question metadata for: "+qk,ioe);
+			} catch(IOException ioe) {
+				throw new OmException("Error loading question metadata for: "
+					+ qk,ioe);
 			}
 		}
 		return qs.dMeta;
@@ -160,8 +229,7 @@ public class QuestionCache
 	 * @param qk Question key
 	 * @return File that does/would correspond to that question
 	 */
-	private File getFile(QuestionKey qk)
-	{
+	private File getFile(QuestionKey qk) {
 		return new File(fFolder,qk.getFileName());
 	}
 
@@ -171,8 +239,7 @@ public class QuestionCache
 	 * @return True if it's in the cache, false if it needs to be obtained
 	 *   and saved
 	 */
-	synchronized boolean containsQuestion(QuestionKey qk)
-	{
+	synchronized boolean containsQuestion(QuestionKey qk) {
 		if(mActiveQuestions1==null) return false; // If shutdown
 
 		// If it's loaded in memory, we've got it, return true to save time
@@ -205,11 +272,18 @@ public class QuestionCache
 		}
 	}
 
-	static class QuestionInstance
-	{
-		Question q;
-		ClosableClassLoader ccl;
-	}
+	 public Question getDynamicClass(QuestionKey qk, QuestionStuff qs)
+	 	throws Exception {
+		String className = qs.c.toString().substring("class ".length(),
+			qs.c.toString().length());
+		ClassLoader cl = null;
+		if (qk.isDynamicQuestion()) {
+			cl = (DynamicOMClassLoader) qs.omclc;
+		} else {
+			cl = (ClosableClassLoader) qs.omclc;
+		}
+		return (Question) Class.forName(className,true, cl).newInstance();
+	 }
 
 	/**
 	 * Returns new instance of a question with the given question ID. Question
@@ -220,118 +294,42 @@ public class QuestionCache
 	 * @return New Question object
 	 * @throws OmException If various problems with the .jar occur
 	 */
-	synchronized QuestionInstance newQuestion(QuestionKey qk) throws OmException
-	{
+	synchronized QuestionInstance newQuestion(QuestionKey qk)
+		throws OmException {
 		checkNotShutdown();
 		// Find question ID in first map
 		QuestionStuff qs=mActiveQuestions1.get(qk);
-		if(qs==null)
-		{
+		if(qs==null) {
 			qs=new QuestionStuff();
-			mActiveQuestions1.put(qk,qs);
 		}
-
 		// If we don't already have the class loaded, we need to load it
-		if(qs.c==null)
-		{
-			File fJar=getFile(qk);
-			if(!fJar.exists()) throw new OmException("Question '"+qk+
-				"' does not exist");
-
-			// Get new classloader
-			try
-			{
-				qs.ccl=new ClosableClassLoader(fJar,getClass().getClassLoader());
-			}
-			catch(IOException ioe)
-			{
-				throw new OmException(
-					"Failed to start question classloader for: "+fJar,ioe);
-			}
-
-			boolean bSuccess=false;
-			try
-			{
-				// Get metadata document
-				try
-				{
-					URL uXML=qs.ccl.findResource("question.xml");
-					if(uXML==null)
-						throw new OmDeveloperException("question.xml not present in: "+fJar);
-					InputStream is=uXML.openStream();
-					qs.dMeta=XML.parse(is);
-					is.close();
-				}
-				catch(IOException ioe)
-				{
-					throw new OmDeveloperException(
-						"Failed to load or parse question.xml in: "+fJar,ioe);
-				}
-
-				// Find classname
-				Element eRoot=qs.dMeta.getDocumentElement();
-				if(!eRoot.getTagName().equals("question"))
-					throw new OmDeveloperException(
-						"Expecting <question> as root of question.xml in: "+fJar);
-				if(!eRoot.hasAttribute("class"))
-					throw new OmDeveloperException(
-						"Expecting class= attribute on root of question.xml in: "+fJar);
-				String sClass=eRoot.getAttribute("class");
-
-				// Load class
-				try
-				{
-					qs.c = qs.ccl.loadClass(sClass);
-				}
-				catch(ClassNotFoundException cnfe)
-				{
-					throw new OmDeveloperException("Failed to find "+sClass+" in: "+fJar);
-				}
-
-				bSuccess=true;
-			}
-			finally
-			{
-				if(!bSuccess) qs.ccl.close();
-			}
-		}
-
+		loadQuestionsClassLoader(qs, qk);
+		mActiveQuestions1.put(qk, qs);
 		// Instantiate question
 		Question q;
 		boolean bSuccess=false;
-		try
-		{
-			q=(Question)qs.c.newInstance();
+		try {
+			q = getDynamicClass(qk, qs);
 			bSuccess=true;
-		}
-		catch(ClassCastException cce)
-		{
+		} catch(ClassCastException cce) {
 			throw new OmDeveloperException(
 				"Class "+qs.c+" doesn't implement Question, in: "+qk);
-		}
-		catch(InstantiationException ie)
-		{
+		} catch(InstantiationException ie) {
 			throw new OmException(
 				"Error instantiating "+qs.c+" in: "+qk,ie);
-		}
-		catch(IllegalAccessException iae)
-		{
+		} catch(IllegalAccessException iae) {
 			throw new OmException(
 				"Error instantiating "+qs.c+" (check it's public) in: "+qk,iae);
-		}
-		catch(Throwable t)
-		{
+		} catch(Throwable t) {
 			throw new OmException(
 				"Error instantiating "+qs.c+" in: "+qk,t);
-		}
-		finally
-		{
+		} finally {
 			// If no other questions were already instantiated, throw away the
 			// classloader too
 			if(!bSuccess && qs.lActive.isEmpty())
 			{
 				mActiveQuestions1.remove(qk);
-				qs.ccl.close();
+				qs.omclc.close();
 			}
 		}
 
@@ -340,10 +338,66 @@ public class QuestionCache
 		mActiveQuestions2.put(q,qk);
 
 		// Return question
-		QuestionInstance qi=new QuestionInstance();
-		qi.q=q;
-		qi.ccl=qs.ccl;
+		QuestionInstance qi = new QuestionInstance();
+		qi.q = q;
+		qi.omclc = qs.omclc;
 		return qi;
+	}
+
+	void loadQuestionsClassLoader(QuestionStuff qs, QuestionCache.QuestionKey qk)
+		throws OmException {
+		if(qs.c == null) {
+			File f = getFile(qk);
+			if(!f.exists()) {
+				throw new OmException("Question '" + qk + "' does not exist");
+			}
+			qs.omclc = determineClassLoader(f, qk);
+			QuestionLoader qLoader = getQuestionLoader(qk);
+			boolean bSuccess = false;
+			try {
+				qLoader.loadMetaData(qs, f);
+				qLoader.loadClass(qs, f);
+				bSuccess=true;
+			} finally {
+				if(!bSuccess) qs.omclc.close();
+			}
+		}
+	}
+
+	/**
+	 * Creates the appropriate ClassLoader for the based on the type of Question
+	 *  being requested. 
+	 * 
+	 * @param qk
+	 * @param f
+	 * @return
+	 * @throws IOException
+	 * @author Trevor Hinson
+	 */
+	protected OmClassLoaderContract determineClassLoader(File f,
+		QuestionCache.QuestionKey qk) throws OmException {
+		return null != qk ?
+			qk.isDynamicQuestion() ? newDynamicOMClassLoader(f, qk) : newClosableClassLoader(f, qk)
+				: null;
+	}
+	
+	protected DynamicOMClassLoader newDynamicOMClassLoader(File f,
+		QuestionCache.QuestionKey qk) throws OmException {
+		try {
+			return new DynamicOMClassLoader(classPath, getClass().getClassLoader());
+		} catch (IOException x) {
+			throw new OmException(FAILED_CLASSLOADER_MESSAGE + f, x);
+		}		
+	}
+	
+	protected ClosableClassLoader newClosableClassLoader(File f,
+		QuestionCache.QuestionKey qk) throws OmException {
+		try {
+			return new ClosableClassLoader(f,
+				getClass().getClassLoader());
+		} catch (IOException x) {
+			throw new OmException(FAILED_CLASSLOADER_MESSAGE + f, x);
+		}		
 	}
 
 	/**
@@ -354,8 +408,7 @@ public class QuestionCache
 	 * @param q Question to return to the bank.
 	 * @throws OmException If the data structures are inconsistent
 	 */
-	synchronized void returnQuestion(Question q) throws OmException
-	{
+	synchronized void returnQuestion(Question q) throws OmException {
 		checkNotShutdown();
 		// Remove from both directional maps
 		QuestionKey qk=mActiveQuestions2.remove(q);
@@ -367,19 +420,14 @@ public class QuestionCache
 		if(!qs.lActive.remove(q))
 			throw new OmException("Question maps inconsistent (missing question)");
 		if(!qs.lActive.isEmpty()) return; // If it wasn't the last, we're done
-
-		// Remove the whole question class entry from the jarfile
 		mActiveQuestions1.remove(qk);
-
-		// OK, that jar file can now be closed
-		qs.ccl.close();
+		qs.omclc.close();
 	}
 
+
 	/** Abandon all questions and close all classloaders */
-	synchronized void shutdown()
-	{
-		for(QuestionStuff qs : mActiveQuestions1.values())
-		{
+	synchronized void shutdown() {
+		for(QuestionStuff qs : mActiveQuestions1.values()) {
 			((ClosableClassLoader)qs.c.getClassLoader()).close();
 			qs.c=null;
 		}
@@ -388,8 +436,7 @@ public class QuestionCache
 	}
 
 	/** @throws OmException If the question cache was shut down */
-	private void checkNotShutdown() throws OmException
-	{
+	private void checkNotShutdown() throws OmException {
 		if(mActiveQuestions1==null) throw new OmException(
 			"Can't call question cache methods after shutdown");
 	}

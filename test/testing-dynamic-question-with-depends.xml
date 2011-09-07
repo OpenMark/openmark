@@ -1,0 +1,9 @@
+<dynamic-question encrypted="true">
+	<question class="om.dynamic.Xyz" />
+	
+	<handler language="java" classpathDependencies="xyz.1.2.3.jar,abc.2.3.1.jar" className="om.dynamic.questions.Xyz" />
+	
+</dynamic-question>
+
+
+

@@ -254,7 +254,7 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 	 * @return
 	 * @author Trevor Hinson
 	 */
-	protected Map<String, String> getParameters(HttpServletRequest request) {
+	public static Map<String, String> getParameters(HttpServletRequest request) {
 		Map<String, String> params = new HashMap<String, String>();
 		if (null != request) {
 			Map<?,?> requestMap = request.getParameterMap();

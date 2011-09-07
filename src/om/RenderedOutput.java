@@ -22,6 +22,8 @@ public class RenderedOutput implements Serializable, RequestResponse {
 
 	private boolean asXHTML = true;
 
+	private byte[] bytes;
+
 	public Object getResponse() {
 		return response;
 	}
@@ -62,6 +64,16 @@ public class RenderedOutput implements Serializable, RequestResponse {
 	@Override
 	public void setAsXHTML(boolean b) {
 		asXHTML = b;
+	}
+
+	@Override
+	public byte[] output() {
+		return bytes;
+	}
+
+	@Override
+	public void setByteOutput(byte[] by) {
+		bytes = by;
 	}
 
 }

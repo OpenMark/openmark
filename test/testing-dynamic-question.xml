@@ -1,0 +1,126 @@
+<dynamic-question encrypted="true">
+	<question class="samples.mu120.module5.question01.Q1">
+	
+	    <scoring>
+	        <marks>3</marks>
+	    </scoring>
+	
+	    <layout>
+	        <row height="420"/>
+	        <column width="390"/>
+	        <column width="202"/>  
+	    </layout>
+	  
+	    <!-- Defines the question box -->
+	    <box gridx="0" gridy="0" id="inputbox" background="input">
+	        Below is a plan of a proposed garden.
+	        The scale is that each division in the plan
+	        represents a length in the garden of __X__ metres.
+	        What is the proposed length and width of the __Y__ in the garden?
+	        <gap/>
+	        <image id="flowerbed" display="yes" filePath="flowerbed.gif" alt=""></image>
+	        <gap/>
+	
+	        The __Y__ is 
+	        <editfield id="response1" label="length" cols="4"/> metres by	
+	        <editfield id="response2" label="width" cols="4"/>  metres.
+	        <gap/>
+	
+	        <button action="actionSubmit" label="%%lENTERANSWER%%"/>
+	        <button id="hintButton" action="actionHint" label="Hint" display="yes"/>
+	        <!--button action="actionGiveUp" label="%%lGIVEUP%%"/-->
+	    </box>
+	
+	    <!-- Defines the right-hand answer box, which is initially hidden  -->
+	    <box gridx="1" gridy="0" id="answerbox" display="no" background="answer">
+			 
+	        <t id="wrong">Your answer is <t id="still">still</t> incorrect.<gap/></t>
+	        <t id="right">Your answer is correct.<gap/></t>
+	        <t id="pass">You passed on this question.<gap/></t>
+	
+	        <t id="hints">
+	            <t id="hint">
+	                Count the number of divisions in each length and multiply by the scale.
+	                <gap/>
+	            </t>
+	        </t>
+	
+	        <t id="feedback">
+	            <t id="nonumber">
+	                You must enter two numbers for the length and the width.
+	                <gap/>
+	            </t>
+	            <t id="lokwtoobig">
+	                The length is correct but the width is too big.
+	            </t>
+	            <t id="lokwtoosmall">
+	                The length is correct but the width is too small.
+	            </t>
+	            <t id="wokltoobig">
+	                The width is correct but the length is too big.
+	            </t>
+	            <t id="wokltoosmall">
+	                The width is correct but the length is too small.
+	            </t>
+	            <t id="allwrong">
+	                Neither the width or the length are correct.
+	            </t>
+	            <t id="feedback1">
+	                Remember to multiply the number of divisions on the plan by the scale.
+	                <gap/>
+	            </t>   
+	            <t id="feedback2">
+	                Multiply the number of divisions on the plan by the scale,
+	                so multiply by __X__ metres.
+	                <gap/>
+	            </t>   
+	        </t>
+			
+	        <t id="answer">
+	            Each division on the plan represents __X__ metres on the garden.
+	            The __Y__ is __L__ divisions by __W__ divisions on the plan. 
+	            Multiplying by the scale __X__ metres,
+	            gives the proposed __Y__ in the garden as 
+	            __L__Ã—__X__ metres by __W__Ã—__X__ metres, 
+	            Which is __AnsL__ metres by __AnsW__ metres.
+	            <gap/>
+	        </t>
+	
+	        <t id="reference">
+	            Please see MU120 Preparatory Resource Book B section 5.1
+	            <gap/>
+	        </t>
+	     
+	        <button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+	        <button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+	   
+	    </box>
+	 
+	</question>
+	
+	<handler language="java" className="om.dynamic.questions.TestingDynamicQuestions">
+		<![CDATA[
+			package om.dynamic.questions;
+			
+			import om.*;
+			import java.util.Map;
+			import java.util.HashMap;
+			
+			public class TestingDynamicQuestion {
+			
+				private Integer value = 14;
+			
+			    public Integer tester(Integer n) throws OmException {
+					Integer result = value + n;
+			    	System.out.println("Got invoked Trev = " + result);
+			    	return result;
+			    }
+			    
+			}
+		]]>
+	</handler>
+	
+</dynamic-question>
+
+
+
