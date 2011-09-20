@@ -2,6 +2,8 @@ package om.tnavigator.request.authorship;
 
 import om.RenderedOutput;
 import om.tnavigator.UserSession;
+import om.tnavigator.db.JUnitTestCaseOmQueries;
+import om.tnavigator.db.OmQueries;
 
 public class TestAuthorshipConfirmation extends AbstractAuthorshipTestCase {
 
@@ -9,11 +11,17 @@ public class TestAuthorshipConfirmation extends AbstractAuthorshipTestCase {
 		dummyTransaction = null;
 	}
 
+	@Override
+	protected OmQueries getOmQueries(String s) throws Exception {
+		return new JUnitTestCaseOmQueries(s);
+	}
+
 	public void testFormatQueryRetrieve() throws Exception {
 		AuthorshipConfirmationChecking check = createAuthorshipConfirmationChecking(1);
 		UserSession us = getUserSession(2325);
 		System.out.println(">>> " + us.getDbTi());
-		String s = check.formatQuery(us, StandardAuthorshipConfirmationRequestHandling.RETRIEVE_QUERY);
+		String s = check.formatQuery(us, getOmQueries("[oms-dev].[dbo].[nav_tests]")
+			.retrieveAuthorshipConfirmationQuery());
 		assertNotNull(s);
 		System.out.println(s);
 		assertEquals("SELECT authorshipConfirmation from [oms-dev].[dbo].[nav_tests] where ti = '2325'", s);
@@ -23,7 +31,8 @@ public class TestAuthorshipConfirmation extends AbstractAuthorshipTestCase {
 		AuthorshipConfirmationChecking check = createAuthorshipConfirmationChecking(1);
 		UserSession us = getUserSession(2325);
 		System.out.println(">>> " + us.getDbTi());
-		String s = check.formatQuery(us, StandardAuthorshipConfirmationRequestHandling.UPDATE_QUERY);
+		String s = check.formatQuery(us, getOmQueries("[oms-dev].[dbo].[nav_tests]")
+			.updateAuthorshipConfirmationQuery());
 		assertNotNull(s);
 		System.out.println(s);
 		assertEquals("UPDATE [oms-dev].[dbo].[nav_tests] SET authorshipConfirmation=1 WHERE ti='2325'", s);

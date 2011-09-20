@@ -1,11 +1,10 @@
 package om.tnavigator.request.authorship;
 
-import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import org.w3c.dom.Document;
+import javax.servlet.ServletContext;
 
 import om.AbstractTestCase;
 import om.Log;
@@ -15,13 +14,16 @@ import om.tnavigator.JUnitTestCaseTestDefinition;
 import om.tnavigator.JUnitTestCaseTestRealisation;
 import om.tnavigator.JUnitTestCaseUserSession;
 import om.tnavigator.NavigatorServlet;
+import om.tnavigator.TestCaseServletContext;
 import om.tnavigator.TestDeployment;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.JUnitTestCaseDatabaseAccess;
 import om.tnavigator.db.JUnitTestCaseResultSet;
 import om.tnavigator.db.JUnitTestCaseTransaction;
+import om.tnavigator.db.OmQueries;
 import om.tnavigator.db.DatabaseAccess.ConnectionInfo;
-import util.xml.XML;
+
+import org.w3c.dom.Document;
 
 public abstract class AbstractAuthorshipTestCase extends AbstractTestCase {
 
@@ -32,10 +34,12 @@ public abstract class AbstractAuthorshipTestCase extends AbstractTestCase {
 	private static String PARENT_TEMPLATE = "template.xhtml";
 
 	protected RequestAssociates getDummyRequestAssociates() throws Exception {
-		RequestAssociates ra = new RequestAssociates(newTestCaseNavigationServlet().getServletContext(),
-			"/", false, new HashMap<String, Object>());
-		ra.putPrincipleObject(RequestParameterNames.DatabaseAccess.toString(), new JUnitTestCaseDatabaseAccess());
+		RequestAssociates ra = new RequestAssociates(newTestCaseNavigationServlet()
+			.getServletContext(), "/", false, new HashMap<String, Object>());
+		ra.putPrincipleObject(RequestParameterNames.DatabaseAccess.toString(),
+			new JUnitTestCaseDatabaseAccess());
 		ra.putPrincipleObject(RequestParameterNames.Log.toString(), log);
+		ra.putPrincipleObject(RequestParameterNames.OmQueries.toString(), getOmQueries(null));
 		ra.putPrincipleObject(RequestParameterNames.AuthorshipQueryBean.toString(),
 			getAuthorshipQueryBean());
 		ra.putPrincipleObject(RequestParameterNames.UserSession.toString(), getUserSession(1));
@@ -48,6 +52,8 @@ public abstract class AbstractAuthorshipTestCase extends AbstractTestCase {
 		ra.putPrincipleObject(RequestParameterNames.ParentTemplate.toString(), getParentTemplate());
 		return ra;
 	}
+
+	protected abstract OmQueries getOmQueries(String s) throws Exception;
 
 	protected Document getParentTemplate() throws Exception {
 		return getPickUpDocument(PARENT_TEMPLATE);
@@ -67,8 +73,7 @@ public abstract class AbstractAuthorshipTestCase extends AbstractTestCase {
 	}
 
 	protected AuthorshipQueryBean getAuthorshipQueryBean() throws Exception {
-		return new AuthorshipQueryBean(StandardAuthorshipConfirmationRequestHandling.RETRIEVE_QUERY,
-			StandardAuthorshipConfirmationRequestHandling.UPDATE_QUERY);
+		return new AuthorshipQueryBean(getOmQueries(null));
 	}
 
 	protected JUnitTestCaseUserSession getUserSession(int testID) throws Exception {
@@ -114,6 +119,10 @@ public abstract class AbstractAuthorshipTestCase extends AbstractTestCase {
 			l = log;
 		}
 		
+		public ServletContext getServletContext() {
+			return new TestCaseServletContext();
+		}
+
 	}
 
 	protected class TestCaseAuthorshipConfirmationDatabaseAccess extends JUnitTestCaseDatabaseAccess {

@@ -10,6 +10,8 @@ import om.RequestResponse;
 import om.tnavigator.JUnitTestCaseHttpServletRequest;
 import om.tnavigator.JUnitTestCaseUserSession;
 import om.tnavigator.TestDeployment;
+import om.tnavigator.db.JUnitTestCaseOmQueries;
+import om.tnavigator.db.OmQueries;
 
 public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 
@@ -20,6 +22,11 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertNotSame(AuthorshipAction.hasConfirmed, aa);
 		assertTrue(AuthorshipAction.confirmingAuthorship.equals(aa));
 		assertFalse(AuthorshipAction.hasConfirmed.equals(aa));
+	}
+
+	@Override
+	protected OmQueries getOmQueries(String s) throws Exception {
+		return new JUnitTestCaseOmQueries(s);
 	}
 
 	public void testCreateAuthorshipConfirmationCheckingWithNullRequestAssociates()
@@ -269,7 +276,6 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 			new AuthorshipConfirmationHttpServletRequest(), ra,
 			confirmation.createAuthorshipConfirmationChecking(ra));
 		assertNotNull(rr);
-		assertTrue(rr.isSuccessful());
 		assertTrue(rr.toString().contains("onLoad=\"establish();"));
 	}
 

@@ -17,7 +17,7 @@ public class JUnitTestCaseOmQueries extends OmQueries {
 		super(null);
 	}
 
-	protected JUnitTestCaseOmQueries(String prefix) {
+	public JUnitTestCaseOmQueries(String prefix) {
 		super(prefix);
 	}
 
@@ -49,6 +49,19 @@ public class JUnitTestCaseOmQueries extends OmQueries {
 	@Override
 	public String getURL(String server, String database, String username,
 			String password) throws ClassNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String alterStringColumnWidthSQL(String table, String column,
+			int newWidth) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String dateTimeFieldType() {
 		// TODO Auto-generated method stub
 		return null;
 	}

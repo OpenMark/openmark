@@ -1,5 +1,8 @@
 package om.tnavigator.request.authorship;
 
+import om.tnavigator.db.JUnitTestCaseOmQueries;
+import om.tnavigator.db.OmQueries;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -84,6 +87,11 @@ public class XMLAuthorshipConfirmationBuilderTestCases extends AbstractAuthorshi
 			XMLAuthorshipConfirmationBuilder.FORM));
 		assertTrue(s.contains("<div class=\"error-message\">"));
 		assertNotSame(doc, originalTemplate);
+	}
+
+	@Override
+	protected OmQueries getOmQueries(String s) throws Exception {
+		return new JUnitTestCaseOmQueries(s);
 	}
 
 }
