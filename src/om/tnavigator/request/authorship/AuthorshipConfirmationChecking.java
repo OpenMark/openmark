@@ -31,16 +31,19 @@ public class AuthorshipConfirmationChecking {
 	private String getRetrieveQuery(UserSession us)
 		throws AuthorshipConfirmationException {
 		checkAuthorshipConfirmationBean();
-		return formatQuery(us, authorshipQueryBean.getRetrieveQuery());
+		return formatQuery(us, authorshipQueryBean.getOmQueries()
+			.retrieveAuthorshipConfirmationQuery());
 	}
 
 	private String getUpdateQuery(UserSession us)
 		throws AuthorshipConfirmationException {
 		checkAuthorshipConfirmationBean();
-		return formatQuery(us, authorshipQueryBean.getUpdateQuery());
+		return formatQuery(us, authorshipQueryBean.getOmQueries()
+			.updateAuthorshipConfirmationQuery());
 	}
 
-	private void checkAuthorshipConfirmationBean() throws AuthorshipConfirmationException {
+	private void checkAuthorshipConfirmationBean()
+		throws AuthorshipConfirmationException {
 		if (null == authorshipQueryBean) {
 			throw new AuthorshipConfirmationException("Unable to continue as"
 				+ " the composite AuthorshipQueryBean was null.");
@@ -105,8 +108,7 @@ public class AuthorshipConfirmationChecking {
 		if (null != us) {
 			try {
 				Transaction t = getDatabaseAccess().newTransaction();
-				ResultSet rs = t.query(
-					getRetrieveQuery(us));
+				ResultSet rs = t.query(getRetrieveQuery(us));
 				x : while (rs.next()) {
 					int auth = rs.getInt(AUTHORSHIP_CONFIRMATION);
 					if (auth == 1) {

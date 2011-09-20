@@ -1,22 +1,21 @@
 package om.tnavigator.request.authorship;
 
+import om.tnavigator.db.OmQueries;
+
 public class AuthorshipQueryBean {
 
-	private String retrieveQuery;
+	private OmQueries omQueries;
 
-	private String updateQuery;
-
-	public String getRetrieveQuery() {
-		return retrieveQuery;
+	public OmQueries getOmQueries() throws AuthorshipConfirmationException {
+		if (null == omQueries) {
+			throw new AuthorshipConfirmationException("Unable to continue as"
+				+ " the composite OmQueries implementation is null.");
+		}
+		return omQueries;
 	}
 
-	public String getUpdateQuery() {
-		return updateQuery;
-	}
-
-	public AuthorshipQueryBean(String retrieve, String update) {
-		retrieveQuery = retrieve;
-		updateQuery = update;
+	public AuthorshipQueryBean(OmQueries q) {
+		omQueries = q;
 	}
 
 }

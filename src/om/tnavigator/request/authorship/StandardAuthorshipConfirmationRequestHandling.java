@@ -21,6 +21,7 @@ import om.tnavigator.TestDefinition;
 import om.tnavigator.TestDeployment;
 import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
+import om.tnavigator.db.OmQueries;
 
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.DOMException;
@@ -47,10 +48,10 @@ public class StandardAuthorshipConfirmationRequestHandling
 	private static final long serialVersionUID = -7226664092547045144L;
 
 	// TODO : make configurable !
-	public static String RETRIEVE_QUERY = "SELECT authorshipConfirmation from [oms-dev].[dbo].[nav_tests] where ti = {0}";
+	//public static String RETRIEVE_QUERY = "SELECT authorshipConfirmation from [oms-dev].[dbo].[nav_tests] where ti = {0}";
 
 	// TODO : make configurable !
-	public static String UPDATE_QUERY = "UPDATE [oms-dev].[dbo].[nav_tests] SET authorshipConfirmation=1 WHERE ti={0}";
+	//public static String UPDATE_QUERY = "UPDATE [oms-dev].[dbo].[nav_tests] SET authorshipConfirmation=1 WHERE ti={0}";
 
 	private static String ROOT_NODE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><div class=\"authority-confirmation\">";
 
@@ -78,6 +79,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 
 	static {
 		requiresValidation.put(RequestParameterNames.DatabaseAccess.toString(), DatabaseAccess.class);
+		requiresValidation.put(RequestParameterNames.OmQueries.toString(), OmQueries.class);
 		requiresValidation.put(RequestParameterNames.Log.toString(), Log.class);
 		requiresValidation.put(RequestParameterNames.PostLocation.toString(), String.class);
 		requiresValidation.put(RequestParameterNames.AuthorshipQueryBean.toString(), AuthorshipQueryBean.class);
@@ -111,12 +113,14 @@ public class StandardAuthorshipConfirmationRequestHandling
 					new HashMap<String, Object>());
 				NavigatorServlet ns = (NavigatorServlet) servlet;
 				ra.getPrincipleObjects().put(
+					RequestParameterNames.OmQueries.toString(), ns.getOmQueries());
+				ra.getPrincipleObjects().put(
 					RequestParameterNames.DatabaseAccess.toString(),
 					ns.getDatabaseAccess());
 				ra.getPrincipleObjects().put(RequestParameterNames.Log.toString(),
 					ns.getLog());
 				ra.getPrincipleObjects().put(RequestParameterNames.AuthorshipQueryBean.toString(),
-					getAuthorshipQueryBean());
+					getAuthorshipQueryBean(ns.getOmQueries()));
 				ra.getPrincipleObjects().put(RequestParameterNames.UserSession.toString(), userSession);
 				ra.getPrincipleObjects().put(RequestParameterNames.UserAuthorshipConfirmationResponse.toString(),
 					request.getParameter(RequestParameterNames.UserAuthorshipConfirmationResponse.toString()));
@@ -141,8 +145,8 @@ public class StandardAuthorshipConfirmationRequestHandling
 		return ra;
 	}
 
-	private AuthorshipQueryBean getAuthorshipQueryBean() {
-		return new AuthorshipQueryBean(RETRIEVE_QUERY, UPDATE_QUERY);
+	private AuthorshipQueryBean getAuthorshipQueryBean(OmQueries om) {
+		return new AuthorshipQueryBean(om);
 	}
 
 	@Override
@@ -268,7 +272,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 			RequestParameterNames.AuthorshipQueryBean.toString());
 		if (null != bn ? bn instanceof AuthorshipQueryBean : false) {
 			checking = new AuthorshipConfirmationChecking(
-				getDatabaseAccess(ra), getLog(ra), (AuthorshipQueryBean) bn); 
+				getDatabaseAccess(ra), getLog(ra), (AuthorshipQueryBean) bn);
 		} else {
 			throwProblemBack(RequestParameterNames.
 				AuthorshipQueryBean.toString(), bn);

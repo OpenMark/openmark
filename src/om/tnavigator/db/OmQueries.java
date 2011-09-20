@@ -38,7 +38,6 @@ import util.misc.NameValuePairs;
  */
 public abstract class OmQueries
 {
-	private static String AUTHORSHIP_CLASS_NAME = "om.tnavigator.request.authorship.StandardAuthorshipConfirmationRequestHandling";
 
 	private final String prefix;
 
@@ -978,14 +977,21 @@ public abstract class OmQueries
 	private void applyAuthorshipUpdate(DatabaseAccess.Transaction dat, Log l,
 		NavVersion DBversion, NavigatorConfig nc)
 		throws SQLException, IllegalArgumentException {
-		Class<?> cla = nc.retrievePreProcessingRequestHandler();
-		if (null != cla ? AUTHORSHIP_CLASS_NAME.equals(cla.getName()) : false) {
-			if (!columnExistsInTable(dat, "tests", "authorshipConfirmation")) {
-				updateDatabase("1.12",DBversion,
-					"ALTER TABLE " + getPrefix() +
-					"tests ADD authorshipConfirmation INTEGER NOT NULL DEFAULT 0", l,dat);
-			}
+		if (!columnExistsInTable(dat, "tests", "authorshipConfirmation")) {
+			updateDatabase("1.12",DBversion,
+				"ALTER TABLE " + getPrefix() +
+				"tests ADD authorshipConfirmation INTEGER NOT NULL DEFAULT 0", l,dat);
 		}
+	}
+
+	public String retrieveAuthorshipConfirmationQuery() {
+		return "SELECT authorshipConfirmation from "
+			+ getPrefix() + "tests where ti = {0}";
+	}
+
+	public String updateAuthorshipConfirmationQuery() {
+		return "UPDATE " + getPrefix()
+			+ "tests SET authorshipConfirmation=1 WHERE ti={0}";
 	}
 
 	/**
