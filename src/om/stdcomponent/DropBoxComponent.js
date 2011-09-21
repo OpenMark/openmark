@@ -15,24 +15,15 @@ function dragboxInform(id,idPrefix,enabled,group,infinite)
 // Array of all dropboxes
 var dropboxArray=new Array();
 
-var widthFix = 0;
-var additionalWidth = 72;
-
 function dropboxFix(id,idPrefix,enabled,group,bgcolour)
 {
 	// Check maximum size of all dragboxes
 	var maxWidth=0,maxHeight=0;
-	for(var i=0;i<dragboxArray.length;i++) {
+	for(var i=0;i<dragboxArray.length;i++)
+	{
 		var db=document.getElementById(dragboxArray[i]);
 		if(db.inGroup!=idPrefix+group) continue;
-		if (parseInt(widthFix) == 0) {
-			if((db.offsetWidth + additionalWidth) > widthFix) {
-				maxWidth=db.offsetWidth + additionalWidth;
-				widthFix = maxWidth;
-			}
-		} else {
-			maxWidth = widthFix;
-		}
+		if(db.offsetWidth>maxWidth) maxWidth=db.offsetWidth;
 		if(db.offsetHeight>maxHeight) maxHeight=db.offsetHeight;
 	}
 
@@ -77,39 +68,6 @@ function dropboxFix(id,idPrefix,enabled,group,bgcolour)
 			box.style.border="1px solid "+box.filledBorder;
 		else
 			box.style.border="1px solid "+bgcolour;
-	}
-	maxWidth=null;
-	maxHeight=null;
-	addPostLoad(function() {fixGridWidths(); });
-}
-
-function fixGridWidths() {
-	var hasResetParentNode = false;
-	var matchClass = "gridcontainer";
-	var elems = document.getElementsByTagName('*'),i;
-	for (i in elems) {
-		if((" "+elems[i].className+" ").indexOf(" "+matchClass+" ") > -1) {
-			var ele = elems[i];
-			var eleWidth = parseInt(ele.style.width);
-			if (eleWidth < widthFix) {
-				var gridgroup = ele.parentNode;
-				if (null != gridgroup && !hasResetParentNode) {
-					gridgroup.style.width = widthFix + 10 + "px";
-					hasResetParentNode = true;
-				}					
-				ele.style.width = widthFix + "px";
-			}
-		}
-	}
-}
-
-function focusOnTryAgainOrNext() {
-	var omact_next = document.getElementById("omact_next");
-	var omact_ok = document.getElementById("omact_ok");
-	if (null != omact_next) {
-		omact_next.focus();
-	} else if (null != omact_ok) {
-		omact_ok.focus();
 	}
 }
 
