@@ -978,7 +978,7 @@ public abstract class OmQueries
 		NavVersion DBversion, NavigatorConfig nc)
 		throws SQLException, IllegalArgumentException {
 		if (!columnExistsInTable(dat, "tests", "authorshipConfirmation")) {
-			updateDatabase("1.12",DBversion,
+			updateDatabase("1.14",DBversion,
 				"ALTER TABLE " + getPrefix() +
 				"tests ADD authorshipConfirmation INTEGER NOT NULL DEFAULT 0", l,dat);
 		}
