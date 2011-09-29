@@ -124,10 +124,15 @@ public class VersionUtil {
 					if (StringUtils.isNotEmpty(remainder)) {
 						String[] bits = remainder.split("\\.");
 						if (null != bits ? bits.length == 2 : false) {
-							QuestionVersion ver = new QuestionVersion();
-							ver.iMajor = new Integer(bits[0]);
-							ver.iMinor = new Integer(bits[1]);
-							qn = new QuestionName(questionName, ver);
+							try {
+								QuestionVersion ver = new QuestionVersion();
+								ver.iMajor = new Integer(bits[0]);
+								ver.iMinor = new Integer(bits[1]);
+								qn = new QuestionName(questionName, ver);
+							} catch (NumberFormatException x) {
+								// log ...
+								// x.printStackTrace();
+							}
 						}
 					}
 				}
