@@ -21,6 +21,8 @@ public class XMLAuthorshipConfirmationBuilder
 
 	protected static String CLASS = "class";
 
+	protected static String ID = "id";
+
 	protected static String BRBR = "<br /><br />";
 
 	@Override
@@ -37,9 +39,8 @@ public class XMLAuthorshipConfirmationBuilder
 				Element div = getElement(response, DIV);
 				Element err = response.createElement(DIV);
 				err.setAttribute(CLASS, ERROR_MESSAGE);
+				err.setAttribute(ID, ERROR_MESSAGE);
 				err.setTextContent(error_text);
-				Element p = response.createElement("p");
-				err.appendChild(p);
 				div.appendChild(err);
 				div.replaceChild(err, error_message);
 			} else {

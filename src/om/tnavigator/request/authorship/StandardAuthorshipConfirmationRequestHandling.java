@@ -47,12 +47,6 @@ public class StandardAuthorshipConfirmationRequestHandling
 
 	private static final long serialVersionUID = -7226664092547045144L;
 
-	// TODO : make configurable !
-	//public static String RETRIEVE_QUERY = "SELECT authorshipConfirmation from [oms-dev].[dbo].[nav_tests] where ti = {0}";
-
-	// TODO : make configurable !
-	//public static String UPDATE_QUERY = "UPDATE [oms-dev].[dbo].[nav_tests] SET authorshipConfirmation=1 WHERE ti={0}";
-
 	private static String ROOT_NODE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><div class=\"authority-confirmation\">";
 
 	private static String DIV = "</div>";	
@@ -505,7 +499,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 		Document parentTemplate = getParentTemplate(ra);
 		if (null != ra && null != ro && null != parentTemplate
 			&& StringUtils.isNotEmpty(authorship)) {
-			authorship = "<div id=\"question\">" + authorship + "</div>";
+			authorship = "<div id=\"question\"><div class=\"basicpage\">" + authorship + "</div></div>";
 			Map<String, Object> mReplace = setPreProcessingMapItems(ra);
 			try {
 				Element txt = (Element) parentTemplate.importNode(XML.parse(authorship)
