@@ -38,6 +38,10 @@ a
   color:%%FG%%;
 }
 
+.error-message {
+	font-style:italic;
+	font-weight:bold;
+}
 
 /* Access */
 .skiplink

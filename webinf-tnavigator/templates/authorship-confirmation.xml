@@ -1,10 +1,4 @@
 <div class="authority-confirmation">
-	<error-message>
-		This iCMA will remain unavailable to you. You will need to re-attempt 
-		this question at another time when you have re-assessed your position.
-	</error-message>
-	Please respond to the question below then move to the next page and submit your answer.
-	<br /><br />
 	<b>Confirmation of Authorship</b><br /><br />
 	The University has to ensure as far as possible that the work submitted by
 	students is their own and does not contain any unreferenced material from other
@@ -21,19 +15,14 @@
 		I confirm that I have read the statement ? "What constitutes plagiarism or cheating?" 
 		and that my answers will be my own work.
 		<br /><br />
-		<table>
-			<tr>
-				<td><input type="submit" onClick="setCancelled();" id="confirm-authority-cancel" value="Cancel" /></td>
-				<td><input type="submit" onClick="setConfirmed();" id="confirm-authority-ok" style="display:none;" value="Ok" /></td>
-			</tr>
-		</table>		
+		<input type="submit" onClick="setCancelled();" id="confirm-authority-cancel" value="Cancel" />
+		<input type="submit" onClick="setConfirmed();" id="confirm-authority-ok" style="display:none;" value="Ok" />
 		<input type="hidden" id="UserAuthorshipConfirmationResponse" name="UserAuthorshipConfirmationResponse" value="cancelled" />
-	
+		<br /><br />
 		<script type="text/javascript">
 			function establish() {
 				document.getElementById('switcher').checked = false;
 				document.getElementById('confirm-authority-ok').style.display = 'none';
-				document.getElementById('confirm-authority-cancel').style.display = 'block';
 				document.getElementById('UserAuthorshipConfirmationResponse').value = 'cancelled';
 			}
 
@@ -60,15 +49,22 @@
 					e.style.display = 'none';
 					cb.style.display = 'block';
 					res.value = 'cancelled';
+					
 				} else {
 					e.style.display = 'block';
 					cb.style.display = 'none';
 					res.value = 'confirmed';
+					var errMsg = document.getElementById('error-message');
+					if (null != errMsg) {
+						errMsg.style.display = 'none';
+					}
 				}
     			}
 			establish();
 		</script>
-
 	</form>
-	
+	<error-message>
+		This iCMA will remain unavailable to you. You will need to re-attempt 
+		this question at another time when you have re-assessed your position.
+	</error-message>
 </div>
