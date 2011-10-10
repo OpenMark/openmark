@@ -78,6 +78,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 		if (null != req && null != res && null != associates ? associates.valid() : false) {
 			requestAssociates = associates;
 			setUpDeployableQuestionLocation(associates);
+			request = req;
 			try {
 				setUpLog();
 				questionDeploymentRenderer = new QuestionDeploymentRenderer(
