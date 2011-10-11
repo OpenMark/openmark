@@ -97,6 +97,8 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 	
 	public static String SPECIFIC_QUESTION_DEPLOYMENT = "specificQuestionDeployment";
 
+	private static String LINE_SEPARATOR = "line.separator";
+
 	/** In-progress question (null if none) */
 	private Question qInProgress=null;
 
@@ -930,6 +932,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			((new File("c:/hack.js")).exists()
 				? "<script type='text/javascript' src='file:///c:/hack.js'/>"
 				: "")+
+			applyJavascriptFooter() + 				
 			"</body>"+
 			"</xhtml>");
 
@@ -992,6 +995,26 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 
 		// Whew! Now send to user
 		XHTML.output(d,request,response,"en");
+	}
+
+	protected String lineBreak() {
+		return System.getProperty(LINE_SEPARATOR);
+	}
+
+	protected String applyJavascriptFooter() {
+		return new StringBuilder().append(lineBreak())
+			.append(lineBreak()).append("<script type=\"text/javascript\">")
+			.append(lineBreak()).append("setTimeout(")
+		    .append(lineBreak()).append("'var f=document.getElementById(\"focusthis\");'+")
+		    .append(lineBreak()).append("'if(f) { f.focus(); setTimeout(\"window.scroll(0,0);\",0); }',100);")
+		    .append(lineBreak()).append("if (typeof myOnLoad != 'undefined') { // Any scope")
+		    .append(lineBreak()).append("if (window['myOnLoad'] != undefined) { // Global scope")
+		    .append(lineBreak()).append("if (window['myOnLoad'] != void 0) { // Old browsers")
+			.append(lineBreak()).append("window.onload=myOnLoad;")
+			.append(lineBreak()).append("	}")
+			.append(lineBreak()).append("	}")
+			.append(lineBreak()).append("}")
+			.append(lineBreak()).append("</script>").toString();
 	}
 
 	/** Cache label replacement (Map of String (labelset id) -> Map ) */
