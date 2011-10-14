@@ -91,7 +91,7 @@ function formatChem(win)
 
 function advancedfieldFix(fieldName,idPrefix,enabled,type,dZoom, sfg,sbg) {
 	if(enabled) {
-		//setTimeout(function() { advancedfieldInit(fieldName,idPrefix, type) },0);
+		setTimeout(function() { advancedfieldInit(fieldName,idPrefix, type) },0);
 	}
 }
 
@@ -101,7 +101,8 @@ function advancedfieldInit(fieldName, idPrefix, type) {
 }
 
 function advancedfieldPreSubmit(fieldName, idPrefix, type) {
-	var si = tinyMCE.selectedInstance;
+	var name = "om_" + fieldName + "_iframe";
+	var si = tinyMCE.get(name);
 	var content = si.getContent();
 	if (type=="chem") content=toChemHtml(content);
 	document.getElementById(idPrefix+"omval_"+fieldName).value = content;

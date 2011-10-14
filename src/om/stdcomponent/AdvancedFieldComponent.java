@@ -305,7 +305,6 @@ public class AdvancedFieldComponent extends QComponent implements Labelable {
 		String outputType = determineOutputType(enu);
 		String elements = QDocument.ID_PREFIX + QDocument.OM_PREFIX
 			+ getID() + "_iframe";
-//		getQDocument().getJSHash()
 		s2.setAttribute("src", "tiny_mce/tiny_mce_settings.js?"
 			+ "&h=" + "" + (int) (60 * dZoom)
 			+ "&w=" + (int) (10 * dZoom * getInteger(PROPERTY_COLS))
@@ -313,13 +312,6 @@ public class AdvancedFieldComponent extends QComponent implements Labelable {
 			+ "&e=" + elements
 			+ "&ro=" + isEnabled()
 			+ "&es=" + "om"+getID()+"iframe");
-		
-//		s2.setAttribute("src", "tiny_mce/tiny_mce_settings.js?"
-//			+ System.currentTimeMillis() + "&h=" + "" + (int) (60 * dZoom)
-//			+ "&w=" + (int) (10 * dZoom * getInteger(PROPERTY_COLS))
-//			+ "&t=" + outputType
-//			+ "&e=" + elements
-//			+ "&es=" + "om"+getID()+"iframe");
 		s2.setAttribute("defer", "defer");
 		eDiv.appendChild(s2);
 		Element textarea = qc.createElement("textarea");
@@ -327,6 +319,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable {
 		textarea.setAttribute("name", elements);
 		textarea.setAttribute("class", "om"+getID()+"iframe");
 		textarea.setAttribute("mysubtype", outputType);
+		textarea.setTextContent(getValue());
 		eDiv.appendChild(textarea);
 		addLangAttributes(textarea);
 	}
