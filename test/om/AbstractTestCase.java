@@ -22,6 +22,8 @@ import junit.framework.TestCase;
 
 public class AbstractTestCase extends TestCase {
 
+	protected static String LINE_SEPERATOR = System.getProperty("line.separator");
+
 	protected static String BASIC_TEST_DEFINITION = "mu120.module5.test.xml";
 
 	protected static String BASIC_TEST_DEPLOYMENT = "mu120.module5.deploy.xml";

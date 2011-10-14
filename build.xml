@@ -188,7 +188,8 @@
 			<include name="om/question/"/>
 			<include name="om/stdcomponent/"/>
 			<include name="om/stdquestion/"/>
-			<include name="util/"/>			
+			<include name="util/"/>
+			<include name="om/tnavigator/request/tinymce/" />
 		</jar>
 		
 		<jar jarfile="${build}/jars/om-engine.jar" basedir="${build}/compiled">
@@ -231,6 +232,8 @@
 		<mkdir dir="${build}/webapps/om/WEB-INF/lib"/>
 		<mkdir dir="${build}/webapps/om/questions"/>
 		
+		<mkdir dir="${build}/webapps/om/WEB-INF/shared"/>
+		
 		<!-- Copy most of webinf -->
 		<copy todir="${build}/webapps/om/WEB-INF">
 			<fileset dir="webinf-dev">
@@ -255,6 +258,13 @@
 			</fileset>
 		</copy>
 
+		<!-- TINY MCE from tnavigator -->
+		<copy todir="${build}/webapps/om/WEB-INF/shared">
+			<fileset dir="webinf-tnavigator/shared">
+				<include name="tiny_mce/**"/>
+			</fileset>
+		</copy>
+		
 		<copy todir="${build}/webapps/om/WEB-INF/lib" file="${build}/jars/om-dev.jar"/>
 		
 		<jar jarfile="${build}/webapps/om.war" basedir="${build}/webapps/om"/>

@@ -1,7 +1,6 @@
 package om.qengine;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -11,20 +10,19 @@ import javax.tools.JavaFileObject;
 
 import om.OmException;
 import om.qengine.QuestionCache.QuestionStuff;
+import om.qengine.dynamics.QuestionClassBuilder;
+import om.qengine.dynamics.QuestionRepresentation;
 import om.question.Question;
 
 import org.apache.commons.lang.StringUtils;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import util.misc.DynamicCompilationReport;
 import util.misc.DynamicCompilationResponse;
 import util.misc.DynamicJavaFile;
 import util.misc.DynamicOMClassLoader;
+import util.misc.DynamicQuestionUtils;
 import util.misc.DynamicQuestionsCompilationUtil;
-import util.misc.StandardFileFilter;
-import util.xml.XML;
 
 /**
  * An implementation of the QuestionLoader specifically designed for the
@@ -41,27 +39,26 @@ import util.xml.XML;
 
 public class DynamicQuestionsLoader implements QuestionLoader {
 
-	private static String QUESTION = "question";
-
 	private static String DOT_JAR = ".jar";
 
 	private static String HANDLER = "handler";
 
-	private static String CLASS_NAME = "className";
+	//private String classOutputFolderX = "/Temp/dynamics/";
+	private String classOutputFolder;
 
-	private String classOutputFolder = "/Temp/dynamics/";
-	
 	private List<String> classPathItems = new ArrayList<String>();
+
+	private QuestionClassBuilder questionClassBuilder;
 
 	public DynamicQuestionsLoader(String libPath) {
 		if (null != libPath) {
 			File path = new File(libPath);
 			if (path.exists() && path.isDirectory() && path.canRead()) {
-				File[] files = path.listFiles(new StandardFileFilter(DOT_JAR));
+				File[] files = path.listFiles();
 				if (null != files) {
 					for (int i = 0; i < files.length; i++) {
 						File f = files[i];
-						if (null != f) {
+						if (null != f ? isJarOrDirectory(f) : false) {
 							classPathItems.add(f.getAbsolutePath());
 						}
 					}
@@ -69,7 +66,26 @@ public class DynamicQuestionsLoader implements QuestionLoader {
 			}
 			classPathItems.add(path.getAbsolutePath());
 			classOutputFolder = path.getAbsolutePath();
+			questionClassBuilder = new QuestionClassBuilder();
 		}
+	}
+
+	/**
+	 * Checks to ensure only Jar files and directories that are readable to be
+	 *  added to the classPathItems.
+	 * 
+	 * @param f
+	 * @return
+	 * @author Trevor Hinson
+	 */
+	protected boolean isJarOrDirectory(File f) {
+		boolean is = false;
+		if (null != f ? f.getName().endsWith(DOT_JAR) || f.isDirectory() : false) {
+			if (f.canRead()) {
+				is = true;
+			}
+		}
+		return is;
 	}
 
 	@Override
@@ -127,20 +143,22 @@ public class DynamicQuestionsLoader implements QuestionLoader {
 	@Override
 	public void loadClass(QuestionStuff qs, File f) throws OmException {
 		if (null != qs && null != f) {
-			Element e = retrieveElement(f, HANDLER);
-			String classDefinition = e.getTextContent();
-			String className = e.getAttribute(CLASS_NAME);
-			DynamicOMClassLoader d = retrieveClassLoader(qs);
-			Class<?> cla = retrieveClass(className, d);
-			if (null == cla) {
-				synchronized (QUESTION) {
-					if (null == cla) {
-						compile(className, classDefinition.trim());
-						cla = retrieveClass(className, d);
+			Element e = DynamicQuestionUtils.retrieveElement(f, HANDLER);
+			QuestionRepresentation qr = questionClassBuilder.generate(e);
+			if (null != qr ? qr.isValid() : false) {
+				String className = qr.getFullClassName();
+				DynamicOMClassLoader d = retrieveClassLoader(qs);
+				Class<?> cla = retrieveClass(className, d);
+				if (null == cla) {
+					synchronized (DynamicQuestionUtils.QUESTION) {
+						if (null == cla) {
+							compile(className, qr.getRepresentation());
+							cla = retrieveClass(className, d);
+						}
 					}
 				}
+				qs.c = cla;
 			}
-			qs.c = cla;
 		}
 	}
 
@@ -198,46 +216,22 @@ public class DynamicQuestionsLoader implements QuestionLoader {
 		DynamicCompilationResponse response = DynamicQuestionsCompilationUtil
 			.compile(getClassPath(), files, classOutputFolder);
 		if (null != response ? !response.isSuccess() : false) {
+			StringBuilder sb = new StringBuilder();
 			for (DynamicCompilationReport dcr : response.getReports()) {
 				System.out.println(dcr.getMessage());
+				sb.append(dcr.getMessage());
+				// LOG THIS ALSO !
 			}
+			throw new OmException("Unable to continue as the engine was not able"
+				+ " to build the Question : " + sb);
 		}
 	}
 
 	@Override
 	public void loadMetaData(QuestionStuff qs, File f) throws OmException {
 		if (null != qs && null != f) {
-			Element e = retrieveElement(f, QUESTION);
-			Document doc = XML.createDocument();
-			doc.adoptNode(e);
-			qs.dMeta = doc;
+			qs.dMeta = DynamicQuestionUtils.metaDataFromDynamicQuestion(f);
 		}
-	}
-
-	/**
-	 * Looks for a particular Element from within the provided file and returns.
-	 * 
-	 * @param f
-	 * @param name
-	 * @return
-	 * @throws OmException
-	 * @author Trevor Hinson
-	 */
-	protected Element retrieveElement(File f, String name) throws OmException {
-		Element e = null;
-		if (null != f && StringUtils.isNotEmpty(name)) {
-			try {
-				Document parent = XML.parse(f);
-				Node node = parent.getFirstChild();
-				Node n = XML.getChild(node, name);
-				if (null != n ? Node.ELEMENT_NODE == n.getNodeType() : false) {
-					e = (Element) n; 
-				}
-			} catch (IOException x) {
-				throw new OmException(x);
-			}			
-		}
-		return e;
 	}
 
 }

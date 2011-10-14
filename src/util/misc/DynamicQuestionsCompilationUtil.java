@@ -18,6 +18,12 @@ public class DynamicQuestionsCompilationUtil {
     	throws OmException {
     	DynamicCompilationResponse response = new DynamicCompilationResponse();
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        if (null == compiler) {
+        	throw new OmException("Unable to continue as the Java compiler"
+        		+ " was null returned from the ToolProvider.getSystemJavaCompiler() "
+        		+ "Please check that the JDK is referenced in JAVA_HOME rather"
+        		+ " than the JRE to use this facility.");
+        }
         DynamicDiagnosticListener c = new DynamicDiagnosticListener();
         StandardJavaFileManager fileManager = compiler
         	.getStandardFileManager(c, Locale.ENGLISH, null);

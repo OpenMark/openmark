@@ -347,8 +347,12 @@ public class QDocument
 			}
 		}
 
+		qcRoot.applyComponentResets();
+		
 		// Actually get output from all components
 		qcRoot.produceOutput(qc,bInit,bPlain);
+		
+		qcRoot.applyComponentResets();
 
 		// Set output in QContent to the Rendering object
 		r.setXHTML(qc.getXHTML());

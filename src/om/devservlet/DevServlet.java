@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
+import om.AbstractOpenMarkServlet;
 import om.DisplayUtils;
 import om.Log;
 import om.OmException;
@@ -47,6 +48,7 @@ import om.OmVersion;
 import om.RenderedOutput;
 import om.RequestAssociates;
 import om.RequestHandler;
+import om.RequestParameterNames;
 import om.RequestResponse;
 import om.devservlet.deployment.DeploymentEnum;
 import om.devservlet.deployment.DeploymentRequestHandler;
@@ -61,6 +63,7 @@ import om.question.Resource;
 import om.question.Results;
 import om.question.Score;
 import om.stdquestion.StandardQuestion;
+import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
@@ -715,6 +718,10 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				response.getOutputStream().write(r.getContent());
 				response.getOutputStream().close();
 			}
+			else if (sAfter.contains("tiny_mce/")) 
+			{	
+				handleTinyMCEResponse(sRemainingPath, bPost, request, response);
+			}
 			else
 			{
 				sendError(request,response,
@@ -783,6 +790,37 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			}
 		}
 	}
+
+	/**
+	 * Caters for the request for the TinyMCE associated files in the typical 
+	 *  OpenMark pattern.
+	 * 
+	 * @param path
+	 * @param post
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 * @author Trevor Hinson
+	 */
+	private void handleTinyMCEResponse(String path, boolean post,
+		HttpServletRequest request, HttpServletResponse response)
+		throws Exception {
+		Map<String, Object> config = new HashMap<String, Object>();
+		config.put(RequestParameterNames.logPath.toString(),
+			getServletContext().getContextPath());
+		RequestAssociates ra = new RequestAssociates(getServletContext(), path,
+			post, config);
+		Map<String, String> params = AbstractOpenMarkServlet.getParameters(request);
+		params.put(TinyMCERequestHandler.FILE_PATH, path);
+		ra.setRequestParameters(params);
+		RequestHandler rh = new TinyMCERequestHandler();
+		RequestResponse rr = rh.handle(request, response, ra);
+		rr.output();
+		OutputStream os = response.getOutputStream();
+		os.write(rr.output());
+		os.close();
+	}	
+	
 
 	byte[] abTempCSS=null;
 
@@ -932,7 +970,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			((new File("c:/hack.js")).exists()
 				? "<script type='text/javascript' src='file:///c:/hack.js'/>"
 				: "")+
-			applyJavascriptFooter() + 				
+			//applyJavascriptFooter() + 				
 			"</body>"+
 			"</xhtml>");
 

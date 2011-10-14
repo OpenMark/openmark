@@ -40,11 +40,15 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 
 	private static String WIDTH = "[WIDTH]";
 
+	private static String EDITOR_SELECTOR = "[EDITOR_SELECTOR]";
+
 	private static String BUTTONS = "[BUTTONS]";
 
 	private static String VALID_ELEMENTS = "[VALID_ELEMENTS]";
 
 	private static String ELEMENTS = "[ELEMENTS]";
+
+	private static String READ_ONLY = "[READ_ONLY]";
 
 	private static String UTF_8 = "UTF-8";
 
@@ -118,6 +122,8 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 			String width = ra.getRequestParameters().get("w");
 			String buttons = ra.getRequestParameters().get("t");
 			String elements = ra.getRequestParameters().get("e");
+			String isEnabled = ra.getRequestParameters().get("ro");
+			String editor_selector = ra.getRequestParameters().get("es");
 			if (!valid(height)) {
 				height = "100";
 			}
@@ -130,11 +136,25 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 			if (!valid(elements)) {
 				elements = "elm1";
 			}
+			if (!valid(editor_selector)) {
+				editor_selector = "elm1";
+			}
+			if (!valid(isEnabled)) {
+				isEnabled = "readonly : false";
+			} else {
+				if ("true".equalsIgnoreCase(isEnabled)) {
+					isEnabled = "readonly : false";
+				} else {
+					isEnabled = "readonly : true";
+				}
+			}
 			fileContent = fileContent.replace(HEIGHT, height);
 			fileContent = fileContent.replace(WIDTH, width);
 			fileContent = fileContent.replace(BUTTONS, buttons);
+			fileContent = fileContent.replace(READ_ONLY, isEnabled);
 			fileContent = fileContent.replace(VALID_ELEMENTS,
 				determineValidElements(buttons));
+			fileContent = fileContent.replace(EDITOR_SELECTOR, editor_selector);
 			fileContent = fileContent.replace(ELEMENTS, elements);
 			accommodatedFor = fileContent;
 		}

@@ -91,7 +91,7 @@ function formatChem(win)
 
 function advancedfieldFix(fieldName,idPrefix,enabled,type,dZoom, sfg,sbg) {
 	if(enabled) {
-		setTimeout(function() { advancedfieldInit(fieldName,idPrefix, type) },0);
+		//setTimeout(function() { advancedfieldInit(fieldName,idPrefix, type) },0);
 	}
 }
 

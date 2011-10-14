@@ -17,6 +17,8 @@
  */
 package om.stdcomponent;
 
+import java.util.List;
+
 import om.OmDeveloperException;
 import om.OmException;
 import om.OmFormatException;
@@ -141,6 +143,18 @@ public class AdvancedFieldComponent extends QComponent implements Labelable {
 
 	private boolean bGotLabel = false;
 
+	private boolean appliedTinyMCEJavascript = false;
+
+	private boolean appliedTinyMCEByAnotherComponentInDocument = false;
+
+	public boolean isAppliedTinyMCEJavascript() {
+		return appliedTinyMCEJavascript;
+	}
+
+	public void setAppliedTinyMCEJavascript(boolean b) {
+		this.appliedTinyMCEJavascript = b;
+	}
+
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName() {
 		return ADVANCED_FIELD;
@@ -172,6 +186,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable {
 	@Override
 	public void produceVisibleOutput(QContent qc, boolean bInit, boolean bPlain)
 		throws OmException {
+		determineExistingTinyMCEOutput();
 		SubSupEnum ssb = determineOutputType(getString(PROPERTY_TYPE));
 		if (!(bGotLabel || isPropertySet(PROPERTY_LABEL))) {
 			throw new OmFormatException("<advancedfield> " + getID()
@@ -181,6 +196,36 @@ public class AdvancedFieldComponent extends QComponent implements Labelable {
 			generateVisibleOutputForPlainDisplay(ssb, qc);
 		} else {
 			generateVisibleOutput(qc, ssb);
+		}
+	}
+
+	/**
+	 * Simply resets the component state so that it is ready for rendering
+	 *  again.
+	 * @author Trevor Hinson
+	 */
+	public void resetIndividualComponentState() throws OmException {
+		appliedTinyMCEJavascript = false;
+		appliedTinyMCEByAnotherComponentInDocument = false;
+	}
+	
+	protected void determineExistingTinyMCEOutput() {
+		boolean hasAlready = false;
+		List<AdvancedFieldComponent> advs = getQDocument()
+			.find(AdvancedFieldComponent.class);
+		if (null != advs ? advs.size() > 0 : false) {
+			x : for (AdvancedFieldComponent adv : advs) {
+				 hasAlready = adv.isAppliedTinyMCEJavascript();
+				 if (hasAlready) {
+					 break x;
+				 }
+			}
+		}
+		if (hasAlready) {
+			appliedTinyMCEJavascript = hasAlready;
+			if (appliedTinyMCEJavascript) {
+				appliedTinyMCEByAnotherComponentInDocument = true;
+			}
 		}
 	}
 
@@ -248,24 +293,39 @@ public class AdvancedFieldComponent extends QComponent implements Labelable {
 
 	protected void applyTextArea(QContent qc, Element eDiv, SubSupEnum enu,
 		double dZoom) throws OmException {
-		Element s1 = qc.createElement("script");
-		s1.setAttribute("type", "text/javascript");
-		s1.setAttribute("src", "tiny_mce/tiny_mce_src.js");
-		eDiv.appendChild(s1);
+		if (!appliedTinyMCEByAnotherComponentInDocument) {
+			Element s1 = qc.createElement("script");
+			s1.setAttribute("type", "text/javascript");
+			s1.setAttribute("src", "tiny_mce/tiny_mce_src.js");
+			eDiv.appendChild(s1);
+			setAppliedTinyMCEJavascript(true);
+		}
 		Element s2 = qc.createElement("script");
 		s2.setAttribute("type", "text/javascript");
 		String outputType = determineOutputType(enu);
 		String elements = QDocument.ID_PREFIX + QDocument.OM_PREFIX
 			+ getID() + "_iframe";
+//		getQDocument().getJSHash()
 		s2.setAttribute("src", "tiny_mce/tiny_mce_settings.js?"
-			+ System.currentTimeMillis() + "&h=" + "" + (int) (60 * dZoom)
+			+ "&h=" + "" + (int) (60 * dZoom)
 			+ "&w=" + (int) (10 * dZoom * getInteger(PROPERTY_COLS))
 			+ "&t=" + outputType
-			+ "&e=" + elements);
+			+ "&e=" + elements
+			+ "&ro=" + isEnabled()
+			+ "&es=" + "om"+getID()+"iframe");
+		
+//		s2.setAttribute("src", "tiny_mce/tiny_mce_settings.js?"
+//			+ System.currentTimeMillis() + "&h=" + "" + (int) (60 * dZoom)
+//			+ "&w=" + (int) (10 * dZoom * getInteger(PROPERTY_COLS))
+//			+ "&t=" + outputType
+//			+ "&e=" + elements
+//			+ "&es=" + "om"+getID()+"iframe");
+		s2.setAttribute("defer", "defer");
 		eDiv.appendChild(s2);
 		Element textarea = qc.createElement("textarea");
 		textarea.setAttribute("id", elements);
 		textarea.setAttribute("name", elements);
+		textarea.setAttribute("class", "om"+getID()+"iframe");
 		textarea.setAttribute("mysubtype", outputType);
 		eDiv.appendChild(textarea);
 		addLangAttributes(textarea);
@@ -292,11 +352,12 @@ public class AdvancedFieldComponent extends QComponent implements Labelable {
 			+ dZoom + ",'" + sfg + "','" + sbg + "'); } );");
 
 		// Can be focused (hopefully)
-		if (isEnabled())
-			qc.informFocusableFullJS(QDocument.ID_PREFIX + getID(),
-				"document.getElementById('" + QDocument.ID_PREFIX
-					+ QDocument.OM_PREFIX + getID()
-					+ "_iframe').contentWindow", false);
+//		if (isEnabled()) {
+////			qc.informFocusableFullJS(QDocument.ID_PREFIX + getID(),
+////				"document.getElementById('" + QDocument.ID_PREFIX
+////					+ QDocument.OM_PREFIX + getID()
+////					+ "_iframe').contentWindow", false);
+//		}
 	}
 
 	protected void generateVisibleOutputForPlainDisplay(SubSupEnum enu,

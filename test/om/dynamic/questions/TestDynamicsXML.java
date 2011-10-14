@@ -20,7 +20,7 @@ import util.xml.XML;
 
 public class TestDynamicsXML extends AbstractTestCase {
 
-	private static String TESTING_DYNAMIC_QUESTION = "testing-dynamic-question.xml";
+	private static String TESTING_DYNAMIC_QUESTION = "testing-dynamic-question.omxml";
 
 	public void testLoading() throws Exception {
 		File f = pickUpFile(TESTING_DYNAMIC_QUESTION);

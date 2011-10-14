@@ -33,6 +33,7 @@ import om.OmException;
 import om.helper.QEngineConfig;
 import om.question.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -299,19 +300,18 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 		}
 	}
 
-	private void obtainQuestion(String questionBaseURL,QuestionCache.QuestionKey qk) throws OmException
-	{
-		if(!qc.containsQuestion(qk))
-		{
+	private void obtainQuestion(String questionBaseURL,
+		QuestionCache.QuestionKey qk) throws OmException {
+		if(!qc.containsQuestion(qk)) {
 			String sContentURL=questionBaseURL+"/"+qk.getURLPart();
 			try
 			{
 				// Get it from the URL
-				byte[] abJar;
+				byte[] bytes;
 				if(sContentURL.equals("/!test.0.0"))
 				{
 					// Question used during automated check
-					abJar=IO.loadBytes(getClass().getResourceAsStream("testquestion.jar"));
+					bytes=IO.loadBytes(getClass().getResourceAsStream("testquestion.jar"));
 				}
 				else
 				{
@@ -321,12 +321,12 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 					HTTPS.allowDifferentServerNames(huc);
 					//abJar=IO.loadBytes(huc.getInputStream());
 					URLDataSource uds = new URLDataSource(u);
-					abJar = IO.loadBytes(uds.getInputStream());
+					bytes = IO.loadBytes(uds.getInputStream());
 					String contentType = uds.getContentType();
 					qk.setContentType(contentType);
 				}
 				// Put it in cache
-				qc.saveQuestion(qk,abJar);
+				qc.saveQuestion(qk, bytes);
 			}
 			catch(MalformedURLException e)
 			{

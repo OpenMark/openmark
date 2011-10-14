@@ -166,9 +166,9 @@ public abstract class StandardQuestion implements Question
 		qd.action(ap);
 
 		// Render current state
-		if(!arCurrent.isSessionEnd())
+		if(!arCurrent.isSessionEnd()) {
 			qd.render(arCurrent,false);
-
+		}
 		fixPlaceholders(arCurrent);
 
 		ActionRendering ar=arCurrent;

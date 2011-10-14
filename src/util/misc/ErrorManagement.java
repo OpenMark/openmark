@@ -22,6 +22,7 @@ import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
 
 import org.apache.axis.AxisFault;
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -221,12 +222,12 @@ public class ErrorManagement implements GracefulFinalization {
 					emp.setThrowable(null);
 				}
 			} else if (null != emp.getThrowable() ? emp.getThrowable() instanceof AxisFault : false) {
-				if (emp.getThrowable().getMessage().indexOf(
+				String throwableMessage = emp.getThrowable().getMessage();
+				if (StringUtils.isNotEmpty(throwableMessage) ? throwableMessage.indexOf(
 					"java.net.SocketTimeoutException") != -1
-					|| emp.getThrowable().getMessage().indexOf(
+					|| throwableMessage.indexOf(
 						"This application is not currently available") != -1
-					|| emp.getThrowable().getMessage().indexOf(
-						"java.net.ConnectException") != -1) {
+					|| throwableMessage.indexOf("java.net.ConnectException") != -1 : false) {
 					emp.setTitle("Question engine connection fault");
 					emp.setMessage("The system could not connect to a required component. "
 						+ TEMPPROBLEM);

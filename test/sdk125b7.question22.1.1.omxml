@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-question>
+
+<question class="sdk125b7.question08.Percent">
+
+	<scoring>
+		<marks>3</marks>
+	</scoring>
+	
+  	<layout>
+    	<row height="405"/>
+		<row height="195"/>
+		<column width="600"/>
+  	</layout>
+  
+  	<box gridx="0" gridy="0" id="inputbox" background="input">
+		<emphasis type="italic">Cis</emphasis>-retinal is made from Vitamin A. 
+		The World Health Organisation (WHO) has recommended that children (6 months-10 years) 
+		have a minimum daily intake of 400 µg of Vitamin A.
+		<gap/>
+		Bread, pasta, rice and water contain no Vitamin A.
+		<gap/>
+		<centre>
+			<table cols="3" rows="8" head="1">
+			<row><t>Portion</t><t>Food source</t><t>Vitamin A</t></row>
+			<row><t>1 small piece (30 g)</t><t>Liver, fried</t><t>9,000 µg</t></row>
+			<row><t>1 piece (200 g)</t><t>Carrot, cooked</t><t>760 µg</t></row>
+			<row><t>&#xBD; cup (80 g)</t><t>Green peas, boiled</t><t>120 µg</t></row>
+			<row><t>1 egg (50 g)</t><t>Egg, fried</t><t>95 µg</t></row>
+			<row><t>1 glass (250 ml)</t><t>Whole milk</t><t>90 µg</t></row>
+			<row><t>1 cob (128 g)</t><t>Corn, boiled</t><t>64 µg</t></row>
+			<row><t>1 slice (135 g)</t><t>Fish, grilled</t><t>30 µg</t></row>
+			</table>
+		</centre>
+		<gap/>
+		Determine what percentage (to the nearest whole percent) of daily intake is obtained 
+		by a 7 year old child __STATEMENT__.
+		<gap/>
+	    <indent>
+		<editfield id="input" cols="3" label=""/> <eq italic="no">%</eq>
+	    </indent>
+	    <gap/>
+    	<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+		<!--<button action="actionGiveUp" label="%%lGIVEUP%%"/>-->
+  	</box>
+
+  	<box gridx="0" gridy="1" id="answerbox" display="no" background="answer">
+    	<t id="wrong">Your answer is 
+    		<t id="wrongdps">numerically correct, but is not expressed to the nearest whole percent.</t>
+    		<t id="inrange">numerically correct to within 1 percentage point, but is not expressed to the nearest whole percent.</t>
+    		<t id="notinrange"><t id="still">still</t> incorrect.</t>
+    	</t>
+    	<t id="right">Your answer is correct<t id="dps"> to within 1 percentage point of the true value</t>.</t>
+    	<t id="pass">You passed on this question.</t> 
+		<gap/>
+
+    	<t id="feedback">
+	 		<t id="default">
+				The percentage of daily intake can be calculated from the following equation:
+				<gap/>
+				<equation alt="Percentage daily intake equals one hundred multiplied by total Vitamin A intake in micro grams divided by four hundred">\mbox{Daily intake (%) } = \mbox{ 100 x } \frac{\mbox{total vitamin A (µg)}}{400}</equation>
+				<gap/>
+	  		</t>
+    	</t>   
+   		
+   		<t id="show">
+    		__ANSWER__% of daily Vitamin A intake is obtained by a 7 year old child __STATEMENT__.
+			<gap/>
+    	</t>
+    	
+    	<t id="answer"></t>
+     
+    	<button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+  	</box>
+ 
+</question>
+
+<handler language="java" className="om.dynamic.questions.Percentage">
+	<![CDATA[	
+	
+			package om.dynamic.questions;
+			
+			import om.*;
+			import om.question.*;
+			import om.helper.*;
+			import java.util.Map;
+			import java.util.HashMap;
+			
+			public class Percentage extends SimpleQuestion1 implements Question {
+			
+				private boolean tester = true;
+				
+				public DynamicQuestionTester() {}
+			
+			    protected void init() throws OmException{
+			        System.out.println("DynamicQuestionTester.init() invoked :)");
+			    }
+			
+			    protected boolean isRight(int iAttempt)
+			        throws OmDeveloperException {
+					System.out.println("Percentage.isRight(int iAttempt)  invoked so Im returning true :)");
+					return true;
+			    }
+			}
+
+	
+	]]>
+</handler>
+
+</dynamic-question>
