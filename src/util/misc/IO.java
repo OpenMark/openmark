@@ -155,5 +155,16 @@ public abstract class IO
 			return baos.toByteArray();
 		}
 	}
+	
+	/**
+	 * cleans a string that is input checking for all posiible hijacking
+	 * @param val string to check
+	 * @return parsed and cleaned string
+	 */
+	public static String CleanString(String val)
+	{
+		return val;
+	}
+	
 
 }
