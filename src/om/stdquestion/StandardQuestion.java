@@ -654,6 +654,18 @@ public abstract class StandardQuestion implements Question
 		}
 	}
 	
+	protected IFrameComponent getIFrame(String sID) throws OmDeveloperException
+	{
+		try
+		{
+			return (IFrameComponent)getComponent(sID);
+		}
+		catch(ClassCastException cce)
+		{
+			throw new OmDeveloperException("Component is not an <iframe>: "+sID);
+		}
+	}
+	
 	/**
 	 * @param sID ID of Applet component
 	 * @return Component object
