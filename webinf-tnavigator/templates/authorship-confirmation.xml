@@ -2,17 +2,17 @@
 	<b>Confirmation of Authorship</b><br /><br />
 	The University has to ensure as far as possible that the work submitted by
 	students is their own and does not contain any unreferenced material from other
-	sources. The University statement ?&quot;What constitutes plagiarism or cheating?&quot;
+	sources. The University statement &quot;What constitutes plagiarism or cheating?&quot;
 	appears in your Student/Assessment Handbook and you are expected to have
 	familiarised yourself with it.<br /><br />
 	Please be aware that the University may subject
 	your work to checks (including computerised checks) for plagiarism and in some
 	instances may need to seek further information from you. Any cases where a
 	basis for concern about the originality of the work is identified, will be
-	considered under the University’s policy on academic conduct<br /><br />
+	considered under the University’s policy on academic conduct.<br /><br />
 	<form action="[dynamically added]" id="authorship-confirmation-form" method="post">
 		<input type="checkbox" onclick="flick();" id="switcher" value="false" />
-		I confirm that I have read the statement ? "What constitutes plagiarism or cheating?" 
+		I confirm that I have read the statement "What constitutes plagiarism or cheating?" 
 		and that my answers will be my own work.
 		<br /><br />
 		<input type="submit" onClick="setCancelled();" id="confirm-authority-cancel" value="Cancel" />

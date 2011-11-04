@@ -20,7 +20,9 @@
    <span id="progressinfo">&#x2022; %%PROGRESSINFO%%</span>
   </h2>
  </div> 
- <div id='buttons'><div class='button'><a href='?access'>Display options</a></div><div class='buttonspacer'/><div class='button'><a href='../!shared/help.html' target="_blank" onclick="window.open('../!shared/help.html','omtnhelp','width=500,height=400,resizable=yes,scrollbars=yes,dependent=yes'); return false;">Help</a></div><br/></div>
+ <div id='buttons'><div class='button'>
+ <a href='?access'>Display options</a></div><div class='buttonspacer'/>
+ <div class='button'><a href='../!shared/help.html' target="_blank" onclick="window.open('../!shared/help.html','omtnhelp','width=500,height=400,resizable=yes,scrollbars=yes,dependent=yes'); return false;">Help</a></div><br/></div>
  <div class='clear'/>
 </div>
 
@@ -41,13 +43,13 @@ setTimeout(
     'if(f) { f.focus(); setTimeout("window.scroll(0,0);",0); }',100);
 
 
-if (typeof myOnLoad != 'undefined') { // Any scope
-	if (window['myOnLoad'] != undefined) { // Global scope
-		if (window['myOnLoad'] != void 0) { // Old browsers
-			window.onload=myOnLoad;
-		}
-	}
-}
+//if (typeof myOnLoad != 'undefined') { // Any scope
+	//if (window['myOnLoad'] != undefined) { // Global scope
+		//if (window['myOnLoad'] != void 0) { // Old browsers
+			//window.onload=myOnLoad;
+		//}
+//	}
+//}
 </script>
 
 </body>

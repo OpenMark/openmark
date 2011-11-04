@@ -370,6 +370,10 @@
 		<copy todir="${build}/webapps/om-admin/WEB-INF">
 			<fileset dir="webinf-administration"/>
 		</copy>
+		
+		<copy todir="${build}/webapps/om-admin/WEB-INF">
+			<fileset dir="webinf-administration"/>
+		</copy>
 		<!-- Sample navigator.xml doesn't go in web-inf -->
 		<move file="${build}/webapps/om-admin/WEB-INF/navigator.sample.xml"
 			todir="${build}/webapps/om-admin/"/>
