@@ -364,3 +364,9 @@ function trueoffsettop(El)
 		return(El.offsetTop);
 	}
 }
+
+function cleanstring(val)
+{
+	return(val);
+}
+

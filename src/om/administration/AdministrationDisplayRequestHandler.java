@@ -39,6 +39,8 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 	private static final long serialVersionUID = -5182723126562478570L;
 
 	private static String ADMINISTRATION = "Administration";
+	private static String SERVLETNAME = "openmark-admin";
+
 
 	@Override
 	public RequestResponse handle(HttpServletRequest request,
@@ -154,7 +156,7 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 				&& StringUtils.isNotEmpty(description)
 				&& StringUtils.isNotEmpty(invocationPath)) {
 				sb.append("<p>").append("<b><a href=\"")
-					.append("/om-admin").append(invocationPath)
+					.append("/").append(SERVLETNAME).append(invocationPath)
 					.append("\">").append(displayName)
 					.append("</a></b>").append("<br /><br />")
 					.append(description).append("</p>");

@@ -61,6 +61,7 @@ public class IFrameComponent extends QComponent
 	private static final String PROPERTY_WIDTH="width";
 	private static final String PROPERTY_HEIGHT="height";
 	private static final String PROPERTY_SHOWRESPONSE="showResponse";///w
+	public static final String PROPERTY_BUTTONLABEL="buttonlabel";
 
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
@@ -103,6 +104,7 @@ public class IFrameComponent extends QComponent
 	{
 		super.defineProperties();
 		defineString(PROPERTY_ACTION);
+		defineString(PROPERTY_BUTTONLABEL);
 		defineString(PROPERTY_SRC);
 		defineInteger(PROPERTY_WIDTH);
 		defineInteger(PROPERTY_HEIGHT);
@@ -190,8 +192,14 @@ public class IFrameComponent extends QComponent
 			eInput.setAttribute("id",sInputID);
 			qc.addInlineXHTML(eInput);
 	
-			/*if not external, set sup tag that conatisn information that is passed from
+			/*if not external, set sup tag that contains information that is passed from
 			user to OM. we dont do this if frame source is not in the question jar
+			
+			only accept input from the containing url if NOT external, this is a security 
+			feature to prevent response string being hijacked. If change this ensure other
+			 security precautions are taken
+			
+			*
 			*/
 			
 			if(isPropertySet(PROPERTY_ACTION) && !external && showResponse)///w
@@ -235,17 +243,22 @@ public class IFrameComponent extends QComponent
 			
 			/* setting up enter answer button tag for passing information */
 			if(!external && showResponse){///w
+				String sbuttonlabel=getString(PROPERTY_BUTTONLABEL);
 				qc.addTextEquivalent("<br/>");
 				Element okTag=qc.createElement("input");
 				okTag.setAttribute("type","button");
 				okTag.setAttribute("id","enterB");
-				okTag.setAttribute("value"," Enter answer ");
+				if(sbuttonlabel.length()<4) sbuttonlabel=" "+sbuttonlabel+" ";
+				okTag.setAttribute("value",sbuttonlabel);
 				okTag.setAttribute("onclick", 
+				"if(this.hasSubmitted) { return false; } this.hasSubmitted=true; "+
 				"sendResponse('"
 					+sInputID+"','"+QDocument.ID_PREFIX+"',"
 					+"'IF"+getID()+"'"
 					+");"
 					);
+				if(!isEnabled()) okTag.setAttribute("disabled","yes");
+
 				qc.addInlineXHTML(okTag);
 			}
 
@@ -259,7 +272,7 @@ public class IFrameComponent extends QComponent
 
 	public String getResponse()
 	{
-		return sValue;
+		return util.misc.IO.CleanString(sValue);
 	}
 
 	@Override
