@@ -76,3 +76,5 @@
 <!ELEMENT close (#PCDATA)>
 <!ELEMENT forbid (#PCDATA)>
 <!ELEMENT feedback (#PCDATA)>
+<!ATTLIST assessed   authorship (yes|no) #IMPLIED>
+<!ATTLIST assessed type (1,2,3) #IMPLIED>
