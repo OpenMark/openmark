@@ -395,6 +395,8 @@ public class QDocument
 		// Finally, handle the conventional 'attempt finishing' data.
 		if (Arrays.asList(asParams).contains("-finish")) {
 			getQuestion().finish();
+		} else {
+			getQuestion().save();
 		}
 	}
 

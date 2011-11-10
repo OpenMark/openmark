@@ -19,7 +19,9 @@ package om.helper;
 
 import om.OmDeveloperException;
 import om.OmException;
-import om.question.*;
+import om.question.InitParams;
+import om.question.Rendering;
+import om.question.Results;
 import om.stdcomponent.BoxComponent;
 import om.stdquestion.QComponent;
 import om.stdquestion.StandardQuestion;
@@ -65,7 +67,7 @@ public abstract class DeferredFeedbackQuestion1 extends StandardQuestion
   public Rendering init(Document d,InitParams ip) throws OmException
 	{
 		Rendering r=super.init(d,ip);
-		r.setProgressInfo("Please enter your answer.");
+		r.setProgressInfo("Not yet answered");
 
 		try
 		{
@@ -88,6 +90,20 @@ public abstract class DeferredFeedbackQuestion1 extends StandardQuestion
   public void finish() throws OmException
   {
     checkAnswer();
+  }
+
+  /**
+   * Callback that Om calls when the test attempt is finished. Calls checkAnswer
+   * for further processing.
+   * @throws OmException
+   */
+  public void save() throws OmException
+  {
+    if (isComplete()) {
+		setProgressInfo("Answer saved");
+    } else {
+		setProgressInfo("Not yet answered");
+    }
   }
 
   /**
@@ -144,6 +160,16 @@ public abstract class DeferredFeedbackQuestion1 extends StandardQuestion
 		// Clear progress info (looks bad esp. in plain mode)
 		setProgressInfo("");
 	}
+
+	/**
+	 * Override this method to check whether all parts of the question have been
+	 * completed by the student. This is used to set the progress info to either
+	 * "Not yet answered" or "Answer saved".
+	 * @return true if the user has finished this question; false if there are
+	 *      still some blanks to complete.
+	 * @throws OmDeveloperException
+	 */
+  protected abstract boolean isComplete() throws OmDeveloperException;
 
 	/**
 	 * Override this method to check whether the user's answer is correct or not.

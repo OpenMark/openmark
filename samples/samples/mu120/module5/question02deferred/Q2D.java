@@ -104,9 +104,16 @@ public class Q2D extends DeferredFeedbackQuestion1 {
     }
 
     @Override
+    protected boolean isComplete() throws OmDeveloperException {
+        String response = getEditField("response").getValue().trim();
+        double dbl = Helper.inputNumber(response);
+        return !Double.isNaN(dbl);
+    }
+
+    @Override
     protected boolean isRight() throws OmDeveloperException {
 
-        String response = (getEditField("response").getValue().trim());
+        String response = getEditField("response").getValue().trim();
         double dbl = Helper.inputNumber(response);
 
         // store response information

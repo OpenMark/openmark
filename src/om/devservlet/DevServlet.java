@@ -959,6 +959,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				"[<a href='../../build/"+sQuestion+"/'>Rebuild</a>] " +
 				"[<a href='../../'>List</a>] <small>[<a href='./?save'>Save</a>]</small>" +
 			"</h1>"+
+			"<h2 style='font: normal 12px Verdana'>"+r.getProgressInfo()+"</h2>"+
 			"<form method='post' action='./' id='question' autocomplete='off' class='om'/>"+
 			"<h1 style='font: bold 14px Verdana'>" +
 				"For testing deferred feedback questions [" +

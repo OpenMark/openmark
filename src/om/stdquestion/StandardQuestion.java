@@ -209,6 +209,14 @@ public abstract class StandardQuestion implements Question
 	}
 
 	/**
+	 * Override to handle savge (navigating to the next page) from Moodle, and similar.
+	 * @throws OmException For any error
+	 */
+	protected void save() throws OmException
+	{
+	}
+
+	/**
 	 * Fix placeholders just before returning output.
 	 * @param r Output about to be returned
 	 */
