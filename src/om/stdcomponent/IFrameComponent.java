@@ -61,7 +61,7 @@ public class IFrameComponent extends QComponent
 	private static final String PROPERTY_WIDTH="width";
 	private static final String PROPERTY_HEIGHT="height";
 	private static final String PROPERTY_SHOWRESPONSE="showResponse";///w
-	public static final String PROPERTY_BUTTONLABEL="buttonlabel";
+	public static final String PROPERTY_BUTTONLABEL="buttonLabel";
 
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
@@ -243,13 +243,13 @@ public class IFrameComponent extends QComponent
 			
 			/* setting up enter answer button tag for passing information */
 			if(!external && showResponse){///w
-				String sbuttonlabel=getString(PROPERTY_BUTTONLABEL);
+				String sbuttonLabel=getString(PROPERTY_BUTTONLABEL);
 				qc.addTextEquivalent("<br/>");
 				Element okTag=qc.createElement("input");
 				okTag.setAttribute("type","button");
 				okTag.setAttribute("id","enterB");
-				if(sbuttonlabel.length()<4) sbuttonlabel=" "+sbuttonlabel+" ";
-				okTag.setAttribute("value",sbuttonlabel);
+				if(sbuttonLabel.length()<4) sbuttonLabel=" "+sbuttonLabel+" ";
+				okTag.setAttribute("value",sbuttonLabel);
 				okTag.setAttribute("onclick", 
 				"if(this.hasSubmitted) { return false; } this.hasSubmitted=true; "+
 				"sendResponse('"
