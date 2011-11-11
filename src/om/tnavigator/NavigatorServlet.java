@@ -1463,7 +1463,8 @@ public class NavigatorServlet extends HttpServlet {
 		// allows these IPs to be spoofed. But we don't rely on them for
 		// anything
 		// security-ish anyhow).
-		String sIP = request.getHeader("Client-IP");
+		
+		String sIP = IPAddressCheckUtil.getIPAddress(request);
 		if (sIP == null)
 			sIP = request.getRemoteAddr();
 
