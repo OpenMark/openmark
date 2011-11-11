@@ -22,16 +22,7 @@ public class IPAddressCheckUtil {
 
 		// Check originating address, if it went through the netscaler
 
-		// students.open.ac.uk actually provides the one with the underline,
-		// but I think the more standard header would be as below
-		String sClientIP = request.getHeader("client_ip");
-		if (sClientIP == null)
-			sClientIP = request.getHeader("Client-IP");
-		if (sClientIP == null)
-			sClientIP = request.getHeader("X_FORWARDED_FOR");
-		// check to see if its local and not via the netscaler
-		if (sClientIP == null)
-			sClientIP = request.getRemoteAddr();
+		String sClientIP=getIPAddress(request);
 
 		if (sClientIP != null)
 			log.logDebug("IPCHECK", "(local) Non-null " + sClientIP);
@@ -71,14 +62,7 @@ public class IPAddressCheckUtil {
 		// students.open.ac.uk actually provides the one with the underline,
 		// but I think the more standard header would be as below
 
-		String sClientIP = request.getHeader("client_ip");
-		if (sClientIP == null)
-			sClientIP = request.getHeader("Client-IP");
-		if (sClientIP == null)
-			sClientIP = request.getHeader("X_FORWARDED_FOR");
-		// check to see if its local and not via the netscaler
-		if (sClientIP == null)
-			sClientIP = request.getRemoteAddr();
+		String sClientIP=getIPAddress(request);
 
 		if (sClientIP != null)
 			log.logDebug("IPCHECK", "(secure) Non-null " + sClientIP);
@@ -189,5 +173,26 @@ public class IPAddressCheckUtil {
 			return i;
 		return 256 + i;
 	}
+	/**
+	 * @param r
+	 *            httpServletRequest
+	 * @return The originating IP address of the session
+	 */
+	
+	public static String getIPAddress(HttpServletRequest r)
+	{
+		// Check originating address, if it went through the netscaler
 
+		// students.open.ac.uk actually provides the one with the underline,
+		// but I think the more standard header would be as below
+		String sClientIP = r.getHeader("client_ip");
+		if (sClientIP == null)
+			sClientIP = r.getHeader("Client-IP");
+		if (sClientIP == null)
+			sClientIP = r.getHeader("X_FORWARDED_FOR");
+		// check to see if its local and not via the netscaler
+		if (sClientIP == null)
+			sClientIP = r.getRemoteAddr();
+		return sClientIP;
+	}
 }
