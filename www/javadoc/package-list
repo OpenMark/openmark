@@ -1,11 +1,17 @@
 om
+om.administration
+om.administration.extraction
+om.administration.questionbank
 om.devservlet
+om.devservlet.deployment
+om.devservlet.deployment.transport
 om.equation
 om.graph
 om.helper
 om.helper.spellcheck
 om.loadtest
 om.qengine
+om.qengine.dynamics
 om.question
 om.stdcomponent
 om.stdquestion
@@ -17,6 +23,8 @@ om.tnavigator.db.postgres
 om.tnavigator.db.sqlserver
 om.tnavigator.reports
 om.tnavigator.reports.std
+om.tnavigator.request.authorship
+om.tnavigator.request.tinymce
 om.tnavigator.scores
 util.misc
 util.servicebalancer
