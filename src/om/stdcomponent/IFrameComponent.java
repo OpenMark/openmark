@@ -21,18 +21,15 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import om.OmDeveloperException;
-import om.OmException;
+import om.*;
 import om.question.ActionParams;
-import om.stdquestion.QComponent;
-import om.stdquestion.QContent;
-import om.stdquestion.QDocument;
+import om.stdquestion.*;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 
+import util.misc.*;
 import util.xml.XML;
+import util.xml.XMLException;
 
 /**
 Represents an iframe
@@ -60,8 +57,10 @@ public class IFrameComponent extends QComponent
 	private static final String PROPERTY_SRC="src";
 	private static final String PROPERTY_WIDTH="width";
 	private static final String PROPERTY_HEIGHT="height";
-	private static final String PROPERTY_SHOWRESPONSE="showResponse";///w
-	public static final String PROPERTY_BUTTONLABEL="buttonLabel";
+	private static final String PROPERTY_SHOWRESPONSE="showResponse";
+	private static final String PROPERTY_BUTTONLABEL="buttonlabel";
+	private static final boolean DEF_SHOWRESPONSE=false;
+	private static final String DEF_PROPERTY_BUTTONLABEL="Enter Answer";
 
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName()
@@ -79,8 +78,6 @@ public class IFrameComponent extends QComponent
 	/** Current (most recently set) value */
 	private String sValue;
 
-	/** Random token used to check when user goes to different window */
-	private String sToken;
 
 	/**
 	 * Keep track of resources we added to users so we can save SOAP time by
@@ -133,14 +130,17 @@ public class IFrameComponent extends QComponent
 		}
 	}
 
-	boolean external, showResponse;///w
+	boolean external, showResponse=DEF_SHOWRESPONSE;///w
 
 	@Override
 	protected void initSpecific(Element eThis) throws OmException
 	{
-		sToken="t"+getQuestion().getRandom().nextInt()+getID().hashCode();
+		
+		if (isPropertySet(PROPERTY_SHOWRESPONSE))
+		{
+			showResponse=!getString(PROPERTY_SHOWRESPONSE).equalsIgnoreCase("no");
+		}
 
-		showResponse=!getString(PROPERTY_SHOWRESPONSE).equalsIgnoreCase("no");///w
 		
 		external=getString(PROPERTY_SRC).substring(0,4).equalsIgnoreCase("http");
 		/* external means the page is not in the question jar, we want to keep this definition
@@ -177,7 +177,7 @@ public class IFrameComponent extends QComponent
 			iHeight = getInteger("height");
 
 			sSrc=getString(PROPERTY_SRC);
-			
+
 			// iframe tag
 			int
 			iActualWidth=(int)(iWidth*dZoom+0.5),
@@ -243,13 +243,17 @@ public class IFrameComponent extends QComponent
 			
 			/* setting up enter answer button tag for passing information */
 			if(!external && showResponse){///w
-				String sbuttonLabel=getString(PROPERTY_BUTTONLABEL);
+				String sbuttonlabel=DEF_PROPERTY_BUTTONLABEL;
+				if(isPropertySet(PROPERTY_BUTTONLABEL))
+					{
+					sbuttonlabel=getString(PROPERTY_BUTTONLABEL);
+					}
 				qc.addTextEquivalent("<br/>");
 				Element okTag=qc.createElement("input");
 				okTag.setAttribute("type","button");
 				okTag.setAttribute("id","enterB");
-				if(sbuttonLabel.length()<4) sbuttonLabel=" "+sbuttonLabel+" ";
-				okTag.setAttribute("value",sbuttonLabel);
+				if(sbuttonlabel.length()<4) sbuttonlabel=" "+sbuttonlabel+" ";
+				okTag.setAttribute("value",sbuttonlabel);
 				okTag.setAttribute("onclick", 
 				"if(this.hasSubmitted) { return false; } this.hasSubmitted=true; "+
 				"sendResponse('"
