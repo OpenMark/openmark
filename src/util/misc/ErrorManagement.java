@@ -33,6 +33,7 @@ import util.xml.XMLException;
 public class ErrorManagement implements GracefulFinalization {
 
 	public static String ERROR_TEMPLATE = "WEB-INF/templates/errortemplate.xhtml";
+	public static String ERROR_TEMPLATE_TXT = "WEB-INF/templates/errortemplate.txt";
 
 	public static String ADMINISTRATION_ERROR_TEMPLATE = "WEB-INF/templates/administrationErrorTemplate.xhtml";
 
@@ -395,7 +396,7 @@ public class ErrorManagement implements GracefulFinalization {
 			XML.replaceTokens(d, m);
 			XHTML.output(d, request, response, "en");
 			sendErrorMessage(request, isBug, m, visitor.getServletContext(),
-				emp.getThrowable(), ERROR_TEMPLATE);
+				emp.getThrowable(), ERROR_TEMPLATE_TXT);
 		} catch (OmException x) {
 			log.logError("The OMVisitor needs to be properly constructed.", x);
 		} catch (XMLException x) {
