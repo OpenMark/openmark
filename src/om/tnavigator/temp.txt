@@ -1,0 +1,95 @@
+	private void processTrafficLightsIntoString(RequestTimings rt, UserSession us,
+			Element eParent, Element eTarget, CombinedScore ps,
+			HttpServletRequest request) throws Exception {
+		Element[] ae = XML.getChildren(eParent);
+		for (int i = 0; i < ae.length; i++) {
+			Element e = ae[i];
+			String sTag = e.getTagName();
+		String fullflag="";
+			
+		for (int i = 0; i < ae.length; i++) {
+			Element e = ae[i];
+			String sTag = e.getTagName();
+			if (sTag.equals("conditional")) {
+				// Find marks on the specified axis
+				String sAxis = e.hasAttribute("axis") ? e.getAttribute("axis")
+						: null;
+				String sOn = e.getAttribute("on");
+				int iCompare;
+				if (sOn.equals("marks")) {
+					iCompare = (int) Math.round(ps.getScore(sAxis));
+				} else if (sOn.equals("percentage")) {
+					iCompare = (int) Math.round(ps.getScore(sAxis) * 100.0
+							/ ps.getMax(sAxis));
+				} else
+					throw new OmFormatException(
+							"Unexpected on= for conditional: " + sOn);
+	String flag="X";
+				boolean bOK = true;
+				try {
+					if (e.hasAttribute("gt")) {
+						if (!(iCompare > Integer.parseInt(e.getAttribute("gt"))))
+						{
+							bOK = false;
+							}
+							else
+							{ 
+							flag="A":
+							}
+					}
+					if (e.hasAttribute("gte")) {
+						if (!(iCompare >= Integer.parseInt(e
+								.getAttribute("gte"))))
+							bOK = false;
+							}
+							else
+							{ 
+							flag="B":
+							}					}
+					if (e.hasAttribute("e")) {
+						if (!(iCompare == Integer.parseInt(e.getAttribute("e"))))
+							bOK = false;
+							}
+							else
+							{ 
+							flag="C":
+							}					}
+					if (e.hasAttribute("lte")) {
+						if (!(iCompare <= Integer.parseInt(e
+								.getAttribute("lte"))))
+							bOK = false;
+							}
+							else
+							{ 
+							flag="D":
+							}					}
+					if (e.hasAttribute("lt")) {
+						if (!(iCompare < Integer.parseInt(e.getAttribute("lt"))))
+							bOK = false;
+							}
+							else
+							{ 
+							flag="E":
+							}					}
+					if (e.hasAttribute("ne")) {
+						if (!(iCompare != Integer
+								.parseInt(e.getAttribute("ne"))))
+							bOK = false;
+							}
+							else
+							{ 
+							flag="F":
+							}					}
+				} catch (NumberFormatException nfe) {
+					throw new OmFormatException(
+							"Not valid integer in <conditional>");
+				}
+				if (bOK) // Passed the conditional! Process everything within it
+				{
+					fullflag=fullflag+flag;
+				}
+			} 
+			}
+		}
+		eTarget.appendChild(fullflag));
+	}

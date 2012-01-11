@@ -209,7 +209,7 @@
 		axis: score axis to consider (omit for default)
 		gt,gte,lt,lte: >, >=, <, <=
 		Multiple conditions permitted. Can also nest
-		conditionals.
+		conditionals. Specify trafficlight flag to be used by prediagbnostic code
  -->
 <!ELEMENT conditional (p,conditional?)>
 <!ATTLIST conditional
@@ -219,6 +219,7 @@
 	lt NMTOKEN #IMPLIED
 	lte NMTOKEN #IMPLIED
 	on (marks|percentage) #REQUIRED
+	flag NMTOKEN #IMPLIED
 >
 
 <!--

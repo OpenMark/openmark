@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import om.Log;
 import om.OmVersion;
 import om.tnavigator.NavigatorConfig;
+import om.tnavigator.PreCourseDiagCode;
 import om.tnavigator.db.DatabaseAccess.Transaction;
 
 import util.misc.IO;
@@ -473,6 +474,13 @@ public abstract class OmQueries
 						"WHERE iq.ti = q.ti AND iq.question=q.question AND iq.finished > 0) " +
 				"ORDER BY tq.questionnumber, q.question, t.ti");
 	}
+	
+	public ResultSet queryPreCourseDiagCode(Transaction dat,int ti)
+		throws SQLException{
+		String sqlstr="SELECT ti,preCourseDiagCode,timecodeupdated,trafficlights from "
+			+ getPrefix() + "precoursediag where ti = "+ti+" order by timecodeupdated DESC";
+		return dat.query(sqlstr);
+	}
 
 	/**
 	 * Store a user's action within an question attempt.
@@ -674,6 +682,45 @@ public abstract class OmQueries
 	{
 		dat.update("UPDATE " + getPrefix() + "tests SET finished=1,finishedclock="+currentDateFunction()+" WHERE ti="+ti+";");
 	}
+	/**
+	 * add precourse diagnostic code if necessary
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @param precoursediag the code to add.
+	 * @throws SQLException
+*/
+	public void updateTestPreCourseDiagCode(DatabaseAccess.Transaction dat, PreCourseDiagCode pcdc)
+		throws SQLException
+	{
+		try
+		{
+			String sqlstr="UPDATE " + getPrefix() + 
+			"precoursediag SET PreCourseDiagCode="+Strings.sqlQuote(pcdc.getPreCourseDiagCode())+
+			",timecodeupdated="+currentDateFunction()+",trafficlights="+Strings.sqlQuote(pcdc.getTrafficlights())+" WHERE ti="+pcdc.getti()+";";
+			dat.update(sqlstr);
+		}
+		catch (SQLException e)
+		{
+			throw new SQLException(e);
+		}
+	}
+	
+	public void insertTestPreCourseDiagCode(DatabaseAccess.Transaction dat,PreCourseDiagCode pcdc)
+	throws SQLException
+{
+	try
+	{
+		String sqlstr="INSERT INTO " + getPrefix() + 
+				"precoursediag (ti,precoursediagcode,timecodeupdated,trafficlights) " +
+				"VALUES ("+pcdc.getti()+","+Strings.sqlQuote(pcdc.getPreCourseDiagCode())+
+				","+currentDateFunction()+","+Strings.sqlQuote(pcdc.getTrafficlights())+");";
+		dat.update(sqlstr);
+	}
+	catch (SQLException e)
+	{
+		throw new SQLException(e);
+	}
+}
 
 	/**
 	 * Update the test variant (used for testing).
@@ -805,10 +852,7 @@ public abstract class OmQueries
 			createDatabaseTables(dat);
 			return;
 		}
-
-
 		/* first add a navigator config table if not already there */
-		
 				
 		// Otherwise, look to see if the database needs upgrading is specific ways.
 		if (!columnExistsInTable(dat, "tests", "navigatorversion"))
@@ -942,6 +986,7 @@ public abstract class OmQueries
 
 			applyUpdateForEmailNotification(dat, l, DBversion);
 			applyAuthorshipUpdate(dat, l, DBversion, nc);
+			upgradeDatabaseToAddprecoursediag(dat, l, DBversion, nc);
 
 			/* finally having applied all the updates set the DB version to the current */
 			l.logDebug("DatabaseUpgrade", "Update DB version to current "+currversion);
@@ -983,11 +1028,37 @@ public abstract class OmQueries
 				"tests ADD authorshipConfirmation INTEGER NOT NULL DEFAULT 0", l,dat);
 		}
 	}
+	
+	/**
+	* generate mew PreCourseDiagCode table
+	 * @param dat
+	 * @param l
+	 * @param DBversion
+	 * @param nc
+	 * @throws SQLException
+	 * @throws IllegalArgumentException
+	 * @author Sarah Wood
+	 */
+	private void upgradeDatabaseToAddprecoursediag(DatabaseAccess.Transaction dat, Log l,
+		NavVersion DBversion, NavigatorConfig nc)
+		throws SQLException, IllegalArgumentException {
+		
+		if(!tableExists(dat,"precoursediag"))
+		{
+			updateDatabase("1.15",DBversion,
+					"CREATE TABLE " + getPrefix() + "precoursediag (  ti int NOT NULL PRIMARY KEY," + 
+					"precoursediagcode VARCHAR(64) NOT NULL," +
+					"timecodeupdated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+					"trafficlights VARCHAR(1024) NOT NULL)",
+					l,dat);
+		}
+	}
 
 	public String retrieveAuthorshipConfirmationQuery() {
 		return "SELECT authorshipConfirmation from "
 			+ getPrefix() + "tests where ti = {0}";
 	}
+
 
 	public String updateAuthorshipConfirmationQuery() {
 		return "UPDATE " + getPrefix()

@@ -18,7 +18,8 @@ CREATE TABLE dbo.prefix_tests (
   testposition SMALLINT NOT NULL,
   finishedclock DATETIME,
   navigatorversion CHAR(16) NOT NULL,
-  dateWarningEmailSent DATETIME
+  dateWarningEmailSent DATETIME,
+  authorshipConfirmation INT NOT NULL DEFAULT 0
 ); 
 
 CREATE NONCLUSTERED INDEX i1 ON prefix_tests (deploy);
@@ -101,3 +102,10 @@ CREATE TABLE dbo.prefix_sessioninfo (
 );
 CREATE CLUSTERED INDEX i2 on prefix_sessioninfo (ti);
  
+CREATE TABLE dbo.precoursediag (
+  ti INT NOT NULL FOREIGN KEY REFERENCES prefix_tests,
+  precoursediagcode VARCHAR(64) NOT NULL,
+  timecodeupdated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  trafficlights VARCHAR(1024) NOT NULL
+  
+);

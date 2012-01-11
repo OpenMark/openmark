@@ -128,6 +128,10 @@ public class UserSession
 	// A place where any extra information can be stored in the session.
 	private Map<String,Object> extraSessionInfo = new HashMap<String, Object>();
 
+	public NavigatorServlet getNs() {
+		return ns;
+	}
+	
 	public int getICSSIndex() {
 		return new Integer(iCSSIndex).intValue();
 	}
@@ -357,4 +361,6 @@ public class UserSession
 		bFinished = finished;
 		navigatorVersion = OmVersion.getVersion();
 	}
+	
+
 }

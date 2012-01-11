@@ -5,12 +5,16 @@
 		<definition> - ID of test
 		<access> - Controls access to test
 		<dates> - Dates affecting test (optional; if omitted test is always available)
+		<pcdc> - whether to generate a pre-course diagnostic code
 -->	
-<!ELEMENT deploy (definition,supportcontacts?,access,dates?)>
+<!ELEMENT deploy (definition,supportcontacts?,access,dates?,pcdc)>
 
 
 <!-- <definition> is just text (test definition ID) -->
 <!ELEMENT definition (#PCDATA)>
+
+<!-- if its there we generate a pre-course diagnostic code -->
+<!ELEMENT pcdc (#PCDATA)>
 
 <!-- <supportcontacts> is just text (it should contain a list of email addresses of people responsible
 		for this test, so they can be contacted if a problem is identified with the test.) -->

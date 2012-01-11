@@ -18,7 +18,8 @@ CREATE TABLE prefix_tests (
   testposition SMALLINT NOT NULL,
   finishedclock TIMESTAMP WITH TIME ZONE,
   navigatorversion CHAR(16) NOT NULL,
-  dateWarningEmailSent TIMESTAMP WITH TIME ZONE
+  dateWarningEmailSent TIMESTAMP WITH TIME ZONE,
+  authorshipConfirmation INTEGER NOT NULL WITH 0
 ); 
 
 CREATE INDEX prefix_tests_deploy ON prefix_tests (deploy);
@@ -99,5 +100,14 @@ CREATE TABLE prefix_sessioninfo (
   useragent VARCHAR(255),
   clock TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE dbo.precoursediag (
+  ti INTEGER NOT NULL REFERENCES prefix_tests,
+  precoursediagcode VARCHAR(64) NOT NULL
+  timecodeupdated TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+  trafficlights VARCHAR(1024) NOT NULL
+
+);
 CREATE INDEX prefix_sessioninfo_ti on prefix_sessioninfo (ti);
+ 
  

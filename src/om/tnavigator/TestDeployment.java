@@ -72,8 +72,14 @@ public class TestDeployment
 	/* authorship plagarism message   required */
 	public final static int AUTHORSHIP_NOT_REQUIRED=1;
 	
-	private int iAuthor=AUTHORSHIP_NOT_REQUIRED;
+	private int iAuthor=AUTHORSHIP_NOT_REQUIRED;	
 	
+	public final static boolean PCDC_REQUIRED=true;
+	/* authorship plagarism message   required */
+	public final static boolean PCDC_NOT_REQUIRED=false;
+
+	private boolean bPcdc=PCDC_NOT_REQUIRED;	
+
 	/** True if the test should send out confirm emails */
 	private boolean bSubmitEmail;
 
@@ -121,7 +127,11 @@ public class TestDeployment
 		return iAuthor;
 	}
 	
+	public boolean getbPcdc() {
+		return bPcdc;
+	}
 	
+		
 	public int getiForbidExtensionValue() {
 		return iForbidExtensionValue;
 	}
@@ -137,6 +147,8 @@ public class TestDeployment
 	public boolean isUsingEmailStudents() {
 		return bhasEmailStudents;
 	}
+	
+	
 
 	/**
 	 * Constructs test definition and checks format.
@@ -189,7 +201,19 @@ public class TestDeployment
 			{
 				iType=TYPE_NOTASSESSED;
 			}
-
+/* check is pre course diagnotic code required
+ * 
+ */
+			if(XML.hasChild(eRoot,"pcdc"))
+			{
+				bPcdc=PCDC_REQUIRED;
+			}
+			else
+			{
+				bPcdc=PCDC_NOT_REQUIRED;
+			}
+			
+			
 			handleEmailStudentsNode(eRoot);
 
 			if(XML.hasChild(eRoot,"email"))

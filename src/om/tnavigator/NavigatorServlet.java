@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -83,6 +84,8 @@ import om.tnavigator.db.OmQueries;
 import om.tnavigator.reports.ReportDispatcher;
 import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 import om.tnavigator.scores.CombinedScore;
+import om.tnavigator.PreCourseDiagCode;
+import util.misc.TrafficLights;
 
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
@@ -121,8 +124,24 @@ public class NavigatorServlet extends HttpServlet {
 	private static final String FAKEOUCUCOOKIENAME = "tnavigator_xid";
 
 	private static final String SUMMARYTABLE_NOTANSWERED = "Not completed";
+	
+	private static final String DEFAULT_PRECOURSEDIAGCODE="PCDC";
 
 	private static String SCRIPT_JS = "script.js";
+	
+	private static String PCDCTEXT="Pre course diagnostic code ";
+	
+	private static String OUTPUTBLURB="Please quote this pre diagnostic course code when applying for this course ";
+	
+	private static String BADCONDITIONALFLAG="Value not specified for conditional flag";
+	
+	private static String PCDCSEPARATOR="/";
+	
+	private static String PCDCCATAGORY="pcdcGeneration";
+	
+	private static String NOFLAG="X";
+
+
 
 	/**
 	 * User passed on question. Should match the definition in
@@ -1424,6 +1443,7 @@ public class NavigatorServlet extends HttpServlet {
 			if (rs.next() && rs.getMetaData().getColumnCount() > 0)
 				iMaxAttempt = rs.getInt(1);
 
+
 			oq.insertTest(dat, us.sOUCU, sTestID, us.getRandomSeed(),
 					iMaxAttempt + 1, us.bAdmin,
 					// Use same PI as OUCU for non-logged-in guests
@@ -1431,8 +1451,17 @@ public class NavigatorServlet extends HttpServlet {
 							.getFixedVariant(), us.navigatorVersion);
 			int dbTi = oq.getInsertedSequenceID(dat, "tests", "ti");
 			l.logDebug("TI = " + dbTi);
-			us.setDbTi(dbTi);
+			
+			us.setDbTi(dbTi);			
+			
+			// generate an pre course diagnostic code code if appropriate and add to database table
+			if (PreCourseDiagCode.shouldGenerateCode(us))
+			{			
+				PreCourseDiagCode pcdc=new PreCourseDiagCode(dbTi,us.sOUCU);
+				pcdc.insertTestPCDC(dat,oq);
 
+		     }
+			
 			for (int i = 0; i < us.getTestLeavesInOrder().length; i++) {
 				if (us.getTestLeavesInOrder()[i] instanceof TestQuestion) {
 					TestQuestion tq = (TestQuestion) us.getTestLeavesInOrder()[i];
@@ -2169,6 +2198,7 @@ public class NavigatorServlet extends HttpServlet {
 
 		// See if user's allowed to see results yet
 		boolean bAfterFeedback = us.getTestDeployment().isAfterFeedback();
+		TrafficLights trafficlights=new TrafficLights();
 		if (us.bAdmin || bAfterFeedback) {
 			if (!bAfterFeedback) {
 				Element eInfo = XML.createChild(eMain, "div");
@@ -2190,6 +2220,11 @@ public class NavigatorServlet extends HttpServlet {
 			// Now process each element from the final part of the definition
 			processFinalTags(rt, us, us.getTestDefinition().getFinalPage(),
 					eMain, ps, request);
+			//generate a trafficlights string for the pre course diagnotic code
+			trafficlights=			
+				processTrafficLights(rt, us, us.getTestDefinition().getFinalPage(),
+		  				  eMain, ps, request);
+
 		} else {
 			XML.createText(eMain, "p", "Thank you for completing this test.");
 			XML
@@ -2202,7 +2237,18 @@ public class NavigatorServlet extends HttpServlet {
 									+ us.getTestDeployment()
 											.displayFeedbackDate() + ".");
 		}
-
+		// show diagnostic code if available
+		try{
+			if (PreCourseDiagCode.shouldGenerateCode(us))
+			{
+				XML.createText(eMain,"p",readPCDC(da,us,trafficlights));
+			}
+		}
+		catch (Exception e) {
+			throw new ServletException("Error creating pcdc code: "
+					+ e.getMessage(), e);	
+		}
+		
 		// Show restart button, if enabled
 		if ((us.getTestDefinition().isRedoTestAllowed() && !us
 				.getTestDeployment().isAfterForbid())
@@ -2250,6 +2296,159 @@ public class NavigatorServlet extends HttpServlet {
 			response.addHeader("X-UA-Compatible", "IE=8");
 		}
 	}
+	public String readPCDC(DatabaseAccess da, UserSession us,TrafficLights trafficlights )
+	throws Exception
+	{
+		String code="";
+		try
+		{
+			code=PCDCTEXT;
+			DatabaseAccess.Transaction dat = null;
+			try {
+				dat = da.newTransaction();
+				if (dat != null)
+				{
+					// read the value from the databsae for this TI
+					try {
+						PreCourseDiagCode pcdc=new PreCourseDiagCode(dat,us.getNs(),us.getDbTi());
+						String TLights= trafficlights.getTrafficLightValuesAsString().equals("") ? "": trafficlights.getTrafficLightValuesAsString()+PCDCSEPARATOR;
+						pcdc.setCode(TLights+pcdc.getPreCourseDiagCode());
+						pcdc.setTrafficlights(trafficlights.getTrafficLightPairsAsString());
+						// store the new code
+						pcdc.updateDBwithCode(dat,oq);
+						code=code+pcdc.getPreCourseDiagCode();
+					} catch (Exception e) {
+						throw new ServletException("Error creating pcdc code (1) : "
+								+ e.getMessage(), e);	
+					}finally {
+						dat.finish();
+					}
+				}
+				
+			} catch (Exception e) {
+			throw new OmException("Error creating pcdc code (2): "
+					+ e.getMessage(), e);	
+			}
+		}catch (Exception e) {
+				throw new OmException("Error creating pcdc code (3): "
+						+ e.getMessage(), e);
+		}
+		return code;		
+	}
+			
+			
+	private TrafficLights processTrafficLights(RequestTimings rt, UserSession us,
+			Element eParent, Element eTarget, CombinedScore ps ,
+			HttpServletRequest request) throws Exception {
+		
+		TrafficLights tls=new TrafficLights();
+
+		Element[] ae = XML.getChildren(eParent);
+		String fullflag="";
+		for (int i = 0; i < ae.length; i++) {
+			Element e = ae[i];
+			String sTag = e.getTagName();
+			if (sTag.equals("conditional")) {
+				// Find marks on the specified axis
+				String sAxis = e.hasAttribute("axis") ? e.getAttribute("axis")
+						: null;
+				String sOn = e.getAttribute("on");
+				String sFlag = e.hasAttribute("flag") ? e.getAttribute("flag")
+						: null;
+				/* if we dont have a conditional, then dont calculate the traffic lights
+				 * for that one,leave it set to X
+				 */			
+				if (sFlag==null)l.logDebug(PCDCCATAGORY,"flag not set for conditional on test " + us.getTestId()
+						+ " ti " + us.getDbTi());
+				
+				int iCompare;
+				if (sOn.equals("marks")) {
+					iCompare = (int) Math.round(ps.getScore(sAxis));
+				} else if (sOn.equals("percentage")) {
+					iCompare = (int) Math.round(ps.getScore(sAxis) * 100.0
+							/ ps.getMax(sAxis));
+				} else
+					throw new OmFormatException(
+							"Unexpected on= for conditional: " + sOn);
+				//String flag=NOFLAG;
+				boolean bOK = true;
+				try {
+					if (e.hasAttribute("gt")) {
+						if (!(iCompare > Integer.parseInt(e.getAttribute("gt"))))
+						{
+							bOK = false;
+						}
+						else
+						{ 
+							String flag=sFlag!=null?sFlag:NOFLAG;
+							tls.addTrafficLights(sAxis,flag);
+							//if (sFlag!=null )flag=sFlag;
+						}
+					}
+					if (e.hasAttribute("gte")) {
+						if (!(iCompare >= Integer.parseInt(e
+								.getAttribute("gte"))))
+							bOK = false;
+							}
+							else
+							{ 
+								String flag=sFlag!=null?sFlag:NOFLAG;
+								tls.addTrafficLights(sAxis,flag);;
+							}					
+					if (e.hasAttribute("e")) {
+						if (!(iCompare == Integer.parseInt(e.getAttribute("e"))))
+							bOK = false;
+							}
+							else
+							{ 
+								String flag=sFlag!=null?sFlag:NOFLAG;
+								tls.addTrafficLights(sAxis,flag);
+							}					
+					if (e.hasAttribute("lte")) {
+						if (!(iCompare <= Integer.parseInt(e
+								.getAttribute("lte"))))
+							bOK = false;
+							}
+							else
+							{ 
+								String flag=sFlag!=null?sFlag:NOFLAG;
+								tls.addTrafficLights(sAxis,flag);
+								
+							}					
+					if (e.hasAttribute("lt")) {
+						if (!(iCompare < Integer.parseInt(e.getAttribute("lt"))))
+							bOK = false;
+							}
+							else
+							{ 
+								String flag=sFlag!=null?sFlag:NOFLAG;
+								tls.addTrafficLights(sAxis,flag);
+								}					
+					if (e.hasAttribute("ne")) {
+						if (!(iCompare != Integer
+								.parseInt(e.getAttribute("ne"))))
+							bOK = false;
+							}
+							else
+							{ 
+								String flag=sFlag!=null?sFlag:NOFLAG;
+								tls.addTrafficLights(sAxis,flag);
+							}					
+				} catch (NumberFormatException nfe) {
+					throw new OmFormatException(
+							"Not valid integer in <conditional>");
+				}
+				if (bOK) // Passed the conditional! Process everything within it
+				{
+				//	fullflag=fullflag+flag;
+				}
+			} 
+			
+		}
+			return tls;
+	}
+	
+
 
 	private void processFinalTags(RequestTimings rt, UserSession us,
 			Element eParent, Element eTarget, CombinedScore ps,
