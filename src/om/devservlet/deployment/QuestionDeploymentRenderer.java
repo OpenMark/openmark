@@ -41,6 +41,8 @@ public class QuestionDeploymentRenderer {
 	private static String DEPLOY_TO_HEADING = "<h3>Deploying To ...</h3>";
 
 	private static String CONFIRMATION_PAGE_HEADER = "<h1>Confirmation Page</h1>";
+	
+	private static String COPY_TO_SERVER="Click copy to server below to confirm.";
 
 	private RenderedOutput outputRendering;
 
@@ -160,7 +162,9 @@ public class QuestionDeploymentRenderer {
 		} else {
 			or.append(renderNoQuestionsSelected());
 		}
-		or.append(DEPLOY_TO_HEADING).append(QuestionDeploymentRenderer.BRS);
+		//or.append(DEPLOY_TO_HEADING).append(QuestionDeploymentRenderer.BRS);
+		// lose the extra breaks
+		or.append(DEPLOY_TO_HEADING);
 		List<String> locations = DisplayUtils.getLocations(metaData);
 		if (null != locations ? locations.size() > 0 : false) {
 			or.append(renderDeployToLocations(locations));
@@ -198,7 +202,8 @@ public class QuestionDeploymentRenderer {
 
 	private String renderConfirmationSubmission() {
 		return new StringBuffer()
-			.append("<div class=\"alert\">Click copy to server below to confirm.</div>")
+			//.append("<div class=\"alert\">Click copy to server below to confirm.</div>")
+			.append(COPY_TO_SERVER)
 			.append(QuestionDeploymentRenderer.START_SELECTION_FORM)
 			.append("<input type=\"hidden\" name=\"")
 			.append(CONFIRMED_DEPLOYMENT)
