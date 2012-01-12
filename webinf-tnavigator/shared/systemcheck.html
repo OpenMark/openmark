@@ -46,11 +46,21 @@ var browser, message, ok=false;
 
 if(ua.match(/KHTML/))
 {
-  if(ua.match(/\ Safari\//)) browser="Safari";
-  else browser="a KHTML-based browser";
-  message="Some parts of this system rely on features that are not "+
+  browser="a KHTML-based browser";
+  if(ua.match(/\ Safari\//))
+  {
+  	browser="Safari"
+  	ok=true;
+  }
+  if(ua.match(/\ Chrome\//))
+  {
+  	browser="Chrome";
+  	ok=true;
+   }
+    message="Some parts of this system rely on features that are not "+
     "included in current versions of KHTML-based browsers (like Safari) "+
     "at the time of writing.";
+
 }
 else if(ua.match(/\ Gecko\//))
 {
