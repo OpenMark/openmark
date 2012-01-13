@@ -242,6 +242,9 @@ public class IFrameComponent extends QComponent
 			eEnsureSpaces.setAttribute("marginheight","0");///w
 			
 			eEnsureSpaces.setAttribute("frameborder","0");
+			
+			eEnsureSpaces.setAttribute("allowtransparency","true");
+
 			qc.addInlineXHTML(eEnsureSpaces);
 			
 			/* setting up enter answer button tag for passing information */
