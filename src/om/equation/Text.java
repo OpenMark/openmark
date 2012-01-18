@@ -307,6 +307,19 @@ public class Text extends Item
 		}		
 		return false;
 	}
+	
+	//Returns true if any one of parent items is Bold.
+	private boolean isTextItalic() {
+		Item parent = getParent();
+		while (parent != null) {
+			if(parent instanceof Italic) {
+				return true;
+			}
+			parent = parent.getParent();
+		}		
+		return false;
+	}
+
 
 	private static boolean isSpecialChar(char c, Font f)
 	{
@@ -341,6 +354,13 @@ public class Text extends Item
 					style = SPECIAL_CHAR_BOLD_FONT;
 				} else {
 					style = Font.BOLD;
+				}
+			}
+			if (isTextItalic() && style != THIS_IS_A_ZED) {
+				if (style == SPECIAL_CHAR_FONT) {
+					style = SPECIAL_CHAR_ITALIC_FONT;
+				} else {
+					style = Font.ITALIC;
 				}
 			}
 			if (style == currentStyle) {

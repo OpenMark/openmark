@@ -1,6 +1,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
-<xsl:variable name="LETTERS">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZαβγδεζηθικλμνξοπρςστυφχψω</xsl:variable>
+<xsl:variable name="LETTERS">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:variable>
 <xsl:param name="ITALIC">y</xsl:param>
  
 <xsl:template match="/int_equation">
@@ -37,6 +37,10 @@
 		<xsl:when test="ancestor::bold">
 			<b><xsl:value-of select="$FIRST"/></b>
 		</xsl:when>	
+		<xsl:when test="ancestor::bolditalic">
+			<b><i><xsl:value-of select="$FIRST"/></i></b>
+		</xsl:when>	
+		
 		<xsl:when test="contains($LETTERS,$FIRST) and $ITALIC='y'">
 			<i><xsl:value-of select="$FIRST"/></i>
 		</xsl:when>	

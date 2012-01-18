@@ -113,6 +113,7 @@ public class Equation extends Line
 	static
 	{
 		Bold.register(ifDefault);
+		Italic.register(ifDefault);
 		Brackets.register(ifDefault);
 		ContourIntegral.register(ifDefault);
 		Equation.register(ifDefault);

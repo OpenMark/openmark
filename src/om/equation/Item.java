@@ -33,6 +33,8 @@ abstract class Item
 	
 	protected final static int SPECIAL_CHAR_BOLD_FONT = 0x3000000;
 	
+	protected final static int SPECIAL_CHAR_ITALIC_FONT = 0x3000000;
+	
 	protected final static String SPECIAL_CHAR_FONTFAMILY = "Lucida Sans Unicode";
 
 	/** Parent item */
