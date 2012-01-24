@@ -127,7 +127,7 @@ var isOpera=navigator.userAgent.indexOf('Opera')!=-1;
 var isIE=!isOpera && navigator.userAgent.match('.*MSIE.*Windows.*');
 var isIE7OrBelow=!isOpera && navigator.userAgent.match('.*MSIE [1-7].*Windows.*');
 var isIE7=!isOpera && navigator.userAgent.match('.*MSIE 7.*Windows.*');
-
+var isIE8OrBelow=!isOpera && navigator.userAgent.match('.*Trident/[1-4].*Windows.*');
 
 var isGecko18;
 if(isGecko)
