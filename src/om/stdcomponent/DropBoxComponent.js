@@ -307,8 +307,8 @@ function dragboxMouseMove(e)
 	e=fixEvent(e);
 	// Handle IE thing where it gets stuck on if you go out of
 	// the window and let go there
-	if(isIE && e.button==0)
-		return dragboxMouseUp(e);
+	if(isIE8OrBelow && e.button==0)
+			return dragboxMouseUp(e);
 	if(!dbMoving) return;
 
 
