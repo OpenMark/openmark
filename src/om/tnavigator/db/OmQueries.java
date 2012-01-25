@@ -789,8 +789,9 @@ public abstract class OmQueries
 	protected boolean columnExistsInTable(DatabaseAccess.Transaction dat,String table,String column)
 			throws SQLException
 	{
-		ResultSet rs=dat.query("SELECT COUNT(*) FROM information_schema.columns WHERE table_name="+
-				Strings.sqlQuote(getPrefix()+table) + " AND column_name=" + Strings.sqlQuote(column));
+		String sqlstr="SELECT COUNT(*) FROM information_schema.columns WHERE table_name="+
+				Strings.sqlQuote(getPrefix()+table) + " AND column_name=" + Strings.sqlQuote(column);
+		ResultSet rs=dat.query(sqlstr);
 		rs.next();
 		return rs.getInt(1)!=0;
 	}
@@ -987,6 +988,7 @@ public abstract class OmQueries
 			applyUpdateForEmailNotification(dat, l, DBversion);
 			applyAuthorshipUpdate(dat, l, DBversion, nc);
 			upgradeDatabaseToAddprecoursediag(dat, l, DBversion, nc);
+			updateQuestionlineAnswerline(dat, l, DBversion, nc);
 
 			/* finally having applied all the updates set the DB version to the current */
 			l.logDebug("DatabaseUpgrade", "Update DB version to current "+currversion);
@@ -1084,6 +1086,21 @@ public abstract class OmQueries
 		}
 	}
 	
+
+
+	public void updateQuestionlineAnswerline(DatabaseAccess.Transaction dat, Log l,
+			NavVersion DBversion, NavigatorConfig nc)
+	throws SQLException, IllegalArgumentException 
+	{
+		updateDatabase("1.15",DBversion,
+			"ALTER TABLE " + getPrefix() +
+			"results ALTER COLUMN questionline VARCHAR(max) NOT NULL", l,dat);
+		updateDatabase("1.15",DBversion,
+			"ALTER TABLE " + getPrefix() +
+			"results ALTER COLUMN answerline VARCHAR(max) NOT NULL", l,dat);
+	}
+
+
 /**
 *checks the version stored in the database against a pre-defined version and performs the appropriate database
 *upgrade
@@ -1108,6 +1125,7 @@ public abstract class OmQueries
 				try
 				{
 					/* perform the update */
+					l.logDebug("DatabaseUpgrade","UPDATE: "+update);
 					dat.update(update);
 					/* if that worked, update the database version */
 					dat.update("UPDATE " + getPrefix() + "navconfig SET value = \'"+version+"\' where name=\'dbversion\'");
