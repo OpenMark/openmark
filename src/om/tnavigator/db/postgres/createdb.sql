@@ -61,8 +61,8 @@ CREATE TABLE prefix_scores (
 
 CREATE TABLE prefix_results (
   qi INTEGER NOT NULL PRIMARY KEY REFERENCES prefix_questions,
-  questionline VARCHAR(max) NOT NULL,
-  answerline VARCHAR(max) NOT NULL,
+  questionline VARCHAR(4096)  NULL,
+  answerline VARCHAR(4096)  NULL,
   actions TEXT NOT NULL,
   attempts INTEGER NOT NULL
 );

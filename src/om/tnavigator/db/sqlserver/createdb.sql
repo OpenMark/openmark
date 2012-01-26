@@ -61,8 +61,8 @@ CREATE TABLE dbo.prefix_scores (
 
 CREATE TABLE dbo.prefix_results (
   qi INT NOT NULL PRIMARY KEY CLUSTERED FOREIGN KEY REFERENCES prefix_questions,
-  questionline NATIONAL CHAR VARYING(max) NOT NULL,
-  answerline NATIONAL CHAR VARYING(max) NOT NULL,
+  questionline NATIONAL CHAR VARYING(4096)  NULL,
+  answerline NATIONAL CHAR VARYING(4096)  NULL,
   actions NATIONAL TEXT NOT NULL,
   attempts INT NOT NULL
 );

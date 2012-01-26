@@ -74,13 +74,15 @@ public abstract class OmQueries
 	 */
 	public ResultSet querySummary(DatabaseAccess.Transaction dat,int ti) throws SQLException
 	{
-		return dat.query(
+				String sqlstr=
 			"SELECT tq.questionnumber,q.finished,r.questionline,r.answerline,tq.question,r.attempts,tq.sectionname "+
 			"FROM " + getPrefix() + "testquestions tq " +
 			"LEFT JOIN " + getPrefix() + "questions q ON tq.question=q.question AND tq.ti=q.ti " +
 			"LEFT JOIN " + getPrefix() + "results r ON q.qi=r.qi " +
 			"WHERE tq.ti="+ti+" " +
-			"ORDER BY tq.questionnumber, q.attempt DESC");
+			"ORDER BY tq.questionnumber, q.attempt DESC";
+			return dat.query(sqlstr);
+
 	}
 
 	/**
@@ -1092,12 +1094,13 @@ public abstract class OmQueries
 			NavVersion DBversion, NavigatorConfig nc)
 	throws SQLException, IllegalArgumentException 
 	{
+		/*Bug 11743 - We should increase questionline and answerline from NVARCHAR(255) to NVARCHAR(MAX)*/
 		updateDatabase("1.15",DBversion,
 			"ALTER TABLE " + getPrefix() +
-			"results ALTER COLUMN questionline VARCHAR(max) NOT NULL", l,dat);
+			"results ALTER COLUMN questionline VARCHAR(4096) NOT NULL", l,dat);
 		updateDatabase("1.15",DBversion,
 			"ALTER TABLE " + getPrefix() +
-			"results ALTER COLUMN answerline VARCHAR(max) NOT NULL", l,dat);
+			"results ALTER COLUMN answerline VARCHAR(4096) NOT NULL", l,dat);
 	}
 
 
