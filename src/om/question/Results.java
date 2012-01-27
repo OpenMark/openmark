@@ -51,6 +51,10 @@ public class Results
 
 	/** If developer hasn't set the value */
 	public final static int ATTEMPTS_UNSET=-99;
+	
+	/** max length of question and answerline **/
+	private static int MAX_LENGTH=4096;
+
 
 	/** Hashmap of all scores based on axis (String -> Score) */
 	private HashMap<String, Score> hmScores=new HashMap<String, Score>();
@@ -70,7 +74,6 @@ public class Results
 	 *   ATTEMPTS_UNSET(-99)=value has not been set
 	 */
 	public int getAttempts() { return iAttempts; }
-
 	/**
 	 * Sets the one-line question summary.
 	 * <p>
@@ -80,12 +83,15 @@ public class Results
 	 * However, some questions may be impossible to accurately summarise in
 	 * a single line.
 	 * @param sText One-line question summary
-	 * @throws OmDeveloperException If sText is longer than 255 characters
+	 * @throws OmDeveloperException If sText is longer than 4096 characters
 	 */
+	
+
+	
 	public void setQuestionLine(String sText) throws OmDeveloperException
 	{
-		if(sText.length() > 255) throw new OmDeveloperException(
-			"Question line must be <= 255 characters long");
+		if(sText.length() > MAX_LENGTH) throw new OmDeveloperException(
+			"Question line must be <= " + Integer.toString(MAX_LENGTH) + " characters long");
 		sQuestionLine=sText;
 	}
 
@@ -102,8 +108,8 @@ public class Results
 	 */
 	public void setAnswerLine(String sText) throws OmDeveloperException
 	{
-		if(sText.length() > 255) throw new OmDeveloperException(
-			"Answer line must be <= 255 characters long");
+		if(sText.length() > MAX_LENGTH) throw new OmDeveloperException(
+			"Answer line must be <= " + Integer.toString(MAX_LENGTH) + " characters long");
 		sAnswerLine=sText;
 	}
 

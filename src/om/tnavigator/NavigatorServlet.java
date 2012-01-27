@@ -115,6 +115,8 @@ import util.xml.XMLException;
 /** Om test navigator; implementation of the test delivery engine. */
 public class NavigatorServlet extends HttpServlet {
 
+	private static int VALUE_LENGTH=4000;
+	
 	private static final String INPUTTOOLONG = "Input too long";
 
 	private static final String SEQUENCEFIELD = "sequence";
@@ -3578,7 +3580,7 @@ public class NavigatorServlet extends HttpServlet {
 									+ "these during the test. It can also happen if you click on something "
 									+ "while a page is loading.", null);
 				}
-			} else if (sValue.length() > 4000) {
+			} else if (sValue.length() > VALUE_LENGTH) {
 				sendError(us, request, response,
 						HttpServletResponse.SC_FORBIDDEN, false, false, null,
 						INPUTTOOLONG,
