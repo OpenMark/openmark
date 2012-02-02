@@ -1,5 +1,6 @@
 package util.misc;
 
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
@@ -112,6 +113,17 @@ public class IPAddressCheckUtil {
 
 	public static boolean isIPInList(InetAddress ia, String[] addresses, Log l) {
 		l.logDebug("IPCHECK", "isIPInList");
+		
+	     if ( ia instanceof Inet6Address ) 
+	     {    		 
+	 			l.logDebug("IPCHECK", "isIPInList - IPV6,");
+	 			if (ia.isMCOrgLocal())
+	 			{
+		 			l.logDebug("IPCHECK", "isIPInList - IPV6 local,");
+
+	 			}
+			      // do something if visitor is using IPv6
+	     }
 		byte[] ab = ia.getAddress();
 		if (ab.length == 16) {
 			// Check that IPv6 addresses are actually representations of IPv4 -
