@@ -142,6 +142,8 @@ public class NavigatorServlet extends HttpServlet {
 	private static String PCDCCATAGORY="pcdcGeneration";
 	
 	private static String NOFLAG="X";
+	
+	private static String TINYMCE="tiny_mce";
 
 
 
@@ -817,7 +819,7 @@ public class NavigatorServlet extends HttpServlet {
 				return;
 			}
 
-			if (sPath.contains("tiny_mce/") || sPath.contains("subsup.html")) {
+			if (sPath.contains(TINYMCE) || sPath.contains("subsup.html")) {
 				handleTinyMCEResponse(sPath, bPost, request, response);
 				return;
 			}
@@ -4379,6 +4381,7 @@ public class NavigatorServlet extends HttpServlet {
 					+ sTitle);
 		mReplace.put("CSSINDEX", "" + us.iCSSIndex);
 		mReplace.put("RESOURCES", "resources/" + us.getTestPosition());
+		mReplace.put("TINYMCE", TINYMCE);
 		mReplace.put("ACCESS", RequestHelpers.getAccessCSSAppend(request));
 
 		if (!us.isSingle()) {
@@ -4611,6 +4614,7 @@ public class NavigatorServlet extends HttpServlet {
 		// Fix up the replacement variables
 		mReplace = new HashMap<String, Object>(getLabelReplaceMap(us));
 		mReplace.put("RESOURCES", "resources/" + us.getTestPosition());
+		mReplace.put("TINYMCE", TINYMCE);
 		mReplace.put("IDPREFIX", "");
 		
 		XML.replaceTokens(eQuestion, mReplace);

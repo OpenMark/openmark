@@ -99,6 +99,9 @@ import util.xml.XML;
  **/
 public class AdvancedFieldComponent extends QComponent implements Labelable {
 
+//	private static String TINYMCE="tiny_mce/";
+	private static String TINYMCE="%%TINYMCE%%/";
+
 	private static String DIV = "div";
 
 	static String TEXT_AREA_REF = "elm1";
@@ -296,7 +299,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable {
 		if (!appliedTinyMCEByAnotherComponentInDocument) {
 			Element s1 = qc.createElement("script");
 			s1.setAttribute("type", "text/javascript");
-			s1.setAttribute("src", "tiny_mce/tiny_mce_src.js");
+			s1.setAttribute("src", TINYMCE+"tiny_mce_src.js");
 			eDiv.appendChild(s1);
 			setAppliedTinyMCEJavascript(true);
 		}
@@ -305,7 +308,7 @@ public class AdvancedFieldComponent extends QComponent implements Labelable {
 		String outputType = determineOutputType(enu);
 		String elements = QDocument.ID_PREFIX + QDocument.OM_PREFIX
 			+ getID() + "_iframe";
-		s2.setAttribute("src", "tiny_mce/tiny_mce_settings.js?"
+		s2.setAttribute("src", TINYMCE+"tiny_mce_settings.js?"
 			+ "&h=" + "" + (int) (60 * dZoom)
 			+ "&w=" + (int) (10 * dZoom * getInteger(PROPERTY_COLS))
 			+ "&t=" + outputType

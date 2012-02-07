@@ -128,6 +128,8 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
     private Map<String, Object> configuration = new HashMap<String, Object>();
 
 	private Log deployLog;
+	
+	private static String TINYMCE="tiny_mce/";
 
 	/** Clear/reset question data */
 	private void resetQuestion()
@@ -718,7 +720,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				response.getOutputStream().write(r.getContent());
 				response.getOutputStream().close();
 			}
-			else if (sAfter.contains("tiny_mce/")) 
+			else if (sAfter.contains(TINYMCE)) 
 			{	
 				handleTinyMCEResponse(sRemainingPath, bPost, request, response);
 			}
@@ -1022,6 +1024,8 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 		Map<String,String> mReplace=new HashMap<String,String>(getLabelReplaceMap());
 		mReplace.put("RESOURCES","resources");
 		mReplace.put("IDPREFIX","");
+		mReplace.put("TINYMCE","tiny_mce");
+
 		XML.replaceTokens(eQuestion,mReplace);
 
 		// Update document root
