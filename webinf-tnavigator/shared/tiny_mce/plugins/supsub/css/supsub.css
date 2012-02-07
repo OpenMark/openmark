@@ -1,0 +1,6 @@
+body#tinymce {
+    margin: 0;
+    padding: 1px 0 0 3px;
+    line-height: 2;
+    font:13px/1.231 arial,helvetica,clean,sans-serif;
+}

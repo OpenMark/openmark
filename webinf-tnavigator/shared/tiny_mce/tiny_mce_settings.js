@@ -15,7 +15,7 @@
 	    force_p_newlines : false,
 	    language : "en",
 	    nowrap : true,
-	    plugins : "-supsub",
+	    plugins : "supsub",
 	    height : "[HEIGHT]",
 	    width : "[WIDTH]",
 	    relative_urls :  false,
