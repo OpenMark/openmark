@@ -38,6 +38,7 @@ public class ComponentRegistry
 		DragBoxComponent.class,
 		DropBoxComponent.class,
 		DropdownComponent.class,
+		EditAdvancedFieldComponent.class,
 		EditFieldComponent.class,
 		EmphasisComponent.class,
 		EquationComponent.class,
