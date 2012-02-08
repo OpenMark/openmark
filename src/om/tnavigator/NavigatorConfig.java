@@ -103,6 +103,9 @@ public class NavigatorConfig
 	
 	/** Standard admin usernames that may be required to be present in test deploy files */
 	private List<String> standardAdmins = new ArrayList<String>();
+	
+	/** list of optional fieatures switched on */
+	private List<String> optionalFeatures = new ArrayList<String>();
 
 	private static String PRE_PROCESSOR = "preprocessor";
 
@@ -329,6 +332,22 @@ public class NavigatorConfig
 				}				
 			}
 		}
+		/* allows us to turn features on and off */
+		
+		if(XML.hasChild(eRoot, "optionalfeatures")) {
+			Element eOptionalFeatures=XML.getChild(eRoot,"optionalfeatures");
+			Element[] eFeatures=XML.getChildren(eOptionalFeatures, "feature");
+			for (Element eFeature : eFeatures) 
+			{	
+				if (eFeature.hasAttribute("name") && eFeature.hasAttribute("enable"))
+				{
+					if (eFeature.getAttribute("enable").compareToIgnoreCase("yes") ==0)
+					{
+						optionalFeatures.add(eFeature.getAttribute("name"));
+					}	
+				}
+			}
+		}
 		establishPreProcessor(eRoot);
 		establishRequestManagementPosition(eRoot);
 	}
@@ -542,5 +561,10 @@ public class NavigatorConfig
 			return password;
 		}		
 		
+	}
+	
+	public boolean isOptionalFeatureOn(String what)
+	{	
+		return optionalFeatures.contains(what);		
 	}
 }

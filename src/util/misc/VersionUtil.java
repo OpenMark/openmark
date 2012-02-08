@@ -34,27 +34,48 @@ public class VersionUtil {
 	 * @throws OmException
 	 */
 	public static boolean findLatestVersion(String sQuestionID,
-		int iRequiredVersion, QuestionVersion qv, File[] af)
+			int iRequiredVersion, QuestionVersion qv, File[] af, Boolean doingDynamic)
+			throws OmException {
+			boolean bFound = false;
+			
+			Pattern p = Pattern.compile(sQuestionID + suffix);
+
+			bFound=findLatestVersionOfQuestion(sQuestionID,
+					 iRequiredVersion,  qv, af,p);
+			/** see if its  dynamic question **/
+			if (!bFound && doingDynamic)
+			{			
+				Pattern xp = Pattern.compile(sQuestionID + xmlSuffix);
+				bFound=findLatestVersionOfQuestion(sQuestionID,
+					 iRequiredVersion,  qv, af,xp);
+			}
+			return bFound;
+		}
+	/**
+	 * @param sQuestionID
+	 * @param iRequiredVersion
+	 * @param qv
+	 * @param af
+	 * @param p 
+	 * @return
+	 * @throws OmException
+	 * **/
+	private static boolean findLatestVersionOfQuestion(String sQuestionID,
+		int iRequiredVersion, QuestionVersion qv, File[] af, Pattern p)
 		throws OmException {
 		boolean bFound = false;
-		Pattern p = Pattern.compile(sQuestionID + suffix);
-		Pattern xp = Pattern.compile(sQuestionID + xmlSuffix);
 		String found = null;
 		for (int i = 0; i < af.length; i++) {
 			Matcher toUse = null;
 			// See if it's the question we're looking for
 			Matcher m = p.matcher(af[i].getName());
-			Matcher xm = xp.matcher(af[i].getName());
 			boolean mMatched = m.matches();
-			boolean xmMatched = xm.matches();
-			if (!mMatched && !xmMatched) {
+			if (!mMatched ) {
 				continue;
 			} else {
 				if (mMatched) {
 					toUse = m;
-				} else if (xmMatched) {
-					toUse = xm;
-				}
+				} 
 			}
 			if (null != toUse) {
 				//bFound = isGreater(m, qv, iRequiredVersion);

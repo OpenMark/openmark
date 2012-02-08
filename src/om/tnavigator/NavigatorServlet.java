@@ -144,6 +144,8 @@ public class NavigatorServlet extends HttpServlet {
 	private static String NOFLAG="X";
 	
 	private static String TINYMCE="tiny_mce";
+	
+	private static String DYNAMICQUESTIONS="dynamic_questions";
 
 
 
@@ -409,6 +411,18 @@ public class NavigatorServlet extends HttpServlet {
 		// Start expiry thread
 		sessionExpirer = new SessionExpirer();
 		setUpPreProcessingRequestHandler();
+		
+		// log that we are procfessing dynamic questions
+		if(nc.isOptionalFeatureOn(DYNAMICQUESTIONS))
+		{
+			l.logNormal("Dynamic Questions enabled");
+		}
+		else
+		{
+			l.logNormal("Dynamic questions not enabled");
+		}
+		
+
 	}
 
 	/**
@@ -2031,7 +2045,7 @@ public class NavigatorServlet extends HttpServlet {
 		// This should use a proper question bank at some point
 		QuestionVersion qv = new QuestionVersion();
 		File[] af = IO.listFiles(questionBankFolder);
-		boolean bFound = VersionUtil.findLatestVersion(sQuestionID, iRequiredVersion, qv, af);
+		boolean bFound = VersionUtil.findLatestVersion(sQuestionID, iRequiredVersion, qv, af, nc.isOptionalFeatureOn(DYNAMICQUESTIONS));
 		if (!bFound) {
 			throw new OmException(
 				"Question file missing: " + sQuestionID
@@ -4038,8 +4052,13 @@ public class NavigatorServlet extends HttpServlet {
 		byte[] abQuestion = IO.loadBytes(new FileInputStream(file));
 		if (what.equals("question")) {
 			response.setContentType("application/x-openmark");
-			if (file.getName().endsWith(".omxml")) {
-				response.setContentType("application/x-openmark-dynamics");
+			/* only do this if enabled */
+			if(nc.isOptionalFeatureOn(DYNAMICQUESTIONS))
+			{
+				if (file.getName().endsWith(".omxml")) 
+				{
+					response.setContentType("application/x-openmark-dynamics");
+				}
 			}
 		} else {
 			response.setContentType("application/xml");
@@ -4054,8 +4073,11 @@ public class NavigatorServlet extends HttpServlet {
 	private void handleQuestion(String sIDVersion, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		File file = new File(questionBankFolder, sIDVersion + ".jar");
-		if (!file.exists()) {
-			file = new File(questionBankFolder, sIDVersion + ".omxml");
+		if(nc.isOptionalFeatureOn(DYNAMICQUESTIONS))
+		{
+			if (!file.exists()) {
+				file = new File(questionBankFolder, sIDVersion + ".omxml");
+			}
 		}
 		handleTestOrQuestion(file, "question", request, response);
 	}
