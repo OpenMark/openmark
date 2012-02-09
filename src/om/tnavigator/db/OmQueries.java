@@ -1049,7 +1049,7 @@ public abstract class OmQueries
 		
 		if(!tableExists(dat,"precoursediag"))
 		{
-			updateDatabase("1.15",DBversion,
+			updateDatabase("1.15.1",DBversion,
 					"CREATE TABLE " + getPrefix() + "precoursediag (  ti int NOT NULL PRIMARY KEY," + 
 					"precoursediagcode VARCHAR(64) NOT NULL," +
 					"timecodeupdated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
