@@ -2362,7 +2362,7 @@ public class NavigatorServlet extends HttpServlet {
 		TrafficLights tls=new TrafficLights();
 
 		Element[] ae = XML.getChildren(eParent);
-		String fullflag="";
+		String flag="";
 		for (int i = 0; i < ae.length; i++) {
 			Element e = ae[i];
 			String sTag = e.getTagName();
@@ -2391,73 +2391,86 @@ public class NavigatorServlet extends HttpServlet {
 				//String flag=NOFLAG;
 				boolean bOK = true;
 				try {
-					if (e.hasAttribute("gt")) {
-						if (!(iCompare > Integer.parseInt(e.getAttribute("gt"))))
+					if (e.hasAttribute("gt")) 
+					{
+						int itest=Integer.parseInt(e.getAttribute("gt"));
+						if (!(iCompare > itest))
 						{
 							bOK = false;
 						}
 						else
 						{ 
-							String flag=sFlag!=null?sFlag:NOFLAG;
-							tls.addTrafficLights(sAxis,flag);
-							//if (sFlag!=null )flag=sFlag;
+							 flag=sFlag!=null?sFlag:NOFLAG;
+
 						}
 					}
-					if (e.hasAttribute("gte")) {
-						if (!(iCompare >= Integer.parseInt(e
-								.getAttribute("gte"))))
-							bOK = false;
+					if (e.hasAttribute("gte")) 
+					{
+							int itest=Integer.parseInt(e.getAttribute("gte"));
+							if (!(iCompare >= itest))
+							{
+								bOK = false;
 							}
 							else
 							{ 
-								String flag=sFlag!=null?sFlag:NOFLAG;
-								tls.addTrafficLights(sAxis,flag);;
-							}					
-					if (e.hasAttribute("e")) {
-						if (!(iCompare == Integer.parseInt(e.getAttribute("e"))))
-							bOK = false;
+								flag=sFlag!=null?sFlag:NOFLAG;
 							}
-							else
-							{ 
-								String flag=sFlag!=null?sFlag:NOFLAG;
-								tls.addTrafficLights(sAxis,flag);
-							}					
-					if (e.hasAttribute("lte")) {
-						if (!(iCompare <= Integer.parseInt(e
-								.getAttribute("lte"))))
+					}
+					if (e.hasAttribute("e")) 
+					{
+						int itest=Integer.parseInt(e.getAttribute("e"));
+						if (!(iCompare == itest))
+						{
 							bOK = false;
-							}
-							else
-							{ 
-								String flag=sFlag!=null?sFlag:NOFLAG;
-								tls.addTrafficLights(sAxis,flag);
-								
-							}					
-					if (e.hasAttribute("lt")) {
-						if (!(iCompare < Integer.parseInt(e.getAttribute("lt"))))
+						}
+						else
+						{ 
+							 flag=sFlag!=null?sFlag:NOFLAG;
+						}	
+					}
+					if (e.hasAttribute("lte")) 
+					{
+						int itest=Integer.parseInt(e.getAttribute("lte"));
+						if (!(iCompare <= itest))
+						{
 							bOK = false;
-							}
-							else
-							{ 
-								String flag=sFlag!=null?sFlag:NOFLAG;
-								tls.addTrafficLights(sAxis,flag);
-								}					
-					if (e.hasAttribute("ne")) {
-						if (!(iCompare != Integer
-								.parseInt(e.getAttribute("ne"))))
+						}
+						else
+						{ 
+							 flag=sFlag!=null?sFlag:NOFLAG;
+						}
+					}
+					if (e.hasAttribute("lt")) 
+					{
+						int itest=Integer.parseInt(e.getAttribute("lt"));
+						if (!(iCompare < itest ))
+						{
 							bOK = false;
-							}
-							else
-							{ 
-								String flag=sFlag!=null?sFlag:NOFLAG;
-								tls.addTrafficLights(sAxis,flag);
-							}					
+						}
+						else
+						{ 
+							 flag=sFlag!=null?sFlag:NOFLAG;
+						}
+					}
+					if (e.hasAttribute("ne")) 
+					{
+						int itest=Integer.parseInt(e.getAttribute("ne"));
+						if (!(iCompare != itest))
+						{
+							bOK = false;
+						}
+						else
+						{ 
+							 flag=sFlag!=null?sFlag:NOFLAG;
+						}
+					}
 				} catch (NumberFormatException nfe) {
 					throw new OmFormatException(
 							"Not valid integer in <conditional>");
 				}
 				if (bOK) // Passed the conditional! Process everything within it
 				{
+					tls.addTrafficLights(sAxis,flag);
 				//	fullflag=fullflag+flag;
 				}
 			} 
