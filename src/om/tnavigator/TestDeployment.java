@@ -74,11 +74,15 @@ public class TestDeployment
 	
 	private int iAuthor=AUTHORSHIP_NOT_REQUIRED;	
 	
+	/* PCDC message   required */
 	public final static boolean PCDC_REQUIRED=true;
-	/* authorship plagarism message   required */
 	public final static boolean PCDC_NOT_REQUIRED=false;
+		/* PCDC message   displayed to student */
+	public final static boolean PCDC_DISPLAY=true;
+	public final static boolean PCDC_NODISPLAY=false;
 
 	private boolean bPcdc=PCDC_NOT_REQUIRED;	
+	private boolean bDisplayPcdc=PCDC_DISPLAY;
 
 	/** True if the test should send out confirm emails */
 	private boolean bSubmitEmail;
@@ -131,7 +135,10 @@ public class TestDeployment
 		return bPcdc;
 	}
 	
-		
+	
+	public boolean getbDisplayPcdc() {
+		return bDisplayPcdc;
+	}	
 	public int getiForbidExtensionValue() {
 		return iForbidExtensionValue;
 	}
@@ -201,12 +208,16 @@ public class TestDeployment
 			{
 				iType=TYPE_NOTASSESSED;
 			}
-/* check is pre course diagnotic code required
+/* check is pre course diagnotic code required, and check the attribute display 
  * 
  */
 			if(XML.hasChild(eRoot,"pcdc"))
 			{
 				bPcdc=PCDC_REQUIRED;
+				/** by default its displayed **/
+				Element ePCDC=XML.getChild(eRoot,"pcdc");
+				if("no".equalsIgnoreCase(ePCDC.getAttribute("display")))
+					bDisplayPcdc=PCDC_NODISPLAY;
 			}
 			else
 			{

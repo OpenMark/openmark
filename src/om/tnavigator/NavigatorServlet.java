@@ -2259,7 +2259,11 @@ public class NavigatorServlet extends HttpServlet {
 		try{
 			if (PreCourseDiagCode.shouldGenerateCode(us))
 			{
-				XML.createText(eMain,"p",readPCDC(da,us,trafficlights));
+				String text=readPCDC(da,us,trafficlights);
+				if (PreCourseDiagCode.shouldDisplayCode(us))
+				{
+					XML.createText(eMain,"p",text);
+				}
 			}
 		}
 		catch (Exception e) {

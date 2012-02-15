@@ -259,6 +259,26 @@ public class PreCourseDiagCode {
 		}
 		return should;
 	}
+	
+	/**
+	 * Here we check that the test shpould displayt he codeto the student
+	 * @return
+	 * @throws RequestHandlingException
+	 * @author sarah wood
+	 */
+	static boolean shouldDisplayCode(UserSession us)
+	 throws Exception  {
+		boolean should = false;
+		// start with a simple, run it if its an open to the world test
+		// may extend to having a specific tag
+		if (null != us ? null != us.getTestDeployment() : false) {
+			if (us.getTestDeployment().getbDisplayPcdc())
+			 {
+				should = true;
+			}
+		}
+		return should;
+	}
 
 	public  void  getPreCourseDiagCodeFromDB(
 			DatabaseAccess.Transaction dat, NavigatorServlet ns, int iTi) 
