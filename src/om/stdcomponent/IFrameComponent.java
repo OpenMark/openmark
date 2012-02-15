@@ -61,7 +61,7 @@ public class IFrameComponent extends QComponent
 	private static final String PROPERTY_WIDTH="width";
 	private static final String PROPERTY_HEIGHT="height";
 	private static final String PROPERTY_SHOWRESPONSE="showResponse";
-	private static final String PROPERTY_BUTTONLABEL="buttonLabel ";
+	private static final String PROPERTY_BUTTONLABEL="buttonLabel";
 	private static final boolean DEF_SHOWRESPONSE=false;
 	private static final String DEF_PROPERTY_BUTTONLABEL="Enter Answer";
 
