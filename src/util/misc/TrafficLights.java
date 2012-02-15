@@ -1,12 +1,12 @@
 package util.misc;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /* holds trafficlights in 2 forms, a concatenated string, and a map of axis and traffic light value */
 
 public class TrafficLights {
-		Map <String,String> trafficlights = new HashMap<String,String>();
+		Map <String,String> trafficlights = new LinkedHashMap<String,String>();
 		
 		private static String NOVALUE2="No trafficlight for this axis";
 		private static String NOVALUE1="_";
