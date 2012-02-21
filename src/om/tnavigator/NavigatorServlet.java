@@ -1473,7 +1473,7 @@ public class NavigatorServlet extends HttpServlet {
 			us.setDbTi(dbTi);			
 			
 			// generate an pre course diagnostic code code if appropriate and add to database table
-			if (PreCourseDiagCode.shouldGenerateCode(us))
+			if (PreCourseDiagCode.shouldGenerateNewCode(us))
 			{			
 				PreCourseDiagCode pcdc=new PreCourseDiagCode(dbTi,us.sOUCU);
 				pcdc.insertTestPCDC(dat,oq);
@@ -2241,7 +2241,7 @@ public class NavigatorServlet extends HttpServlet {
 			//generate a trafficlights string for the pre course diagnotic code
 			trafficlights=			
 				processTrafficLights(rt, us, us.getTestDefinition().getFinalPage(),
-		  				  eMain, ps, request);
+		  				  eMain, ps, request,l);
 
 		} else {
 			XML.createText(eMain, "p", "Thank you for completing this test.");
@@ -2257,7 +2257,7 @@ public class NavigatorServlet extends HttpServlet {
 		}
 		// show diagnostic code if available
 		try{
-			if (PreCourseDiagCode.shouldGenerateCode(us))
+			if (PreCourseDiagCode.shouldReadCode(us) )
 			{
 				String text=readPCDC(da,us,trafficlights);
 				if (PreCourseDiagCode.shouldDisplayCode(us))
@@ -2333,11 +2333,17 @@ public class NavigatorServlet extends HttpServlet {
 					// read the value from the databsae for this TI
 					try {
 						PreCourseDiagCode pcdc=new PreCourseDiagCode(dat,us.getNs(),us.getDbTi());
-						String TLights= trafficlights.getTrafficLightValuesAsString().equals("") ? "": trafficlights.getTrafficLightValuesAsString()+PCDCSEPARATOR;
-						pcdc.setCode(TLights+pcdc.getPreCourseDiagCode());
-						pcdc.setTrafficlights(trafficlights.getTrafficLightPairsAsString());
-						// store the new code
-						pcdc.updateDBwithCode(dat,oq);
+						/*generate a new one from the traffic lights if wee need to*/
+						if (PreCourseDiagCode.shouldGenerateCode(us))
+						{	
+							String TLights= trafficlights.getTrafficLightValuesAsString().equals("") ? "": trafficlights.getTrafficLightValuesAsString()+PCDCSEPARATOR;
+							pcdc.setCode(TLights+pcdc.getPreCourseDiagCode());
+							pcdc.setTrafficlights(trafficlights.getTrafficLightPairsAsString());
+						// store the new code if we should
+
+							pcdc.updateDBwithCode(dat,oq);
+							us.setHasGeneratedFinalPCDC(true);
+						}
 						code=code+pcdc.getPreCourseDiagCode();
 					} catch (Exception e) {
 						throw new ServletException("Error creating pcdc code (1) : "
@@ -2361,16 +2367,22 @@ public class NavigatorServlet extends HttpServlet {
 			
 	private TrafficLights processTrafficLights(RequestTimings rt, UserSession us,
 			Element eParent, Element eTarget, CombinedScore ps ,
-			HttpServletRequest request) throws Exception {
+			HttpServletRequest request,Log l) throws Exception 
+			
+	{
 		
+		String dummyVariablesoIcanfindthefunctioneasily="";
 		TrafficLights tls=new TrafficLights();
 
 		Element[] ae = XML.getChildren(eParent);
 		String flag="";
-		for (int i = 0; i < ae.length; i++) {
+		for (int i = 0; i < ae.length; i++) 
+		{
 			Element e = ae[i];
 			String sTag = e.getTagName();
-			if (sTag.equals("conditional")) {
+			String ltext="START "+Integer.toString(us.getDbTi())+" i: "+Integer.toString(i)+" ";
+			if (sTag.equals("conditional")) 
+			{
 				// Find marks on the specified axis
 				String sAxis = e.hasAttribute("axis") ? e.getAttribute("axis")
 						: null;
@@ -2393,6 +2405,8 @@ public class NavigatorServlet extends HttpServlet {
 					throw new OmFormatException(
 							"Unexpected on= for conditional: " + sOn);
 				//String flag=NOFLAG;
+				ltext="axis: "+sAxis+" score: "+Integer.toString(iCompare);
+				
 				boolean bOK = true;
 				try {
 					if (e.hasAttribute("gt")) 
@@ -2407,6 +2421,10 @@ public class NavigatorServlet extends HttpServlet {
 							 flag=sFlag!=null?sFlag:NOFLAG;
 
 						}
+					    String s = new Boolean(bOK).toString();
+					    ltext=ltext+" bOk: "+s;
+						ltext=ltext+" flag:"+flag+" GT"+" itest: "+Integer.toString(itest);
+
 					}
 					if (e.hasAttribute("gte")) 
 					{
@@ -2419,6 +2437,10 @@ public class NavigatorServlet extends HttpServlet {
 							{ 
 								flag=sFlag!=null?sFlag:NOFLAG;
 							}
+						    String s = new Boolean(bOK).toString();
+						    ltext=ltext+" bOk: "+s;
+						    ltext=ltext+" flag:"+flag+" GTE"+" itest: "+Integer.toString(itest) ;
+
 					}
 					if (e.hasAttribute("e")) 
 					{
@@ -2430,7 +2452,11 @@ public class NavigatorServlet extends HttpServlet {
 						else
 						{ 
 							 flag=sFlag!=null?sFlag:NOFLAG;
-						}	
+						}
+					    String s = new Boolean(bOK).toString();
+					    ltext=ltext+" bOk: "+s;
+						ltext=ltext+" flag:"+flag+" E"+" itest: "+Integer.toString(itest);
+
 					}
 					if (e.hasAttribute("lte")) 
 					{
@@ -2443,6 +2469,10 @@ public class NavigatorServlet extends HttpServlet {
 						{ 
 							 flag=sFlag!=null?sFlag:NOFLAG;
 						}
+					    String s = new Boolean(bOK).toString();
+					    ltext=ltext+" bOk: "+s;
+						ltext=ltext+" flag:"+flag+" LTE"+" itest: "+Integer.toString(itest);
+
 					}
 					if (e.hasAttribute("lt")) 
 					{
@@ -2455,6 +2485,9 @@ public class NavigatorServlet extends HttpServlet {
 						{ 
 							 flag=sFlag!=null?sFlag:NOFLAG;
 						}
+					    String s = new Boolean(bOK).toString();
+					    ltext=ltext+" bOk: "+s;
+						ltext=ltext+" flag:"+flag+" LT"+" itest: "+Integer.toString(itest);
 					}
 					if (e.hasAttribute("ne")) 
 					{
@@ -2467,6 +2500,9 @@ public class NavigatorServlet extends HttpServlet {
 						{ 
 							 flag=sFlag!=null?sFlag:NOFLAG;
 						}
+					    String s = new Boolean(bOK).toString();
+					    ltext=ltext+" bOk: "+s;
+						ltext=ltext+" flag:"+flag+" NE"+" itest: "+Integer.toString(itest);
 					}
 				} catch (NumberFormatException nfe) {
 					throw new OmFormatException(
@@ -2478,8 +2514,10 @@ public class NavigatorServlet extends HttpServlet {
 				//	fullflag=fullflag+flag;
 				}
 			} 
+			l.logDebug(PCDCCATAGORY,ltext);
 			
 		}
+		
 			return tls;
 	}
 	

@@ -242,17 +242,45 @@ public class PreCourseDiagCode {
 	
 	/**
 	 * Here we check that the test meets the criteria for generating the code
+	 * only generate if option set and the test is not finished
 	 * @return
 	 * @throws RequestHandlingException
 	 * @author sarah wood
 	 */
-	static boolean shouldGenerateCode(UserSession us)
+	static boolean shouldDoCode(UserSession us)
 	 throws Exception  {
 		boolean should = false;
 		// start with a simple, run it if its an open to the world test
 		// may extend to having a specific tag
 		if (null != us ? null != us.getTestDeployment() : false) {
-			if (us.getTestDeployment().getbPcdc())
+			if (us.getTestDeployment().getbPcdc() && !us.isHasGeneratedFinalPCDC())
+			 {
+				should = true;
+			}
+		}
+		return should;
+	}
+	
+	static boolean shouldGenerateCode(UserSession us)
+	 throws Exception  {
+		return shouldDoCode(us);
+	}
+	
+	static boolean shouldGenerateNewCode(UserSession us)
+	 throws Exception  {
+		//reset the boolean in the usersession
+		us.setHasGeneratedFinalPCDC(false);
+		return shouldDoCode(us);
+
+	}
+	
+	static boolean shouldReadCode(UserSession us)
+	 throws Exception  {
+		boolean should = false;
+		// start with a simple, run it if its an open to the world test
+		// may extend to having a specific tag
+		if (null != us ? null != us.getTestDeployment() : false) {
+			if (us.getTestDeployment().getbPcdc() )
 			 {
 				should = true;
 			}
@@ -272,7 +300,7 @@ public class PreCourseDiagCode {
 		// start with a simple, run it if its an open to the world test
 		// may extend to having a specific tag
 		if (null != us ? null != us.getTestDeployment() : false) {
-			if (us.getTestDeployment().getbDisplayPcdc())
+			if (us.getTestDeployment().getbDisplayPcdc() )
 			 {
 				should = true;
 			}

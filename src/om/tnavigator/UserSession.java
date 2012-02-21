@@ -78,6 +78,9 @@ public class UserSession
 	/** Whether they can also view reports */
 	public boolean bAllowReports=false;
 
+	/** Whether the final PCDC code has been generated */
+	public boolean bHasGeneratedFinalPCDC=false;
+	
 	/** Map of String (filename) -> Resource */
 	Map<String,Resource> mResources=new HashMap<String,Resource>();
 
@@ -250,6 +253,20 @@ public class UserSession
 	 */
 	boolean isFinished() {
 		return bFinished;
+	}
+	
+	/**
+	 * @param bFinished the bFinished to set
+	 */
+	void setHasGeneratedFinalPCDC(boolean bFinished) {
+		this.bHasGeneratedFinalPCDC = bFinished;
+	}
+
+	/**
+	 * @return the bFinished
+	 */
+	boolean isHasGeneratedFinalPCDC() {
+		return bHasGeneratedFinalPCDC;
 	}
 
 	/**
