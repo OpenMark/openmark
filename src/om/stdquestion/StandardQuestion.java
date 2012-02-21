@@ -597,6 +597,23 @@ public abstract class StandardQuestion implements Question
 			throw new OmDeveloperException("Component is not an <advancedfield>: "+sID);
 		}
 	}
+	
+	/**
+	 * @param sID ID of EditAdvancedfield component
+	 * @return Component object
+	 * @throws OmDeveloperException If it doesn't exist or isn't correct type
+	 */
+	protected EditAdvancedFieldComponent getEditAdvancedField(String sID) throws OmDeveloperException
+	{
+		try
+		{
+			return (EditAdvancedFieldComponent)getComponent(sID);
+		}
+		catch(ClassCastException cce)
+		{
+			throw new OmDeveloperException("Component is not an <editadvancedfield>: "+sID);
+		}
+	}
 	/**
 	 * @param sID ID of dropbox component
 	 * @return Component object
