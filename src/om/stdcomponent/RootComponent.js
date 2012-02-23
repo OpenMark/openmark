@@ -126,7 +126,8 @@ var isGecko=!isKHTML && navigator.userAgent.indexOf('Gecko/')!=-1;
 var isOpera=navigator.userAgent.indexOf('Opera')!=-1;
 var isIE=!isOpera && navigator.userAgent.match('.*MSIE.*Windows.*');
 var isIE7OrBelow=!isOpera && navigator.userAgent.match('.*MSIE [1-7].*Windows.*');
-var isIE7=!isOpera && navigator.userAgent.match('.*MSIE 7.*Windows.*');
+var isIE8 = navigator.userAgent.match('.*Trident/4.*');
+var isIE7=!isOpera && navigator.userAgent.match('.*MSIE 7.*Windows.*') && !isIE8;
 var isIE8OrBelow=!isOpera && navigator.userAgent.match('.*Trident/[1-4].*Windows.*');
 
 var isGecko18;
@@ -234,33 +235,68 @@ var focusList=new Array();
 
 function addFocusable(id,expr)
 {
-	var o=new Object();
-	o.id=id;
-	o.expr=expr;
+    var o=new Object();
+    o.id=id;
+    o.expr=expr;
 
-	if(focusList.length==0 && isAutoFocusOn())
-	{
-		addOnLoad(function() {
-		setTimeout(o.expr+'.focus();setTimeout("window.scroll(0,0);",0)',100);
-		});
-	}
+    if(focusList.length==0 && isAutoFocusOn())
+    {
+        setFocus(o);
+    }
 
-	focusList.push(o);
+    focusList.push(o);
 }
 
 // Focus the next (offset=1) or previous (offset=-1) one
 function focusFromList(idThis,offset)
 {
-	for(var i=0;i<focusList.length;i++)
-	{
-		if(focusList[i].id==idThis)
-		{
-			var index=i+offset;
-			while(index<0) index+=focusList.length;
-			while(index>=focusList.length) index-=focusList.length;
-			setTimeout(focusList[index].expr+".focus();",0);
-		}
-	}
+    for(var i=0;i<focusList.length;i++)
+    {
+        if(focusList[i].id==idThis)
+        {
+            var index=i+offset;
+            while(index<0) index+=focusList.length;
+            while(index>=focusList.length) index-=focusList.length;
+            setFocus(focusList[index]);
+        }
+    }
+}
+
+function setFocus(o){
+
+    var type = getFocusableType(o.expr);
+    
+    switch(type){
+        case 'tinyMCE':
+            tinyMCE.execCommand('mceFocus',false,o.expr);
+            break;
+        case 'contentWindow':
+            setTimeout('document.getElementById(\''+o.expr+'\').contentWindow.focus();',0);
+            break;
+        default:
+            setTimeout('document.getElementById(\''+o.expr+'\').focus();',0);
+    }
+    
+}
+
+//What is the type of element to be focused
+function getFocusableType(id){
+    var type = 'standard';
+
+    var el = document.getElementById(id);
+    // Is it a standard element
+    if(!el || (el.nodeName.toLowerCase() !=='iframe' && el.nodeName.toLowerCase() !=='textarea')){
+        return 'standard';
+    }
+    
+    var s = el.nextSibling;
+    // Is tinymce being used
+    if(s && s.className && s.className.match(/mceEditor/i)){
+        return 'tinyMCE';
+    }
+    
+    // a contentwindow is being used
+    return 'contentWindow';
 }
 
 // Adds pageX and pageY to the element
@@ -313,56 +349,56 @@ if(window.isDevServlet===undefined || !window.isDevServlet)
 
 function trueoffsetleft(El)
 {
-	if(isIE7)
-	{
-		var lastleft=0;
-		var cl=0;
-		var curLeft=0;
-		obj=El;
-		if(obj.offsetParent) {
-			curLeft = obj.offsetLeft
+	//if(isIE7)
+	//{
+	//	var lastleft=0;
+	//	var cl=0;
+	//	var curLeft=0;
+	//	obj=El;
+	//	if(obj.offsetParent) {
+	//		curLeft = obj.offsetLeft
 			
-			while (obj = obj.offsetParent) {
-			   lastleft=cl;
-			   if(obj == document.body) break;
-			    curLeft += obj.offsetLeft;	
-			    cl=obj.offsetLeft;
-			}
-		}		
-		return(curLeft-lastleft);
-	}
-	else
-	{
+	//		while (obj = obj.offsetParent) {
+//			   lastleft=cl;
+	//		   if(obj == document.body) break;
+	//		    curLeft += obj.offsetLeft;	
+	//		    cl=obj.offsetLeft;
+	//		}
+	//	}		
+	//	return(curLeft-lastleft);
+	//}
+	//else
+	//{
 		return(El.offsetLeft);
-	}
+//	}
 }
 
 function trueoffsettop(El)
 {
-	if(isIE7)
-	{
+//	if(isIE7)
+	//{
 
-		var curTop=0;
-		var lasttop=0;
-		var ct=0;
-		obj=El;
-	    if (obj.offsetParent) {
-	        curTop = obj.offsetTop
-	        while (obj = obj.offsetParent) {
-	        	lasttop=ct;
+	//	var curTop=0;
+	//	var lasttop=0;
+	//	var ct=0;
+	//	obj=El;
+	 //   if (obj.offsetParent) {
+	 //       curTop = obj.offsetTop
+	 //       while (obj = obj.offsetParent) {
+	 //       	lasttop=ct;
 	           //alert("objName= "+obj.id+"  offsetLeft= "+obj.offsetLeft+"  offsetTop= "+obj.offsetTop);
-	            if(obj == document.body) break;
-	            curTop += obj.offsetTop;
-	            ct=obj.offsetTop;
+	 //           if(obj == document.body) break;
+	 //           curTop += obj.offsetTop;
+	 //           ct=obj.offsetTop;
 	            
-	        }
-	    }
-		return(curTop-lasttop);
-	}
-	else
-	{	
+	 //       }
+	//    }
+	//	return(curTop-lasttop);
+//	}
+//	else
+//	{	
 		return(El.offsetTop);
-	}
+//	}
 }
 
 function cleanstring(val)
