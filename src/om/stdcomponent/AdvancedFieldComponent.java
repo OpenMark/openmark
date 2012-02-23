@@ -254,8 +254,8 @@ public class AdvancedFieldComponent extends QComponent implements Labelable
 				(isEnabled()?"true":"false")+ ",'" +sType+ "'," + dZoom+ ",'"+sfg+"','"+sbg+"'); } );");
 
 			// Can be focused (hopefully)
-			if(isEnabled()) qc.informFocusableFullJS(QDocument.ID_PREFIX+getID(),"document.getElementById('"+
-					QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_iframe').contentWindow",bPlain);
+			if(isEnabled()) qc.informFocusableFullJS(QDocument.ID_PREFIX+getID(),
+					QDocument.ID_PREFIX+QDocument.OM_PREFIX+getID()+"_iframe",bPlain);
 		}
 	}
 

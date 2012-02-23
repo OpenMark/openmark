@@ -149,6 +149,8 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 	private boolean appliedTinyMCEJavascript = false;
 
 	private boolean appliedTinyMCEByAnotherComponentInDocument = false;
+	
+	private static String TOP_POSITION_FIX = "0";
 
 	public boolean isAppliedTinyMCEJavascript() {
 		return appliedTinyMCEJavascript;
@@ -346,14 +348,17 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 			+ getID() + "','" + QDocument.ID_PREFIX + "',"
 			+ (isEnabled() ? "true" : "false") + ",'" + sType + "',"
 			+ dZoom + ",'" + sfg + "','" + sbg + "'); } );");
+		// Align text field with question equals sign.
+		XML.createText(eScript, "addPostLoad( function() { editadvancedFieldPositionFix('"
+				+ getID() + "'," + TOP_POSITION_FIX + "); } );");
 
 		// Can be focused (hopefully)
-//		if (isEnabled()) {
-////			qc.informFocusableFullJS(QDocument.ID_PREFIX + getID(),
-////				"document.getElementById('" + QDocument.ID_PREFIX
-////					+ QDocument.OM_PREFIX + getID()
-////					+ "_iframe').contentWindow", false);
-//		}
+		if (isEnabled()) {
+			qc.informFocusableFullJS(QDocument.ID_PREFIX + getID(),
+				 QDocument.ID_PREFIX
+					+ QDocument.OM_PREFIX + getID()
+					+ "_iframe", false);
+		}
 	}
 
 	protected void generateVisibleOutputForPlainDisplay(SubSupEnum enu,
