@@ -8,7 +8,7 @@
 	Please be aware that the University may subject
 	your work to checks (including computerised checks) for plagiarism and in some
 	instances may need to seek further information from you. Any cases where a
-	basis for concern about the originality of the work is identified, will be
+	basis for concern about the originality of the work is identified will be
 	considered under the University’s policy on academic conduct.<br /><br />
 	<form action="[dynamically added]" id="authorship-confirmation-form" method="post">
 		<input type="checkbox" onclick="flick();" id="switcher" value="false" />
