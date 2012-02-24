@@ -48,6 +48,7 @@ or (for an html file contained in question jar):
 <tr><td>width</td><td>(int)</td><td>default displayed width in pixels (optional)</td></tr>
 <tr><td>height</td><td>(int)</td><td>default displayedheight in pixels (optional)</td></tr>
 <tr><td>src</td><td>(string)</td><td>html src contents of iframe</td></tr>
+<tr><td>action</td><td>(string)</td><td>Name of method in question class that is called if user clicks button</td></tr>
 <tr><td>showResponse</td><td>(boolean)</td><td>dictates whether OM takes a response from an embedded iframe , default is false (optional)</td></tr>
 <tr><td>buttonlabel</td><td>(string)</td><td>Value of the button label, default is "Enter Answer" (optional)</td></tr>
 
