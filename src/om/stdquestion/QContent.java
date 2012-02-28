@@ -258,8 +258,8 @@ public class QContent
 
 		Element eScript=createElement("script");
 		eScript.setAttribute("type","text/javascript");
-		XML.createText(eScript,"addFocusable('"+sID+"','"+
-			sJSObjectExpression.replaceAll("'","\\\\'")+"');");
+		XML.createText(eScript,"addPostLoad(function(){addFocusable('"+sID+"','"+
+			sJSObjectExpression.replaceAll("'","\\\\'")+"');});");
 		addInlineXHTML(eScript);
 	}
 
@@ -275,7 +275,7 @@ public class QContent
 	 */
 	public void informFocusable(String sXHTMLID,boolean bPlain) throws OmDeveloperException
 	{
-		informFocusableFullJS(sXHTMLID,"document.getElementById('"+sXHTMLID+"')",bPlain);
+		informFocusableFullJS(sXHTMLID,sXHTMLID,bPlain);
 	}
 
 	/**
