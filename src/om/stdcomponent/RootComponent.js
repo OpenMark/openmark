@@ -129,6 +129,8 @@ var isIE7OrBelow=!isOpera && navigator.userAgent.match('.*MSIE [1-7].*Windows.*'
 var isIE8 = navigator.userAgent.match('.*Trident/4.*');
 var isIE7=!isOpera && navigator.userAgent.match('.*MSIE 7.*Windows.*') && !isIE8;
 var isIE8OrBelow=!isOpera && navigator.userAgent.match('.*Trident/[1-4].*Windows.*');
+var isFF=navigator.userAgent.indexOf("Firefox")!=-1;
+
 
 var isGecko18;
 if(isGecko)
