@@ -269,8 +269,8 @@ function canvasLineInit(canvasId,idPrefix,from,to,labelJS,originX,originY,factor
       div.style.fontSize=line.canvas.labelSize+"px";
       div.style.lineHeight=line.canvas.labelSize+"px";
       div.style.position="absolute";
-      div.style.top=((py1+py2)/2+line.canvas.img.offsetTop-line.canvas.labelSize/2)+"px";
-      div.style.left=((px1+px2)/2 - 100+line.canvas.img.offsetLeft)+"px";
+      div.style.top=((py1+py2)/2+trueoffsettop(line.canvas.img)-line.canvas.labelSize/2)+"px";
+      div.style.left=((px1+px2)/2 - 100+trueoffsetleft(line.canvas.img))+"px";
       div.style.width="200px";
       div.style.textAlign="center";
 
@@ -320,8 +320,8 @@ function canvasLineInit(canvasId,idPrefix,from,to,labelJS,originX,originY,factor
           h+="<div style='"+
             "position:absolute;"+
             "background:"+line.canvas.fg+";"+
-            "left:"+(drawnX+line.canvas.img.offsetLeft)+"px;"+
-            "top:"+(drawnY+line.canvas.img.offsetTop)+"px;"+
+            "left:"+(drawnX+trueoffsetleft(line.canvas.img))+"px;"+
+            "top:"+(drawnY+trueoffsettop(line.canvas.img))+"px;"+
             "width:"+(x-drawnX)+"px;"+
     	    "height:2px;"+
     	    "'></div>";
@@ -363,8 +363,8 @@ function canvasLineInit(canvasId,idPrefix,from,to,labelJS,originX,originY,factor
           h+="<div style='"+
             "position:absolute;"+
             "background:"+line.canvas.fg+";"+
-            "left:"+(drawnX+line.canvas.img.offsetLeft)+"px;"+
-            "top:"+(drawnY+line.canvas.img.offsetTop)+"px;"+
+            "left:"+(drawnX+trueoffsetleft(line.canvas.img))+"px;"+
+            "top:"+(drawnY+trueoffsettop(line.canvas.img))+"px;"+
             "width:2px;"+
     	    "height:"+(y-drawnY)+"px;"+
     	    "'></div>";
@@ -419,8 +419,8 @@ function canvasLineInit(canvasId,idPrefix,from,to,labelJS,originX,originY,factor
           }
           else s=line.bits[lineBit];
 
-          s.style.left=(drawnX+line.canvas.img.offsetLeft)+"px";
-          s.style.top=(drawnY+line.canvas.img.offsetTop)+"px";
+          s.style.left=(drawnX+trueoffsetleft(line.canvas.img))+"px";
+          s.style.top=(drawnY+trueoffsettop(line.canvas.img))+"px";
           s.style.width=(x-drawnX)+"px";
           s.style.height="2px";
           s.style.visibility="visible";
@@ -475,8 +475,8 @@ function canvasLineInit(canvasId,idPrefix,from,to,labelJS,originX,originY,factor
           }
           else s=line.bits[lineBit];
 
-          s.style.left=(drawnX+line.canvas.img.offsetLeft)+"px";
-          s.style.top=(drawnY+line.canvas.img.offsetTop)+"px";
+          s.style.left=(drawnX+trueoffsetleft(line.canvas.img))+"px";
+          s.style.top=(drawnY+trueoffsettop(line.canvas.img))+"px";
           s.style.width="2px";
           s.style.height=(y-drawnY)+"px";
           s.style.visibility="visible";

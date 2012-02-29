@@ -349,58 +349,51 @@ if(window.isDevServlet===undefined || !window.isDevServlet)
 	});
 }
 
+function getTrueOffset(El, position)
+{
+    var offsetPosition = 'offsetLeft';// Element offset position name
+    if(position=='top'){
+        offsetPosition = 'offsetTop';
+    }
+    
+    if(!isIE7){
+        return(El[offsetPosition]);
+    }
+
+    var last=0;
+    var currentLast=0;
+    var current=0;
+    
+    e=El;
+    if(e.offsetParent) {
+        current = e[offsetPosition];
+        
+        while (e = e.offsetParent) {
+            last=currentLast;
+            if(e == document.body){
+                break;
+            }
+            current += e[offsetPosition];  
+            currentLast=e[offsetPosition];
+        }
+    }  
+
+    var trueOffset = (current-last);
+    if(El[offsetPosition] == 0 && (El[offsetPosition] == trueOffset)){
+       return El[offsetPosition]; 
+    }
+    return trueOffset;
+    
+}
+
 function trueoffsetleft(El)
 {
-	//if(isIE7)
-	//{
-	//	var lastleft=0;
-	//	var cl=0;
-	//	var curLeft=0;
-	//	obj=El;
-	//	if(obj.offsetParent) {
-	//		curLeft = obj.offsetLeft
-			
-	//		while (obj = obj.offsetParent) {
-//			   lastleft=cl;
-	//		   if(obj == document.body) break;
-	//		    curLeft += obj.offsetLeft;	
-	//		    cl=obj.offsetLeft;
-	//		}
-	//	}		
-	//	return(curLeft-lastleft);
-	//}
-	//else
-	//{
-		return(El.offsetLeft);
-//	}
+    return getTrueOffset(El, 'left');
 }
 
 function trueoffsettop(El)
 {
-//	if(isIE7)
-	//{
-
-	//	var curTop=0;
-	//	var lasttop=0;
-	//	var ct=0;
-	//	obj=El;
-	 //   if (obj.offsetParent) {
-	 //       curTop = obj.offsetTop
-	 //       while (obj = obj.offsetParent) {
-	 //       	lasttop=ct;
-	           //alert("objName= "+obj.id+"  offsetLeft= "+obj.offsetLeft+"  offsetTop= "+obj.offsetTop);
-	 //           if(obj == document.body) break;
-	 //           curTop += obj.offsetTop;
-	 //           ct=obj.offsetTop;
-	            
-	 //       }
-	//    }
-	//	return(curTop-lasttop);
-//	}
-//	else
-//	{	
-		return(El.offsetTop);
-//	}
+    return getTrueOffset(El, 'top');
 }
 
 function cleanstring(val)
