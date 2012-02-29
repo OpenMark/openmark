@@ -379,10 +379,11 @@ function getTrueOffset(El, position)
     }  
 
     var trueOffset = (current-last);
-    if(El[offsetPosition] == 0 && (El[offsetPosition] == trueOffset)){
-       return El[offsetPosition]; 
+    if(El[offsetPosition] == 0 && (El[offsetPosition] <= trueOffset)){
+        return trueOffset;
     }
-    return trueOffset;
+    
+    return El[offsetPosition]; 
     
 }
 
