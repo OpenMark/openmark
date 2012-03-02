@@ -264,26 +264,43 @@ function focusFromList(idThis,offset)
     }
 }
 
+/**
+ * Set focus on a given element
+ * @param object o object from focusList containing element details
+ * @return bool 
+ */
 function setFocus(o){
 
     var type = getFocusableType(o.expr);
     
-    switch(type){
-        case 'tinyMCE':
-            tinyMCE.execCommand('mceFocus',false,o.expr);
-            break;
-        case 'contentWindow':
-            setTimeout('document.getElementById(\''+o.expr+'\').contentWindow.focus();',0);
-            break;
-        default:
-            setTimeout('document.getElementById(\''+o.expr+'\').focus();',0);
+    if(type == 'tinyMCE'){
+        tinyMCE.execCommand('mceFocus',false,o.expr);
+        return true;
+    }
+    var el = document.getElementById(o.expr);
+    if(!el){
+        return false;
     }
     
+    if(type == 'contentWindow' && el.contentWindow){
+        el.contentWindow.focus();
+        return true;
+    }
+    
+    if(el.focus){
+        el.focus();
+        return true;
+    }
+
+    return false;
 }
 
-//What is the type of element to be focused
+/**
+ * Different elements are given focus in different ways. Determine the type of element to be focused 
+ * @param string element id
+ * @return string focus type to be used.
+ */
 function getFocusableType(id){
-    var type = 'standard';
 
     var el = document.getElementById(id);
     // Is it a standard element
