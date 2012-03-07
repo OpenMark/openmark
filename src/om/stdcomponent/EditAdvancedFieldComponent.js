@@ -101,9 +101,9 @@ function editadvancedfieldInit(fieldName, idPrefix, type) {
 }
 
 function editadvancedfieldPreSubmit(fieldName, idPrefix, type) {
-	var name = "om_" + fieldName + "_iframe";
-	var si = tinyMCE.get(name);
-	var content = si.getContent();
-	if (type=="chem") content=toChemHtml(content);
-	document.getElementById(idPrefix+"omval_"+fieldName).value = content;
+    var id = idPrefix+"om_" + fieldName + "_iframe";
+    var editor = tinyMCE.get(id);
+    var content = editor.getContent();
+    if (type=="chem") content=toChemHtml(content);
+    document.getElementById(idPrefix+"omval_"+fieldName).value = content;
 }
