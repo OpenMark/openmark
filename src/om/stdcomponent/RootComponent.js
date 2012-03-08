@@ -243,7 +243,9 @@ function addFocusable(id,expr)
 
     if(focusList.length==0 && isAutoFocusOn())
     {
-        setFocus(o);
+        addOnLoad(function() {
+        setTimeout(o.expr+'.focus();setTimeout("window.scroll(0,0);",0)',100);
+        });
     }
 
     focusList.push(o);
@@ -259,63 +261,9 @@ function focusFromList(idThis,offset)
             var index=i+offset;
             while(index<0) index+=focusList.length;
             while(index>=focusList.length) index-=focusList.length;
-            setFocus(focusList[index]);
+            setTimeout(focusList[index].expr+".focus();",0);
         }
     }
-}
-
-/**
- * Set focus on a given element
- * @param object o object from focusList containing element details
- * @return bool 
- */
-function setFocus(o){
-
-    var type = getFocusableType(o.expr);
-    
-    if(type == 'tinyMCE'){
-        tinyMCE.execCommand('mceFocus',false,o.expr);
-        return true;
-    }
-    var el = document.getElementById(o.expr);
-    if(!el){
-        return false;
-    }
-    
-    if(type == 'contentWindow' && el.contentWindow){
-        el.contentWindow.focus();
-        return true;
-    }
-    
-    if(el.focus){
-        el.focus();
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Different elements are given focus in different ways. Determine the type of element to be focused 
- * @param string element id
- * @return string focus type to be used.
- */
-function getFocusableType(id){
-
-    var el = document.getElementById(id);
-    // Is it a standard element
-    if(!el || (el.nodeName.toLowerCase() !=='iframe' && el.nodeName.toLowerCase() !=='textarea')){
-        return 'standard';
-    }
-    
-    var s = el.nextSibling;
-    // Is tinymce being used
-    if(s && s.className && s.className.match(/mceEditor/i)){
-        return 'tinyMCE';
-    }
-    
-    // a contentwindow is being used
-    return 'contentWindow';
 }
 
 // Adds pageX and pageY to the element
