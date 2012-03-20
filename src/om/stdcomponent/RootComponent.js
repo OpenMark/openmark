@@ -244,7 +244,7 @@ function addFocusable(id,expr)
     if(focusList.length==0 && isAutoFocusOn())
     {
         addOnLoad(function() {
-        setTimeout(o.expr+'.focus();setTimeout("window.scroll(0,0);",0)',100);
+            setTimeout('try{'+o.expr+'.focus()}catch(e){};setTimeout("window.scroll(0,0);",0)',100);
         });
     }
 
@@ -261,7 +261,7 @@ function focusFromList(idThis,offset)
             var index=i+offset;
             while(index<0) index+=focusList.length;
             while(index>=focusList.length) index-=focusList.length;
-            setTimeout(focusList[index].expr+".focus();",0);
+            setTimeout('try{'+focusList[index].expr+".focus()}catch(e){};",0);
         }
     }
 }
