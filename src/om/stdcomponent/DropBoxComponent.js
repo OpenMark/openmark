@@ -48,12 +48,15 @@ function dropboxFix(id,idPrefix,enabled,group,bgcolour)
 
 			var dbInner=document.getElementById(dragboxArray[i]+"inner");
 			dbInner.style.marginTop=(((maxHeight-6) - dbInner.offsetHeight)/2)+"px";
-	
+
+			// adjust margins to prevent line breaks in newer browsers Firefox 9+ and IE9
+			dbInner.style.marginLeft = '-2px';
+			dbInner.style.marginRight = '-2px';
+
 			db.style.width=(maxWidth-6) +"px";
 			db.style.height=(maxHeight-6)+"px";
 
 			db.isInited=true;
-
 		}
 	}
 
