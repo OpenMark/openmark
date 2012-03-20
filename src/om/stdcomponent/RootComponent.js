@@ -56,15 +56,37 @@ function addPreSubmit(specifiedForm,handler)
 	{
 		var previous=specifiedForm.preSubmit;
 		specifiedForm.preSubmit=function() { previous(); handler(); };
+		return;
 	}
-	else
-		specifiedForm.preSubmit=handler;
+
+	specifiedForm.preSubmit=handler;
+	code = function(){
+		// Call pre submit methods
+		preSubmit(specifiedForm);
+	};
+	om_attachEvent('submit', code, specifiedForm);
 }
 
 // Must call before submitting specified form
 function preSubmit(specifiedForm)
 {
 	if(specifiedForm.preSubmit) specifiedForm.preSubmit();
+}
+
+/**
+ * Get form element by id, run presubmit methods then trigger form submit event
+ * @param id
+ * @return bool
+ */
+function submitForm(id)
+{
+	form = document.getElementById(id);
+
+	// trigger submit event
+	fireEventById(id,'submit');
+	// submit form
+	form.submit();
+	return true;
 }
 
 // Detect whether a DOM node is a particular thing. Can call with one or more
@@ -367,3 +389,47 @@ function cleanstring(val)
 	return(val);
 }
 
+/**
+ * Fire a dom event on a given element from its id
+ * @param id element id
+ * @param event name of event
+ * @return bool
+ */
+function fireEventById(id,event)
+{
+	element = document.getElementById(id);
+	if(!element){
+		return false;
+	}
+
+	return fireEvent(element,event);
+}
+
+/**
+ * Fire a dom event on a given element
+ * @param element dom element
+ * @param e name of event
+ * @return bool
+ */
+function fireEvent(element,e)
+{
+	if (!document.createEventObject){
+		// dispatch for firefox + others
+		var evt = document.createEvent("HTMLEvents");
+		evt.initEvent(e, true, true ); // event type,bubbling,cancelable
+		return !element.dispatchEvent(evt);
+	}
+	// dispatch for IE
+	var evt = document.createEventObject();
+	return element.fireEvent('on'+e,evt);
+}
+
+function om_attachEvent(e, code, element)
+{
+	element = element || window;
+	if (element.addEventListener){
+		element.addEventListener(e, code, false);
+	} else if (window.attachEvent){
+		element.attachEvent('on'+e, code);
+	}
+}

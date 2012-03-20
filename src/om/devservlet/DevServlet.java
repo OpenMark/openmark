@@ -965,7 +965,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			"<form method='post' action='./' id='question' autocomplete='off' class='om'/>"+
 			"<h1 style='font: bold 14px Verdana'>" +
 				"For testing deferred feedback questions [" +
-					"<a href='#' onclick='document.getElementById(\"question\").submit()'>Next (save)</a> " +
+					"<a href='#' onclick='submitForm(\"question\")'>Next (save)</a> " +
 					"<a href='./finish'>Submit all and finish</a>]" +
 			"</h1>" +
 			"<pre id='results' style='clear:both'/>"+
