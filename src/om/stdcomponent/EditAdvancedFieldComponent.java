@@ -263,7 +263,6 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 		double dZoom = getQuestion().getZoom();
 		applyTextArea(qc, eDiv, enu, dZoom);
 		applyHiddenInputField(qc, eDiv);
-		applyLineBreaks(qc, eDiv);
 		applyScript(qc, eDiv, sType, dZoom);
 	}
 
@@ -349,10 +348,10 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 
 		// Can be focused (hopefully)
 		if (isEnabled()) {
-			qc.informFocusableFullJS(QDocument.ID_PREFIX + getID(),
-				 QDocument.ID_PREFIX
-					+ QDocument.OM_PREFIX + getID()
-					+ "_iframe", false);
+//			qc.informFocusableFullJS(QDocument.ID_PREFIX + getID(),
+//				 QDocument.ID_PREFIX
+//					+ QDocument.OM_PREFIX + getID()
+//					+ "_iframe", false);
 		}
 	}
 
