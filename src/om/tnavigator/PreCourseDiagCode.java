@@ -334,6 +334,11 @@ public class PreCourseDiagCode {
 			} 			
 	
 	}
+	
+	public boolean TrafficlightsIsEmpty()
+	{
+		return this.trafficlights.isEmpty();
+	}
 }
 
 

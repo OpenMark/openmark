@@ -2259,7 +2259,7 @@ public class NavigatorServlet extends HttpServlet {
 		try{
 			if (PreCourseDiagCode.shouldReadCode(us) )
 			{
-				String text=readPCDC(da,us,trafficlights);
+				String text=updatePCDC(da,us,trafficlights);
 				if (PreCourseDiagCode.shouldDisplayCode(us))
 				{
 					XML.createText(eMain,"p",text);
@@ -2318,7 +2318,7 @@ public class NavigatorServlet extends HttpServlet {
 			response.addHeader("X-UA-Compatible", "IE=8");
 		}
 	}
-	public String readPCDC(DatabaseAccess da, UserSession us,TrafficLights trafficlights )
+	public String updatePCDC(DatabaseAccess da, UserSession us,TrafficLights trafficlights )
 	throws Exception
 	{
 		String code="";
@@ -2335,14 +2335,18 @@ public class NavigatorServlet extends HttpServlet {
 						PreCourseDiagCode pcdc=new PreCourseDiagCode(dat,us.getNs(),us.getDbTi());
 						/*generate a new one from the traffic lights if wee need to*/
 						if (PreCourseDiagCode.shouldGenerateCode(us))
-						{	
-							String TLights= trafficlights.getTrafficLightValuesAsString().equals("") ? "": trafficlights.getTrafficLightValuesAsString()+PCDCSEPARATOR;
-							pcdc.setCode(TLights+pcdc.getPreCourseDiagCode());
-							pcdc.setTrafficlights(trafficlights.getTrafficLightPairsAsString());
-						// store the new code if we should
-
-							pcdc.updateDBwithCode(dat,oq);
-							us.setHasGeneratedFinalPCDC(true);
+						{								
+							/* only set the code if the PCDC doies notalready have a trafficlights set, actually check the DB, as if they
+							 * go away and revisit the page it starts a new session */
+							if (pcdc.TrafficlightsIsEmpty())
+							{
+								String TLights= trafficlights.getTrafficLightValuesAsString().equals("") ? "": trafficlights.getTrafficLightValuesAsString()+PCDCSEPARATOR;
+								pcdc.setCode(TLights+pcdc.getPreCourseDiagCode());
+								pcdc.setTrafficlights(trafficlights.getTrafficLightPairsAsString());
+								// store the new code if we should
+								pcdc.updateDBwithCode(dat,oq);
+								us.setHasGeneratedFinalPCDC(true);
+							}
 						}
 						code=code+pcdc.getPreCourseDiagCode();
 					} catch (Exception e) {
@@ -2370,155 +2374,157 @@ public class NavigatorServlet extends HttpServlet {
 			HttpServletRequest request,Log l) throws Exception 
 			
 	{
-		
-		String dummyVariablesoIcanfindthefunctioneasily="";
-		TrafficLights tls=new TrafficLights();
 
-		Element[] ae = XML.getChildren(eParent);
-		String flag="";
-		for (int i = 0; i < ae.length; i++) 
-		{
-			Element e = ae[i];
-			String sTag = e.getTagName();
-			String ltext="START "+Integer.toString(us.getDbTi())+" i: "+Integer.toString(i)+" ";
-			if (sTag.equals("conditional")) 
-			{
-				// Find marks on the specified axis
-				String sAxis = e.hasAttribute("axis") ? e.getAttribute("axis")
-						: null;
-				String sOn = e.getAttribute("on");
-				String sFlag = e.hasAttribute("flag") ? e.getAttribute("flag")
-						: null;
-				/* if we dont have a conditional, then dont calculate the traffic lights
-				 * for that one,leave it set to X
-				 */			
-				if (sFlag==null)l.logDebug(PCDCCATAGORY,"flag not set for conditional on test " + us.getTestId()
-						+ " ti " + us.getDbTi());
-				
-				int iCompare;
-				if (sOn.equals("marks")) {
-					iCompare = (int) Math.round(ps.getScore(sAxis));
-				} else if (sOn.equals("percentage")) {
-					iCompare = (int) Math.round(ps.getScore(sAxis) * 100.0
-							/ ps.getMax(sAxis));
-				} else
-					throw new OmFormatException(
-							"Unexpected on= for conditional: " + sOn);
-				//String flag=NOFLAG;
-				ltext="axis: "+sAxis+" score: "+Integer.toString(iCompare);
-				
-				boolean bOK = true;
-				try {
-					if (e.hasAttribute("gt")) 
-					{
-						int itest=Integer.parseInt(e.getAttribute("gt"));
-						if (!(iCompare > itest))
-						{
-							bOK = false;
-						}
-						else
-						{ 
-							 flag=sFlag!=null?sFlag:NOFLAG;
-
-						}
-					    String s = new Boolean(bOK).toString();
-					    ltext=ltext+" bOk: "+s;
-						ltext=ltext+" flag:"+flag+" GT"+" itest: "+Integer.toString(itest);
-
-					}
-					if (e.hasAttribute("gte")) 
-					{
-							int itest=Integer.parseInt(e.getAttribute("gte"));
-							if (!(iCompare >= itest))
-							{
-								bOK = false;
-							}
-							else
-							{ 
-								flag=sFlag!=null?sFlag:NOFLAG;
-							}
-						    String s = new Boolean(bOK).toString();
-						    ltext=ltext+" bOk: "+s;
-						    ltext=ltext+" flag:"+flag+" GTE"+" itest: "+Integer.toString(itest) ;
-
-					}
-					if (e.hasAttribute("e")) 
-					{
-						int itest=Integer.parseInt(e.getAttribute("e"));
-						if (!(iCompare == itest))
-						{
-							bOK = false;
-						}
-						else
-						{ 
-							 flag=sFlag!=null?sFlag:NOFLAG;
-						}
-					    String s = new Boolean(bOK).toString();
-					    ltext=ltext+" bOk: "+s;
-						ltext=ltext+" flag:"+flag+" E"+" itest: "+Integer.toString(itest);
-
-					}
-					if (e.hasAttribute("lte")) 
-					{
-						int itest=Integer.parseInt(e.getAttribute("lte"));
-						if (!(iCompare <= itest))
-						{
-							bOK = false;
-						}
-						else
-						{ 
-							 flag=sFlag!=null?sFlag:NOFLAG;
-						}
-					    String s = new Boolean(bOK).toString();
-					    ltext=ltext+" bOk: "+s;
-						ltext=ltext+" flag:"+flag+" LTE"+" itest: "+Integer.toString(itest);
-
-					}
-					if (e.hasAttribute("lt")) 
-					{
-						int itest=Integer.parseInt(e.getAttribute("lt"));
-						if (!(iCompare < itest ))
-						{
-							bOK = false;
-						}
-						else
-						{ 
-							 flag=sFlag!=null?sFlag:NOFLAG;
-						}
-					    String s = new Boolean(bOK).toString();
-					    ltext=ltext+" bOk: "+s;
-						ltext=ltext+" flag:"+flag+" LT"+" itest: "+Integer.toString(itest);
-					}
-					if (e.hasAttribute("ne")) 
-					{
-						int itest=Integer.parseInt(e.getAttribute("ne"));
-						if (!(iCompare != itest))
-						{
-							bOK = false;
-						}
-						else
-						{ 
-							 flag=sFlag!=null?sFlag:NOFLAG;
-						}
-					    String s = new Boolean(bOK).toString();
-					    ltext=ltext+" bOk: "+s;
-						ltext=ltext+" flag:"+flag+" NE"+" itest: "+Integer.toString(itest);
-					}
-				} catch (NumberFormatException nfe) {
-					throw new OmFormatException(
-							"Not valid integer in <conditional>");
-				}
-				if (bOK) // Passed the conditional! Process everything within it
-				{
-					tls.addTrafficLights(sAxis,flag);
-				//	fullflag=fullflag+flag;
-				}
-			} 
-			l.logDebug(PCDCCATAGORY,ltext);
+			String dummyVariablesoIcanfindthefunctioneasily="";
+			TrafficLights tls=new TrafficLights();
 			
-		}
+			if (PreCourseDiagCode.shouldDoCode(us))
+			{	
+				Element[] ae = XML.getChildren(eParent);
+				String flag="";
+				for (int i = 0; i < ae.length; i++) 
+				{
+					Element e = ae[i];
+					String sTag = e.getTagName();
+					String ltext="START "+Integer.toString(us.getDbTi())+" i: "+Integer.toString(i)+" ";
+					if (sTag.equals("conditional")) 
+					{
+						// Find marks on the specified axis
+						String sAxis = e.hasAttribute("axis") ? e.getAttribute("axis")
+								: null;
+						String sOn = e.getAttribute("on");
+						String sFlag = e.hasAttribute("flag") ? e.getAttribute("flag")
+								: null;
+						/* if we dont have a conditional, then dont calculate the traffic lights
+						 * for that one,leave it set to X
+						 */			
+						if (sFlag==null)l.logDebug(PCDCCATAGORY,"flag not set for conditional on test " + us.getTestId()
+								+ " ti " + us.getDbTi());
+						
+						int iCompare;
+						if (sOn.equals("marks")) {
+							iCompare = (int) Math.round(ps.getScore(sAxis));
+						} else if (sOn.equals("percentage")) {
+							iCompare = (int) Math.round(ps.getScore(sAxis) * 100.0
+									/ ps.getMax(sAxis));
+						} else
+							throw new OmFormatException(
+									"Unexpected on= for conditional: " + sOn);
+						//String flag=NOFLAG;
+						ltext="axis: "+sAxis+" score: "+Integer.toString(iCompare);
+						
+						boolean bOK = true;
+						try {
+							if (e.hasAttribute("gt")) 
+							{
+								int itest=Integer.parseInt(e.getAttribute("gt"));
+								if (!(iCompare > itest))
+								{
+									bOK = false;
+								}
+								else
+								{ 
+									 flag=sFlag!=null?sFlag:NOFLAG;
 		
-			return tls;
+								}
+							    String s = new Boolean(bOK).toString();
+							    ltext=ltext+" bOk: "+s;
+								ltext=ltext+" flag:"+flag+" GT"+" itest: "+Integer.toString(itest);
+		
+							}
+							if (e.hasAttribute("gte")) 
+							{
+									int itest=Integer.parseInt(e.getAttribute("gte"));
+									if (!(iCompare >= itest))
+									{
+										bOK = false;
+									}
+									else
+									{ 
+										flag=sFlag!=null?sFlag:NOFLAG;
+									}
+								    String s = new Boolean(bOK).toString();
+								    ltext=ltext+" bOk: "+s;
+								    ltext=ltext+" flag:"+flag+" GTE"+" itest: "+Integer.toString(itest) ;
+		
+							}
+							if (e.hasAttribute("e")) 
+							{
+								int itest=Integer.parseInt(e.getAttribute("e"));
+								if (!(iCompare == itest))
+								{
+									bOK = false;
+								}
+								else
+								{ 
+									 flag=sFlag!=null?sFlag:NOFLAG;
+								}
+							    String s = new Boolean(bOK).toString();
+							    ltext=ltext+" bOk: "+s;
+								ltext=ltext+" flag:"+flag+" E"+" itest: "+Integer.toString(itest);
+		
+							}
+							if (e.hasAttribute("lte")) 
+							{
+								int itest=Integer.parseInt(e.getAttribute("lte"));
+								if (!(iCompare <= itest))
+								{
+									bOK = false;
+								}
+								else
+								{ 
+									 flag=sFlag!=null?sFlag:NOFLAG;
+								}
+							    String s = new Boolean(bOK).toString();
+							    ltext=ltext+" bOk: "+s;
+								ltext=ltext+" flag:"+flag+" LTE"+" itest: "+Integer.toString(itest);
+		
+							}
+							if (e.hasAttribute("lt")) 
+							{
+								int itest=Integer.parseInt(e.getAttribute("lt"));
+								if (!(iCompare < itest ))
+								{
+									bOK = false;
+								}
+								else
+								{ 
+									 flag=sFlag!=null?sFlag:NOFLAG;
+								}
+							    String s = new Boolean(bOK).toString();
+							    ltext=ltext+" bOk: "+s;
+								ltext=ltext+" flag:"+flag+" LT"+" itest: "+Integer.toString(itest);
+							}
+							if (e.hasAttribute("ne")) 
+							{
+								int itest=Integer.parseInt(e.getAttribute("ne"));
+								if (!(iCompare != itest))
+								{
+									bOK = false;
+								}
+								else
+								{ 
+									 flag=sFlag!=null?sFlag:NOFLAG;
+								}
+							    String s = new Boolean(bOK).toString();
+							    ltext=ltext+" bOk: "+s;
+								ltext=ltext+" flag:"+flag+" NE"+" itest: "+Integer.toString(itest);
+							}
+						} catch (NumberFormatException nfe) {
+							throw new OmFormatException(
+									"Not valid integer in <conditional>");
+						}
+						if (bOK) // Passed the conditional! Process everything within it
+						{
+							tls.addTrafficLights(sAxis,flag);
+						//	fullflag=fullflag+flag;
+						}
+					} 
+				l.logDebug(PCDCCATAGORY,ltext);
+					
+				}
+		}
+		return tls;
 	}
 	
 
