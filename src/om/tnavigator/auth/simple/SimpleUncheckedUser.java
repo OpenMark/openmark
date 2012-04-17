@@ -24,16 +24,24 @@ import om.tnavigator.auth.UncheckedUserDetails;
  */
 public class SimpleUncheckedUser implements UncheckedUserDetails
 {
-	private String cookie,username;
+	private String cookie,username,cookieName;
 
 	/**
 	 * @param cookie Cookie value
 	 * @param username Username
 	 */
+	
 	public SimpleUncheckedUser(String cookie,String username)
 	{
 		this.cookie=cookie;
 		this.username=username;
+		this.cookieName="";
+	}
+	public SimpleUncheckedUser(String cookie,String username,String cookieName)
+	{
+		this.cookie=cookie;
+		this.username=username;
+		this.cookieName=cookieName;
 	}
 
 	public String getCookie()
@@ -49,6 +57,11 @@ public class SimpleUncheckedUser implements UncheckedUserDetails
 	public String getUsername()
 	{
 		return username;
+	}
+	
+	public String getsCookieName()
+	{
+		return cookieName;
 	}
 
 }

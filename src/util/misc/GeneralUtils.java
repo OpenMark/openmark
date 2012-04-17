@@ -14,11 +14,16 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletRequest;
 
 import om.Log;
 
 import org.apache.commons.lang.StringUtils;
+
 
 public class GeneralUtils implements Serializable {
 
@@ -245,6 +250,29 @@ public class GeneralUtils implements Serializable {
 			}
 		}
 		return s;
+	}
+	
+	/**
+	 * The 'SAMS2session' cookie contains invalid characters and cannot be
+	 * read by normal means.
+	 * @return Cookie value or null if not included
+	 */
+	@SuppressWarnings("unchecked")
+	private final static Pattern REGEX_BROKEN_SAMS_COOKIE =	Pattern.compile("(?:^|; )SAMS2session=([^;]+)(?:$|; )");
+
+	public static String getBrokenSamsCookie(HttpServletRequest request)
+	{
+		Enumeration<String> e = request.getHeaders("Cookie");
+		while(e.hasMoreElements())
+		{
+			String header = e.nextElement();
+			Matcher m = REGEX_BROKEN_SAMS_COOKIE.matcher(header);
+			if(m.find())
+			{
+				return m.group(1);
+			}
+		}
+		return null;
 	}
 
 }

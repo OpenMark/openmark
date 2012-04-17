@@ -26,4 +26,6 @@ public interface UncheckedUserDetails
 	public String getCookie();
 	/** @return Student PI or staff number or whatever */
 	public String getPersonID();
+	/**  @return cookie name null if none */
+	public String getsCookieName();
 }

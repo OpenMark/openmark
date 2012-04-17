@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -111,6 +110,7 @@ import util.misc.VersionUtil;
 import util.xml.XHTML;
 import util.xml.XML;
 import util.xml.XMLException;
+import util.misc.GeneralUtils;
 
 /** Om test navigator; implementation of the test delivery engine. */
 public class NavigatorServlet extends HttpServlet {
@@ -146,6 +146,8 @@ public class NavigatorServlet extends HttpServlet {
 	private static String TINYMCE="tiny_mce";
 	
 	private static String DYNAMICQUESTIONS="dynamic_questions";
+
+	public static final String SAMS2COOKIE="SAMS2session";
 
 
 
@@ -689,12 +691,22 @@ public class NavigatorServlet extends HttpServlet {
 	 * @return Cookie value
 	 */
 	private String getCookie(HttpServletRequest request, String sName) {
-		Cookie[] ac = request.getCookies();
-		if (ac == null)
-			ac = new Cookie[0];
-		for (int iCookie = 0; iCookie < ac.length; iCookie++) {
-			if (ac[iCookie].getName().equals(sName))
-				return ac[iCookie].getValue();
+		/* if we are looking at the sams 2 cookie, then use the special function that reads it from headets
+		 * 
+		 */
+		if(sName.equals(SAMS2COOKIE))
+		{
+			return GeneralUtils.getBrokenSamsCookie(request);		
+		}
+		else
+		{
+			Cookie[] ac = request.getCookies();
+			if (ac == null)
+				ac = new Cookie[0];
+			for (int iCookie = 0; iCookie < ac.length; iCookie++) {
+				if (ac[iCookie].getName().equals(sName))
+					return ac[iCookie].getValue();
+			}
 		}
 		return null;
 	}
