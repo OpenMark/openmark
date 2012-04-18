@@ -774,6 +774,9 @@ public class NavigatorServlet extends HttpServlet {
 			// Vitally important, otherwise any input with unicode gets screwed
 			// up
 			request.setCharacterEncoding("UTF-8");
+			//putip address in the log
+			String localIPAddr=IPAddressCheckUtil.getIPAddress(request);
+			l.setIPAddress(localIPAddr);
 			// Check path
 			sPath = request.getPathInfo();
 			if (sPath == null)
@@ -946,6 +949,8 @@ public class NavigatorServlet extends HttpServlet {
 				// New sessions!
 				if (bNewCookie) {
 					String sAddr = request.getRemoteAddr();
+					
+
 
 					// Check if we've already been redirected
 					for (NewSession ns : cookiesOffCheck) {
