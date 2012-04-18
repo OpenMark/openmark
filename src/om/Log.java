@@ -64,6 +64,9 @@ public class Log
 
 	/** List of recent errors/warnings */
 	private LinkedList<String> llRecentProblems=new LinkedList<String>();
+	
+	/** ip address **/
+	private String sIPAddress="";
 
 	/** Message for debugging purposes */
 	private final static String SEVERITY_DEBUG = "debug";
@@ -262,6 +265,10 @@ public class Log
 			"severity='"+XML.escape(sSeverity)+"'");
 		if(sCategory!=null)
 			sbEntry.append(" category='"+XML.escape(sCategory)+"'");
+		if (!this.sIPAddress.isEmpty())
+		{
+			sbEntry.append(" address='"+this.sIPAddress+"'");
+		}
 		sbEntry.append(">");
 
 		if(sMessage!=null) sbEntry.append(XML.escape(sMessage));
@@ -655,5 +662,15 @@ public class Log
 		    sb.append("{" + formatArray(aai[i]) + "}");
 		}
 		return sb.toString();
+	}
+	
+	public void setIPAddress(String ipaddr)
+	{
+		this.sIPAddress=ipaddr;
+	}
+	
+	public String getsIPAddress()
+	{
+		return this.sIPAddress;
 	}
 }
