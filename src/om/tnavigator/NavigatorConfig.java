@@ -183,6 +183,7 @@ public class NavigatorConfig
 		}
 	}
 
+	
 	/**
 	 * Get a parameter from the <authentication> section of navigator.xml as a array of strings, 
 	 * splitting the content of the parameter on whitespace.
