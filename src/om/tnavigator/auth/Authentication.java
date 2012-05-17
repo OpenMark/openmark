@@ -23,6 +23,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import om.OmException;
+
 public interface Authentication {
 
 	/**
@@ -54,7 +56,7 @@ public interface Authentication {
    * @return User details (all set to null if they aren't logged in)
    */
   public UncheckedUserDetails getUncheckedUserDetails(
-  		HttpServletRequest request);
+  		HttpServletRequest request) throws OmException;
 
   /**
    * Set up this user's browser with a cookie that will mark them out as

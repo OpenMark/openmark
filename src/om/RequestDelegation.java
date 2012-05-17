@@ -12,11 +12,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.w3c.dom.Document;
-
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.auth.Authentication;
 import om.tnavigator.auth.UserDetails;
+
+import org.w3c.dom.Document;
 
 import util.misc.FinalizedResponse;
 import util.misc.IPAddressCheckUtil;

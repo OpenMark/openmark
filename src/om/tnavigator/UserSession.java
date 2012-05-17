@@ -256,6 +256,12 @@ public class UserSession
 	}
 	
 	/**
+	 * @return the sOUCU
+	 */
+	public String getOUCU() {
+		return sOUCU;
+	}
+	/**
 	 * @param bFinished the bFinished to set
 	 */
 	void setHasGeneratedFinalPCDC(boolean bFinished) {

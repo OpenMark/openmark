@@ -63,5 +63,5 @@ public class SimpleUncheckedUser implements UncheckedUserDetails
 	{
 		return cookieName;
 	}
-
+	
 }

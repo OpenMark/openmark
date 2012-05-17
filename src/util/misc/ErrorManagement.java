@@ -314,9 +314,16 @@ public class ErrorManagement implements GracefulFinalization {
 			m.put("TITLE", emp.getTitle());
 			m.put("MESSAGE", emp.getMessage());
 			m.put("STATUSCODE", code + "");
-			String sOUCU = visitor.getAuthentication()
-				.getUncheckedUserDetails(request).getUsername();
-			m.put("OUCU", sOUCU == null ? "[not logged in]" : sOUCU);
+			//String sOUCU = visitor.getAuthentication()
+				//.getUncheckedUserDetails(request).getUsername();
+			String sOUCU=null;
+			// ctach it if us is null
+			try
+			{
+				sOUCU=us.getOUCU();
+			}
+			catch (Exception e){}
+			 m.put("OUCU", (sOUCU == null || sOUCU.isEmpty()) ? "[not logged in]" : sOUCU);
 			m.put("REQUEST", request.getPathInfo()
 					+ (request.getQueryString() == null ? "" : "?"
 							+ request.getQueryString()));

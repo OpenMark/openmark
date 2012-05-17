@@ -78,13 +78,12 @@ import om.axis.qengine.StartReturn;
 import om.tnavigator.auth.Authentication;
 import om.tnavigator.auth.AuthenticationFactory;
 import om.tnavigator.auth.AuthenticationInstantiationException;
+import om.tnavigator.auth.UncheckedUserDetails;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.reports.ReportDispatcher;
 import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 import om.tnavigator.scores.CombinedScore;
-import om.tnavigator.PreCourseDiagCode;
-import util.misc.TrafficLights;
 
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
@@ -93,6 +92,7 @@ import org.w3c.dom.Node;
 
 import util.misc.ErrorManagement;
 import util.misc.ErrorMessageParts;
+import util.misc.GeneralUtils;
 import util.misc.HTTPS;
 import util.misc.IO;
 import util.misc.IPAddressCheckUtil;
@@ -104,13 +104,13 @@ import util.misc.QuestionVersion;
 import util.misc.RequestHelpers;
 import util.misc.StopException;
 import util.misc.Strings;
+import util.misc.TrafficLights;
 import util.misc.UserAgent;
 import util.misc.UtilityException;
 import util.misc.VersionUtil;
 import util.xml.XHTML;
 import util.xml.XML;
 import util.xml.XMLException;
-import util.misc.GeneralUtils;
 
 /** Om test navigator; implementation of the test delivery engine. */
 public class NavigatorServlet extends HttpServlet {
@@ -906,8 +906,29 @@ public class NavigatorServlet extends HttpServlet {
 
 			// Get OUCU (null if no SAMS cookie), used to synch sessions for
 			// single user
-			String sOUCU = getAuthentication().getUncheckedUserDetails(request).getUsername();
-
+			String sOUCU=null;
+			//Authentication a=getAuthentication();
+			//UncheckedUserDetails u=a.getUncheckedUserDetails(request);
+			//String s=u.getUsername();
+			try
+			{
+				sOUCU = getAuthentication().getUncheckedUserDetails(request).getUsername();
+			}
+			catch (Exception e)
+			{
+				sendError(
+						us,
+						request,
+						response,
+						HttpServletResponse.SC_NOT_FOUND,
+						false,
+						false,
+						null,
+						"Unable to authenticate user session",
+						"An error occurred while attempting to authenticate your request.",
+						null);
+			}
+			
 			// See if they've got a cookie for this test
 			String sTestCookieName = COOKIENAME + "_" + sTestID;
 			String sCookie = getCookie(request, sTestCookieName);
@@ -989,14 +1010,31 @@ public class NavigatorServlet extends HttpServlet {
 					// cause the cookie to be removed and avoid multiple
 					// redirects.
 					if (sOUCU != null) {
-						if (!getAuthentication().getUserDetails(request, response, false)
-								.isLoggedIn()) {
-							// And we need to set this to zero to reflect that
-							// we just wiped
-							// their cookie.
-							iAuthHash = 0;
+						try{
+							if (!getAuthentication().getUserDetails(request, response, false)
+									.isLoggedIn()) {
+								// And we need to set this to zero to reflect that
+								// we just wiped
+								// their cookie.
+								iAuthHash = 0;
+							}
+						}
+						catch(IOException e)
+						{
+							sendError(
+									us,
+									request,
+									response,
+									HttpServletResponse.SC_NOT_FOUND,
+									false,
+									false,
+									null,
+									"Unable to authenticate user session (2)",
+									"An error occurred while attempting to authenticate your request.",
+									null);
 						}
 					}
+					
 				}
 
 				// If this is the first time we've had an OUCU for this session,
@@ -1399,10 +1437,15 @@ public class NavigatorServlet extends HttpServlet {
 			// This just means that data was already sent to user
 		} catch (Throwable t) {
 			try {
-				sendError(us, request, response,
-						HttpServletResponse.SC_INTERNAL_SERVER_ERROR, true,
-						false, null, "Error handling request",
-						"An error occurred while processing your request.", t);
+
+				
+				sendError(null, request, response,
+						HttpServletResponse.SC_FORBIDDEN,
+						false, false,null,
+						"Unable to validate session cookie",
+						"An error occurred while attempting to authenticate your request.",
+						null);
+				throw new StopException();
 			} catch (StopException se) {
 				// This throws a stopexception
 			}
