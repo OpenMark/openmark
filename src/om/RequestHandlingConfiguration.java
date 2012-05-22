@@ -33,6 +33,9 @@ public class RequestHandlingConfiguration {
 	private static String FULL_CLASS_NAME = "fullClassName";
 
 	private static String INVOCATION_PATH = "invocationPath";
+	
+	private static String SERVLET_NAME = "servletName";
+
 
 	private Map<String, RequestHandlerSettings> configurationSettings
 		= new HashMap<String, RequestHandlerSettings>();
@@ -149,6 +152,7 @@ public class RequestHandlingConfiguration {
 			if (null != rhNodeList ? rhNodeList.getLength() > 0 : false) {
 				String invocationPath = null;
 				String fullClassName = null;
+				String servletName=null;
 				Map<String, String> config = new HashMap<String, String>();
 				for (int t = 0 ; t < rhNodeList.getLength() ; t++) {
 					Node tn = rhNodeList.item(t);
@@ -158,6 +162,8 @@ public class RequestHandlingConfiguration {
 							invocationPath = el.getTextContent();
 						} else if (FULL_CLASS_NAME.equals(el.getNodeName())) {
 							fullClassName = el.getTextContent();
+						} else if (SERVLET_NAME.equals(el.getNodeName())) {
+							servletName = el.getTextContent();
 						}
 						config.put(el.getNodeName(), el.getTextContent());
 					}
@@ -165,7 +171,7 @@ public class RequestHandlingConfiguration {
 				if (StringUtils.isNotEmpty(fullClassName)
 					&& StringUtils.isNotEmpty(invocationPath)) {
 					Class<RequestHandler> rh = retrieveRequestHandlerClass(fullClassName);
-					settings = new RequestHandlerSettings(invocationPath, rh, config);
+					settings = new RequestHandlerSettings(invocationPath, rh, config,servletName);
 				}
 			}
 		}

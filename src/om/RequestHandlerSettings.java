@@ -16,15 +16,21 @@ import util.misc.GeneralUtils;
 public class RequestHandlerSettings {
 
 	private String invocationPath;
+	
+	private String servletName="";
 
 	private Class<RequestHandler> requestHandlerClassReference;
 
 	private Map<String, String> parameters = new HashMap<String, String>();
+	
+	private static String SERVLETNAME = "openmark-admin";
+
 
 	public RequestHandlerSettings(String path, Class<RequestHandler> requestHandler,
-		Map<String, String> params) {
+		Map<String, String> params,String sn) {
 		requestHandlerClassReference = requestHandler;
 		invocationPath = path;
+		servletName=sn;
 		if (null != params) {
 			parameters.putAll(params);
 		}
@@ -94,5 +100,15 @@ public class RequestHandlerSettings {
 	public String toString() {
 		String s = GeneralUtils.toString(this);
 		return null != s ? s : super.toString();
+	}
+
+	public String getServletName() {
+		// TODO Auto-generated method stub
+		if (servletName==null)
+		{
+			servletName=SERVLETNAME;
+
+		}
+		return servletName;
 	}
 }
