@@ -1,10 +1,12 @@
 package om.tnavigator.db;
 
-import java.io.File;
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,26 +14,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
 import om.AbstractTestCase;
-import om.Log;
-import om.axis.qengine.Score;
 import om.tnavigator.JUnitTestCaseTestDefinition;
 import om.tnavigator.JUnitTestCaseTestDefinitionOptions;
 import om.tnavigator.JUnitTestCaseTestRealisation;
 import om.tnavigator.JUnitTestCaseUserSession;
-import om.tnavigator.NavigatorServlet;
 import om.tnavigator.SummaryDetails;
 import om.tnavigator.SummaryDetailsGeneration;
 import om.tnavigator.SummaryTableBuilder;
 import om.tnavigator.TestDeployment;
 import om.tnavigator.scores.CombinedScore;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import util.misc.GeneralUtils;
 import util.xml.XML;
 
 /**
@@ -54,7 +54,6 @@ public class SummaryTableTesting extends AbstractTestCase {
 		List<List<Object>> data = new ArrayList<List<Object>>();
 		for (int i = 1; i < 6; i++) {
 			List<Object> res = newRow(i);
-			System.out.println(res);
 			data.add(res);
 		}
 		return data;
@@ -75,11 +74,11 @@ public class SummaryTableTesting extends AbstractTestCase {
 		return res;
 	}
 
+	@After
 	public void tearDown() {
 //		log.close();
 //		File f = new File(getLogPath());
 //		assertTrue(f.isDirectory());
-//		System.out.println("Removing temp log files (if there are any) ... ");
 //		File[] files = f.listFiles();
 //		for (int i = 0; i < files.length; i++) {
 //			File fil = files[i];
@@ -91,6 +90,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 //		}
 	}
 
+	@Before
 	public void setUp() throws Exception {
 		boolean ok = true;
 		super.setUp();
@@ -147,7 +147,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 	 *  includeAttempts = false
 	 *  includeScore = false
 	 */
-	public void testSummaryTableBuildingNormalDataWithoutScores() throws Exception {
+	@Test public void testSummaryTableBuildingNormalDataWithoutScores() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
 		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
@@ -160,7 +160,6 @@ public class SummaryTableTesting extends AbstractTestCase {
 		assertNotNull(sd);
 		stb.addSummaryTable(sd);
 		String results = XML.saveString(d);
-		System.out.println(results);
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("Chapter " + i));
@@ -168,7 +167,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 		}
 	}
 
-	public void testSummaryTableBuildingNormalDataNoScore() throws Exception {
+	@Test public void testSummaryTableBuildingNormalDataNoScore() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
 		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
@@ -181,7 +180,6 @@ public class SummaryTableTesting extends AbstractTestCase {
 		assertNotNull(sd);
 		stb.addSummaryTable(sd);
 		String results = XML.saveString(d);
-		System.out.println(results);
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("Chapter " + i));
@@ -189,7 +187,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 		}
 	}
 
-	public void testSummaryTableBuildingNormalDataPlainWithAttempts() throws Exception {
+	@Test public void testSummaryTableBuildingNormalDataPlainWithAttempts() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
 		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
@@ -202,7 +200,6 @@ public class SummaryTableTesting extends AbstractTestCase {
 		assertNotNull(sd);
 		stb.addSummaryTable(sd);
 		String results = XML.saveString(d);
-		System.out.println(results);
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("Chapter " + i));
@@ -210,7 +207,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 		}
 	}
 
-	public void testSummaryTableBuildingNormalDataAllChecked() throws Exception {
+	@Test public void testSummaryTableBuildingNormalDataAllChecked() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
 		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
@@ -223,7 +220,6 @@ public class SummaryTableTesting extends AbstractTestCase {
 		assertNotNull(sd);
 		stb.addSummaryTable(sd);
 		String results = XML.saveString(d);
-		System.out.println(results);
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("Chapter " + i));
@@ -231,7 +227,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 		}
 	}
 
-	public void testOptionsOverriding() throws Exception {
+	@Test public void testOptionsOverriding() throws Exception {
 		JUnitTestCaseTestDefinition td = pickUpTestDefinition(BASIC_TEST_DEFINITION);
 		assertNotNull(td);
 		JUnitTestCaseTestDefinitionOptions options = new JUnitTestCaseTestDefinitionOptions();
@@ -240,7 +236,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 		assertFalse(td.getEndSummaryValue());
 	}
 
-	public void testSummaryTableBuildingNormalDataPlainWithoutScores() throws Exception {
+	@Test public void testSummaryTableBuildingNormalDataPlainWithoutScores() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
 		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
@@ -253,7 +249,6 @@ public class SummaryTableTesting extends AbstractTestCase {
 		assertNotNull(sd);
 		stb.addSummaryTable(sd);
 		String results = XML.saveString(d);
-		System.out.println(results);
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("Chapter " + i));
@@ -261,7 +256,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 		}
 	}
 
-	public void testSummaryTableBuildingNormalDataIncludeQuestionsWithoutScores() throws Exception {
+	@Test public void testSummaryTableBuildingNormalDataIncludeQuestionsWithoutScores() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
 		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
@@ -274,7 +269,6 @@ public class SummaryTableTesting extends AbstractTestCase {
 		assertNotNull(sd);
 		stb.addSummaryTable(sd);
 		String results = XML.saveString(d);
-		System.out.println(results);
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("<td colspan=\"3\">Chapter " + i));
@@ -282,7 +276,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 		}
 	}
 
-	public void testSummaryTableBuildingNormalDataIncludeAttemptsWithoutScores() throws Exception {
+	@Test public void testSummaryTableBuildingNormalDataIncludeAttemptsWithoutScores() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
 		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
@@ -295,7 +289,6 @@ public class SummaryTableTesting extends AbstractTestCase {
 		assertNotNull(sd);
 		stb.addSummaryTable(sd);
 		String results = XML.saveString(d);
-		System.out.println(results);
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("<td colspan=\"2\">Chapter " + i));
@@ -303,7 +296,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 		}
 	}
 
-	public void testSummaryTableBuildingNormalDataWithScores() throws Exception {
+	@Test public void testSummaryTableBuildingNormalDataWithScores() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
 		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
@@ -316,7 +309,6 @@ public class SummaryTableTesting extends AbstractTestCase {
 		assertNotNull(sd);
 		stb.addSummaryTable(sd);
 		String results = XML.saveString(d);
-		System.out.println(results);
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("<tr class=\"totals\"><td colspan=\"1\">Total</td><td>1.8</td><td>18</td><td>1.8</td><td>18</td></tr>"));
@@ -370,51 +362,51 @@ public class SummaryTableTesting extends AbstractTestCase {
 	 * Iterate over each of the option cases until we identify where the issue
 	 *  is make a number of combinations also.
 	 */
-	public void testStandardOptionVariations() throws Exception {
+	@Test public void testStandardOptionVariations() throws Exception {
 		recurseOptions(true, null, null, false, true, true, true);
 	}
 
-	public void testStandardOptionVariationsBuildingUp() throws Exception {
+	@Test public void testStandardOptionVariationsBuildingUp() throws Exception {
 		recurseOptions(false, null, null, false, true, true, true);
 	}
 
-	public void testWithQuestionNumberHeader() throws Exception {
+	@Test public void testWithQuestionNumberHeader() throws Exception {
 		recurseOptions(true, "questionNumberHeader", null, false, true, true, true);
 	}
 
-	public void testWithQuestionNumberHeaderBuildUp() throws Exception {
+	@Test public void testWithQuestionNumberHeaderBuildUp() throws Exception {
 		recurseOptions(false, "questionNumberHeader", null, false, true, true, true);
 	}
 
-	public void testWithQuestionNumberHeaderEmpty() throws Exception {
+	@Test public void testWithQuestionNumberHeaderEmpty() throws Exception {
 		recurseOptions(true, "", null, false, true, true, true);
 	}
 
-	public void testWithQuestionNumberHeaderEmptyBuildUp() throws Exception {
+	@Test public void testWithQuestionNumberHeaderEmptyBuildUp() throws Exception {
 		recurseOptions(false, "", null, false, true, true, true);
 	}
 
-	public void testBuildUpWithPlainNote() throws Exception {
+	@Test public void testBuildUpWithPlainNote() throws Exception {
 		recurseOptions(false, "Tester", null, true, true, true, true);
 	}
 
-	public void testWithPlainNote() throws Exception {
+	@Test public void testWithPlainNote() throws Exception {
 		recurseOptions(true, "Tester", null, true, true, true, true);
 	}
 
-	public void testWithPlainNoteNoScore() throws Exception {
+	@Test public void testWithPlainNoteNoScore() throws Exception {
 		recurseOptions(true, "Tester", null, true, true, true, false);
 	}
 
-	public void testWithPlainNoteNoScoreWithLabel() throws Exception {
+	@Test public void testWithPlainNoteNoScoreWithLabel() throws Exception {
 		recurseOptions(true, "Tester", "label here", true, true, true, false);
 	}
 
-	public void testWithFalse() throws Exception {
+	@Test public void testWithFalse() throws Exception {
 		recurseOptions(false, null, null, false, false, false, false);
 	}
 
-	public void testWithTrue() throws Exception {
+	@Test public void testWithTrue() throws Exception {
 		recurseOptions(true, null, null, true, true, true, true);
 	}
 
@@ -447,7 +439,6 @@ public class SummaryTableTesting extends AbstractTestCase {
 			assertNotNull(sd);
 			stb.addSummaryTable(sd);
 			String results = XML.saveString(d);
-			System.out.println(results);
 			assertTrue(results.contains("<div id=\"summarytable\">"));
 			for (int k = 1; k < 6; k++) {
 				assertTrue(results.contains("<tr class=\"answered\"><td>" + k + "</td>"));
@@ -458,7 +449,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 		}
 	}
 
-	public void testSummaryTableBuildingNormalDataEverythingNotPlain() throws Exception {
+	@Test public void testSummaryTableBuildingNormalDataEverythingNotPlain() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
 		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
@@ -476,27 +467,24 @@ public class SummaryTableTesting extends AbstractTestCase {
 		
 		JUnitTestCaseTestDefinition tds = usession.getJUnitTestDefinition();
 		String header = tds.getsQuestionNumberHeader();
-		System.out.println("header = [" + header + "]");
 		
 		String section = "";
 		
 		tds.setField("sQuestionNumberHeader", section);
 
 		String header2 = tds.getsQuestionNumberHeader();
-		System.out.println("header2 = [" + header2 + "]");
 		assertEquals(header2, section);
 		SummaryDetails sd = createSummaryDetails(usession, false, true, true, true);
 		assertNotNull(sd);
 		stb.addSummaryTable(sd);
 		String results = XML.saveString(d);
-		System.out.println(results);
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("<tr class=\"answered\"><td>" + i + "</td>"));
 		}
 	}
 
-	public void testSummaryTableBuildingNormalDataEverythingFalseNotPlain() throws Exception {
+	@Test public void testSummaryTableBuildingNormalDataEverythingFalseNotPlain() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
 		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
@@ -514,14 +502,13 @@ public class SummaryTableTesting extends AbstractTestCase {
 		assertNotNull(sd);
 		stb.addSummaryTable(sd);
 		String results = XML.saveString(d);
-		System.out.println(results);
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("<tr class=\"answered\"><td>" + i + "</td>"));
 		}
 	}
 
-	public void testNumberbysectionANDquestionnumberheaderBlank() throws Exception {
+	@Test public void testNumberbysectionANDquestionnumberheaderBlank() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
 		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
@@ -537,24 +524,22 @@ public class SummaryTableTesting extends AbstractTestCase {
 		assertNotNull(sd);
 		stb.addSummaryTable(sd);
 		String results = XML.saveString(d);
-		System.out.println(results);
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("<tr class=\"answered\"><td>" + i + "</td>"));
 		}
 	}
 
-	public void testRetrieveSummaryConfirmation() throws Exception {
+	@Test public void testRetrieveSummaryConfirmation() throws Exception {
 		JUnitTestCaseTestDefinition def = pickUpTestDefinition(BASIC_TEST_DEFINITION);
 		assertNotNull(def);
 		String s = def.retrieveSummaryConfirmation();
 		
 		assertNotNull(s);
-		System.out.println(s);
 		assertEquals(s, "Completed");
 	}
 
-	public void testRetrieveSummaryConfirmationWithDeletedDocument() throws Exception {
+	@Test public void testRetrieveSummaryConfirmationWithDeletedDocument() throws Exception {
 		JUnitTestCaseTestDefinition def = pickUpTestDefinition(BASIC_TEST_DEFINITION);
 		def.deleteDocumentForTesting();
 		String s = def.retrieveSummaryConfirmation();
@@ -577,7 +562,6 @@ public class SummaryTableTesting extends AbstractTestCase {
 			boolean b = false;
 			if (null != results ? currentPosition < results.size() - 1 : false) {
 				currentPosition++;
-				System.out.println("currentPosition = " + currentPosition);
 				b = true;
 			}
 			return b;

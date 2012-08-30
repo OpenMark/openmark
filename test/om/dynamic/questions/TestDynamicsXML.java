@@ -1,5 +1,9 @@
 package om.dynamic.questions;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -11,6 +15,8 @@ import javax.tools.JavaFileObject;
 
 import om.AbstractTestCase;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -22,7 +28,8 @@ public class TestDynamicsXML extends AbstractTestCase {
 
 	private static String TESTING_DYNAMIC_QUESTION = "testing-dynamic-question.omxml";
 
-	public void testLoading() throws Exception {
+	@Ignore // Looks like the test was committed, even though the dynamic question stuff wasn't.
+	@Test public void testLoading() throws Exception {
 		File f = pickUpFile(TESTING_DYNAMIC_QUESTION);
 		Document doc = XML.parse(f);
 		assertNotNull(doc);
@@ -31,8 +38,7 @@ public class TestDynamicsXML extends AbstractTestCase {
 		Node handler = XML.getChild(node, "handler");
 		assertNotNull(handler);
 		String s = XML.getText(handler);
-		System.out.println(s.trim());
-		
+
 		String classOutputFolder = "/Temp/dynamics/";
 		DynamicJavaFile tjf = new DynamicJavaFile("om.dynamic.questions.TestingDynamicQuestion", s);
 		assertNotNull(tjf);

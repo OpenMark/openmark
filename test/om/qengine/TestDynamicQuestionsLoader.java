@@ -1,15 +1,23 @@
 package om.qengine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
 
+import om.AbstractTestCase;
+import om.question.Question;
+
 import org.apache.commons.io.FileUtils;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import om.AbstractTestCase;
-import om.question.Question;
 import util.misc.DynamicOMClassLoader;
 import util.misc.DynamicQuestionUtils;
 import util.xml.XML;
@@ -20,7 +28,7 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 
 	private static String DYNAMIC_QUESTION = "sdk125b7.question22.1.1.omxml";
 
-	public void testIsDynamicQuestion() throws Exception {
+	@Test public void testIsDynamicQuestion() throws Exception {
 		File f = pickUpFile(DYNAMIC_QUESTION);
 		assertNotNull(f);
 		byte[] bytes = FileUtils.readFileToByteArray(f);
@@ -30,11 +38,11 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 		assertTrue(DynamicQuestionUtils.isDynamicQuestion(d));
 	}
 
-	public void testIsNotDynamicQuestion() throws Exception {
+	@Test public void testIsNotDynamicQuestion() throws Exception {
 		assertFalse(DynamicQuestionUtils.isDynamicQuestion(null));
 	}
 
-	public void testIsInvalidDynamicQuestion() throws Exception {
+	@Test public void testIsInvalidDynamicQuestion() throws Exception {
 		File f = pickUpFile("mu120.module5.test.xml");
 		assertNotNull(f);
 		byte[] bytes = FileUtils.readFileToByteArray(f);
@@ -42,7 +50,7 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 		assertFalse(DynamicQuestionUtils.isDynamicQuestion(d));
 	}
 
-	public void testParse() throws Exception {
+	@Test public void testParse() throws Exception {
 		File f = pickUpFile(DYNAMIC_QUESTION);
 		assertNotNull(f);
 		assertTrue(f.exists());
@@ -51,10 +59,9 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 		Document d = XML.parse(st.getBytes("UTF-8"));
 		assertNotNull(d);
 		String s = XML.saveString(d);
-		System.out.println(s);
 	}
 
-	public void tester() throws Exception {
+	@Test public void tester() throws Exception {
 		File f = pickUpFile(DYNAMIC_QUESTION);
 		//DynamicQuestionsLoader dql = new DynamicQuestionsLoader("");
 		Element e = DynamicQuestionUtils.retrieveElement(f, "question");
@@ -64,7 +71,7 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 		assertEquals(att, "sdk125b7.question08.Percent");
 	}
 
-	public void testLoadMetaData() throws Exception {
+	@Test public void testLoadMetaData() throws Exception {
 		DynamicQuestionsLoader dql = new DynamicQuestionsLoader(
 			System.getProperty("java.class.path"));
 		QuestionCache.QuestionStuff qs = new QuestionCache.QuestionStuff();
@@ -74,7 +81,8 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 		assertNotNull(qs.dMeta);
 	}
 
-	public void testLoadClass() throws Exception {
+	@Ignore
+	@Test public void testLoadClass() throws Exception {
 		URL url = ClassLoader.getSystemResource(TESTING_DYNAMIC_QUESTION);
 		assertNotNull(url);
 		String out = "";
@@ -88,7 +96,6 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 				out = out.substring("file:/".length(), out.length());
 			}
 		}
-		System.out.println("OUT > " + out);
 		DynamicQuestionsLoader dql = new DynamicQuestionsLoader(out);
 		QuestionCache.QuestionStuff qs = new QuestionCache.QuestionStuff();
 		DynamicOMClassLoader d = new DynamicOMClassLoader("/Temp/dynamics/",
@@ -98,14 +105,12 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 		assertNotNull(f);
 		dql.loadClass(qs, f);
 		assertNotNull(qs.c);
-		System.out.println(">> " + qs.c.toString());
 		Question q = getDynamicClass(qs.c, d);
 		assertNotNull(q);
 		Object obj = qs.c.newInstance();
 		assertNotNull(obj);
 		assertTrue(obj instanceof Question);
 		Question qu = (Question) obj;
-		System.out.println("TMH >> " + qu.toString());
 	}
 
 	 public Question getDynamicClass(Class<?> cla, DynamicOMClassLoader d)

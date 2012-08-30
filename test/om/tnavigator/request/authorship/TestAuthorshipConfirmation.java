@@ -1,12 +1,20 @@
 package om.tnavigator.request.authorship;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import om.RenderedOutput;
 import om.tnavigator.UserSession;
 import om.tnavigator.db.JUnitTestCaseOmQueries;
 import om.tnavigator.db.OmQueries;
 
+import org.junit.After;
+import org.junit.Test;
+
 public class TestAuthorshipConfirmation extends AbstractAuthorshipTestCase {
 
+	@After
 	public void tearDown() throws Exception {
 		dummyTransaction = null;
 	}
@@ -16,36 +24,32 @@ public class TestAuthorshipConfirmation extends AbstractAuthorshipTestCase {
 		return new JUnitTestCaseOmQueries(s);
 	}
 
-	public void testFormatQueryRetrieve() throws Exception {
+	@Test public void testFormatQueryRetrieve() throws Exception {
 		AuthorshipConfirmationChecking check = createAuthorshipConfirmationChecking(1);
 		UserSession us = getUserSession(2325);
-		System.out.println(">>> " + us.getDbTi());
-		String s = check.formatQuery(us, getOmQueries("[oms-dev].[dbo].[nav_tests]")
+		String s = check.formatQuery(us, getOmQueries("nav_")
 			.retrieveAuthorshipConfirmationQuery());
 		assertNotNull(s);
-		System.out.println(s);
-		assertEquals("SELECT authorshipConfirmation from [oms-dev].[dbo].[nav_tests] where ti = '2325'", s);
+		assertEquals("SELECT authorshipConfirmation from nav_tests WHERE ti = '2325'", s);
 	}
 
-	public void testFormatQueryUpdate() throws Exception {
+	@Test public void testFormatQueryUpdate() throws Exception {
 		AuthorshipConfirmationChecking check = createAuthorshipConfirmationChecking(1);
 		UserSession us = getUserSession(2325);
-		System.out.println(">>> " + us.getDbTi());
-		String s = check.formatQuery(us, getOmQueries("[oms-dev].[dbo].[nav_tests]")
+		String s = check.formatQuery(us, getOmQueries("nav_")
 			.updateAuthorshipConfirmationQuery());
 		assertNotNull(s);
-		System.out.println(s);
-		assertEquals("UPDATE [oms-dev].[dbo].[nav_tests] SET authorshipConfirmation=1 WHERE ti='2325'", s);
+		assertEquals("UPDATE nav_tests SET authorshipConfirmation=1 WHERE ti='2325'", s);
 	}
 
-	public void testHasSuccessfullyConfirmed() throws Exception {
+	@Test public void testHasSuccessfullyConfirmed() throws Exception {
 		RenderedOutput ro = createAuthorshipConfirmationChecking(1)
 			.hasSuccessfullyConfirmed(getUserSession(2));
 		assertNotNull(ro);
 		assertTrue(ro.isSuccessful());
 	}
 
-	public void testFailedHasSuccessfullyConfirmed() throws Exception {
+	@Test public void testFailedHasSuccessfullyConfirmed() throws Exception {
 		try {
 			createAuthorshipConfirmationChecking(1)
 				.hasSuccessfullyConfirmed(null);
@@ -55,21 +59,21 @@ public class TestAuthorshipConfirmation extends AbstractAuthorshipTestCase {
 		}
 	}
 	
-	public void testMakeConfirmation() throws Exception {
+	@Test public void testMakeConfirmation() throws Exception {
 		RenderedOutput ro = createAuthorshipConfirmationChecking(1)
 			.makeConfirmation(getUserSession(2));
 		assertNotNull(ro);
 		assertTrue(ro.isSuccessful());
 	}
 
-	public void testFailedMakeConfirmationOnUpdateResponse() throws Exception {
+	@Test public void testFailedMakeConfirmationOnUpdateResponse() throws Exception {
 		RenderedOutput ro = createAuthorshipConfirmationChecking(-72)
 			.makeConfirmation(getUserSession(2));
 		assertNotNull(ro);
 		assertFalse(ro.isSuccessful());
 	}
 
-	public void testFailedMakeConfirmation() throws Exception {
+	@Test public void testFailedMakeConfirmation() throws Exception {
 		try {
 			createAuthorshipConfirmationChecking(1)
 				.makeConfirmation(null);

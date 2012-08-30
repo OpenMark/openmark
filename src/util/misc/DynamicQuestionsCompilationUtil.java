@@ -30,12 +30,6 @@ public class DynamicQuestionsCompilationUtil {
         //String classPath = System.getProperty("java.class.path");
         Iterable<String> options = Arrays.asList("-d", classOutputFolder,
         	"-classpath", classPath);
-        System.out.println("CLASSPATH -------------------------");
-        String[] arr = classPath.split(";");
-        for (int i = 0; i < arr.length; i++) {
-			System.out.println(arr[i]);
-		}
-        System.out.println("END OF CLASSPATH ------------------");
         JavaCompiler.CompilationTask task = compiler
         	.getTask(null, fileManager, c, options, null, files);
         Boolean result = task.call();

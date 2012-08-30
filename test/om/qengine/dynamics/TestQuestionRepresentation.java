@@ -1,16 +1,21 @@
 package om.qengine.dynamics;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.text.MessageFormat;
 
 import om.AbstractTestCase;
-import om.qengine.dynamics.QuestionRepresentation;
+
+import org.junit.Test;
 
 public class TestQuestionRepresentation extends AbstractTestCase {
 
 	private static String TEST_FOR = "The composite representation of a"
 			+ " Question Java class is not valid :";
 
-	public void testIncorrectQuestionRepresentation() throws Exception {
+	@Test public void testIncorrectQuestionRepresentation() throws Exception {
 		QuestionRepresentation qr = new QuestionRepresentation("", "");
 		try {
 			qr.getRepresentation();
@@ -20,7 +25,7 @@ public class TestQuestionRepresentation extends AbstractTestCase {
 		}
 	}
 
-	public void testNullQuestionRepresentation() throws Exception {
+	@Test public void testNullQuestionRepresentation() throws Exception {
 		QuestionRepresentation qr = new QuestionRepresentation(null, null);
 		try {
 			qr.getRepresentation();
@@ -56,7 +61,7 @@ public class TestQuestionRepresentation extends AbstractTestCase {
 
 	private static String CLASS_NAME = "om.dynamic.questions.tester.Tester";
 
-	public void testWrongQuestionRepresentation() throws Exception {
+	@Test public void testWrongQuestionRepresentation() throws Exception {
 		QuestionRepresentation qr = new QuestionRepresentation(WRONG_TEMPLATED_JAVA, CLASS_NAME);
 		try {
 			qr.getRepresentation();
@@ -66,7 +71,7 @@ public class TestQuestionRepresentation extends AbstractTestCase {
 		}
 	}
 
-	public void testQuestionRepresentation() throws Exception {
+	@Test public void testQuestionRepresentation() throws Exception {
 		Object[] arguments = {"implements Question"};
 		String check = MessageFormat.format(TEMPLATED_JAVA, arguments);
 		QuestionRepresentation qr = new QuestionRepresentation(check, CLASS_NAME);
@@ -78,7 +83,7 @@ public class TestQuestionRepresentation extends AbstractTestCase {
 		}
 	}
 
-	public void testStandardQuestionRepresentation() throws Exception {
+	@Test public void testStandardQuestionRepresentation() throws Exception {
 		Object[] arguments = {"extends StandardQuestion"};
 		String check = MessageFormat.format(TEMPLATED_JAVA, arguments);
 		check = check.replace("[", "{");
@@ -92,7 +97,7 @@ public class TestQuestionRepresentation extends AbstractTestCase {
 		}
 	}
 
-	public void testSimpleQuestion1QuestionRepresentation() throws Exception {
+	@Test public void testSimpleQuestion1QuestionRepresentation() throws Exception {
 		Object[] arguments = {"extends SimpleQuestion1"};
 		String check = MessageFormat.format(TEMPLATED_JAVA, arguments);
 		check = check.replace("[", "{");
@@ -106,7 +111,7 @@ public class TestQuestionRepresentation extends AbstractTestCase {
 		}
 	}
 
-	public void testSimpleQuestionRepresentation() throws Exception {
+	@Test public void testSimpleQuestionRepresentation() throws Exception {
 		Object[] arguments = {"extends SimpleQuestion1ForIAT"};
 		String check = MessageFormat.format(TEMPLATED_JAVA, arguments);
 		check = check.replace("[", "{");
@@ -120,7 +125,7 @@ public class TestQuestionRepresentation extends AbstractTestCase {
 		}
 	}
 
-	public void testDeferredFeedbackQuestion1Representation() throws Exception {
+	@Test public void testDeferredFeedbackQuestion1Representation() throws Exception {
 		Object[] arguments = {"extends DeferredFeedbackQuestion1"};
 		String check = MessageFormat.format(TEMPLATED_JAVA, arguments);
 		check = check.replace("[", "{");
@@ -134,7 +139,7 @@ public class TestQuestionRepresentation extends AbstractTestCase {
 		}
 	}
 
-	public void testSimpleQuestion20ForIATRepresentation() throws Exception {
+	@Test public void testSimpleQuestion20ForIATRepresentation() throws Exception {
 		Object[] arguments = {"extends SimpleQuestion20ForIAT"};
 		String check = MessageFormat.format(TEMPLATED_JAVA, arguments);
 		check = check.replace("[", "{");
@@ -148,7 +153,7 @@ public class TestQuestionRepresentation extends AbstractTestCase {
 		}
 	}
 
-	public void testSimpleQuestion3Representation() throws Exception {
+	@Test public void testSimpleQuestion3Representation() throws Exception {
 		Object[] arguments = {"extends SimpleQuestion3"};
 		String check = MessageFormat.format(TEMPLATED_JAVA, arguments);
 		check = check.replace("[", "{");

@@ -1,5 +1,10 @@
 package om.administration.questionbank;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,6 +14,9 @@ import java.util.Map;
 import om.AbstractTestCase;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import util.misc.GeneralUtils;
 
@@ -48,6 +56,7 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 
 	private File tempTestBankDirectoryTwo;
 
+	@After
 	public void tearDown() throws Exception {
 		createReferenceIfNull();
 		deleteDirectoryContents(tempQuestionBankDirectoryOne);
@@ -113,15 +122,13 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		int end = question.getAbsolutePath().lastIndexOf(File.separator);
 		assertTrue(end > 0);
 		String location = question.getAbsolutePath().substring(0, end);
-		System.out.println(location);
 		currentLocation = new File(location);
 	}
 
+	@Before
 	public void setUp() throws Exception {
 		question = retrieveFile(FILE_NAME + "01.jar");
 		assertNotNull(question);
-		System.out.println(question.getAbsolutePath());
-		System.out.println("File.separator = " + File.separator);
 		getUnitTestLocation();
 		assertNotNull(currentLocation);
 		assertTrue(currentLocation.canRead());
@@ -210,7 +217,6 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		assertNotNull(currentLocation);
 		File newDirectory = new File(currentLocation.getAbsolutePath()
 				+ File.separator + "temp");
-		System.out.println(newDirectory);
 		if (!newDirectory.exists()) {
 			assertTrue(newDirectory.mkdir());
 		}
@@ -239,46 +245,44 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		return dirs;
 	}
 
-	public void testIdentifyAllTests() throws Exception {
+	@Test public void testIdentifyAllTests() throws Exception {
 		ClearanceResponse cr = new ClearanceResponse();
 		QuestionBankCleaner cqb = new QuestionBankCleaner();
 		Map<String, TestSynchronizationCheck> tests = cqb.identifyAllTests(
 			pickUpTestLocations(), cr);
 		assertNotNull(tests);
-		System.out.println(tests.size());
 		assertEquals(tests.size(), 5);
 	}
 
-	public void testRetrieveCompositeQuestions() throws Exception {
+	@Test public void testRetrieveCompositeQuestions() throws Exception {
 		QuestionBankCleaner cqb = new QuestionBankCleaner();
 		QuestionAndTestBankLocations locs = new QuestionAndTestBankLocations();
 		locs.setTestBanks(pickUpTestLocations());
 		locs.setQuestionBanks(pickUpQuestionLocations());
 		List<String> questions = cqb.retrieveCompositeQuestions(test);
 		assertNotNull(questions);
-		System.out.println(questions);
 		assertTrue(questions.size() == 6);
 	}
 
-	public void testGetQuestionsEmpty() throws Exception {
+	@Test public void testGetQuestionsEmpty() throws Exception {
 		List<String> results = QuestionBankCleaner.getQuestions("");
 		assertNotNull(results);
 		assertTrue(results.size() == 0);
 	}
 
-	public void testGetQuestionsNulled() throws Exception {
+	@Test public void testGetQuestionsNulled() throws Exception {
 		List<String> results = QuestionBankCleaner.getQuestions(null);
 		assertNotNull(results);
 		assertTrue(results.size() == 0);
 	}
 
-	public void testGetQuestionsIncorrect() throws Exception {
+	@Test public void testGetQuestionsIncorrect() throws Exception {
 		List<String> results = QuestionBankCleaner.getQuestions("/tester1/sdfasdf");
 		assertNotNull(results);
 		assertTrue(results.size() == 0);
 	}
 
-	public void testGetQuestionsSingled() throws Exception {
+	@Test public void testGetQuestionsSingled() throws Exception {
 		String lookFor = "/questionBank1/sdk125b6.question06f.1.3.jar";
 		List<String> results = QuestionBankCleaner
 			.getQuestions(lookFor);
@@ -289,31 +293,29 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		assertEquals(s, lookFor);
 	}
 
-	public void testGetQuestionsMultiples() throws Exception {
+	@Test public void testGetQuestionsMultiples() throws Exception {
 		List<String> results = QuestionBankCleaner
 			.getQuestions("/tester1/sdk125b6.question06f.1.3.jar, /tester2/sdk125b6.question06f.1.3.jar");
 		assertNotNull(results);
 		assertTrue(results.size() == 2);
 		for (String s : results) {
-			System.out.println(s);
 			assertTrue(!s.startsWith(","));
 			assertTrue(!s.startsWith(" "));
 		}
 	}
 
-	public void testIdentifySyncOfTest() throws Exception {
+	@Test public void testIdentifySyncOfTest() throws Exception {
 		ClearanceResponse cr = new ClearanceResponse();
 		QuestionBankCleaner cqb = new QuestionBankCleaner();
 		Map<String, TestSynchronizationCheck> checks = cqb.identifyAllTests(
 			pickUpTestLocations(), cr);
 		assertNotNull(checks);
 		for (TestSynchronizationCheck test : checks.values()) {
-			System.out.println(test.getName());
-// FIXME	assertTrue(cqb.identifySyncStatus(test));
+			// assertTrue(cqb.identifySyncStatus(test));
 		}
 	}
 
-	public void testArchive() throws Exception {
+	@Test public void testArchive() throws Exception {
 		ClearanceResponse cr = new ClearanceResponse();
 		QuestionBankCleaner cqb = new QuestionBankCleaner();
 		assertNotNull(tempQuestionBankDirectoryOne);
@@ -324,7 +326,6 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		assertNotNull(fileToArchive);
 		String archiveName = tempQuestionBankDirectoryOne.getAbsolutePath()
 			+ File.separator + cqb.renderDate();
-		System.out.println(archiveName);
 		File archive = new File(archiveName);
 		assertTrue(archive.mkdir());
 		cqb.archieveIndividualQuestion(fileToArchive, archive, cr, null);

@@ -1,13 +1,18 @@
 package om.administration;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Map;
 
 import om.AbstractRequestHandlerTestCase;
 import om.RequestHandlerSettings;
 
+import org.junit.Test;
+
 public class TestAdministrationDisplayRequestHandler extends AbstractRequestHandlerTestCase {
 
-	public void testRenderRequestHandlerSettings() throws Exception {
+	@Test public void testRenderRequestHandlerSettings() throws Exception {
 		AdministrationDisplayRequestHandler handler = new AdministrationDisplayRequestHandler();
 		assertNotNull(configuration);
 		Map<String, RequestHandlerSettings> settings = configuration.getSettings();
@@ -16,7 +21,6 @@ public class TestAdministrationDisplayRequestHandler extends AbstractRequestHand
 		for (RequestHandlerSettings rhs : settings.values()) {
 			sb.append(handler.renderRequestHandlerSettings("/om-admin", rhs));
 		}
-		System.out.println(sb);
 		assertTrue(sb.toString().contains("/trevor/hinson"));
 	}
 

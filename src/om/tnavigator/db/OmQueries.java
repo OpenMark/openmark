@@ -1060,7 +1060,7 @@ public abstract class OmQueries
 
 	public String retrieveAuthorshipConfirmationQuery() {
 		return "SELECT authorshipConfirmation from "
-			+ getPrefix() + "tests where ti = {0}";
+			+ getPrefix() + "tests WHERE ti = {0}";
 	}
 
 

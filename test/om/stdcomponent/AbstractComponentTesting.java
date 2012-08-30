@@ -1,5 +1,8 @@
 package om.stdcomponent;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
@@ -75,8 +78,10 @@ public class AbstractComponentTesting extends AbstractTestCase {
 		QEngineConfig engineConfig = null;
 		int attempt = 1;
 		String navigatorVersion = "1.14";
+		boolean readOnly = false;
+		boolean showFeedback = true;
 		return new InitParams(lRandomSeed,sFixedFG,sFixedBG,dZoom,bPlain,
-			cl,iFixedVariant,engineConfig, attempt, navigatorVersion);
+			cl,iFixedVariant,engineConfig, attempt, navigatorVersion, readOnly, showFeedback);
 		
 	}
 

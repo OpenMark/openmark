@@ -1,5 +1,13 @@
 package om.tnavigator.request.authorship;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,9 +21,11 @@ import om.tnavigator.TestDeployment;
 import om.tnavigator.db.JUnitTestCaseOmQueries;
 import om.tnavigator.db.OmQueries;
 
+import org.junit.Test;
+
 public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 
-	public void testAuthorshipAction() throws Exception {
+	@Test public void testAuthorshipAction() throws Exception {
 		AuthorshipAction aa = AuthorshipAction.confirmingAuthorship;
 		assertEquals(AuthorshipAction.confirmingAuthorship, aa);
 		assertSame(AuthorshipAction.confirmingAuthorship, aa);
@@ -29,30 +39,30 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		return new JUnitTestCaseOmQueries(s);
 	}
 
-	public void testCreateAuthorshipConfirmationCheckingWithNullRequestAssociates()
+	@Test public void testCreateAuthorshipConfirmationCheckingWithNullRequestAssociates()
 		throws Exception {
 		checkNulledRequestAssociateComposite("RequestAssociates", null);
 	}
 
-	public void testCreateAuthorshipConfirmationCheckingWithNullDatabaseAccess()
+	@Test public void testCreateAuthorshipConfirmationCheckingWithNullDatabaseAccess()
 		throws Exception {
 		checkNulledRequestAssociateComposite(RequestParameterNames.DatabaseAccess.toString(),
 			getDummyRequestAssociates());
 	}
 
-	public void testCreateAuthorshipConfirmationCheckingWithNullLog()
+	@Test public void testCreateAuthorshipConfirmationCheckingWithNullLog()
 		throws Exception {
 		checkNulledRequestAssociateComposite(RequestParameterNames.Log.toString(),
 			getDummyRequestAssociates());
 	}
 
-	public void testCreateAuthorshipConfirmationCheckingWithNullAuthorshipQueryBean()
+	@Test public void testCreateAuthorshipConfirmationCheckingWithNullAuthorshipQueryBean()
 		throws Exception {
 		checkNulledRequestAssociateComposite(RequestParameterNames.AuthorshipQueryBean.toString(),
 			getDummyRequestAssociates());
 	}
 
-	public void testCreateAuthorshipConfirmationCheckingWithNullUserSession()
+	@Test public void testCreateAuthorshipConfirmationCheckingWithNullUserSession()
 		throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation = new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -67,7 +77,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		}
 	}
 
-	public void testCreateAuthorshipConfirmationCheckingWithNoAuthorshipAction() throws Exception {
+	@Test public void testCreateAuthorshipConfirmationCheckingWithNoAuthorshipAction() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation = new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
 		ra.putPrincipleObject(RequestParameterNames.AuthorshipAction.toString(), null);
@@ -75,13 +85,12 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 			new AuthorshipConfirmationHttpServletRequest(), ra,
 			confirmation.createAuthorshipConfirmationChecking(ra));
 		assertNotNull(rr);
-		System.out.println(">> " + rr);
 		assertFalse(rr.isSuccessful());
 		assertNotNull(rr.toString());
 		assertTrue(rr.toString().contains("Please respond to the question below then move to the next page and submit your answer."));
 	}
 
-	public void testCreateAuthorshipConfirmationCheckingConfirmed() throws Exception {
+	@Test public void testCreateAuthorshipConfirmationCheckingConfirmed() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -94,7 +103,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertTrue(rr.isSuccessful());
 	}
 
-	public void testCreateAuthorshipConfirmationCheckingWithAuthorshipActionConfirmed()
+	@Test public void testCreateAuthorshipConfirmationCheckingWithAuthorshipActionConfirmed()
 		throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
@@ -110,7 +119,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertTrue(rr.isSuccessful());
 	}
 
-	public void testCreateAuthorshipConfirmationCheckingWithAuthorshipAction()
+	@Test public void testCreateAuthorshipConfirmationCheckingWithAuthorshipAction()
 		throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
@@ -123,11 +132,10 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 			new AuthorshipConfirmationHttpServletRequest(), ra,
 			confirmation.createAuthorshipConfirmationChecking(ra));
 		assertNotNull(rr);
-		System.out.println(">>> " + rr);
 		assertTrue(rr.isSuccessful());
 	}
 
-	public void testCreateAuthorshipConfirmationCheckingWithAuthorshipActionMakeConfirmation() throws Exception {
+	@Test public void testCreateAuthorshipConfirmationCheckingWithAuthorshipActionMakeConfirmation() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -140,7 +148,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertTrue(rr.isSuccessful());
 	}
 
-	public void testUserNeedsToConfirmAuthorship() throws Exception {
+	@Test public void testUserNeedsToConfirmAuthorship() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -156,7 +164,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertTrue(output.length() > 0);
 	}
 
-	public void testConfirmedAuthorship() throws Exception {
+	@Test public void testConfirmedAuthorship() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -173,7 +181,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertTrue(output.length() == 0);
 	}
 
-	public void testAddUsersResponseToRequestAssociates() throws Exception {
+	@Test public void testAddUsersResponseToRequestAssociates() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -186,7 +194,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertEquals(o, "tester");
 	}
 	
-	public void testAddUsersResponseToRequestAssociatesNulled() throws Exception {
+	@Test public void testAddUsersResponseToRequestAssociatesNulled() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -197,7 +205,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertNull(o);
 	}
 
-	public void testAddUsersResponseToRequestAssociatesForCorrectAction() throws Exception {
+	@Test public void testAddUsersResponseToRequestAssociatesForCorrectAction() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -212,7 +220,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertEquals(o, AuthorshipAction.confirmingAuthorship);
 	}
 
-	public void testAddUsersResponseToRequestAssociatesForNullAction() throws Exception {
+	@Test public void testAddUsersResponseToRequestAssociatesForNullAction() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -225,7 +233,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertNull(o);
 	}
 
-	public void testShouldRun() throws Exception {
+	@Test public void testShouldRun() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -237,7 +245,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertTrue(confirmation.shouldRun(ra));
 	}
 
-	public void testShouldRunNOT() throws Exception {
+	@Test public void testShouldRunNOT() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -245,7 +253,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertFalse(confirmation.shouldRun(ra));
 	}
 
-	public void testErrorPageResponse() throws Exception {
+	@Test public void testErrorPageResponse() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();
@@ -260,10 +268,9 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		assertNotNull(rr);
 		assertFalse(rr.isSuccessful());
 		assertTrue(rr.toString().contains("This iCMA will remain unavailable to you."));
-		System.out.println(rr);
 	}
 
-	public void testCheckForOnLoad() throws Exception {
+	@Test public void testCheckForOnLoad() throws Exception {
 		StandardAuthorshipConfirmationRequestHandling confirmation
 			= new StandardAuthorshipConfirmationRequestHandling();
 		RequestAssociates ra = getDummyRequestAssociates();

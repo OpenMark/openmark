@@ -1,9 +1,10 @@
 package om.qengine.dynamics;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import om.AbstractTestCase;
-import om.qengine.dynamics.MixedBuilderType;
-import om.qengine.dynamics.QuestionRepresentation;
 
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -31,7 +32,7 @@ public class TestMixedTemplatedDynamicXML extends AbstractTestCase {
 		return doc.getDocumentElement();
 	}
 
-	public void testMixedTemplate() throws Exception {
+	@Test public void testMixedTemplate() throws Exception {
 		MixedBuilderType mht = new MixedBuilderType();
 		Element e = createElement();
 		QuestionRepresentation qr = mht.generateClassRepresentation(e);
@@ -39,7 +40,6 @@ public class TestMixedTemplatedDynamicXML extends AbstractTestCase {
 		assertNotNull(qr.getFullClassName());
 		String generatedJava = qr.getRepresentation();
 		assertNotNull(generatedJava);
-		System.out.println(generatedJava);
 		assertTrue(generatedJava.contains("om.dynamic.questions.testing;"));
 		assertTrue(generatedJava.contains("CodedTemplate"));
 		assertTrue(generatedJava.contains("om.helper.SimpleQuestion3"));

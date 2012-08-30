@@ -1,8 +1,15 @@
 package om.tnavigator.request.authorship;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.containsString;
 import om.tnavigator.db.JUnitTestCaseOmQueries;
 import om.tnavigator.db.OmQueries;
 
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -11,7 +18,7 @@ import util.xml.XML;
 
 public class XMLAuthorshipConfirmationBuilderTestCases extends AbstractAuthorshipTestCase {
 
-	public void testDisplay() throws Exception {
+	@Test public void testDisplay() throws Exception {
 		Document doc = template();
 		assertNotNull(doc);
 		String output = XML.saveString(doc);
@@ -20,15 +27,14 @@ public class XMLAuthorshipConfirmationBuilderTestCases extends AbstractAuthorshi
 		output = rh.stripForDisplay(output);
 		assertFalse(output.contains("<div class=\"authority-confirmation\">"));
 		assertFalse(output.endsWith("</div>"));
-		System.out.println(output);
 	}
 
-	public void testPickUpTemplate() throws Exception {
+	@Test public void testPickUpTemplate() throws Exception {
 		Document doc = template();
 		assertNotNull(doc);
 	}
 
-	public void testUpdatePostLocation() throws Exception {
+	@Test public void testUpdatePostLocation() throws Exception {
 		XMLAuthorshipConfirmationBuilder builder = new XMLAuthorshipConfirmationBuilder();
 		Document doc = template();
 		assertNotNull(doc);
@@ -39,15 +45,14 @@ public class XMLAuthorshipConfirmationBuilderTestCases extends AbstractAuthorshi
 		assertNotNull(e);
 		String s = XML.saveString(doc);
 		assertTrue(s.contains("/om-tn/mu120.module5/"));
-		System.out.println(s);
 	}
 
-	public void testInvalidDocument() throws Exception {
+	@Test public void testInvalidDocument() throws Exception {
 		XMLAuthorshipConfirmationBuilder builder = new XMLAuthorshipConfirmationBuilder();
 		assertFalse(builder.checkDocumentForRequiredNodes(null));
 	}
 
-	public void testValidDocument() throws Exception {
+	@Test public void testValidDocument() throws Exception {
 		XMLAuthorshipConfirmationBuilder builder = new XMLAuthorshipConfirmationBuilder();
 		Document doc = template();
 		assertNotNull(doc);
@@ -57,14 +62,13 @@ public class XMLAuthorshipConfirmationBuilderTestCases extends AbstractAuthorshi
 		assertTrue(builder.checkDocumentForRequiredNodes((Element) n));
 	}
 
-	public void testDetermineElementForRenderingWithoutErrorMessage()
+	@Test public void testDetermineElementForRenderingWithoutErrorMessage()
 		throws Exception {
 		XMLAuthorshipConfirmationBuilder builder = new XMLAuthorshipConfirmationBuilder();
 		Document originalTemplate = template();
 		Document doc = builder.renderForDisplay(originalTemplate, false,
 			getDummyRequestAssociates());
 		assertNotNull(doc);
-		System.out.println(XML.saveString(doc));
 		assertTrue(XML.hasChild(doc, XMLAuthorshipConfirmationBuilder.DIV));
 		assertTrue(XML.hasChild(doc.getFirstChild(),
 			XMLAuthorshipConfirmationBuilder.FORM));
@@ -73,7 +77,7 @@ public class XMLAuthorshipConfirmationBuilderTestCases extends AbstractAuthorshi
 		assertNotSame(doc, originalTemplate);
 	}
 
-	public void testDetermineElementForRenderingWITHErrorMessage()
+	@Test public void testDetermineElementForRenderingWITHErrorMessage()
 		throws Exception {
 		XMLAuthorshipConfirmationBuilder builder = new XMLAuthorshipConfirmationBuilder();
 		Document originalTemplate = template();
@@ -81,11 +85,10 @@ public class XMLAuthorshipConfirmationBuilderTestCases extends AbstractAuthorshi
 			getDummyRequestAssociates());
 		assertNotNull(doc);
 		String s = XML.saveString(doc);
-		System.out.println(s);
 		assertTrue(XML.hasChild(doc, XMLAuthorshipConfirmationBuilder.DIV));
 		assertTrue(XML.hasChild(doc.getFirstChild(),
 			XMLAuthorshipConfirmationBuilder.FORM));
-		assertTrue(s.contains("<div class=\"error-message\">"));
+		assertThat(s, containsString("<div class=\"error-message\""));
 		assertNotSame(doc, originalTemplate);
 	}
 

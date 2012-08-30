@@ -1,5 +1,7 @@
 package om;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -9,18 +11,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Document;
-
 import om.axis.qengine.Score;
 import om.tnavigator.JUnitTestCaseTestDefinition;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.TestDeployment;
 import om.tnavigator.scores.CombinedScore;
+
+import org.junit.Before;
+import org.w3c.dom.Document;
+
 import util.misc.GeneralUtils;
 import util.xml.XML;
-import junit.framework.TestCase;
 
-public class AbstractTestCase extends TestCase {
+public class AbstractTestCase {
 
 	protected static String LINE_SEPERATOR = System.getProperty("line.separator");
 
@@ -39,6 +42,7 @@ public class AbstractTestCase extends TestCase {
 		return XML.parse(f);
 	}
 
+	@Before
 	public void setUp() throws Exception{
 		String logPath = getLogPath();
 		log = GeneralUtils.getLog(getClass(), logPath, true);
@@ -72,7 +76,6 @@ public class AbstractTestCase extends TestCase {
 
 	protected File pickUpFile(String name) {
 		URL url = ClassLoader.getSystemResource(name);
-		System.out.println("URL = " + url);
 		File f = null;
 		if (null != url) {
 			String path = url.getPath();

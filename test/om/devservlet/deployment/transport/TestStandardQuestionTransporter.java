@@ -7,13 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.TestCase;
 import om.DisplayUtils;
 import om.RenderedOutput;
 import om.devservlet.deployment.QuestionHolder;
 import om.devservlet.deployment.transport.StandardQuestionTransporter.LatestNameAndVersion;
 import om.devservlet.deployment.transport.StandardQuestionTransporter.Versioner;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Test;
+
 import util.misc.GeneralUtils;
 
 public class TestStandardQuestionTransporter extends TestCase {
@@ -22,6 +25,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 	 * Here we tidy up .jar files that have been created within the directory
 	 *  for these tests to run with.
 	 */
+	@After
 	public void tearDown() {
 		String name = "samples.mu120.module5.question01.jar";
 		URL url = TestStandardQuestionTransporter.class.getResource(name);
@@ -32,7 +36,6 @@ public class TestStandardQuestionTransporter extends TestCase {
 			source.getAbsolutePath().lastIndexOf(File.separator) + 1);
 		File f = new File(subPath);
 		assertTrue(f.isDirectory());
-		System.out.println("Removing temp jars ... ");
 		File[] files = f.listFiles();
 		for (int i = 0; i < files.length; i++) {
 			File fil = files[i];
@@ -45,45 +48,40 @@ public class TestStandardQuestionTransporter extends TestCase {
 		}
 	}
 
-	public void testVersionNumberDetermination() throws Exception {
+	@Test public void testVersionNumberDetermination() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner num = sqt.retrieveVersionerFromFileName("tester.3.7.jar");
-		System.out.println(num);
 		assertNotNull(num);
 		assertEquals(7, num.secondary);
 	}
 
-	public void testBadVersionNumberDetermination() throws Exception {
+	@Test public void testBadVersionNumberDetermination() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner num = sqt.retrieveVersionerFromFileName("tester.1.3..jar");
-		System.out.println(num);
 		assertNull(num);
 	}
 
-	public void testReducedVersionNumberDetermination() throws Exception {
+	@Test public void testReducedVersionNumberDetermination() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner num = sqt.retrieveVersionerFromFileName("tester.1.1.jar");
-		System.out.println(num);
 		assertNotNull(num);
 		assertTrue(num.primary == 1);
 		assertTrue(num.secondary == 1);
 	}
 
-	public void testInvalidVersionNumberDetermination() throws Exception {
+	@Test public void testInvalidVersionNumberDetermination() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner num = sqt.retrieveVersionerFromFileName("tester.jar");
-		System.out.println(num);
 		assertNull(num);
 	}
 
-	public void testCompletelyInvalidVersionNumberDetermination() throws Exception {
+	@Test public void testCompletelyInvalidVersionNumberDetermination() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner num = sqt.retrieveVersionerFromFileName("x.jar");
-		System.out.println(num);
 		assertNull(num);
 	}
 
-	public void testLargest() throws Exception {
+	@Test public void testLargest() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		List<String> which = new ArrayList<String>();
 		which.add("25.3");
@@ -106,7 +104,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(mostRecent.secondary == 3);
 	}
 
-	public void testLargestAgain() throws Exception {
+	@Test public void testLargestAgain() throws Exception {
 		List<String> which = new ArrayList<String>();
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		which.add("0.8");
@@ -124,7 +122,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(mostRecent.secondary == 8);
 	}
 
-	public void testRetrieveVersionerFromFileName() throws Exception {
+	@Test public void testRetrieveVersionerFromFileName() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		String name = "samples.mu120.module5.question02.4.5.jar";
 		StandardQuestionTransporter.Versioner ver = sqt
@@ -134,7 +132,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(ver.secondary == 5);
 	}
 
-	public void testMatchingVersioner() throws Exception {
+	@Test public void testMatchingVersioner() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		StandardQuestionTransporter.Versioner v = sqt.new Versioner();
 		StandardQuestionTransporter.Versioner v2 = sqt.new Versioner();
@@ -145,7 +143,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(v.validMatch(v2));
 	}
 
-	public void testInvalidMatchingVersioner() throws Exception {
+	@Test public void testInvalidMatchingVersioner() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		StandardQuestionTransporter.Versioner v = sqt.new Versioner();
 		StandardQuestionTransporter.Versioner v2 = sqt.new Versioner();
@@ -156,7 +154,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertFalse(v.validMatch(v2));
 	}
 
-	public void testAnotherInvalidMatchingVersioner() throws Exception {
+	@Test public void testAnotherInvalidMatchingVersioner() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		StandardQuestionTransporter.Versioner v = sqt.new Versioner();
 		StandardQuestionTransporter.Versioner v2 = sqt.new Versioner();
@@ -167,7 +165,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertFalse(v.validMatch(v2));
 	}
 
-	public void testAnotherMatchingVersioner() throws Exception {
+	@Test public void testAnotherMatchingVersioner() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		StandardQuestionTransporter.Versioner v = sqt.new Versioner();
 		StandardQuestionTransporter.Versioner v2 = sqt.new Versioner();
@@ -178,7 +176,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(v.validMatch(v2));
 	}
 	
-	public void testCreationOfVersioner() throws Exception {
+	@Test public void testCreationOfVersioner() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		StandardQuestionTransporter.Versioner v = sqt
 			.retrieveVersionerFromFileName("tester.11.317.jar");
@@ -187,7 +185,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(v.validMatch(v2));
 	}
 
-	public void testSecondaryInvalidMatchVersioner() throws Exception {
+	@Test public void testSecondaryInvalidMatchVersioner() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		StandardQuestionTransporter.Versioner v = sqt
 			.retrieveVersionerFromFileName("tester.11.317.jar");
@@ -196,7 +194,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertFalse(v.validMatch(v2));
 	}
 
-	public void testPrimaryInvalidMatchVersioner() throws Exception {
+	@Test public void testPrimaryInvalidMatchVersioner() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		StandardQuestionTransporter.Versioner v = sqt
 			.retrieveVersionerFromFileName("tester.11.317.jar");
@@ -205,7 +203,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertFalse(v.validMatch(v2));
 	}
 
-	public void testNewName() throws Exception {
+	@Test public void testNewName() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		StandardQuestionTransporter.LatestNameAndVersion ver = sqt.new LatestNameAndVersion();
 		assertNotNull(ver);
@@ -216,12 +214,10 @@ public class TestStandardQuestionTransporter extends TestCase {
 		ver.version = v;
 		String newName = sqt.newFileNamePrefix(ver);
 		assertNotNull(newName);
-		System.out.println(newName);
 		assertEquals("tester.2.3", newName);
-		System.out.println(newName);
 	}
 
-	public void testMakingACopy() throws Exception {
+	@Test public void testMakingACopy() throws Exception {
 		URL url = TestStandardQuestionTransporter.class.getResource("samples.mu120.module5.question01.jar");
 		assertNotNull(url);
 		String path = url.getPath();
@@ -229,17 +225,15 @@ public class TestStandardQuestionTransporter extends TestCase {
 		String replacedPath = url.getPath().replace("%20", " ");
 		File source = new File(replacedPath);
 		assertNotNull(source);
-		System.out.println(source.getAbsolutePath());
 		String newFileName = url.getPath().substring(0, n + 1);
 		newFileName = newFileName.replace("%20", " ");
 		newFileName = newFileName + "target" + System.currentTimeMillis() + ".jar";
-		System.out.println(newFileName);
 		File target = new File(newFileName);
 		assertTrue(target.createNewFile());
 		GeneralUtils.copyFile(source, target);
 	}
 
-	public void testAgreedLatestVersionExpectsNull() throws Exception {
+	@Test public void testAgreedLatestVersionExpectsNull() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner v1 = sqt.new Versioner();
 		v1.primary = 12;
@@ -267,7 +261,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertNull(ver);
 	}
 
-	public void testAgreedLatestVersion() throws Exception {
+	@Test public void testAgreedLatestVersion() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner v1 = sqt.new Versioner();
 		v1.primary = 12;
@@ -288,7 +282,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertNotNull(ver);
 	}
 
-	public void testAppendConfiguredReportMessage() throws Exception {
+	@Test public void testAppendConfiguredReportMessage() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		String message = "Testing the message";
 		Map<String, String> metaData = new HashMap<String, String>();
@@ -300,7 +294,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(ro.toString().contains(message));
 	}
 
-	public void testAppendConfiguredReportMessageInvalid() throws Exception {
+	@Test public void testAppendConfiguredReportMessageInvalid() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		String message = "Testing the message";
 		Map<String, String> metaData = new HashMap<String, String>();
@@ -310,7 +304,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertFalse(ro.toString().contains(message));
 	}
 
-	public void testCreateVersioner() throws Exception {
+	@Test public void testCreateVersioner() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		String s = "7.2";
 		Versioner ver = sqt.createVersioner(s);
@@ -319,35 +313,35 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertEquals(ver.secondary, 2);
 	}
 
-	public void testCreateVersionerWithInvalidDetails() throws Exception {
+	@Test public void testCreateVersionerWithInvalidDetails() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		String s = ".2";
 		Versioner ver = sqt.createVersioner(s);
 		assertNull(ver);
 	}
 
-	public void testCreateVersionerWithInvalidNumbering() throws Exception {
+	@Test public void testCreateVersionerWithInvalidNumbering() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		String s = ".";
 		Versioner ver = sqt.createVersioner(s);
 		assertNull(ver);
 	}
 
-	public void testCreateVersionerWithEmptyText() throws Exception {
+	@Test public void testCreateVersionerWithEmptyText() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		String s = "";
 		Versioner ver = sqt.createVersioner(s);
 		assertNull(ver);
 	}
 
-	public void testCreateVersionerWithInvalidText() throws Exception {
+	@Test public void testCreateVersionerWithInvalidText() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		String s = "tester";
 		Versioner ver = sqt.createVersioner(s);
 		assertNull(ver);
 	}
 
-	public void testDeployCopy() throws Exception {
+	@Test public void testDeployCopy() throws Exception {
 		File newFile = doDeploy(1, 1);
 		assertTrue(newFile.delete());
 	}
@@ -363,7 +357,6 @@ public class TestStandardQuestionTransporter extends TestCase {
 		File source = new File(replacedPath);
 		String subPath = source.getAbsolutePath().substring(0,
 			source.getAbsolutePath().lastIndexOf(File.separator) + 1);
-		System.out.println("subPath = " + subPath);
 		metaData.put(DisplayUtils.LOCATION + 1, subPath);
 		List<String> locations = new ArrayList<String>();
 		locations.add(subPath);
@@ -374,7 +367,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		return newFile;
 	}
 
-	public void testDetermineCurrentVersionSingle() throws Exception {
+	@Test public void testDetermineCurrentVersionSingle() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		String name = "samples.mu120.module5.question01.jar";
 		URL url = TestStandardQuestionTransporter.class.getResource(name);
@@ -383,7 +376,6 @@ public class TestStandardQuestionTransporter extends TestCase {
 		File source = new File(replacedPath);
 		String subPath = source.getAbsolutePath().substring(0,
 			source.getAbsolutePath().lastIndexOf(File.separator) + 1);
-		System.out.println("subPath = " + subPath);
 		Map<String, String> metaData = new HashMap<String, String>();
 		metaData.put(DisplayUtils.LOCATION + 1, subPath);
 		List<String> locations = new ArrayList<String>();
@@ -392,13 +384,12 @@ public class TestStandardQuestionTransporter extends TestCase {
 		QuestionHolder qh = new QuestionHolder(null, source, metaData,name, new File(subPath));
 		LatestNameAndVersion lat = sqt.determineCurrentVersion(locations, metaData, qh, ro);
 		assertNotNull(lat);
-		System.out.println(lat);
 		assertNotNull(lat.version);
 		assertEquals(lat.version.primary, 1);
 		assertEquals(lat.version.secondary, 0);
 	}
 
-	public void testDetermineCurrentVersionMultiples() throws Exception {
+	@Test public void testDetermineCurrentVersionMultiples() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		String name = "samples.mu120.module5.question01";
 		String suffix = ".jar";
@@ -408,7 +399,6 @@ public class TestStandardQuestionTransporter extends TestCase {
 		File source = new File(replacedPath);
 		String subPath = source.getAbsolutePath().substring(0,
 			source.getAbsolutePath().lastIndexOf(File.separator) + 1);
-		System.out.println("subPath = " + subPath);
 		Map<String, String> metaData = new HashMap<String, String>();
 		metaData.put(DisplayUtils.LOCATION + 1, subPath);
 		List<String> locations = new ArrayList<String>();
@@ -427,7 +417,6 @@ public class TestStandardQuestionTransporter extends TestCase {
 		QuestionHolder qh = new QuestionHolder(null, source, metaData,name, new File(subPath));
 		LatestNameAndVersion lat = sqt.determineCurrentVersion(locations, metaData, qh, ro);
 		assertNotNull(lat);
-		System.out.println(lat);
 		assertNotNull(lat.version);
 		assertEquals(lat.version.primary, 1);
 		assertEquals(lat.version.secondary, 5);
@@ -438,7 +427,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(f1_5.delete());
 	}
 
-	public void testEnsureLatestMatch() throws Exception {
+	@Test public void testEnsureLatestMatch() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		String name = "samples.mu120.module5.question01.jar";
 		URL url = TestStandardQuestionTransporter.class.getResource(name);
@@ -447,7 +436,6 @@ public class TestStandardQuestionTransporter extends TestCase {
 		File source = new File(replacedPath);
 		String subPath = source.getAbsolutePath().substring(0,
 			source.getAbsolutePath().lastIndexOf(File.separator) + 1);
-		System.out.println("subPath = " + subPath);
 		Map<String, String> metaData = new HashMap<String, String>();
 		metaData.put(DisplayUtils.LOCATION + 1, subPath);
 		List<String> locations = new ArrayList<String>();
@@ -469,26 +457,25 @@ public class TestStandardQuestionTransporter extends TestCase {
 			new File(subPath));
 		LatestNameAndVersion lat = sqt.ensureLatestMatch(versions, qh);
 		assertNotNull(lat);
-		System.out.println(lat);
 		assertNotNull(lat.version);
 		assertEquals(lat.version.primary, 2);
 		assertEquals(lat.version.secondary, 5);
 	}
 
-	public void testGetMostRecentEmpty() throws Exception {
+	@Test public void testGetMostRecentEmpty() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		List<Versioner> vers = new ArrayList<Versioner>();
 		Versioner v = sqt.getMostRecentVersion(vers);
 		assertNull(v);
 	}
 
-	public void testGetMostRecentNulled() throws Exception {
+	@Test public void testGetMostRecentNulled() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner v = sqt.getMostRecentVersion(null);
 		assertNull(v);
 	}
 
-	public void testGetMostRecent() throws Exception {
+	@Test public void testGetMostRecent() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		List<Versioner> versioners = new ArrayList<Versioner>();
 		Versioner ver1 = sqt.new Versioner();
@@ -508,7 +495,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(v.validMatch(ver1));
 	}
 
-	public void testHandleInvalidVersioning() throws Exception {
+	@Test public void testHandleInvalidVersioning() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Map<String, String> metaData = new HashMap<String, String>();
 		RenderedOutput ro = new RenderedOutput();
@@ -516,13 +503,13 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(ro.toString().contains("The latest version could not be determined."));
 	}
 
-	public void testHandleInvalidVersioningWithNullRenderedOutput() throws Exception {
+	@Test public void testHandleInvalidVersioningWithNullRenderedOutput() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Map<String, String> metaData = new HashMap<String, String>();
 		sqt.handleInvalidVersioning(null, metaData);
 	}
 
-	public void testIdentifyLatestVersion() throws Exception {
+	@Test public void testIdentifyLatestVersion() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		RenderedOutput ro = new RenderedOutput();
 		String name = "samples.mu120.module5.question01.jar";
@@ -542,7 +529,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertEquals(lat.version.secondary, 0);
 	}
 
-	public void testMakeLocalCopy() throws Exception {
+	@Test public void testMakeLocalCopy() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		RenderedOutput ro = new RenderedOutput();
 		String newNamePrefix = "tester.1.2";
@@ -561,7 +548,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(newCopy.delete());
 	}
 
-	public void testNewFileNamePrefix() throws Exception {
+	@Test public void testNewFileNamePrefix() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner ver = sqt.new Versioner();
 		ver.primary = 2;
@@ -574,7 +561,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertEquals(name, "tester.2.5");
 	}
 
-	public void testProblemRemovingOutOfSyncCopy() throws Exception {
+	@Test public void testProblemRemovingOutOfSyncCopy() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Map<String, String> metaData = new HashMap<String, String>();
 		String name = "samples.mu120.module5.question01.jar";
@@ -590,7 +577,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(ro.toString().contains(source.getAbsolutePath()));
 	}
 
-	public void testProblemRemovingOutOfSyncCopyNulled() throws Exception {
+	@Test public void testProblemRemovingOutOfSyncCopyNulled() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Map<String, String> metaData = new HashMap<String, String>();
 		RenderedOutput ro = new RenderedOutput();
@@ -600,7 +587,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 			"There was a problem removing the file from the server in order"));
 	}
 
-	public void testProblemWithQuestionBankDirectory() throws Exception {
+	@Test public void testProblemWithQuestionBankDirectory() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		RenderedOutput ro = new RenderedOutput();
 		sqt.problemWithQuestionBankDirectory("", ro);
@@ -608,7 +595,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 			"There was a problem with the questionbank directory."));
 	}
 
-	public void testRetrievelatestVesions() throws Exception {
+	@Test public void testRetrievelatestVesions() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		RenderedOutput ro = new RenderedOutput();
 		String name = "samples.mu120.module5.question01.jar";
@@ -627,22 +614,20 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertNotNull(vers);
 		assertTrue(vers.size() == 1);
 		LatestNameAndVersion latVer = vers.get(subPath);
-		System.out.println(vers);
 		assertNotNull(latVer);
-		System.out.println(latVer.fileNamePrefix);
 		assertEquals(latVer.fileNamePrefix, "samples.mu120.module5.question01.jar");
 		assertNotNull(latVer.version);
 		assertEquals(latVer.version.primary, 1);
 		assertEquals(latVer.version.secondary, 0);
 	}
 
-	public void testRetrieveVersionerFromFileNameNOVersionSpecified() throws Exception {
+	@Test public void testRetrieveVersionerFromFileNameNOVersionSpecified() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner ver = sqt.retrieveVersionerFromFileName("samples.mu120.module5.question01.jar");
 		assertNull(ver);
 	}
 
-	public void testRetrieveVersionerFromFileNameTypical() throws Exception {
+	@Test public void testRetrieveVersionerFromFileNameTypical() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner ver = sqt.retrieveVersionerFromFileName("samples.mu120.module5.question01.2.3.jar");
 		assertNotNull(ver);
@@ -650,19 +635,19 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertEquals(ver.secondary, 3);
 	}
 
-	public void testRetrieveVersionerFromFileNameNull() throws Exception {
+	@Test public void testRetrieveVersionerFromFileNameNull() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner ver = sqt.retrieveVersionerFromFileName(null);
 		assertNull(ver);
 	}
 
-	public void testRetrieveVersionerFromFileNameEmpty() throws Exception {
+	@Test public void testRetrieveVersionerFromFileNameEmpty() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Versioner ver = sqt.retrieveVersionerFromFileName("");
 		assertNull(ver);
 	}
 
-	public void testRollBack() throws Exception {
+	@Test public void testRollBack() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		Map<String, String> metaData = new HashMap<String, String>();
 		RenderedOutput ro = new RenderedOutput();
@@ -679,7 +664,7 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertFalse(f.exists());
 	}
 
-	public void testStartReport() throws Exception {
+	@Test public void testStartReport() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		RenderedOutput ro = new RenderedOutput();
 		String name = "samples.mu120.module5.question01.jar";
@@ -696,14 +681,14 @@ public class TestStandardQuestionTransporter extends TestCase {
 		assertTrue(ro.toString().contains(qh.toString()));
 	}
 
-	public void testTidyUpNulled() throws Exception {
+	@Test public void testTidyUpNulled() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		RenderedOutput ro = new RenderedOutput();
 		sqt.tidyUp(null, ro);
 		assertTrue(ro.toString().contains("unsuccessful"));
 	}
 
-	public void testTidyUp() throws Exception {
+	@Test public void testTidyUp() throws Exception {
 		StandardQuestionTransporter sqt = new StandardQuestionTransporter();
 		RenderedOutput ro = new RenderedOutput();
 		File newFile = doDeploy(1, 4);

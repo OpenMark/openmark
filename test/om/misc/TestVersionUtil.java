@@ -1,29 +1,31 @@
 package om.misc;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
 
 import util.misc.QuestionName;
 import util.misc.VersionUtil;
-import junit.framework.TestCase;
 
 public class TestVersionUtil extends TestCase {
 
-	public void testRepresentedWithNullName() {
+	@Test public void testRepresentedWithNullName() {
 		QuestionName qn = VersionUtil.represented(null);
 		assertNull(qn);
 	}
 
-	public void testRepresentedWithEmptyName() {
+	@Test public void testRepresentedWithEmptyName() {
 		QuestionName qn = VersionUtil.represented("");
 		assertNull(qn);
 	}
 
-	public void testRepresentedWithWrongName() {
+	@Test public void testRepresentedWithWrongName() {
 		QuestionName qn = VersionUtil.represented("sdfsdf");
 		assertNull(qn);
 	}
 
-	public void testRepresentedWithName() {
+	@Test public void testRepresentedWithName() {
 		QuestionName qn = VersionUtil.represented("sdk125b6.question02f.1.2.jar");
 		assertNotNull(qn);
 		assertTrue(StringUtils.isNotEmpty(qn.getPrefix()));
@@ -33,7 +35,7 @@ public class TestVersionUtil extends TestCase {
 		assertEquals(qn.getQuestionVersion().iMinor, 2);
 	}
 
-	public void testRepresentedWithValidName() {
+	@Test public void testRepresentedWithValidName() {
 		QuestionName qn = VersionUtil.represented("sdk125b6.question02f.112.22.jar");
 		assertNotNull(qn);
 		assertTrue(StringUtils.isNotEmpty(qn.getPrefix()));
