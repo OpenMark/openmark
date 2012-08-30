@@ -149,6 +149,8 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 			boolean bPlain=false;
 			double dZoom=1.0;
 			int iFixedVariant=-1;
+			boolean readOnly = false;
+			boolean feedbackVisible = true;
 
 			for(int i=0;i<initialParamNames.length;i++)
 			{
@@ -188,6 +190,14 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 				{
 					iFixedVariant=Integer.parseInt(sValue);
 				}
+				else if(sName.equals("display_readonly"))
+				{
+					readOnly = "1".equals(sValue);
+				}
+				else if(sName.equals("display_generalfeedback"))
+				{
+					feedbackVisible = !"0".equals(sValue);
+				}
 			}
 			if(!bGotRandomSeed) throw new OmException("Required parameter missing: randomseed");
 
@@ -199,7 +209,9 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 			// Create and initialise question
 			QuestionCache.QuestionInstance qi=qc.newQuestion(qk);
 			Question q=qi.q;
-			InitParams ip=new InitParams(lRandomSeed,sFixedFG,sFixedBG,dZoom,bPlain,(ClassLoader) qi.omclc,iFixedVariant,this, attempt, navigatorVersion);
+			InitParams ip=new InitParams(lRandomSeed,sFixedFG,sFixedBG,dZoom,bPlain,
+					(ClassLoader) qi.omclc,iFixedVariant,this, attempt,
+					navigatorVersion, readOnly, feedbackVisible);
 			Rendering r=q.init(qc.getMetadata(qk),ip);
 
 			// Generate session details and store in map

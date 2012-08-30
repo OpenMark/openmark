@@ -115,7 +115,7 @@ public abstract class DeferredFeedbackQuestion1 extends StandardQuestion
 		// Disable input, show answer
 		getComponent("inputbox").setEnabled(false);
 		getComponent("inputbox").setBoolean(BoxComponent.PROPERTY_PLAINHIDE,true);
-		getComponent("answerbox").setDisplay(true);
+		getComponent("answerbox").setDisplay(isFeedbackVisible());
 
 		sFeedbackID=null;
 

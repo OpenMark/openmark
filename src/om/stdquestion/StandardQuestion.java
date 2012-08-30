@@ -804,4 +804,14 @@ public abstract class StandardQuestion implements Question
 	{
 		return ip.isPlainMode();
 	}
+
+	/** @return Whether the question should be output read-only. */
+	public boolean isReadOnly() {
+		return ip.isReadOnly();
+	}
+
+	/** @return Whether the question feedback should be displayed. */
+	public boolean isFeedbackVisible() {
+		return ip.isFeedbackVisible();
+	}
 }

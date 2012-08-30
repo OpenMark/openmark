@@ -654,9 +654,12 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				double dZoom="big".equals(sAccess) ? 2.0 : 1.0;
 				String sFG="bw".equals(sAccess) ? "#00ff00" : null;
 				String sBG="bw".equals(sAccess) ? "#000000" : null;
+				boolean readOnly = false;
+				boolean feedbackVisible = null == request.getParameter("nofeedback");
 
 				ipInProgress=new InitParams(randomSeed,
-					sFG,sBG,dZoom,bPlain,cclInProgress,iVariant, this, 1, OmVersion.getVersion());
+						sFG,sBG,dZoom,bPlain,cclInProgress,iVariant, this, 1,
+						OmVersion.getVersion(), readOnly, feedbackVisible);
 				Rendering r=qInProgress.init(rr.dMeta,ipInProgress);
 
 				// Try starting the question a few times, and ensure we get the same result each time.
@@ -955,7 +958,8 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 					"<a href='./v0'>0</a> <a href='./v1'>1</a> <a href='./v2'>2</a> " +
 						"<a href='./v3'>3</a> <a href='./v4'>4</a> " +
 					"<a href='./?access=plain'>Plain</a> <a href='./?access=bw'>Colour</a> " +
-					"<a href='./?access=big'>Big</a>" +
+					"<a href='./?access=big'>Big</a> " +
+					"<a href='./?nofeedback'>No feedback</a>" +
 
 					"</small>] " +
 				"[<a href='../../build/"+sQuestion+"/'>Rebuild</a>] " +
@@ -1017,7 +1021,11 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 		if(q instanceof StandardQuestion)
 		{
 			StandardQuestion sq=(StandardQuestion)q;
-			XML.createText(XML.find(d,"id","log"),sq.eatLog());
+			String message = "";
+			if (!sq.isFeedbackVisible()) {
+				message = "Note: Feedback is hidden.\n";
+			}
+			XML.createText(XML.find(d,"id","log"),message + sq.eatLog());
 		}
 
 		// Fix up the replacement variables

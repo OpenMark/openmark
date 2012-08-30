@@ -57,6 +57,12 @@ public class InitParams
 	/** The version of the Om test navigator software that started the attempt. */
 	private String navigatorVersion;
 
+	/** Whether the question should be output read-only. */
+	private boolean readOnly = false;
+
+	/** Whether the question feedback should be displayed. */
+	private boolean feedbackVisible = true;
+
 	/**
 	 * Construct and set values.
 	 * @param lRandomSeed Random number seed
@@ -72,7 +78,7 @@ public class InitParams
 	 */
 	public InitParams(long lRandomSeed,String sFixedColourFG,String sFixedColourBG,
 		double dZoom,boolean bPlainMode,ClassLoader cl,int iFixedVariant, QEngineConfig config, 
-		int attempt, String navigatorVersion)
+		int attempt, String navigatorVersion, boolean readOnly, boolean showFeedback)
 	{
 		this.lRandomSeed=lRandomSeed;
 		this.sFixedColourFG=sFixedColourFG;
@@ -84,6 +90,8 @@ public class InitParams
 		this.qeConfig = config;
 		this.attempt = attempt;
 		this.navigatorVersion = navigatorVersion;
+		this.readOnly = readOnly;
+		this.feedbackVisible = showFeedback;
 	}
 
 	/**
@@ -117,6 +125,16 @@ public class InitParams
 	public boolean isPlainMode()
 	{
 		return bPlainMode;
+	}
+
+	/** @return Whether the question should be output read-only. */
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
+	/** @return Whether the question feedback should be displayed. */
+	public boolean isFeedbackVisible() {
+		return feedbackVisible;
 	}
 
 	/** @return ClassLoader that should be used to load resources */
