@@ -1,0 +1,21 @@
+Unit tests in OpenMark
+======================
+
+The OpenMark unit tests are written using the JUnit 4 framework.
+
+There are various ways to run the tests. That is one of the features of JUnit.
+Some options include running them from the command line, running them from Ant,
+or running them from inside an IDE. Some of the options are documented below.
+
+Running the unit tests in Eclipse
+---------------------------------
+
+1. Right-click on the test folder, and choose Build Path -> Use as Source Folder.
+
+2. Right-click on the samples folder, and choose Build Path -> Use as Source Folder.
+
+3. Right-click on the project, and choose Properties. Click on
+   Java Build Path -> Libraries -> Add library... Choose JUnit from the list,
+   then on the next screen Choose JUnit 4. Click Finish, then OK.
+
+4. Right-click on the test folder, and choose Run As -> JUnit Test.
