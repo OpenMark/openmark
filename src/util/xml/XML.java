@@ -1429,9 +1429,15 @@ public abstract class XML
 		// Separate map into two depending on type
 		Map<String,String> mStrings=new HashMap<String,String>();
 		Map<String,Node> mNodes=new HashMap<String,Node>();
+		Integer cnt=0;
 		for(Map.Entry<String,? extends Object> me : mReplace.entrySet())
 		{
-			if(me.getValue() instanceof String)
+			cnt++;
+			if(me.getValue()==null)
+			{
+				mStrings.put(me.getKey(),"");
+			}
+			else if(me.getValue() instanceof String)
 			{
 				mStrings.put(me.getKey(),(String)me.getValue());
 			}
@@ -1439,9 +1445,9 @@ public abstract class XML
 			{
 				mNodes.put(me.getKey(),(Node)me.getValue());
 			}
-			else
+			else 
 			{
-				throw new IllegalArgumentException("replaceTokens map may contain only Strings and Nodes");
+				throw new IllegalArgumentException("replaceTokens map may contain only Strings and Nodes "+cnt.toString());
 			}
 		}
 
