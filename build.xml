@@ -216,6 +216,9 @@
 			<include name="om/administration/*"/>
 			<include name="om/administration/extraction/*"/>
 			<include name="om/administration/questionbank/*"/>
+			<include name="om/administration/databaseCleaner/*"/>
+			<include name="om/administration/dataDeletion/*"/>
+			<include name="om/administration/simpleSQLReporter/*"/>
 			<include name="om/axis/qengine/"/>
 			<include name="om/tnavigator/"/>
 			<include name="util/"/>			
