@@ -75,6 +75,7 @@ Trevor Hinson - 20062011
 		<query>SELECT [ti],[question],[finished],[majorversion],[minorversion] FROM [oms-dev].[dbo].[nav_questions] WHERE question = {0} AND majorversion = {1} AND minorversion = {2} AND finished = 0;</query>
 		<logPath>/</logPath>
 		<resultsPerPage>5</resultsPerPage>
+		<postToUrl>/om-admin/question-clearance</postToUrl>
 		<template>WEB-INF/templates/questionClearance.xhtml</template>
 		<testBanks>/questionCleanerTests/testbank-one,/questionCleanerTests/testbank-two</testBanks>
 		<questionBanks>/questionCleanerTests/questionbank-one,/questionCleanerTests/questionbank-two</questionBanks>
