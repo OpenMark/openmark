@@ -46,7 +46,6 @@ import util.xml.XML;
  * <li>still - component within answerbox, shown only if answer is wrong and
  *   it's not the first time</li>
  * <li>right - component within answerbox, shown only if answer is right</li>
- * <li>pass - component within answerbox, shown only if user passed</li>
  * <li>feedback - component within answerbox, shown only if getFeedbackID()
  *   returns something other than null.
  * </ul>
