@@ -43,8 +43,6 @@ import util.xml.XML;
  * <li>answerbox - box that contains information about the answer, e.g. was
  *   it right or not</li>
  * <li>wrong - component within answerbox, shown only if answer is wrong</li>
- * <li>still - component within answerbox, shown only if answer is wrong and
- *   it's not the first time</li>
  * <li>right - component within answerbox, shown only if answer is right</li>
  * <li>feedback - component within answerbox, shown only if getFeedbackID()
  *   returns something other than null.
