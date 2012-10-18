@@ -19,7 +19,7 @@ import util.misc.VersionUtil;
  * @author Trevor Hinson
  */
 
-class QuestionPoolDetails {
+public class QuestionPoolDetails {
 
 	private static String JAR = ".jar";
 
@@ -30,7 +30,7 @@ class QuestionPoolDetails {
 	Map<String, Set<String>> questionsWithVersionNumbering
 		= new HashMap<String, Set<String>>();
 
-	QuestionPoolDetails(String prefix) {
+	public QuestionPoolDetails(String prefix) {
 		namePrefix = prefix;
 	}
 
@@ -40,7 +40,7 @@ class QuestionPoolDetails {
 	 * @return
 	 * @author Trevor Hinson
 	 */
-	String identifyLatestVersion() {
+	public String identifyLatestVersion() {
 		String latest = null;
 		Set<String> keys = questionsWithVersionNumbering.keySet();
 		QuestionVersion qv = new QuestionVersion();
@@ -58,7 +58,7 @@ class QuestionPoolDetails {
 	 * @param locationFoundIn
 	 * @author Trevor Hinson
 	 */
-	void addTo(String name, String locationFoundIn) {
+	public void addTo(String name, String locationFoundIn) {
 		if (StringUtils.isNotEmpty(name)
 			&& StringUtils.isNotEmpty(locationFoundIn)) {
 			Set<String> qu = questionsWithVersionNumbering.get(name);
@@ -70,7 +70,7 @@ class QuestionPoolDetails {
 		}
 	}
 
-	Map<String, Set<String>> getQuestionsWithVersionNumbering() {
+	public Map<String, Set<String>> getQuestionsWithVersionNumbering() {
 		return questionsWithVersionNumbering;
 	}
 

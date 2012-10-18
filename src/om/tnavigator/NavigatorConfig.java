@@ -129,6 +129,9 @@ public class NavigatorConfig
 		return dbClass;
 	}
 
+	public String getDBName() {
+		return dbName;
+	}
 	public String getDBPrefix() {
 		return dbPrefix;
 	}	

@@ -65,7 +65,7 @@ public class DeployedTestsReport implements OmReport {
 		report.handleReport(request, response);
 	}
 
-	private static class Test {
+	public static class Test {
 		String deploy;
 		String deployModified;
 		String test;
@@ -77,8 +77,9 @@ public class DeployedTestsReport implements OmReport {
 		String forbidDate;
 		String feedbackDate;
 		String supportcontacts;
+		boolean isAssessed=false;
 
-		private Test(String deploy, File deployFile, File testBank) throws OmException {
+		public Test(String deploy, File deployFile, File testBank) throws OmException {
 			this.deploy = deploy;
 			deployModified = dateFormat.format(deployFile.lastModified());
 			TestDeployment def;
@@ -115,6 +116,7 @@ public class DeployedTestsReport implements OmReport {
 			forbidDate = def.displayForbidDate();
 			feedbackDate = def.displayFeedbackDate();
 			supportcontacts = def.getSupportContacts();
+			isAssessed=def.isAssessed();
 		}
 
 		private Map<String, String> toRow(boolean linkToDownloads) {
@@ -137,9 +139,23 @@ public class DeployedTestsReport implements OmReport {
 			row.put("forbiddate", forbidDate);
 			row.put("feedbackdate", feedbackDate);
 			row.put("supportcontacts", supportcontacts);
+			row.put("supportcontacts", supportcontacts);
 
 			return row;
 		}
+		
+		public String getTestName()
+		{
+			return deploy;
+		}
+		
+		
+		public boolean isAssessed()
+		{
+			return isAssessed;
+		}
+		
+		
 	}
 
 	private class DeployedTestsTabularReport extends TabularReportBase {
@@ -194,6 +210,7 @@ public class DeployedTestsReport implements OmReport {
 			columns.add(new ColumnDefinition("forbiddate", "Forbid date"));
 			columns.add(new ColumnDefinition("feedbackdate", "Feedback date"));
 			columns.add(new ColumnDefinition("supportcontacts", "Support Contacts"));
+			columns.add(new ColumnDefinition("isassessed", "Is Assessed?"));
 			return columns;
 		}
 

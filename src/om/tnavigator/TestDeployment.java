@@ -326,6 +326,13 @@ public class TestDeployment
 	{
 		return iType;
 	}
+	
+	/** @return One of the TYPE_xx constants */
+	public boolean isAssessed()
+	{
+		/* assume its asseded if its noit NOT assesed, ie reuqired or optional */
+		return (iType > TYPE_NOTASSESSED);
+	}
 
 	/**
 	 * @return get the name of the test definition file.
@@ -672,6 +679,25 @@ public class TestDeployment
 		return getActualDate(tagName, "00:00:00");		
 	}
 
+	/**
+	 * @param tagName Date tag
+	 * @param sDefaultTime default time to use if none specified
+	 * @return Java Date object. Returns null if tag doesn't exist.
+	 * @throws OmFormatException 
+	 */
+	public Date getActualDateWithDefaultTime(String tagName,String sDefaultTime) throws OmFormatException {
+		if (!XML.hasChild(eDates, tagName)) {
+			return null;
+		}
+		if (sDefaultTime != null)
+		{
+			return getActualDate(tagName,sDefaultTime );	
+		}
+		else
+		{
+			throw new OmFormatException("Invalid default time specified");
+		}
+	}
 	/**
 	 * @return A friendly display version of the date in the format 13 September 2005.
 	 * @throws OmFormatException

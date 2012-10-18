@@ -76,7 +76,12 @@ public class Log
 	private final static String SEVERITY_WARNING = "warning";
 	/** Message describing an unexpected or serious problem */
 	private final static String SEVERITY_ERROR = "error";
+	/** tag the message with a constant tag so it can be grepped */
+	private final static String SEVERITY_WITHTAG="withtag";
 
+	private static boolean WITHTAG=true;
+	private static boolean NOTAG=false;
+	
 	/** Date formatter used for current date in log filename */
 	public final static SimpleDateFormat DATEFORMAT=new SimpleDateFormat("yyyy-MM-dd");
 
@@ -212,6 +217,14 @@ public class Log
 		if(!bShowDebug && sSeverity.equals(SEVERITY_DEBUG))
 		  return;
 
+		String messageTag="";
+		/* if we are logging with tage, then the tag is passed in the sCatagory fields */
+		if(sSeverity.equals(SEVERITY_WITHTAG))
+		{
+			messageTag=sCategory;
+		}
+		
+				
 		// Obtain current date
 		Date dNow=new Date();
 		String sDate=DATEFORMAT.format(dNow);
@@ -242,9 +255,13 @@ public class Log
 					// Create and start off log file
 					pwCurrentLog=new PrintWriter(new OutputStreamWriter(
 						new FileOutputStream(fLog),"UTF-8"));
+					/* if we are logging with tage, then use the tag not the date */
+					
+
 					pwCurrentLog.println(
-						"<log component='"+XML.escape(sComponent)+
-						"' date='"+sDate+"'>");
+								"<log component='"+XML.escape(sComponent)+
+								"' date='"+sDate+"'>");
+					
 				}
 			}
 			catch(IOException ioe)
@@ -259,27 +276,41 @@ public class Log
 
 		// Make up log entry text
 		StringBuffer sbEntry=new StringBuffer();
-
-		sbEntry.append(
-			"<entry time='"+TIMEFORMAT.format(dNow)+"' " +
-			"severity='"+XML.escape(sSeverity)+"'");
-		if(sCategory!=null)
-			sbEntry.append(" category='"+XML.escape(sCategory)+"'");
-		if (!this.sIPAddress.isEmpty())
+		if(sSeverity.equals(SEVERITY_WITHTAG) && !(messageTag.isEmpty()))
 		{
-			sbEntry.append(" address='"+this.sIPAddress+"'");
+			sbEntry.append("<entry='"+messageTag); 
+			if (!this.sIPAddress.isEmpty())
+			{
+				sbEntry.append(" address='"+this.sIPAddress+"'");
+			}
+			sbEntry.append(">");
+			if(sMessage!=null) sbEntry.append(sMessage);
 		}
-		sbEntry.append(">");
-
-		if(sMessage!=null) sbEntry.append(XML.escape(sMessage));
-
-		if(tException!=null)
+		else
 		{
-			sbEntry.append("<exception>");
+			sbEntry.append(
+				"<entry time='"+TIMEFORMAT.format(dNow)+"' " +
+				"severity='"+XML.escape(sSeverity)+"'");
+			if(sCategory!=null)
+				sbEntry.append(" category='"+XML.escape(sCategory)+"'");
 
-			sbEntry.append(XML.escape(getOmExceptionString(tException))+"\n");
+			if (!this.sIPAddress.isEmpty())
+			{
+				sbEntry.append(" address='"+this.sIPAddress+"'");
+			}
+			sbEntry.append(">");
 
-			sbEntry.append("</exception>");
+		
+			if(sMessage!=null) sbEntry.append(XML.escape(sMessage));
+			
+			if(tException!=null)
+			{
+				sbEntry.append("<exception>");
+	
+				sbEntry.append(XML.escape(getOmExceptionString(tException))+"\n");
+	
+				sbEntry.append("</exception>");
+			}
 		}
 
 		sbEntry.append("</entry>\n");
@@ -468,6 +499,17 @@ public class Log
 	public void logDebug(String sMessage)
 	{
 		log(SEVERITY_DEBUG,null,sMessage,null);
+	}
+	
+	/**
+	 * Logs an entry with a fixed tag for easy grepping.
+	 * @param sMessage Message text
+	 * @param tag name of tag to prefix message with
+
+	 */
+	public void logWithTag(String sMessage,String tag)
+	{
+		log(SEVERITY_WITHTAG,tag,sMessage,null);
 	}
 
 	/**

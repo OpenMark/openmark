@@ -11,22 +11,22 @@ import java.util.Map;
  * @author Trevor Hinson
  */
 
-class AllQuestionsPool {
+public class AllQuestionsPool {
 
 	private static String JAR = ".jar";
 
-	Map<String, QuestionPoolDetails> questionDetails
+	public Map<String, QuestionPoolDetails> questionDetails
 		= new HashMap<String, QuestionPoolDetails>();
 
-	QuestionPoolDetails getDetails(String questionPrefixName) {
+	public QuestionPoolDetails getDetails(String questionPrefixName) {
 		return questionDetails.get(questionPrefixName);
 	}
 
-	Map<String, QuestionPoolDetails> getQuestionDetails() {
+	public Map<String, QuestionPoolDetails> getQuestionDetails() {
 		return questionDetails;
 	}
 
-	void removeDetails(String questionPrefixName) {
+	public void removeDetails(String questionPrefixName) {
 		questionDetails.remove(questionPrefixName);
 	}
 
@@ -37,7 +37,7 @@ class AllQuestionsPool {
 	 * @param qpd
 	 * @author Trevor Hinson
 	 */
-	void addDetails(String questionPrefixName, QuestionPoolDetails qpd) {
+	public void addDetails(String questionPrefixName, QuestionPoolDetails qpd) {
 		if (null != questionPrefixName ? questionPrefixName.length() > 0 : false) {
 			if (null != qpd) {
 				if (!questionPrefixName.endsWith(JAR)) {

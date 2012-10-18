@@ -88,13 +88,6 @@ import util.xml.XML;
  * </tr>
  * </table>
  * <br/>
- * If type='chem' is specified then there are no subscript or subscript
- * checkboxes and the text is automatically displayed formatted with subscripts
- * appropriate to chemical formulae eg "3H<sub>2</sub>O + 2CO<sub>2</sub>". The
- * value returned does <b>not</b> include the formatting tags in this case. <br/>
- * For types other than 'chem', the value returned includes the <b>sub</b> and
- * <b>sup</b> elements for subscripts and superscripts. Thus 10<sup>3</sup> is
- * returned as '10&lt;sup>3&lt;/sup>'
  * 
  **/
 public class EditAdvancedFieldComponent extends QComponent implements Labelable {

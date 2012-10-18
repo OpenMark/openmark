@@ -46,8 +46,9 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 
 	/**
 	 * Returns the composite cleanQuestionBanks implementation. The
-	 * implementation itself can be configured. If there is no configuration
-	 * then the default implementation is returned. NOTE - this implementation
+	 * implementation itself can be configured. If there is no configuration, ie 
+	 * getConfig returns NULL
+	 * then the default implementation is used. NOTE - this implementation
 	 * is based on a "per request" - is is not geared to be multi-threaded.
 	 * 
 	 * @param associates

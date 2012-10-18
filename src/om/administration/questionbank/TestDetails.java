@@ -7,6 +7,8 @@ public class TestDetails {
 	private File testDefinition;
 	
 	private TestQuestionsReferenced questionsReferenced;
+	
+	private boolean isAssessed;
 
 	public TestDetails(File test) {
 		testDefinition = test;
@@ -32,4 +34,14 @@ public class TestDetails {
 		return null != questionsReferenced
 			? questionsReferenced.getNumberOfQuestionsHeld() : 0;
 	}
+	
+	public boolean getIsAssessed(){
+		return isAssessed;
+	}
+	
+	public void setIsAssessed(boolean ia)
+	{
+		this.isAssessed=ia;
+	}
+	
 }

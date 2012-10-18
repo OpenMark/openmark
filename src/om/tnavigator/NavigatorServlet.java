@@ -924,7 +924,7 @@ public class NavigatorServlet extends HttpServlet {
 						false,
 						false,
 						null,
-						"Unable to authenticate user session",
+						"Unable to authenticate user session (1)",
 						"An error occurred while attempting to authenticate your request.",
 						null);
 			}
@@ -1438,13 +1438,18 @@ public class NavigatorServlet extends HttpServlet {
 		} catch (Throwable t) {
 			try {
 
-				
+				String mess;
+				if(t==null) {
+						mess="Unknown error";
+				} else {
+						mess=t.getMessage()==null? "Unknown error" : t.getMessage();
+				}
 				sendError(null, request, response,
 						HttpServletResponse.SC_FORBIDDEN,
 						false, false,null,
-						"Unable to validate session cookie",
-						"An error occurred while attempting to authenticate your request.",
-						null);
+						"Unable to display",
+						mess,
+						t);
 				throw new StopException();
 			} catch (StopException se) {
 				// This throws a stopexception
