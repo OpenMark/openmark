@@ -991,7 +991,7 @@ public abstract class OmQueries
 			applyAuthorshipUpdate(dat, l, DBversion, nc);
 			upgradeDatabaseToAddprecoursediag(dat, l, DBversion, nc);
 			updateQuestionlineAnswerline(dat, l, DBversion, nc);
-
+			upgradeDatabaseToAddQuestionStats(dat,l, DBversion, nc);
 			/* finally having applied all the updates set the DB version to the current */
 			l.logDebug("DatabaseUpgrade", "Update DB version to current "+currversion);
 			dat.update("UPDATE " + getPrefix() + "navconfig SET value = \'"+currversion+"\' where name=\'dbversion\'");
@@ -1057,10 +1057,37 @@ public abstract class OmQueries
 					l,dat);
 		}
 	}
+	/**
+	* generate mew questionStats table
+	 * @param dat
+	 * @param l
+	 * @param DBversion
+	 * @param nc
+	 * @throws SQLException
+	 * @throws IllegalArgumentException
+	 * @author Sarah Wood
+	 */
+	private void upgradeDatabaseToAddQuestionStats(DatabaseAccess.Transaction dat, Log l,
+		NavVersion DBversion, NavigatorConfig nc)
+		throws SQLException, IllegalArgumentException {
+		
+		if(!tableExists(dat,"questionstats"))
+		{
+			updateDatabase("1.16.1",DBversion,
+					"CREATE TABLE " + getPrefix() + "questionstats (  " +
+					"timedatagleaned DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+					"question VARCHAR(64) NOT NULL," +
+					"timesused INTEGER ," +
+					"totalscore FLOAT," +
+					"axis VARCHAR(64) ," +
+					"timefirstused DATETIME)" ,
+					l,dat);
+		}
+	}
 
 	public String retrieveAuthorshipConfirmationQuery() {
 		return "SELECT authorshipConfirmation from "
-			+ getPrefix() + "tests WHERE ti = {0}";
+			+ getPrefix() + "tests where ti = {0}";
 	}
 
 
