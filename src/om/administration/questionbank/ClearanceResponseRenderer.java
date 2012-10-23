@@ -40,7 +40,7 @@ public class ClearanceResponseRenderer implements Serializable {
 
 	private static String CLEARANCE_RESPONSE_MESSAGE = "ClearanceResponseMessage";
 
-	private static String DEFAULT_FORM_ACTION = "/om-admin/question-clearance";
+	private static String DEFAULT_FORM_ACTION = "/openmark-admin/question-clearance";
 
 	private static Integer DEFAULT_NUMBER_PER_PAGE = 10;
 
