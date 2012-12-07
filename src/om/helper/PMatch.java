@@ -1070,7 +1070,7 @@ public class PMatch
 		// this routine splits apart these alternatives
 		// and rebuilds them in patterns that only have single words
 		// as alternatives
-		int		i, j, k, wordsWithAlternativeSequencesCount = 0;
+		int		i, j, k;
 		int		whichWordsHaveAlternativeSequence[], chosenAlternative[];
 		int	 	lpatternProximity[];
 		int		patternNumber, patternCount = 1;
@@ -1111,7 +1111,6 @@ public class PMatch
 			if (((patternWordsAndSequences[i].indexOf(altWordSeparator.charAt(0),0) >= 0)
 				|| (patternWordsAndSequences[i].indexOf(altProxSeparator.charAt(0),0) >= 0))
 				&& ((patternWordsAndSequences[i].indexOf('|',0) >= 0))) {
-				wordsWithAlternativeSequencesCount++;
 				// count no of alternative words and phrases
 				j = -2;
 				do {

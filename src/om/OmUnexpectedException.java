@@ -22,6 +22,9 @@ package om;
  */
 public class OmUnexpectedException extends RuntimeException
 {
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = 4117190277140319911L;
+
 	/**
 	 * @param t Exception that wasn't expected to happen
 	 */

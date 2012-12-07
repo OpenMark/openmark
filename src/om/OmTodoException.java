@@ -20,6 +20,9 @@ package om;
 /** Class used for parts of code that aren't implemented */
 public class OmTodoException extends OmException
 {
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = 7314945810445585502L;
+
 	/** The to-do exception needs no parameters */
 	public OmTodoException()
 	{

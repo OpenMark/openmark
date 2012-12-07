@@ -24,6 +24,7 @@
 
 package om.axis.qengine;
 
+@SuppressWarnings(value = { "rawtypes", "serial", "unused" })
 public class Resource  implements java.io.Serializable {
     private byte[] content;
     private java.lang.String encoding;

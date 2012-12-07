@@ -258,6 +258,7 @@ public class QETester
 	/** Track how many threads have finished */
 	private int iFinished=0;
 
+	@SuppressWarnings("unused")
 	private QETester() throws Exception
 	{
 		// Get service

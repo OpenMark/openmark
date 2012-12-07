@@ -24,6 +24,7 @@
 
 package om.axis.qengine;
 
+@SuppressWarnings(value = { "rawtypes", "serial", "unused" })
 public class Results  implements java.io.Serializable {
     private java.lang.String actionSummary;
     private java.lang.String answerLine;

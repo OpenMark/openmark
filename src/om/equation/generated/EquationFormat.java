@@ -19,6 +19,7 @@
 package om.equation.generated;
 import om.equation.SimpleNode;
 
+@SuppressWarnings(value = { "rawtypes", "unused", "serial", "unchecked" })
 public class EquationFormat/*@bgen(jjtree)*/implements EquationFormatTreeConstants, EquationFormatConstants {/*@bgen(jjtree)*/
   protected JJTEquationFormatState jjtree = new JJTEquationFormatState();
 
@@ -828,7 +829,7 @@ public class EquationFormat/*@bgen(jjtree)*/implements EquationFormatTreeConstan
     throw generateParseException();
   }
 
-  static private final class LookaheadSuccess extends java.lang.Error { }
+static private final class LookaheadSuccess extends java.lang.Error { }
   final private LookaheadSuccess jj_ls = new LookaheadSuccess();
   final private boolean jj_scan_token(int kind) {
     if (jj_scanpos == jj_lastpos) {

@@ -139,7 +139,7 @@ public abstract class XSL
 	 * @return New DOM tree
 	 * @throws IOException If any error occurs
 	 */
-	public static Document transform(Document dXSL,Document dSource,Map mParams) throws IOException
+	public static Document transform(Document dXSL,Document dSource,Map<String, Object> mParams) throws IOException
 	{
 		Transformer t = newTransformer(dXSL);
 		setTransformerParameters(t, mParams);
@@ -201,14 +201,14 @@ public abstract class XSL
 	}
 
 	/** Apply a number of parameters (held in a Map) to a transformer */
-	private static void setTransformerParameters(Transformer t, Map mParameters)
+	private static void setTransformerParameters(Transformer t, Map<String, Object> mParameters)
 	{
 		if (mParameters != null)
 		{
-			Iterator i = mParameters.keySet().iterator();
+			Iterator<String> i = mParameters.keySet().iterator();
 			while (i.hasNext())
 			{
-				String sKey = (String)i.next();
+				String sKey = i.next();
 				Object oValue = mParameters.get(sKey);
 				t.setParameter(sKey, oValue);
 			}

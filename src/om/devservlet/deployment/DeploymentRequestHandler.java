@@ -232,10 +232,9 @@ public class DeploymentRequestHandler implements RequestHandler {
 	 * @return
 	 * @author Trevor Hinson
 	 */
-	@SuppressWarnings("unchecked")
 	private List<String> pickUpDeploymentChoices() {
 		List<String> names = new ArrayList<String>();
-		Map m = request.getParameterMap();
+		Map<?, ?> m = request.getParameterMap();
 		String queryString = request.getQueryString();
 		if (!QUERY_STRING_CLEARANCE.equalsIgnoreCase(queryString)) {
 			if (null != m) {

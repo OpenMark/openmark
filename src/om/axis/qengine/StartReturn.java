@@ -24,6 +24,7 @@
 
 package om.axis.qengine;
 
+@SuppressWarnings(value = { "rawtypes", "serial", "unused" })
 public class StartReturn  implements java.io.Serializable {
     private java.lang.String CSS;
     private java.lang.String XHTML;

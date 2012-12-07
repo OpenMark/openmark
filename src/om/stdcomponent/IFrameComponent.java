@@ -18,18 +18,19 @@
 package om.stdcomponent;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
-import om.*;
+import om.OmDeveloperException;
+import om.OmException;
 import om.question.ActionParams;
-import om.stdquestion.*;
+import om.stdquestion.QComponent;
+import om.stdquestion.QContent;
+import om.stdquestion.QDocument;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
-import util.misc.*;
 import util.xml.XML;
-import util.xml.XMLException;
 
 /**
 Represents an iframe
@@ -76,18 +77,9 @@ public class IFrameComponent extends QComponent
 	private String sSrc=null; // Currently-loaded file
 	private int iWidth = 300;
 	private int iHeight = 300;
-	private byte[] movieData;
-	private String sMimeType;
 
 	/** Current (most recently set) value */
 	private String sValue;
-
-
-	/**
-	 * Keep track of resources we added to users so we can save SOAP time by
-	 * not transferring them again.
-	 */
-	private Set<String> sAddedResources=new HashSet<String>();
 
 	/** True if there was whitespace before or after the &lt;flash&gt; tag */
 	private boolean bSpaceBefore,bSpaceAfter;

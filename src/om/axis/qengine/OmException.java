@@ -24,6 +24,7 @@
 
 package om.axis.qengine;
 
+@SuppressWarnings(value = { "rawtypes", "unused", "serial" })
 public class OmException  extends org.apache.axis.AxisFault  implements java.io.Serializable {
 
     public OmException() {

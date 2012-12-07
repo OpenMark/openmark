@@ -17,14 +17,6 @@
  */
 package util.misc;
 
-import java.io.*;
-import java.net.*;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import om.Log;
-import om.tnavigator.db.DatabaseAccess;
-
 
 /** get and process version details from the navconfig table */
 public class NavVersion

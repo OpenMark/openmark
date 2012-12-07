@@ -19,6 +19,7 @@
 
 package om.equation.generated;
 
+@SuppressWarnings(value = { "rawtypes", "unchecked" })
 class JJTEquationFormatState {
   private java.util.Stack nodes;
   private java.util.Stack marks;

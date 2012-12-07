@@ -86,6 +86,8 @@ import util.xml.XML;
  */
 public class DevServlet extends HttpServlet implements QEngineConfig {
 
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = 4128693320676395809L;
 	/** Constant for specifying the number of text boxes for typing package names in the interface. */
 	private final static int NUM_EXTRA_PACKAGE_SLOTS = 3;
 	/** Number of times the question is started, to check that it is using the random seed correctly. */

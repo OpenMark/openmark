@@ -20,6 +20,8 @@ package om.graph;
 /** Thrown to indicate problems with the XML format. */
 public class GraphFormatException extends Exception
 {
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = -9178863483797741736L;
 	GraphFormatException(String message)
 	{
 		super(message);

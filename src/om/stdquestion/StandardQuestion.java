@@ -485,6 +485,9 @@ public abstract class StandardQuestion implements Question
 	/** Special 'random' number generator that actually always returns the same int */
 	private class NotSoRandom extends Random
 	{
+		/** Required by the Serializable interface. */
+		private static final long serialVersionUID = -4883021252611014782L;
+
 		/** Number to return */
 		private int iNumber;
 

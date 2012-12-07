@@ -24,6 +24,7 @@
 
 package om.axis.qengine;
 
+@SuppressWarnings(value = { "rawtypes", "serial", "unused" })
 public class ProcessReturn  implements java.io.Serializable {
     private java.lang.String CSS;
     private java.lang.String XHTML;
@@ -171,7 +172,7 @@ public class ProcessReturn  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
-    public synchronized boolean equals(java.lang.Object obj) {
+	public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ProcessReturn)) return false;
         ProcessReturn other = (ProcessReturn) obj;
         if (obj == null) return false;

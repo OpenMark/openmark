@@ -24,6 +24,7 @@
 
 package om.axis.qengine;
 
+@SuppressWarnings(value = { "rawtypes", "unused", "serial" })
 public class CustomResult  implements java.io.Serializable {
     private java.lang.String name;
     private java.lang.String value;

@@ -25,6 +25,9 @@ import java.io.IOException;
  * @version $Revision: 1.1 $
  */
 public class CausedIOException extends IOException {
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = 2757846255722860059L;
+
 	/**
 	 * @param e the exception that is causing this one. This exception takes its message from e.
 	 */

@@ -109,10 +109,6 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 
 	protected static String SUBSCRIPT = "subscript";
 
-	private static String BR = "br";
-
-	private static String NEW_LINE = "\n";
-
 	private static String INPUT = "input";
 
 	private static String TYPE = "type";
@@ -267,11 +263,6 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 
 	protected String capitaliseFirstCharacter(String initial) {
 		return Strings.uppercaseFirstCharacter(initial);
-	}
-
-	private void applyLineBreaks(QContent qc, Element eDiv) {
-		eDiv.appendChild(qc.createElement(BR));
-		eDiv.appendChild(qc.getOutputDocument().createTextNode(NEW_LINE));
 	}
 
 	protected void applyHiddenInputField(QContent qc, Element eDiv)

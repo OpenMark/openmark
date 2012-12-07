@@ -26,6 +26,9 @@ import util.misc.CausedIOException;
  */
 public class XMLException extends CausedIOException
 {
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = 5953044501477270376L;
+
 	/**
 	 * @param s Error message
 	 */

@@ -29,7 +29,10 @@ package om.equation.generated;
  */
 public class ParseException extends Exception {
 
-  /**
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = -5675007283619313791L;
+
+/**
    * This constructor is used by the method "generateParseException"
    * in the generated parser.  Calling this constructor generates
    * a new object of this type with the fields "currentToken",

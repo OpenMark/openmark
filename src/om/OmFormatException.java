@@ -20,6 +20,9 @@ package om;
 /** Thrown when there is a problem with the format of an Om XML file. */
 public class OmFormatException extends OmDeveloperException
 {
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = 2634118358410456307L;
+
 	/**
 	 * @param sText Exception message (do not end in full stop)
 	 */

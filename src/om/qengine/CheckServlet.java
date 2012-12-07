@@ -31,6 +31,8 @@ import util.misc.NameValuePairs;
 /** Servlet just to provide the automated check page */
 public class CheckServlet extends HttpServlet
 {
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = 2396435665590375099L;
 	private final static int MB=1024*1024;
 	private final static int FREEMEMORYREQ=3*MB;
 

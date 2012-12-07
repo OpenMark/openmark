@@ -39,6 +39,8 @@ import util.xml.XML;
  */
 public class Test extends JFrame
 {
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = 7648575150234190737L;
 
 	/**
 	 * @param args not used.
@@ -163,12 +165,11 @@ public class Test extends JFrame
 
 		((JComponent)getContentPane()).setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 		getContentPane().setLayout(new GridLayout(0,iCols,10,10));
-		if(sSolo==null) for(int i=0;i<asTest.length;i++)
-		{
-			getContentPane().add(getEquation(asTest[i],bAntiAlias,fSize));
-		}
-		else
-		{
+		if(sSolo==null) {
+			for(int i=0;i<asTest.length;i++) {
+				getContentPane().add(getEquation(asTest[i],bAntiAlias,fSize));
+			}
+		} else {
 			getContentPane().add(getEquation(sSolo,bAntiAlias,fSize));
 		}
 

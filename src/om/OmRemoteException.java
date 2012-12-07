@@ -22,6 +22,9 @@ package om;
  */
 public class OmRemoteException extends OmException
 {
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = -3253413977023291640L;
+
 	/**
 	 * @param sText Exception message (do not end in full stop)
 	 */

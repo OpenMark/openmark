@@ -24,6 +24,7 @@
 
 package om.axis.qengine;
 
+@SuppressWarnings(value = { "rawtypes", "unused", "unchecked" })
 public class OmSoapBindingStub extends org.apache.axis.client.Stub implements om.axis.qengine.OmService {
     private java.util.Vector cachedSerClasses = new java.util.Vector();
     private java.util.Vector cachedSerQNames = new java.util.Vector();

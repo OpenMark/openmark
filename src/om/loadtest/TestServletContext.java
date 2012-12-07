@@ -59,7 +59,7 @@ public class TestServletContext implements ServletContext
 	{
 		return null;
 	}
-	public Set getResourcePaths(String arg0)
+	public Set<?> getResourcePaths(String arg0)
 	{
 		return null;
 	}
@@ -83,11 +83,11 @@ public class TestServletContext implements ServletContext
 	{
 		return null;
 	}
-	public Enumeration getServlets()
+	public Enumeration<?> getServlets()
 	{
 		return null;
 	}
-	public Enumeration getServletNames()
+	public Enumeration<?> getServletNames()
 	{
 		return null;
 	}
@@ -112,7 +112,7 @@ public class TestServletContext implements ServletContext
 	{
 		return null;
 	}
-	public Enumeration getInitParameterNames()
+	public Enumeration<?> getInitParameterNames()
 	{
 		return null;
 	}
@@ -120,7 +120,7 @@ public class TestServletContext implements ServletContext
 	{
 		return null;
 	}
-	public Enumeration getAttributeNames()
+	public Enumeration<?> getAttributeNames()
 	{
 		return null;
 	}

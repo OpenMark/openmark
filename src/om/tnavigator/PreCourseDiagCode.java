@@ -2,35 +2,28 @@ package om.tnavigator;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.text.DateFormat;
 
 import javax.servlet.ServletException;
 
 import om.OmUnexpectedException;
-import om.RequestAssociates;
 import om.RequestHandlingException;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
-import util.misc.Strings;
 
 /* generate a code to be used by the Are You ready for tests
  *  
  */
 public class PreCourseDiagCode {
-	
-	private static int OK=0;
 	private static String SEPARATOR="/";
 	private static String BADCREATE="Unable to crate AYRFcode due to non-specified ti ";
-	private static String BADSTORE1="Unable to store code in db for code and ti instance sql error ";
 	private static String BADSTORE2="Unable to store code in db for code and ti instance, null pcdc ";
 	private static String BADSTORE3="Unable to update code in db for code and ti instance ";
 	private static String DATEFORMAT="yyyyMMdd";
 	private static String CANT_DETERMINE_PCDC="Unable to determine pre-course diag code ";
 	private static String BADRETRIEVE="Unable to retrieve pre course diagnostic code from DB ";
-	private static String BADSTRINGTOINT="Unable to convert ti from string to integer ";
-	private static String DEFAULTCODE="DEFCODE";
 	private static String BADDBACCESS="Error accessing database for pcdc: ";
 	private static String ERRORGENERATE="Error generating pcdc code ";
 	//private int RED=1;

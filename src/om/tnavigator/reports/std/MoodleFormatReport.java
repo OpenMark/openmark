@@ -222,22 +222,11 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 				//create empty lists
 				boolean startflag=true;
 				String lastpi="";
-				int isAdmin=0;
 				AttemptForPI BestAttempt = new AttemptForPI("",0,null,"",false);
 
 				while(rs.next())
 				{
-					isAdmin=rs.getInt(5);
-					/* trip the strings */
-					String oucu=rs.getString(1).replaceAll(" ","");
-					
-					String dpi = rs.getString(2).replaceAll(" ","");
-					/*
-					 * Change this to look up the pi and compare it with the database version
-					*/
-					String pi=getPiFromOucu(mPIs,oucu,dpi);
-					
-					boolean isDummy=pi.toLowerCase().startsWith("q");
+					String pi = rs.getString(2);
 
 					//ns.getLog().logDebug("*************** pi " + pi);
 					//we dont do admins, and we dont do dummy students which start with a Q

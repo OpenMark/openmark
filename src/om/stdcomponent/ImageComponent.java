@@ -85,7 +85,6 @@ public class ImageComponent extends QComponent
 	/** Represents one &lt;iplace&gt; item -- a pixel location for adding objects*/
 	private static class IPlace
 	{
-		String sID;
 		QComponent qcPlaceContent;
 		int iLeft, iTop;
 		String sLabel,sLabelFor=null;

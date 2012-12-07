@@ -8,6 +8,9 @@ package om;
  */
 public class OmTransientQuestionException extends OmUnexpectedException {
 
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = -1481815351361289477L;
+
 	/**
 	 * @param cause Cause
 	 */

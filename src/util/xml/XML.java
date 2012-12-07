@@ -1297,7 +1297,7 @@ public abstract class XML
 	 * @param mReplace Replacement map
 	 * @return The new or unchanged string
 	 */
-	public static String replaceTokens(String sValue,String sBorder,Map mReplace)
+	public static String replaceTokens(String sValue,String sBorder,Map<String, String> mReplace)
 	{
 		String sNew=replaceStringTokensInternal(sValue,sBorder,mReplace,true);
 		if(sNew==null)
@@ -1333,7 +1333,7 @@ public abstract class XML
 	 * @return null if there was no change to the string; otherwise, the new
 	 *   string
 	 */
-	private static String replaceStringTokensInternal(String sValue,String sBorder,Map mReplace,boolean bFixBlanks)
+	private static String replaceStringTokensInternal(String sValue,String sBorder,Map<String, String> mReplace,boolean bFixBlanks)
 	{
 		// Get value and look for tokens. If there aren't any, bail now.
 		if(mReplace==null || sValue.indexOf(sBorder)==-1) return null;
@@ -1363,7 +1363,7 @@ public abstract class XML
 		return sbResult.toString();
 	}
 
-	private static void replaceNodeTokens(Text t,String sBorder,Map mReplace)
+	private static void replaceNodeTokens(Text t,String sBorder,Map<String, Node> mReplace)
 	{
 		// Get value and look for tokens. If there aren't any, bail now.
 		String sValue=t.getData();
@@ -1380,7 +1380,7 @@ public abstract class XML
 				m.appendReplacement(sbBefore,sBorder);
 			else
 			{
-				Node nMatch=(Node)mReplace.get(sKey);
+				Node nMatch=mReplace.get(sKey);
 				if(nMatch==null)
 					m.appendReplacement(sbBefore,sBorder+sKey+sBorder);
 				else
@@ -1465,7 +1465,7 @@ public abstract class XML
 	 * @param mStringReplace Map of token-ID to replacement text (String)
 	 * @param mNodeReplace Map of token-ID to replacement XML content (Node)
 	 */
-	private static void replaceTokens(Node n,String sBorder,Map mStringReplace,Map mNodeReplace)
+	private static void replaceTokens(Node n,String sBorder,Map<String, String> mStringReplace,Map<String, Node> mNodeReplace)
 	{
 		if(n instanceof Text)
 		{

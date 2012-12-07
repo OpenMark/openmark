@@ -24,6 +24,7 @@
 
 package om.axis.qengine;
 
+@SuppressWarnings(value = { "rawtypes", "serial", "unchecked" })
 public class OmServiceServiceLocator extends org.apache.axis.client.Service implements om.axis.qengine.OmServiceService {
 
     public OmServiceServiceLocator() {
@@ -127,7 +128,7 @@ public class OmServiceServiceLocator extends org.apache.axis.client.Service impl
 
     private java.util.HashSet ports = null;
 
-    public java.util.Iterator getPorts() {
+	public java.util.Iterator getPorts() {
         if (ports == null) {
             ports = new java.util.HashSet();
             ports.add(new javax.xml.namespace.QName("http://om.open.ac.uk/", "Om"));

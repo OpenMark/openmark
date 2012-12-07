@@ -115,6 +115,7 @@ public class TNTester
 	/** Track how many threads have finished */
 	private int iFinished=0;
 
+	@SuppressWarnings("unused")
 	private TNTester() throws Exception
 	{
 		if(USESERVER!=-1)
@@ -161,7 +162,7 @@ public class TNTester
 		System.out.println();
 
 		// Get number of steps from first entry & create statistic counters
-		int iSteps=((List)mStats.values().iterator().next()).size();
+		int iSteps=mStats.values().iterator().next().size();
 		TimeStatistics[]
 	    atsXHTML=new TimeStatistics[iSteps],
 	    atsMedia=new TimeStatistics[iSteps],
@@ -179,13 +180,13 @@ public class TNTester
 		Map<String,TimeStatistics> mMediaTimes=new HashMap<String,TimeStatistics>();
 
 		// Fill statistics
-		for(Iterator iUser=mStats.values().iterator();iUser.hasNext();)
+		for(Iterator<List<TNTester.StepStats> > iUser=mStats.values().iterator();iUser.hasNext();)
 		{
-			List l=(List)iUser.next();
+			List<TNTester.StepStats> l=iUser.next();
 			if(l.size()!=iSteps) throw new Exception(
 				"Unexpected: list doesn't have right number of steps!");
 
-			Iterator iList=l.iterator();
+			Iterator<TNTester.StepStats > iList=l.iterator();
 			long lTotalXHTML=0,lTotalMedia=0,lTotalCombined=0;
 			for(int iStep=0;iStep<iSteps;iStep++)
 			{
@@ -198,9 +199,9 @@ public class TNTester
 				atsCombined[iStep].add(ss.lTime+ss.getMediaTime());
 				lTotalCombined+=ss.lTime+ss.getMediaTime();
 
-				for(Iterator iMedia=ss.lMedia.iterator();iMedia.hasNext();)
+				for(Iterator<MediaStats> iMedia=ss.lMedia.iterator();iMedia.hasNext();)
 				{
-					MediaStats ms=(MediaStats)iMedia.next();
+					MediaStats ms=iMedia.next();
 					String sPath=ms.sPath.replaceFirst("^.*/om-tn/","");
 					TimeStatistics tsThis=mMediaTimes.get(sPath);
 					if(tsThis==null)
@@ -311,9 +312,9 @@ public class TNTester
 
 		// Display media results
 		System.out.println("Media\tMean\tMedian\t95%le\tMax");
-		for(Iterator iMedia=mMediaTimes.entrySet().iterator();iMedia.hasNext();)
+		for(Iterator<Map.Entry<String, TimeStatistics> > iMedia=mMediaTimes.entrySet().iterator();iMedia.hasNext();)
 		{
-			Map.Entry me=(Map.Entry)iMedia.next();
+			Map.Entry<String, TimeStatistics> me=iMedia.next();
 			TimeStatistics ts=(TimeStatistics)me.getValue();
 			System.out.println(me.getKey()+"\t"+ts.getMean()+"\t"+
 				ts.getMedians()[10]+"\t"+ts.getMedians()[19]+"\t"+ts.getMedians()[20]);
@@ -328,6 +329,7 @@ public class TNTester
 		{
 			start();
 		}
+		@SuppressWarnings("unused")
 		@Override
 		public void run()
 		{
@@ -407,18 +409,18 @@ public class TNTester
 			StringBuffer sb=new StringBuffer(sOUCU+"\t"+HOSTS[iServer]+"\n");
 			sb.append("\tXHTML");
 			long lTotal=0;
-			for(Iterator i=lSteps.iterator();i.hasNext();)
+			for(Iterator<StepStats> i=lSteps.iterator();i.hasNext();)
 			{
-				StepStats ss=(StepStats)i.next();
+				StepStats ss=i.next();
 				sb.append("\t"+ss.lTime);
 				lTotal+=ss.lTime;
 			}
 			sb.append("\t\t"+lTotal);
 			sb.append("\n\tMedia");
 			lTotal=0;
-			for(Iterator i=lSteps.iterator();i.hasNext();)
+			for(Iterator<StepStats> i=lSteps.iterator();i.hasNext();)
 			{
-				StepStats ss=(StepStats)i.next();
+				StepStats ss=i.next();
 				sb.append("\t"+ss.getMediaTime());
 				lTotal+=ss.getMediaTime();
 			}
@@ -438,7 +440,7 @@ public class TNTester
 	private final static Pattern SETCOOKIE=Pattern.compile(
 		"Set-Cookie: tnavigator_session_simple1=([^;]+); Path=/");
 
-	private void sendRequestGetMedia(int iServer,Map mTokens,HttpScript.Item i,StepStats ss) throws IOException
+	private void sendRequestGetMedia(int iServer,Map<String, String> mTokens,HttpScript.Item i,StepStats ss) throws IOException
 	{
 		if(DEBUG) System.err.print("  "+i.getURL());
 		ss.sPath=i.getURL();
@@ -537,7 +539,7 @@ public class TNTester
 		}
 	}
 
-	private void loadMedia(Map mTokens,URL u,StepStats ss) throws IOException
+	private void loadMedia(Map<String, String> mTokens,URL u,StepStats ss) throws IOException
 	{
 		MediaStats ms=new MediaStats();
 		ms.sPath=u.toString();
@@ -558,7 +560,7 @@ public class TNTester
 		"\"([^\"]+\\.(png|gif|jpg|css))\"");
 
 
-	private String sendRequestGetCookie(int iServer,Map mTokens,HttpScript.Item i) throws IOException
+	private String sendRequestGetCookie(int iServer,Map<String, String> mTokens,HttpScript.Item i) throws IOException
 	{
 		Socket s=new Socket(HOSTS[iServer],PORTS[iServer]);
 		// Again with the dodgy charset assumptions

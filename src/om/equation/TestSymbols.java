@@ -28,6 +28,8 @@ import javax.swing.*;
  */
 public class TestSymbols extends JFrame
 {
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = 3304061371810151175L;
 	private final static Font FONT = new Font("Lucida Sans Unicode", Font.PLAIN, 14);
 	/**
 	 * @param args not used.

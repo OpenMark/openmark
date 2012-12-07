@@ -116,6 +116,9 @@ import util.misc.GeneralUtils;
 /** Om test navigator; implementation of the test delivery engine. */
 public class NavigatorServlet extends HttpServlet {
 
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = 7256101326461641553L;
+
 	private static int VALUE_LENGTH=4000;
 	
 	private static final String INPUTTOOLONG = "Input too long";
@@ -128,15 +131,9 @@ public class NavigatorServlet extends HttpServlet {
 
 	private static final String SUMMARYTABLE_NOTANSWERED = "Not completed";
 	
-	private static final String DEFAULT_PRECOURSEDIAGCODE="PCDC";
-
 	private static String SCRIPT_JS = "script.js";
 	
 	private static String PCDCTEXT="Pre course diagnostic code ";
-	
-	private static String OUTPUTBLURB="Please quote this pre diagnostic course code when applying for this course ";
-	
-	private static String BADCONDITIONALFLAG="Value not specified for conditional flag";
 	
 	private static String PCDCSEPARATOR="/";
 	
@@ -2589,6 +2586,7 @@ public class NavigatorServlet extends HttpServlet {
 			HttpServletRequest request,Log l) throws Exception 
 			
 	{
+
 			TrafficLights tls=new TrafficLights();
 			
 			if (PreCourseDiagCode.shouldDoCode(us))
@@ -3388,7 +3386,6 @@ public class NavigatorServlet extends HttpServlet {
 
 	private static int getNumInSection(UserSession us, TestQuestion tq)
 			throws OmException {
-		int iSectionNum = 0;
 		int iNumInSection = 0;
 		String sCurrentSection = "";
 		TestLeaf tl = us.getTestLeavesInOrder()[0];
@@ -3403,8 +3400,6 @@ public class NavigatorServlet extends HttpServlet {
 				sCurrentSection = tl.getSection();
 			}
 			if (tl instanceof TestQuestion) {
-				iNumInSection++;
-
 				// getNumber is wrong, need to get the numb
 				if (((TestQuestion) tl).getNumber() == tq.getNumber()) {
 					return iNumInSection;

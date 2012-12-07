@@ -20,8 +20,12 @@ package om.qengine;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
-import java.net.*;
-import java.util.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 import javax.activation.URLDataSource;
 import javax.servlet.ServletContext;
@@ -31,13 +35,19 @@ import javax.xml.rpc.server.ServletEndpointContext;
 
 import om.OmException;
 import om.helper.QEngineConfig;
-import om.question.*;
+import om.question.ActionParams;
+import om.question.ActionRendering;
+import om.question.InitParams;
+import om.question.Question;
+import om.question.Rendering;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import util.misc.*;
+import util.misc.Exceptions;
+import util.misc.HTTPS;
+import util.misc.IO;
+import util.misc.Strings;
 import util.xml.XML;
 
 /**

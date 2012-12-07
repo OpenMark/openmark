@@ -29,7 +29,7 @@ public class IPAddressCheckUtil {
 			log.logDebug("IPCHECK", "(local) Non-null " + sClientIP);
 		else {
 			log.logDebug("IPCHECK", "(local) Bad IP check " + sClientIP);
-			for (Enumeration hdrs = request.getHeaderNames(); hdrs
+			for (Enumeration<?> hdrs = request.getHeaderNames(); hdrs
 					.hasMoreElements();) {
 				String headerName = (String) hdrs.nextElement();
 				log.logDebug("name = " + headerName + " value= "
@@ -69,7 +69,7 @@ public class IPAddressCheckUtil {
 			log.logDebug("IPCHECK", "(secure) Non-null " + sClientIP);
 		else {
 			log.logDebug("IPCHECK", "(secure) Bad IP check " + sClientIP);
-			for (Enumeration hdrs = request.getHeaderNames(); hdrs
+			for (Enumeration<?> hdrs = request.getHeaderNames(); hdrs
 					.hasMoreElements();) {
 				String headerName = (String) hdrs.nextElement();
 				log.logDebug("name = " + headerName + " value= "

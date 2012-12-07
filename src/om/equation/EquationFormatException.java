@@ -23,6 +23,9 @@ import om.equation.generated.ParseException;
 /** Error in format of equation XML */
 public class EquationFormatException extends OmDeveloperException
 {
+	/** Required by the Serializable interface. */
+	private static final long serialVersionUID = -5626001910334901892L;
+
 	EquationFormatException(Item i,String sError)
 	{
 		super("Error in <equation> format:\n"+

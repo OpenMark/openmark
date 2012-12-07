@@ -257,15 +257,14 @@ public class GeneralUtils implements Serializable {
 	 * read by normal means.
 	 * @return Cookie value or null if not included
 	 */
-	@SuppressWarnings("unchecked")
 	private final static Pattern REGEX_BROKEN_SAMS_COOKIE =	Pattern.compile("(?:^|; )SAMS2session=([^;]+)(?:$|; )");
 
 	public static String getBrokenSamsCookie(HttpServletRequest request)
 	{
-		Enumeration<String> e = request.getHeaders("Cookie");
+		Enumeration<?> e = request.getHeaders("Cookie");
 		while(e.hasMoreElements())
 		{
-			String header = e.nextElement();
+			String header = (String)e.nextElement();
 			Matcher m = REGEX_BROKEN_SAMS_COOKIE.matcher(header);
 			if(m.find())
 			{
