@@ -274,5 +274,19 @@ public class GeneralUtils implements Serializable {
 		}
 		return null;
 	}
+	
+	/* return true if not a temporary user, and oucu/pui are not null, or empty AND they are equal
+	 * 
+	 * */
+	public static boolean isOUCUPIequalButNotTemp(String sOUCU, String sPi)
+	{
+		String trimOUCU= sOUCU.replace(" ", "");
+		String trimPi= sPi.replace(" ", "");
+
+		boolean isEqual=(!(sOUCU == null || sOUCU.isEmpty()) && !(sOUCU.startsWith("_")) && 
+				(!(sPi == null || sPi.isEmpty())  && trimPi.equals(trimOUCU)) );
+		return isEqual;
+	}
+	
 
 }

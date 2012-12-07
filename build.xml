@@ -190,6 +190,7 @@
 			<include name="om/stdquestion/"/>
 			<include name="util/"/>
 			<include name="om/tnavigator/request/tinymce/" />
+			
 		</jar>
 		
 		<jar jarfile="${build}/jars/om-engine.jar" basedir="${build}/compiled">
@@ -201,6 +202,7 @@
 			<include name="om/question/"/>
 			<include name="om/stdcomponent/"/>
 			<include name="om/stdquestion/"/>
+			<include name="om/getOucuInfo/"/>
 			<include name="util/"/>			
 		</jar>
 
@@ -208,6 +210,7 @@
 			<include name="om/*"/>
 			<include name="om/axis/qengine/"/>
 			<include name="om/tnavigator/"/>
+			<include name="om/getOucuInfo/"/>
 			<include name="util/"/>			
 		</jar>
 
@@ -221,6 +224,7 @@
 			<include name="om/administration/simpleSQLReporter/*"/>
 			<include name="om/axis/qengine/"/>
 			<include name="om/tnavigator/"/>
+			<include name="om/getOucuInfo/"/>
 			<include name="util/"/>			
 		</jar>
 		
