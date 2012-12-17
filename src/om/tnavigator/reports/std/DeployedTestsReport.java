@@ -67,6 +67,7 @@ public class DeployedTestsReport implements OmReport {
 
 	public static class Test {
 		String deploy;
+		String deployFileName;
 		String deployModified;
 		String test;
 		String testModified;
@@ -79,6 +80,21 @@ public class DeployedTestsReport implements OmReport {
 		String supportcontacts;
 		boolean isAssessed=false;
 
+		public Test()
+		{
+			test = "";
+			deployFileName="";
+			testModified = "";
+			open = false;
+			world = false;
+			openDate = "";
+			closeDate = "";
+			forbidDate = "";
+			feedbackDate = "";
+			supportcontacts = "[deploy file is invalid XML]";
+			return;
+		}
+		
 		public Test(String deploy, File deployFile, File testBank) throws OmException {
 			this.deploy = deploy;
 			deployModified = dateFormat.format(deployFile.lastModified());
@@ -87,6 +103,7 @@ public class DeployedTestsReport implements OmReport {
 				def = new TestDeployment(deployFile);
 			} catch (OmException e) {
 				test = "";
+				deployFileName="";
 				testModified = "";
 				open = false;
 				world = false;
@@ -109,6 +126,7 @@ public class DeployedTestsReport implements OmReport {
 					testModified = "File missing";
 				}
 			}
+			deployFileName=deployFile.getAbsolutePath();
 			open = def.isAfterOpen() && !def.isAfterForbid();
 			world = def.isWorldAccess();
 			openDate = def.displayOpenDate();
@@ -153,6 +171,11 @@ public class DeployedTestsReport implements OmReport {
 		public boolean isAssessed()
 		{
 			return isAssessed;
+		}
+		
+		public String getDeployFileName()
+		{
+			return deployFileName;
 		}
 		
 		

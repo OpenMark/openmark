@@ -6,33 +6,83 @@ package om.tnavigator.reports.std;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import om.OmException;
 import om.OmUnexpectedException;
-import om.tnavigator.*;
+import om.tnavigator.NavigatorServlet;
+import om.tnavigator.TestDefinition;
+import om.tnavigator.TestDeployment;
+import om.tnavigator.TestRealisation;
+import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
-import om.tnavigator.reports.*;
-import om.tnavigator.scores.CombinedScore;
+import om.tnavigator.reports.OmReport;
+import om.tnavigator.reports.OmTestReport;
+import om.tnavigator.reports.TabularReportBase;
+import om.tnavigator.reports.TabularReportWriter;
 import om.tnavigator.scores.AttemptForPI;
+import om.tnavigator.scores.CombinedScore;
+import om.tnavigator.auth.SAMSOucuPi;
+import util.misc.GeneralUtils;
+
 
 /**
  * This report exports test scores in the format expected by the Moodle &gt;=1.9 gradebook.
  */
 public class MoodleFormatReport implements OmTestReport, OmReport {
 	private NavigatorServlet ns;
+	private static boolean USE_DB_PI_LOOKUP = false;
+	private static boolean USE_WEBSERVICE_PI_LOOKUP = true;
+	/** URL of web service used to validate sams cookie*/
 
+	
 	/**
 	 * Create an instance of this report.
 	 * @param ns the navigator servlet we belong to.
 	 */
 	public MoodleFormatReport(NavigatorServlet ns) {
 		this.ns = ns;
-	}
 
+	}
+	
+	/* read through the oucu pi table and create a hashmap */
+	private  Map<String,String> generateOucuPiMap(NavigatorServlet ns) throws OmUnexpectedException
+	{
+		Map<String, String> mPIs = new HashMap<String, String>();				
+		DatabaseAccess.Transaction dat;
+		try {
+			dat = ns.getDatabaseAccess().newTransaction();
+		} catch (SQLException e1) {
+			throw new OmUnexpectedException("Cannot connect to the database");
+		}
+		try
+		{
+			ResultSet rs = ns.getOmQueries().queryPiFromOucu(dat);
+			while(rs.next())
+			{
+				String sOUCU=rs.getString(1);
+				String sPI=rs.getString(2);
+				mPIs.put(sOUCU,sPI);
+			}		
+		} 
+		catch (Exception e) 
+		{
+			throw new OmUnexpectedException("Error generating list of oucu pis.", e);
+		}
+		finally
+		{
+			dat.finish();
+		}
+		return mPIs;
+	}
+	
 	/* (non-Javadoc)
 	 * @see om.tnavigator.reports.OmTestReport#getUrlTestReportName()
 	 */
@@ -95,12 +145,62 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 		}
 		
 		}
+	
+
+	 
+	 private String getPiFromOucu(Map<String,String> mPIs,String oucu,String dpi)
+	 {
+		 String thisPi=dpi;
+		 /* so if oucu is not null or empty , and its the same as the pi, we may have a problem so look it up */
+		  if (GeneralUtils.isOUCUPIequalButNotTemp(oucu,dpi) )
+		 {
+			 if (USE_DB_PI_LOOKUP)
+			 {
+			 /* if we have a non empty oucu , and it matches the pi we have a promblem so look it up */
+				 thisPi=mPIs.get(oucu);
+			 }
+			 else
+			 {
+				 /* use the webservice */
+				 SAMSOucuPi op=new SAMSOucuPi(oucu,dpi,ns.getNavigatorConfig(),ns.getLog());
+				 thisPi=op.getPi();
+				 
+			 }
+		 }
+		 /* if we found something then return it, otherwise just return what we had in the first place */
+		 if(!(thisPi.isEmpty()) || thisPi==null)
+		 {
+			 return thisPi;
+		 }
+		 else
+		 {
+			 return dpi;
+		 }
+	 }
+	 
 		/* (non-Javadoc)
 		 * @see om.tnavigator.reports.TabularReportBase#generateReport(om.tnavigator.reports.TabularReportWriter)
 		 */
 		@Override
 		public void generateReport(TabularReportWriter reportWriter) {
 			// Query from database for PIs and questions
+			/* get a map of oucus and pis */
+			// Store PIs. Map of String (oucu) -> String (pi)
+			Map<String,String> mPIs=new HashMap<String,String>();
+			/* IF we are using the databse then we need to read the oucus pis into a hash map */
+			if (USE_DB_PI_LOOKUP)
+			{
+				try
+				{		
+					mPIs=generateOucuPiMap(ns);
+	
+				}
+				catch(OmUnexpectedException e)
+				{
+					ns.getLog().logDebug("Problem generating list of oucu pis "+e);
+	
+				}
+			}
 			DatabaseAccess.Transaction dat;
 			try {
 				dat = ns.getDatabaseAccess().newTransaction();
@@ -117,6 +217,7 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 				// * Within categories (finished/unfinished), sorting by PI
 				// I achieve this by setting the sort order and dropping all but the first
 				// result for each PI.
+				
 				ResultSet rs = ns.getOmQueries().queryTestAttemptersByPIandFinishedASC(dat, testId);
 				//create empty lists
 				boolean startflag=true;
@@ -127,7 +228,15 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 				while(rs.next())
 				{
 					isAdmin=rs.getInt(5);
-					String pi = rs.getString(2);
+					/* trip the strings */
+					String oucu=rs.getString(1).replaceAll(" ","");
+					
+					String dpi = rs.getString(2).replaceAll(" ","");
+					/*
+					 * Change this to look up the pi and compare it with the database version
+					*/
+					String pi=getPiFromOucu(mPIs,oucu,dpi);
+					
 					boolean isDummy=pi.toLowerCase().startsWith("q");
 
 					//ns.getLog().logDebug("*************** pi " + pi);

@@ -101,6 +101,26 @@ public abstract class OmQueries
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(testID)+" " +
 			"ORDER BY attempt DESC LIMIT 1");
 	}
+	
+	/**
+	 * Get a user's pi from the test
+	 * @param dat the transaction within which the query should be executed.
+	 * @param oucu the user's username.
+	 * @param testID the deploy file ID.
+	 * @param ti the test it
+	 * @return the requestedt data.
+	 * @throws SQLException
+	 */
+	public ResultSet queryPI(DatabaseAccess.Transaction dat,String oucu,String testID,int ti) throws SQLException
+	{
+		String sqlstr="SELECT oucu,pi " +
+			"FROM " + getPrefix() + "tests " +
+			"WHERE oucu="+Strings.sqlQuote(oucu)+
+			" AND deploy="+Strings.sqlQuote(testID)+
+			" AND ti="+ti+
+			" ORDER BY ti";
+			return dat.query(sqlstr);
+	}	
 
 	/**
 	 * Get a user's scores on a test attempt.
@@ -309,6 +329,17 @@ public abstract class OmQueries
 			"FROM " + getPrefix() + "tests t " +
 			"WHERE deploy="+Strings.sqlQuote(testID)+" " +
 			"ORDER BY pi,finished DESC,clock ASC");
+	}
+	
+	/**
+	* get the list of oucu and pi data
+	 */
+	public ResultSet queryPiFromOucu(DatabaseAccess.Transaction dat)
+	  throws SQLException
+	{
+		return dat.query(
+			"SELECT oucu,pi " +
+			"FROM " + getPrefix() + "oucupi");
 	}
 
 	/**
@@ -760,6 +791,19 @@ public abstract class OmQueries
 	  throws SQLException
 	{
 		dat.update("UPDATE " + getPrefix() + "tests SET testposition="+position+" WHERE ti="+ti);
+	}
+	
+	/**
+	 * Update the pi in the tests table if its different.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @param sPI the new pi
+	 * @throws SQLException
+	 */
+	public void updatePI(DatabaseAccess.Transaction dat,int ti,String sPI)
+	  throws SQLException
+	{
+		dat.update("UPDATE " + getPrefix() + "tests SET pi="+Strings.sqlQuote(sPI)+" WHERE ti="+ti);
 	}
 
 	/**

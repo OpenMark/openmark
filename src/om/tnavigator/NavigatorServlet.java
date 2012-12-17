@@ -78,7 +78,7 @@ import om.axis.qengine.StartReturn;
 import om.tnavigator.auth.Authentication;
 import om.tnavigator.auth.AuthenticationFactory;
 import om.tnavigator.auth.AuthenticationInstantiationException;
-import om.tnavigator.auth.UncheckedUserDetails;
+import om.tnavigator.auth.SAMSOucuPi;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.reports.ReportDispatcher;
@@ -111,6 +111,7 @@ import util.misc.VersionUtil;
 import util.xml.XHTML;
 import util.xml.XML;
 import util.xml.XMLException;
+import util.misc.GeneralUtils;
 
 /** Om test navigator; implementation of the test delivery engine. */
 public class NavigatorServlet extends HttpServlet {
@@ -322,6 +323,55 @@ public class NavigatorServlet extends HttpServlet {
 		}
 	}
 
+	/* sime debugging stuff for pi problem to be removed */
+	private StringBuffer bufferIt(String s,String name)
+	throws Exception
+	{
+		StringBuffer m= new StringBuffer();
+		try
+		{
+			if(s!=null)
+			{
+				m.append(name+" is not null, value=");
+				if (s.isEmpty())
+				{
+					m.append(name+" empty ");
+				}
+				m.append(s);
+			}
+		}
+		catch (Exception e)
+		{
+			m.append("oops bufferit went wrong ");
+			m.append(e.getMessage());
+		}
+		
+		return m;
+	}
+	
+	private void  debugPI(UserSession us, Log l, String i)
+	{			
+		StringBuffer mess=new StringBuffer();
+		mess.append("DEBUGPI navigatorservlet "+i+": ");
+		try
+		{
+			mess.append(bufferIt(us.sOUCU,"oucu").toString()+", ");
+			String pitest=us.ud.isLoggedIn() ? us.ud.getPersonID() : us.sOUCU;
+			String cookie=us.ud.getCookie();
+			mess.append(bufferIt(pitest,"pitest").toString()+", ");
+			mess.append(bufferIt(cookie,"cookie").toString());
+			l.logDebug(mess.toString());
+
+
+		}
+		catch(Exception e)
+		{
+			l.logDebug(mess.toString()+" debugPI errored "+e.getMessage());
+		}
+	
+	}
+	
+	
 	@Override
 	public void init() throws ServletException {
 		ServletContext sc = getServletContext();
@@ -1095,7 +1145,9 @@ public class NavigatorServlet extends HttpServlet {
 			synchronized (us) {
 				// Set last action time (so session doesn't time out)
 				us.touch();
-
+			
+				debugPI(us,l,"1");
+				
 				// If they have an OUCU but also a temp-login then we need to
 				// chuck away
 				// their session...
@@ -1107,6 +1159,7 @@ public class NavigatorServlet extends HttpServlet {
 					response.sendRedirect(request.getRequestURI());
 					return;
 				}
+				debugPI(us,l,"2");
 
 				// Get auth if needed
 				if (us.ud == null) {
@@ -1123,6 +1176,7 @@ public class NavigatorServlet extends HttpServlet {
 						} else
 							throw oe;
 					}
+					debugPI(us,l,"3");
 
 					us.ud = getAuthentication().getUserDetails(request, response, !us
 							.getTestDeployment().isWorldAccess());
@@ -1135,11 +1189,14 @@ public class NavigatorServlet extends HttpServlet {
 						us.markForDiscard();
 						return;
 					}
+					debugPI(us,l,"4");
 
 					// We only give them a cookie after passing this stage. If
 					// they were
 					// redirected to SAMS, they don't get a cookie until the
 					// next request.
+					debugPI(us,l,"5");
+
 					if (bNewCookie) {
 						Cookie c = new Cookie(sTestCookieName, sCookie);
 						c.setPath("/");
@@ -1149,6 +1206,8 @@ public class NavigatorServlet extends HttpServlet {
 					// If they're not logged in, give them a not-logged-in
 					// cookie with
 					// a made-up OUCU in it
+					debugPI(us,l,"6");
+
 					if (us.ud.isLoggedIn()) {
 						us.sOUCU = us.ud.getUsername();
 					} else {
@@ -1172,11 +1231,13 @@ public class NavigatorServlet extends HttpServlet {
 							us.sOUCU = sFakeOUCU;
 						}
 					}
+					debugPI(us,l,"7");
 
 					// Remember auth hash so that it'll know if they change
 					// cookie now
 					us.iAuthHash = iAuthHash;
 				}
+				debugPI(us,l,"8");
 
 				us.bAllowAfterForbid =
 				// * a posted 'end session' request
@@ -1185,6 +1246,7 @@ public class NavigatorServlet extends HttpServlet {
 						sCommand.equals("?access") ||
 						// * Stylesheet
 						sCommand.matches("resources/[0-9]+/style-[0-9]+\\.css");
+				debugPI(us,l,"9");
 
 				// Check test hasn't timed out
 				if (us.getTestId() != null
@@ -1205,6 +1267,7 @@ public class NavigatorServlet extends HttpServlet {
 					response.sendRedirect(request.getRequestURI());
 					return;
 				}
+				debugPI(us,l,"10");
 
 				if (sCommand.equals("")) {
 					// Have they possibly lost an existing session? If so, go
@@ -1220,6 +1283,10 @@ public class NavigatorServlet extends HttpServlet {
 					// on this one...
 					// (the latter should not be possible since cookies are
 					// test-specific)
+					
+					debugPI(us,l,"11");
+
+					
 					if (!bPost
 							&& (us.getTestId() == null || !sTestID.equals(us
 									.getTestId()))) {
@@ -1513,7 +1580,10 @@ public class NavigatorServlet extends HttpServlet {
 		initTestSession(us, rt, sTestID, request, response, false, false, us.ud
 				.isSysTest() ? 1124965882611L : System.currentTimeMillis(),
 				variant);
+		
+		debugPI(us,l,"12");
 
+		
 		// Don't store anything in database for singles version
 		if (us.isSingle())
 			return;
@@ -1525,14 +1595,55 @@ public class NavigatorServlet extends HttpServlet {
 			int iMaxAttempt = 0;
 			if (rs.next() && rs.getMetaData().getColumnCount() > 0)
 				iMaxAttempt = rs.getInt(1);
+			// Use same PI as OUCU for non-logged-in guests
+			String sPi=us.ud.isLoggedIn() ? us.ud.getPersonID() : us.sOUCU;
+			// lots of debugging to try to work out why its storing ouc and not pi
+			try
+			{
+				String sPInew=us.ud.getPersonID();
+				if (sPInew != null)
+				{
+					l.logDebug("navigatorservlet us.ud.getPersonID() ="+sPInew);
+				}
+				else
+				{
+					l.logDebug("navigatorservlet us.ud.getPersonID() null");
+				}
+			}
+			catch (Exception e)
+			{
+				l.logDebug("navigatorservlet us.ud.getPersonID() errors");
+			}
+				
+			if(us.ud.isLoggedIn())
+			{
+				l.logDebug("Logged in determining sPI="+sPi);
+			}
+			else
+			{
+				l.logDebug("Not Logged in determining sPI="+sPi);
 
-
-			oq.insertTest(dat, us.sOUCU, sTestID, us.getRandomSeed(),
+			}
+			/* XXXX problem getting correct pi, so check it with web service here if the oucu and the pi are euqal
+			 *  */
+			if (GeneralUtils.isOUCUPIequalButNotTemp(us.sOUCU,sPi) )
+			{
+				 SAMSOucuPi op=new SAMSOucuPi(us.sOUCU,sPi,this.getNavigatorConfig(),l);			
+				 oq.insertTest(dat, us.sOUCU, sTestID, us.getRandomSeed(),
 					iMaxAttempt + 1, us.bAdmin,
-					// Use same PI as OUCU for non-logged-in guests
-					us.ud.isLoggedIn() ? us.ud.getPersonID() : us.sOUCU, us
-							.getFixedVariant(), us.navigatorVersion);
+					op.getPi(), us.getFixedVariant(), us.navigatorVersion);
+			}
+			else
+			{
+				oq.insertTest(dat, us.sOUCU, sTestID, us.getRandomSeed(),
+						iMaxAttempt + 1, us.bAdmin,
+						sPi, us.getFixedVariant(), us.navigatorVersion);
+			
+			}
+			
+			
 			int dbTi = oq.getInsertedSequenceID(dat, "tests", "ti");
+			
 			l.logDebug("TI = " + dbTi);
 			
 			us.setDbTi(dbTi);			
@@ -2432,15 +2543,52 @@ public class NavigatorServlet extends HttpServlet {
 		}
 		return code;		
 	}
+		
+	/* this function reads the oucu and pi for the test, check whether they are the same, and if the pi has changed.
+	 * If it has there may have been a problem so we update it
+	 */
+	private void checkAndUpdatePI(DatabaseAccess.Transaction d, UserSession us) throws Exception
+	{
+		String sPI=us.ud.getPersonID();
+		String sOUCU=us.getOUCU();
+		String sTestID=us.getTestId();
+		int iTI=us.getDbTi(); 
+		if (!sPI.isEmpty() && ! sOUCU.isEmpty() && ! sTestID.isEmpty() )
+		{
+			try
+			{
+				ResultSet rs = oq.queryPI(d, sOUCU, sTestID,iTI);
+				if (rs.next()) 
+				{
+					String dOUCU = rs.getString(1);
+					String dPI = rs.getString(2);
+					/* so if PI read not epmty, , the oucu and the pi are the same, and the pi
+					in the datbase and the pi passed are different we may have one of the problem users so update */
+					if (GeneralUtils.isOUCUPIequalButNotTemp(dOUCU,dPI) )
+					{
+						SAMSOucuPi op=new SAMSOucuPi(dOUCU,dPI,this.getNavigatorConfig(),l);			
+						oq.updatePI(d,iTI,op.getPi());
+						l.logDebug("Updating PI for oucu,ti="+iTI+","+sOUCU+" from dPI "+dPI+" to pi "+op.getPi());
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				throw new Exception("Unable to query/update PI");			
+			}
 			
-			
+
+		}
+
+	}
+	
+	
+		
 	private TrafficLights processTrafficLights(RequestTimings rt, UserSession us,
 			Element eParent, Element eTarget, CombinedScore ps ,
 			HttpServletRequest request,Log l) throws Exception 
 			
 	{
-
-			String dummyVariablesoIcanfindthefunctioneasily="";
 			TrafficLights tls=new TrafficLights();
 			
 			if (PreCourseDiagCode.shouldDoCode(us))
@@ -3949,9 +4097,21 @@ public class NavigatorServlet extends HttpServlet {
 		try {
 			oq.updateSetTestPosition(dat, us.getDbTi(), iNewIndex);
 			us.setTestPosition(iNewIndex);
-		} finally {
+			/* check the pi stored is the same as the one we have now and update if necessary*/
+			try
+			{
+				checkAndUpdatePI(dat, us);
+			}
+			catch (Exception e)
+			{
+				throw new SQLException(e);
+			}
+		} 
+		finally 
+		{
 			rt.lDatabaseElapsed += dat.finish();
 		}
+		
 	}
 
 	// Method is NOT synchronized on UserSession
