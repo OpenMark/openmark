@@ -27,7 +27,6 @@ import om.tnavigator.reports.OmReport;
 import om.tnavigator.reports.OmTestReport;
 import om.tnavigator.reports.TabularReportBase;
 import om.tnavigator.reports.TabularReportWriter;
-import om.tnavigator.scores.AttemptForPI;
 import om.tnavigator.scores.CombinedScore;
 import om.tnavigator.auth.SAMSOucuPi;
 import util.misc.GeneralUtils;
@@ -39,10 +38,8 @@ import util.misc.GeneralUtils;
 public class MoodleFormatReport implements OmTestReport, OmReport {
 	private NavigatorServlet ns;
 	private static boolean USE_DB_PI_LOOKUP = false;
-	private static boolean USE_WEBSERVICE_PI_LOOKUP = true;
-	/** URL of web service used to validate sams cookie*/
 
-	
+
 	/**
 	 * Create an instance of this report.
 	 * @param ns the navigator servlet we belong to.
@@ -55,7 +52,7 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 	/* read through the oucu pi table and create a hashmap */
 	private  Map<String,String> generateOucuPiMap(NavigatorServlet ns) throws OmUnexpectedException
 	{
-		Map<String, String> mPIs = new HashMap<String, String>();				
+		Map<String, String> mPIs = new HashMap<String, String>();
 		DatabaseAccess.Transaction dat;
 		try {
 			dat = ns.getDatabaseAccess().newTransaction();
