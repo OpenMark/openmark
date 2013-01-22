@@ -29,13 +29,13 @@ import org.w3c.dom.Element;
 public class Rendering
 {
 	/** Question XHTML content */
-  private Element eXHTML=null;
+	private Element eXHTML=null;
 
-  /** CSS stylesheet */
-  private String sCSS=null;
+	/** CSS stylesheet */
+	private String sCSS=null;
 
-  /** Progress information */
-  private String sProgressInfo=null;
+	/** Progress information */
+	private String sProgressInfo=null;
 
 	/** List of returned resources (QResource) */
 	private List<Resource> lResources=new LinkedList<Resource>();
