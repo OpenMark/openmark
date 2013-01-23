@@ -33,7 +33,7 @@ public class GetOucuInfo_Service
             baseUrl = om.getOucuInfo.GetOucuInfo_Service.class.getResource(".");
             url = new URL(baseUrl, WSDLUrl);
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: "+url.toString()+", retrying as a local file");
+            logger.warning("Failed to create URL for the wsdl Location: " + url + ", retrying as a local file");
             logger.warning(e.getMessage());
         }
         GETOUCUINFO_WSDL_LOCATION = url;

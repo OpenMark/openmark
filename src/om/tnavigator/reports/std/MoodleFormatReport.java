@@ -144,37 +144,36 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 		}
 	
 
-	 
-	 private String getPiFromOucu(Map<String,String> mPIs,String oucu,String dpi)
-	 {
-		 String thisPi=dpi;
-		 /* so if oucu is not null or empty , and its the same as the pi, we may have a problem so look it up */
-		  if (GeneralUtils.isOUCUPIequalButNotTemp(oucu,dpi) )
-		 {
-			 if (USE_DB_PI_LOOKUP)
-			 {
-			 /* if we have a non empty oucu , and it matches the pi we have a promblem so look it up */
-				 thisPi=mPIs.get(oucu);
-			 }
-			 else
-			 {
-				 /* use the webservice */
-				 SAMSOucuPi op=new SAMSOucuPi(oucu,dpi,ns.getNavigatorConfig(),ns.getLog());
-				 thisPi=op.getPi();
-				 
-			 }
-		 }
-		 /* if we found something then return it, otherwise just return what we had in the first place */
-		 if(!(thisPi.isEmpty()) || thisPi==null)
-		 {
-			 return thisPi;
-		 }
-		 else
-		 {
-			 return dpi;
-		 }
-	 }
-	 
+	private String getPiFromOucu(Map<String,String> mPIs,String oucu,String dpi)
+	{
+		String thisPi=dpi;
+		/* so if oucu is not null or empty , and its the same as the pi, we may have a problem so look it up */
+		if (GeneralUtils.isOUCUPIequalButNotTemp(oucu,dpi) )
+		{
+			if (USE_DB_PI_LOOKUP)
+			{
+			/* if we have a non empty oucu , and it matches the pi we have a promblem so look it up */
+				thisPi=mPIs.get(oucu);
+			}
+			else
+			{
+				/* use the webservice */
+				SAMSOucuPi op=new SAMSOucuPi(oucu,dpi,ns.getNavigatorConfig(),ns.getLog());
+				thisPi=op.getPi();
+				
+			}
+		}
+		/* if we found something then return it, otherwise just return what we had in the first place */
+		if(!(thisPi.isEmpty()) || thisPi==null)
+		{
+			return thisPi;
+		}
+		else
+		{
+			return dpi;
+		}
+	}
+
 		/* (non-Javadoc)
 		 * @see om.tnavigator.reports.TabularReportBase#generateReport(om.tnavigator.reports.TabularReportWriter)
 		 */
@@ -188,7 +187,7 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 			if (USE_DB_PI_LOOKUP)
 			{
 				try
-				{		
+				{
 					mPIs=generateOucuPiMap(ns);
 	
 				}

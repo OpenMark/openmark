@@ -79,9 +79,6 @@ public class Log
 	/** tag the message with a constant tag so it can be grepped */
 	private final static String SEVERITY_WITHTAG="withtag";
 
-	private static boolean WITHTAG=true;
-	private static boolean NOTAG=false;
-	
 	/** Date formatter used for current date in log filename */
 	public final static SimpleDateFormat DATEFORMAT=new SimpleDateFormat("yyyy-MM-dd");
 

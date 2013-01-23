@@ -81,7 +81,7 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 		assertNotNull(qs.dMeta);
 	}
 
-	@Ignore
+	@Ignore // Looks like the test was committed, even though the dynamic question stuff wasn't.
 	@Test public void testLoadClass() throws Exception {
 		URL url = ClassLoader.getSystemResource(TESTING_DYNAMIC_QUESTION);
 		assertNotNull(url);
