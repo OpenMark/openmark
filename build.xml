@@ -449,7 +449,23 @@
 		description="Build question engine, test navigator, and devserver webapps without external libraries"/>
 
 	<target name="localhost-install" depends="all,update-localhost"
-		description="Rebuild everything, and update the localhost install."
+		description="Rebuild everything, and update the localhost install."/>
+
+	<target name="update-localhost"
+		description="Copy the compiled files code into a localhost tomcat install.">
+		<copy todir="${localhostwebapps}/om-tn/WEB-INF">
+			<fileset dir="${build}/webapps/om-tn/WEB-INF/"/>
+		</copy>
+		<copy todir="${localhostwebapps}/om-qe/WEB-INF">
+			<fileset dir="${build}/webapps/om-qe/WEB-INF/"/>
+		</copy>
+		<copy todir="${localhostwebapps}/om/WEB-INF">
+			<fileset dir="${build}/webapps/om/WEB-INF/"/>
+		</copy>
+		<copy todir="${localhostwebapps}/om-admin/WEB-INF">
+			<fileset dir="${build}/webapps/om-admin/WEB-INF/"/>
+		</copy>
+	</target>
 
 	<target name="bundle-source"
 		description="Bundle the source for upload to the project site.">
