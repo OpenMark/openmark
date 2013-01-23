@@ -115,4 +115,6 @@ requests for this file, so your database password should be safe.
 		<!-- <log-general/> -->
 	</debugflags>
 
+	<preprocessor>om.tnavigator.request.authorship.StandardAuthorshipConfirmationRequestHandling</preprocessor>
+
 </config>
