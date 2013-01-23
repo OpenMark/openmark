@@ -19,11 +19,11 @@ import om.tnavigator.JUnitTestCaseTestDefinition;
 import om.tnavigator.JUnitTestCaseTestDefinitionOptions;
 import om.tnavigator.JUnitTestCaseTestRealisation;
 import om.tnavigator.JUnitTestCaseUserSession;
-import om.tnavigator.SummaryDetails;
-import om.tnavigator.SummaryDetailsGeneration;
-import om.tnavigator.SummaryTableBuilder;
-import om.tnavigator.TestDeployment;
 import om.tnavigator.scores.CombinedScore;
+import om.tnavigator.teststructure.SummaryDetails;
+import om.tnavigator.teststructure.SummaryDetailsGeneration;
+import om.tnavigator.teststructure.SummaryTableBuilder;
+import om.tnavigator.teststructure.TestDeployment;
 
 import org.junit.After;
 import org.junit.Before;

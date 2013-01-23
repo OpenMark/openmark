@@ -1,4 +1,6 @@
-package om.tnavigator;
+package om.tnavigator.teststructure;
+
+import om.tnavigator.UserSession;
 
 import org.w3c.dom.Node;
 

@@ -1,4 +1,4 @@
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,6 +10,8 @@ import javax.servlet.ServletException;
 
 import om.OmUnexpectedException;
 import om.RequestHandlingException;
+import om.tnavigator.NavigatorServlet;
+import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 
@@ -240,7 +242,7 @@ public class PreCourseDiagCode {
 	 * @throws RequestHandlingException
 	 * @author sarah wood
 	 */
-	static boolean shouldDoCode(UserSession us)
+	public static boolean shouldDoCode(UserSession us)
 	 throws Exception  {
 		boolean should = false;
 		// start with a simple, run it if its an open to the world test
@@ -254,12 +256,12 @@ public class PreCourseDiagCode {
 		return should;
 	}
 	
-	static boolean shouldGenerateCode(UserSession us)
+	public static boolean shouldGenerateCode(UserSession us)
 	 throws Exception  {
 		return shouldDoCode(us);
 	}
 	
-	static boolean shouldGenerateNewCode(UserSession us)
+	public static boolean shouldGenerateNewCode(UserSession us)
 	 throws Exception  {
 		//reset the boolean in the usersession
 		us.setHasGeneratedFinalPCDC(false);
@@ -267,7 +269,7 @@ public class PreCourseDiagCode {
 
 	}
 	
-	static boolean shouldReadCode(UserSession us)
+	public static boolean shouldReadCode(UserSession us)
 	 throws Exception  {
 		boolean should = false;
 		// start with a simple, run it if its an open to the world test
@@ -287,7 +289,7 @@ public class PreCourseDiagCode {
 	 * @throws RequestHandlingException
 	 * @author sarah wood
 	 */
-	static boolean shouldDisplayCode(UserSession us)
+	public static boolean shouldDisplayCode(UserSession us)
 	 throws Exception  {
 		boolean should = false;
 		// start with a simple, run it if its an open to the world test

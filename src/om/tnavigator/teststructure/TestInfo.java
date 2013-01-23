@@ -15,7 +15,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ import util.xml.XMLException;
 
 
 /** Represents a text page */
-class TestInfo extends TestItem implements TestLeaf
+public class TestInfo extends TestItem implements TestLeaf
 {
 	private String sSection;
 	private Element eThis;
@@ -47,7 +47,7 @@ class TestInfo extends TestItem implements TestLeaf
 	}
 
 	/** @return Title or default if none */
-	String getTitle()
+	public String getTitle()
 	{
 		if(XML.hasChild(eThis,"title"))
 		{
@@ -84,7 +84,7 @@ class TestInfo extends TestItem implements TestLeaf
 		}
 	}
 
-	String getXHTMLString() throws IOException
+	public String getXHTMLString() throws IOException
 	{
 		StringBuffer sb=new StringBuffer();
 
@@ -120,7 +120,7 @@ class TestInfo extends TestItem implements TestLeaf
 	 * Marks text as seen (or not)
 	 * @param bDone True if text has been shown
 	 */
-	void setDone(boolean bDone)
+	public void setDone(boolean bDone)
 	{
 		this.bDone=bDone;
 	}

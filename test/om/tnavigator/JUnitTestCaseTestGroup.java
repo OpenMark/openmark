@@ -1,6 +1,7 @@
 package om.tnavigator;
 
 import om.OmFormatException;
+import om.tnavigator.teststructure.TestGroup;
 
 import org.w3c.dom.Element;
 

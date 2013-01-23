@@ -84,6 +84,15 @@ import om.tnavigator.db.OmQueries;
 import om.tnavigator.reports.ReportDispatcher;
 import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 import om.tnavigator.scores.CombinedScore;
+import om.tnavigator.teststructure.PreCourseDiagCode;
+import om.tnavigator.teststructure.SummaryDetails;
+import om.tnavigator.teststructure.SummaryDetailsGeneration;
+import om.tnavigator.teststructure.SummaryTableBuilder;
+import om.tnavigator.teststructure.TestDefinition;
+import om.tnavigator.teststructure.TestDeployment;
+import om.tnavigator.teststructure.TestInfo;
+import om.tnavigator.teststructure.TestLeaf;
+import om.tnavigator.teststructure.TestQuestion;
 
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
@@ -111,7 +120,6 @@ import util.misc.VersionUtil;
 import util.xml.XHTML;
 import util.xml.XML;
 import util.xml.XMLException;
-import util.misc.GeneralUtils;
 
 /** Om test navigator; implementation of the test delivery engine. */
 public class NavigatorServlet extends HttpServlet {
@@ -665,7 +673,7 @@ public class NavigatorServlet extends HttpServlet {
 	 */
 	public static class RequestTimings {
 		long lStart;
-		long lDatabaseElapsed;
+		private long lDatabaseElapsed;
 		long lQEngineElapsed;
 
 		/**
@@ -674,6 +682,22 @@ public class NavigatorServlet extends HttpServlet {
 		 */
 		public void recordServiceTime(long time) {
 			lQEngineElapsed += time;
+		}
+
+		/**
+		 * @return the lDatabaseElapsed
+		 */
+		public long getDatabaseElapsedTime()
+		{
+			return lDatabaseElapsed;
+		}
+
+		/**
+		 * @param lDatabaseElapsed the lDatabaseElapsed to set
+		 */
+		public void setDatabaseElapsedTime(long lDatabaseElapsed)
+		{
+			this.lDatabaseElapsed = lDatabaseElapsed;
 		}
 	}
 
@@ -1501,12 +1525,14 @@ public class NavigatorServlet extends HttpServlet {
 			// This just means that data was already sent to user
 		} catch (Throwable t) {
 			try {
-
 				String mess;
-				if(t==null) {
-						mess="Unknown error";
-				} else {
-						mess=t.getMessage()==null? "Unknown error" : t.getMessage();
+				if (t.getMessage() == null)
+				{
+					mess = "Unknown error";
+				}
+				else
+				{
+					mess = t.getMessage();
 				}
 				sendError(null, request, response,
 						HttpServletResponse.SC_FORBIDDEN,
@@ -1540,7 +1566,7 @@ public class NavigatorServlet extends HttpServlet {
 					+ ",qe="
 					+ rt.lQEngineElapsed
 					+ ",db="
-					+ rt.lDatabaseElapsed
+					+ rt.getDatabaseElapsedTime()
 					+ "]"
 					+ ",["
 					+ sPlace
@@ -1663,7 +1689,7 @@ public class NavigatorServlet extends HttpServlet {
 
 			storeSessionInfo(request, dat, us.getDbTi());
 		} finally {
-			rt.lDatabaseElapsed += dat.finish();
+			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
 	}
 
@@ -1796,7 +1822,7 @@ public class NavigatorServlet extends HttpServlet {
 				nParent, bPlain, bIncludeQuestions, bIncludeAttempts,
 				bIncludeScore);
 		SummaryTableBuilder stb = new SummaryTableBuilder(da, oq);
-		rt.lDatabaseElapsed = stb.addSummaryTable(sd);
+		rt.setDatabaseElapsedTime(stb.addSummaryTable(sd));
 	}
 
 	/**
@@ -2052,7 +2078,7 @@ public class NavigatorServlet extends HttpServlet {
 				}
 			}
 		} finally {
-			rt.lDatabaseElapsed += dat.finish();
+			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
 	}
 
@@ -2271,7 +2297,7 @@ public class NavigatorServlet extends HttpServlet {
 					oq.updateSetQuestionVersion(dat, us.iDBqi, qv.iMajor,
 							qv.iMinor);
 				} finally {
-					rt.lDatabaseElapsed += dat.finish();
+					rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 				}
 			}
 		} else {
@@ -3119,7 +3145,8 @@ public class NavigatorServlet extends HttpServlet {
 										bValid = rs.next();
 									}
 								}
-								rt.lDatabaseElapsed += dat.finish();
+								rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime()
+										+ dat.finish());
 
 								// Loop around each sequenced event
 								for (int iSeq = 1; iSeq <= iMaxSeq; iSeq++) {
@@ -3148,7 +3175,7 @@ public class NavigatorServlet extends HttpServlet {
 							}
 						}
 					} finally {
-						rt.lDatabaseElapsed += dat.finish();
+						rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 					}
 				}
 
@@ -3281,7 +3308,7 @@ public class NavigatorServlet extends HttpServlet {
 				try {
 					oq.insertInfoPage(dat, us.getDbTi(), us.getTestPosition());
 				} finally {
-					rt.lDatabaseElapsed += dat.finish();
+					rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 				}
 			}
 		}
@@ -3328,8 +3355,7 @@ public class NavigatorServlet extends HttpServlet {
 				}
 			}
 
-			// if its a defult question, then include the (of XXX) but if nbs is
-			// specified then dont
+			// If its a defult question, then include the "out of" but not if it isnt.
 			String ofmax1 = (us.getTestDefinition().isNumberBySection()) ? ""
 					: "(" + tq.getNumber() + "of " + getQuestionMax(us) + ")";
 			String ofmax2 = (us.getTestDefinition().isNumberBySection()) ? ""
@@ -3443,7 +3469,7 @@ public class NavigatorServlet extends HttpServlet {
 			oq.insertQuestion(dat, us.getDbTi(), tq.getID(), iAttempt);
 			us.iDBqi = oq.getInsertedSequenceID(dat, "questions", "qi");
 		} finally {
-			rt.lDatabaseElapsed += dat.finish();
+			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
 		return iAttempt;
 	}
@@ -3549,7 +3575,7 @@ public class NavigatorServlet extends HttpServlet {
 							+ "answer text have not been recorded.</p>";
 				}
 			} finally {
-				rt.lDatabaseElapsed += dat.finish();
+				rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 			}
 			sXHTML += "<p><a href='?summary'>View a summary of all your answers so far</a></p>"
 					+ "<p><a href='?next'>Next question</a></p>";
@@ -3611,7 +3637,7 @@ public class NavigatorServlet extends HttpServlet {
 				oq.updateTestFinished(dat, us.getDbTi());
 				us.setFinished(true);
 			} finally {
-				rt.lDatabaseElapsed += dat.finish();
+				rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 			}
 
 			// Send an email if desired - to non-admins and only people who look
@@ -3716,7 +3742,7 @@ public class NavigatorServlet extends HttpServlet {
 			rs.next();
 			iCount = rs.getInt(1);
 		} finally {
-			rt.lDatabaseElapsed += dat.finish();
+			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
 
 		if (iCount > 0 || us.getTestPosition() != 0) {
@@ -3751,7 +3777,7 @@ public class NavigatorServlet extends HttpServlet {
 		try {
 			oq.updateTestVariant(dat, us.getDbTi(), us.getFixedVariant());
 		} finally {
-			rt.lDatabaseElapsed += dat.finish();
+			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
 
 		// Redirect back
@@ -3947,7 +3973,7 @@ public class NavigatorServlet extends HttpServlet {
 					oq.updateQuestionFinished(dat, us.iDBqi, 2);
 				}
 			} finally {
-				rt.lDatabaseElapsed += dat.finish();
+				rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 			}
 		}
 
@@ -4104,7 +4130,7 @@ public class NavigatorServlet extends HttpServlet {
 		} 
 		finally 
 		{
-			rt.lDatabaseElapsed += dat.finish();
+			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
 		
 	}
@@ -4261,7 +4287,7 @@ public class NavigatorServlet extends HttpServlet {
 				}
 			}
 		} finally {
-			rt.lDatabaseElapsed += dat.finish();
+			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
 
 		// Redirect to system-check page if needed

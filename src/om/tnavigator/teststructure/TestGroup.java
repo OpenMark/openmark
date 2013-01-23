@@ -15,7 +15,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
 import java.util.*;
 
@@ -29,7 +29,7 @@ import util.xml.XML;
 import util.xml.XMLException;
 
 /** Represents a group of test items in the tree */
-class TestGroup extends TestMarkedItem
+public class TestGroup extends TestMarkedItem
 {
 	/** Items within this group */
 	protected List<TestItem> lItems=new LinkedList<TestItem>();
@@ -169,7 +169,7 @@ class TestGroup extends TestMarkedItem
 		}
 	}
 
-	CombinedScore getFinalScore() throws OmFormatException
+	public CombinedScore getFinalScore() throws OmFormatException
 	{
 		return getFinalScore(null,false);
 	}

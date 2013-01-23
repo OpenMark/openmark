@@ -17,11 +17,11 @@ import om.RequestHandlingException;
 import om.RequestParameterNames;
 import om.RequestResponse;
 import om.tnavigator.NavigatorServlet;
-import om.tnavigator.TestDefinition;
-import om.tnavigator.TestDeployment;
 import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
+import om.tnavigator.teststructure.TestDefinition;
+import om.tnavigator.teststructure.TestDeployment;
 
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.DOMException;

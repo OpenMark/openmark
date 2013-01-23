@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import om.tnavigator.*;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.reports.OmTestReport;
+import om.tnavigator.teststructure.TestDeployment;
 import util.xml.XML;
 
 /**

@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import om.OmException;
 import om.OmUnexpectedException;
 import om.tnavigator.NavigatorServlet;
-import om.tnavigator.TestDeployment;
 import om.tnavigator.reports.*;
+import om.tnavigator.teststructure.TestDeployment;
 
 import org.w3c.dom.*;
 

@@ -14,8 +14,8 @@ import java.util.Map;
 import om.axis.qengine.Score;
 import om.tnavigator.JUnitTestCaseTestDefinition;
 import om.tnavigator.NavigatorServlet;
-import om.tnavigator.TestDeployment;
 import om.tnavigator.scores.CombinedScore;
+import om.tnavigator.teststructure.TestDeployment;
 
 import org.junit.Before;
 import org.w3c.dom.Document;

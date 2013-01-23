@@ -15,29 +15,33 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package om.tnavigator;
-
-import org.w3c.dom.Element;
-
+package om.tnavigator.teststructure;
 
 /**
- * Something that goes in a test group. That is, an info page, a question, or a subgroup.
+ * This is the interface used by the navigation panel to get the
+ * information it needs to display each actual thing in the test
+ * (questions or text pages) in the appropriate state, and with a
+ * section heading before each section.
  */
-class TestItem
+public interface TestLeaf
 {
-	// The enclosing item. Surely, this will always be a TestGroup?
-	private TestItem parent;
+	/**
+	 * @param s Section name for question (or null for none)
+	 */
+	void setSection(String s);
 
-	private String sDepends=null;
+	/**
+	 * @return Section name of question (null if not in a section)
+	 */
+	String getSection();
 
-	TestItem(TestItem iParent,Element eThis)
-	{
-		this.parent=iParent;
+	/**
+	 * @return True if user has finished the item
+	 */
+	boolean isDone();
 
-		sDepends=eThis.getAttribute("depends");
-		if(sDepends!=null && sDepends.equals("")) sDepends=null;
-	}
-
-	TestItem getParent() { return parent; }
-	String getDepends() { return sDepends; }
+	/**
+	 * @return True if item is available for display
+	 */
+	boolean isAvailable();
 }

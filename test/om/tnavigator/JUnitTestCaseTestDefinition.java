@@ -8,6 +8,8 @@ import java.util.Random;
 
 import om.OmException;
 import om.OmFormatException;
+import om.tnavigator.teststructure.TestDefinition;
+import om.tnavigator.teststructure.TestGroup;
 
 public class JUnitTestCaseTestDefinition extends TestDefinition {
 

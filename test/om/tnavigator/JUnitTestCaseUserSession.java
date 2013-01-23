@@ -2,6 +2,8 @@ package om.tnavigator;
 
 import java.lang.reflect.Field;
 
+import om.tnavigator.teststructure.TestDeployment;
+
 public class JUnitTestCaseUserSession extends UserSession {
 
 	public JUnitTestCaseUserSession(NavigatorServlet owner, String cookie) {

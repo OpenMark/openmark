@@ -15,7 +15,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
 import java.io.File;
 import java.io.IOException;
@@ -318,27 +318,27 @@ public class TestDefinition
 		return bNavigation;
 	}
 
-	boolean isRedoQuestionAllowed()
+	public boolean isRedoQuestionAllowed()
 	{
 		return bRedoQuestion;
 	}
 
-	boolean isAutomaticRedoQuestionAllowed()
+	public boolean isAutomaticRedoQuestionAllowed()
 	{
 		return bRedoQuestionAuto;
 	}
 
-	boolean isRedoTestAllowed()
+	public boolean isRedoTestAllowed()
 	{
 		return bRedoTest;
 	}
 
-	boolean isSummaryAllowed()
+	public boolean isSummaryAllowed()
 	{
 		return bFreeSummary;
 	}
 
-	boolean areQuestionsNamed()
+	public boolean areQuestionsNamed()
 	{
 		return bQuestionNames;
 	}
@@ -348,22 +348,22 @@ public class TestDefinition
 		return bSummaryScores;
 	}
 
-	boolean doesSummaryIncludeAttempts()
+	public boolean doesSummaryIncludeAttempts()
 	{
 		return bSummaryAttempts;
 	}
 
-	boolean doesSummaryIncludeQuestions()
+	public boolean doesSummaryIncludeQuestions()
 	{
 		return bSummaryQuestions;
 	}
 
-	boolean isStopAllowed()
+	public boolean isStopAllowed()
 	{
 		return bFreeStop;
 	}
 
-	boolean isSummaryIncludedAtEndCheck()
+	public boolean isSummaryIncludedAtEndCheck()
 	{
 		return bEndSummary;
 	}
@@ -377,30 +377,30 @@ public class TestDefinition
 		return iNavLocation;
 	}
 
-	Element getFinalPage()
+	public Element getFinalPage()
 	{
 		return eFinal;
 	}
 
-	Element getConfirmParagraphs()
+	public Element getConfirmParagraphs()
 	{
 		return eConfirmParagraphs;
 	}
-	String getConfirmButtonLabel()
+	public String getConfirmButtonLabel()
 	{
 		return sConfirmButton;
 	}
-	String getConfirmTitle()
+	public String getConfirmTitle()
 	{
 		return sConfirmTitle;
 	}
 
-	String getLabelSet()
+	public String getLabelSet()
 	{
 		return sLabelSet;
 	}
 	
-	String getQuestionNumberHeader()
+	public String getQuestionNumberHeader()
 	{
 		return sQuestionNumberHeader;
 	}

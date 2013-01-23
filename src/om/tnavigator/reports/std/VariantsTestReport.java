@@ -19,6 +19,7 @@ import om.OmUnexpectedException;
 import om.tnavigator.*;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.reports.*;
+import om.tnavigator.teststructure.TestDeployment;
 
 import org.w3c.dom.Element;
 

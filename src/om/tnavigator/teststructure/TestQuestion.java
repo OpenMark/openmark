@@ -15,7 +15,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +31,7 @@ import util.xml.XMLException;
 
 
 /** Represents a question */
-class TestQuestion extends TestMarkedItem implements TestLeaf
+public class TestQuestion extends TestMarkedItem implements TestLeaf
 {
 	private String sID;
 	private int iVersion=VersionUtil.VERSION_UNSPECIFIED;
@@ -65,13 +65,13 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	}
 
 	/** @return Required question ID */
-	String getID()
+	public String getID()
 	{
 		return sID;
 	}
 
 	/** @return Required question version or VERSION_UNSPECIFIED for latest */
-	int getVersion()
+	public int getVersion()
 	{
 		return iVersion;
 	}
@@ -100,7 +100,7 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	}
 
 	/** @return Number to display for this question */
-	int getNumber()
+	public int getNumber()
 	{
 		return iNumber;
 	}
@@ -185,7 +185,7 @@ class TestQuestion extends TestMarkedItem implements TestLeaf
 	/**
 	 * @return contribution from this question towards final score of a test group
 	 */
-	CombinedScore getScoreContribution(TestGroup testGroup) throws OmFormatException
+	public CombinedScore getScoreContribution(TestGroup testGroup) throws OmFormatException
 	{
 		// Work out contributions this question only has to final results if (a)
 		// they score what they actually scored, and (b) they score the max possible

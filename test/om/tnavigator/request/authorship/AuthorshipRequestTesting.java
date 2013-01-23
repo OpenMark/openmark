@@ -17,9 +17,9 @@ import om.RequestParameterNames;
 import om.RequestResponse;
 import om.tnavigator.JUnitTestCaseHttpServletRequest;
 import om.tnavigator.JUnitTestCaseUserSession;
-import om.tnavigator.TestDeployment;
 import om.tnavigator.db.JUnitTestCaseOmQueries;
 import om.tnavigator.db.OmQueries;
+import om.tnavigator.teststructure.TestDeployment;
 
 import org.junit.Test;
 

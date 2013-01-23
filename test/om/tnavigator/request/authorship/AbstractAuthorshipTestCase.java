@@ -15,13 +15,13 @@ import om.tnavigator.JUnitTestCaseTestRealisation;
 import om.tnavigator.JUnitTestCaseUserSession;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.TestCaseServletContext;
-import om.tnavigator.TestDeployment;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.DatabaseAccess.ConnectionInfo;
 import om.tnavigator.db.JUnitTestCaseDatabaseAccess;
 import om.tnavigator.db.JUnitTestCaseResultSet;
 import om.tnavigator.db.JUnitTestCaseTransaction;
 import om.tnavigator.db.OmQueries;
+import om.tnavigator.teststructure.TestDeployment;
 
 import org.w3c.dom.Document;
 

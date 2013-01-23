@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
 import java.sql.ResultSet;
 import java.util.HashMap;
@@ -23,6 +23,7 @@ import java.util.Map;
 
 import om.OmException;
 import om.OmFormatException;
+import om.tnavigator.NavigatorServlet;
 import om.tnavigator.NavigatorServlet.RequestTimings;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
@@ -113,7 +114,7 @@ public class TestRealisation {
 	/**
 	 * @return the tg
 	 */
-	TestGroup getRootTestGroup() {
+	public TestGroup getRootTestGroup() {
 		return rootTestGroup;
 	}
 
@@ -127,7 +128,7 @@ public class TestRealisation {
 	/**
 	 * @return the atl
 	 */
-	TestLeaf[] getTestLeavesInOrder() {
+	public TestLeaf[] getTestLeavesInOrder() {
 		return testLeavesInOrder;
 	}
 
@@ -141,28 +142,28 @@ public class TestRealisation {
 	/**
 	 * @return the lRandomSeed
 	 */
-	long getRandomSeed() {
+	public long getRandomSeed() {
 		return randomSeed;
 	}
 
 	/**
 	 * @param fixedVariant the iFixedVariant to set.
 	 */
-	void setFixedVariant(int fixedVariant) {
+	public void setFixedVariant(int fixedVariant) {
 		this.fixedVariant = fixedVariant;
 	}
 
 	/**
 	 * @return the iFixedVariant
 	 */
-	int getFixedVariant() {
+	public int getFixedVariant() {
 		return fixedVariant;
 	}
 
 	/**
 	 * @param dbTi the database id for the test. tests.ti.
 	 */
-	void setDbTi(int dbTi) {
+	public void setDbTi(int dbTi) {
 		this.dbTi = dbTi;
 	}
 
@@ -261,7 +262,7 @@ public class TestRealisation {
 		}
 		finally
 		{
-			rt.lDatabaseElapsed += dat.finish();
+			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
 		
 		applyScores(questionVersions, questionScores, ns, rt);

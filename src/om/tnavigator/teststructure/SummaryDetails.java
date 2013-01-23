@@ -1,6 +1,6 @@
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
-import om.tnavigator.SummaryTableBuilder.TableComponents;
+import om.tnavigator.teststructure.SummaryTableBuilder.TableComponents;
 
 import org.w3c.dom.Node;
 

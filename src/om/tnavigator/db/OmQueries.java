@@ -24,8 +24,8 @@ import java.sql.SQLException;
 import om.Log;
 import om.OmVersion;
 import om.tnavigator.NavigatorConfig;
-import om.tnavigator.PreCourseDiagCode;
 import om.tnavigator.db.DatabaseAccess.Transaction;
+import om.tnavigator.teststructure.PreCourseDiagCode;
 
 import util.misc.IO;
 import util.misc.Strings;

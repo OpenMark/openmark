@@ -15,7 +15,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
 import java.io.File;
 import java.io.IOException;
@@ -344,7 +344,7 @@ public class TestDeployment
 		return sDefinition;
 	}
 
-	String getQuestion()
+	public String getQuestion()
 	{
 		if(sQuestion==null)
 			throw new OmUnexpectedException("Can't get question, test only");
@@ -402,7 +402,7 @@ public class TestDeployment
 	 * @return True if a user has access to the test, false otherwise.
 	 * @throws OmFormatException If there's something wrong with the file
 	 */
-	boolean hasAccess(UserDetails ud) throws OmFormatException
+	public boolean hasAccess(UserDetails ud) throws OmFormatException
 	{
 		if(ud.isSysTest()) return isSysTestAccess();
 
@@ -436,7 +436,7 @@ public class TestDeployment
 	 * @return True if user has admin access to test
 	 * @throws OmFormatException
 	 */
-	boolean isAdmin(UserDetails ud) throws OmFormatException
+	public boolean isAdmin(UserDetails ud) throws OmFormatException
 	{
 		if(!XML.hasChild(eAccess,"admins")) return false;
 		try
@@ -455,7 +455,7 @@ public class TestDeployment
 	 * @return True if user can access reports
 	 * @throws OmFormatException
 	 */
-	boolean allowReports(UserDetails ud) throws OmFormatException
+	public boolean allowReports(UserDetails ud) throws OmFormatException
 	{
 		if(!XML.hasChild(eAccess,"admins")) return false;
 		try

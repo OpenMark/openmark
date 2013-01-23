@@ -20,8 +20,8 @@ package om.tnavigator.reports;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.tnavigator.TestDeployment;
 import om.tnavigator.UserSession;
+import om.tnavigator.teststructure.TestDeployment;
 
 /**
  * Interface for Om report plugins. A new instance of the report class is generated each time the

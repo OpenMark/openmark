@@ -1,4 +1,4 @@
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

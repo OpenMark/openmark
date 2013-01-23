@@ -25,6 +25,11 @@ import om.OmException;
 import om.OmVersion;
 import om.axis.qengine.Resource;
 import om.tnavigator.auth.UserDetails;
+import om.tnavigator.teststructure.TestDefinition;
+import om.tnavigator.teststructure.TestDeployment;
+import om.tnavigator.teststructure.TestGroup;
+import om.tnavigator.teststructure.TestLeaf;
+import om.tnavigator.teststructure.TestRealisation;
 
 /** Data stored about particular user */
 public class UserSession
@@ -223,14 +228,14 @@ public class UserSession
 	/**
 	 * @return the tg
 	 */
-	protected TestGroup getRootTestGroup() {
+	public TestGroup getRootTestGroup() {
 		return testRealisation.getRootTestGroup();
 	}
 
 	/**
 	 * @return the atl
 	 */
-	TestLeaf[] getTestLeavesInOrder() {
+	public TestLeaf[] getTestLeavesInOrder() {
 		return testRealisation.getTestLeavesInOrder();
 	}
 
@@ -264,14 +269,14 @@ public class UserSession
 	/**
 	 * @param bFinished the bFinished to set
 	 */
-	void setHasGeneratedFinalPCDC(boolean bFinished) {
+	public void setHasGeneratedFinalPCDC(boolean bFinished) {
 		this.bHasGeneratedFinalPCDC = bFinished;
 	}
 
 	/**
 	 * @return the bFinished
 	 */
-	boolean isHasGeneratedFinalPCDC() {
+	public boolean isHasGeneratedFinalPCDC() {
 		return bHasGeneratedFinalPCDC;
 	}
 
