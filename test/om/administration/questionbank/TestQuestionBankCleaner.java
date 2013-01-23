@@ -310,8 +310,10 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		Map<String, TestSynchronizationCheck> checks = cqb.identifyAllTests(
 			pickUpTestLocations(), cr);
 		assertNotNull(checks);
+		QuestionBankCleaner.Banks b = cqb.new Banks();
+		b.numberOfTestBanks = 2;
 		for (TestSynchronizationCheck test : checks.values()) {
-			// assertTrue(cqb.identifySyncStatus(test));
+			assertTrue(cqb.identifySyncStatus(test, b));
 		}
 	}
 

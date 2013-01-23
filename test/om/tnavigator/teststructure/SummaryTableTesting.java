@@ -1,4 +1,4 @@
-package om.tnavigator.db;
+package om.tnavigator.teststructure;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -16,14 +16,11 @@ import java.util.Map;
 
 import om.AbstractTestCase;
 import om.tnavigator.JUnitTestCaseUserSession;
+import om.tnavigator.db.DatabaseAccess;
+import om.tnavigator.db.JUnitTestCaseDatabaseAccess;
+import om.tnavigator.db.JUnitTestCaseOmQueries;
+import om.tnavigator.db.JUnitTestCaseResultSet;
 import om.tnavigator.scores.CombinedScore;
-import om.tnavigator.teststructure.JUnitTestCaseTestDefinition;
-import om.tnavigator.teststructure.JUnitTestCaseTestDefinitionOptions;
-import om.tnavigator.teststructure.JUnitTestCaseTestRealisation;
-import om.tnavigator.teststructure.SummaryDetails;
-import om.tnavigator.teststructure.SummaryDetailsGeneration;
-import om.tnavigator.teststructure.SummaryTableBuilder;
-import om.tnavigator.teststructure.TestDeployment;
 
 import org.junit.After;
 import org.junit.Before;
@@ -466,8 +463,7 @@ public class SummaryTableTesting extends AbstractTestCase {
 			System.currentTimeMillis(), 1, cs, null);
 		
 		JUnitTestCaseTestDefinition tds = usession.getJUnitTestDefinition();
-		String header = tds.getsQuestionNumberHeader();
-		
+
 		String section = "";
 		
 		tds.setField("sQuestionNumberHeader", section);

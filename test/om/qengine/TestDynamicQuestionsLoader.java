@@ -58,7 +58,7 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 		String st = new String(bytes);
 		Document d = XML.parse(st.getBytes("UTF-8"));
 		assertNotNull(d);
-		String s = XML.saveString(d);
+		XML.saveString(d);
 	}
 
 	@Test public void tester() throws Exception {
@@ -110,7 +110,6 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 		Object obj = qs.c.newInstance();
 		assertNotNull(obj);
 		assertTrue(obj instanceof Question);
-		Question qu = (Question) obj;
 	}
 
 	 public Question getDynamicClass(Class<?> cla, DynamicOMClassLoader d)
