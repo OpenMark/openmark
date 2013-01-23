@@ -20,8 +20,8 @@ package om.tnavigator.db.postgres;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import om.tnavigator.db.OmQueries;
 import om.tnavigator.db.DatabaseAccess.Transaction;
+import om.tnavigator.db.OmQueries;
 
 /**
  * Specialisation of OmQueries for PostgreSQL.
@@ -61,11 +61,6 @@ public class PostgreSQL extends OmQueries
 		return "ALTER TABLE " + getPrefix() + table +" ALTER COLUMN " + column + " TYPE VARCHAR(" + newWidth + ")";
 	}
 
-	protected String getCurrentDateFunction()
-	{
-		return "CURRENT_TIMESTAMP";
-	}
- 
 	@Override
 	protected String dateTimeFieldType()
 	{

@@ -1096,7 +1096,7 @@ public abstract class OmQueries
 			updateDatabase("1.15.1",DBversion,
 					"CREATE TABLE " + getPrefix() + "precoursediag (  ti int NOT NULL PRIMARY KEY," + 
 					"precoursediagcode VARCHAR(64) NOT NULL," +
-					"timecodeupdated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+					"timecodeupdated " + dateTimeFieldType() + " NOT NULL DEFAULT CURRENT_TIMESTAMP," +
 					"trafficlights VARCHAR(1024) NOT NULL)",
 					l,dat);
 		}
@@ -1111,7 +1111,7 @@ public abstract class OmQueries
 	 * @throws IllegalArgumentException
 	 * @author Sarah Wood
 	 */
-	private void upgradeDatabaseToAddQuestionStats(DatabaseAccess.Transaction dat, Log l,
+	protected void upgradeDatabaseToAddQuestionStats(DatabaseAccess.Transaction dat, Log l,
 		NavVersion DBversion, NavigatorConfig nc)
 		throws SQLException, IllegalArgumentException {
 		
@@ -1119,12 +1119,12 @@ public abstract class OmQueries
 		{
 			updateDatabase("1.16.1",DBversion,
 					"CREATE TABLE " + getPrefix() + "questionstats (  " +
-					"timedatagleaned DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+					"timedatagleaned " + dateTimeFieldType() + " NOT NULL DEFAULT CURRENT_TIMESTAMP," +
 					"question VARCHAR(64) NOT NULL," +
 					"timesused INTEGER ," +
 					"totalscore FLOAT," +
 					"axis VARCHAR(64) ," +
-					"timefirstused DATETIME)" ,
+					"timefirstused " + dateTimeFieldType() + ")" ,
 					l,dat);
 		}
 	}

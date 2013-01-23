@@ -95,11 +95,6 @@ public class SQLServer extends OmQueries
 		return "N"+quotedString;
 	}
 
-	protected String getCurrentDateFunction()
-	{
-		return "GETDATE()";
-	}
-
 	@Override
 	protected void upgradeDatabaseTo131(DatabaseAccess.Transaction dat) throws SQLException
 	{
