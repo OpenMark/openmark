@@ -195,7 +195,6 @@ public abstract class Fonts
 					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 				g2.setFont(f);
 				g2.setColor(Color.white);
-				System.err.println("About to draw character "+c+" ("+(int)c+")");
 				g2.drawString(sCharacter,iSize,iSize*2);
 
 				// Check for ascent (highest non-blank line)
