@@ -1,5 +1,6 @@
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
+import om.tnavigator.NavigatorServlet;
 import om.tnavigator.NavigatorServlet.RequestTimings;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;

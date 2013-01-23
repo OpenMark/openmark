@@ -15,11 +15,11 @@ import java.util.List;
 import java.util.Map;
 
 import om.AbstractTestCase;
-import om.tnavigator.JUnitTestCaseTestDefinition;
-import om.tnavigator.JUnitTestCaseTestDefinitionOptions;
-import om.tnavigator.JUnitTestCaseTestRealisation;
 import om.tnavigator.JUnitTestCaseUserSession;
 import om.tnavigator.scores.CombinedScore;
+import om.tnavigator.teststructure.JUnitTestCaseTestDefinition;
+import om.tnavigator.teststructure.JUnitTestCaseTestDefinitionOptions;
+import om.tnavigator.teststructure.JUnitTestCaseTestRealisation;
 import om.tnavigator.teststructure.SummaryDetails;
 import om.tnavigator.teststructure.SummaryDetailsGeneration;
 import om.tnavigator.teststructure.SummaryTableBuilder;

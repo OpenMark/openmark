@@ -1,4 +1,4 @@
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
 import om.OmFormatException;
 import om.tnavigator.teststructure.TestGroup;

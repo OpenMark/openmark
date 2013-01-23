@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 import om.axis.qengine.Score;
-import om.tnavigator.JUnitTestCaseTestDefinition;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.scores.CombinedScore;
+import om.tnavigator.teststructure.JUnitTestCaseTestDefinition;
 import om.tnavigator.teststructure.TestDeployment;
 
 import org.junit.Before;

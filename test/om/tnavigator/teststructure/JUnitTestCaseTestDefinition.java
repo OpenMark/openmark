@@ -1,4 +1,4 @@
-package om.tnavigator;
+package om.tnavigator.teststructure;
 
 import java.io.File;
 import java.lang.reflect.Field;

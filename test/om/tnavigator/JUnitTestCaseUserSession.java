@@ -2,6 +2,8 @@ package om.tnavigator;
 
 import java.lang.reflect.Field;
 
+import om.tnavigator.teststructure.JUnitTestCaseTestDefinition;
+import om.tnavigator.teststructure.JUnitTestCaseTestRealisation;
 import om.tnavigator.teststructure.TestDeployment;
 
 public class JUnitTestCaseUserSession extends UserSession {
