@@ -2575,8 +2575,8 @@ public class NavigatorServlet extends HttpServlet {
 		String sPI=us.ud.getPersonID();
 		String sOUCU=us.getOUCU();
 		String sTestID=us.getTestId();
-		int iTI=us.getDbTi(); 
-		if (!sPI.isEmpty() && ! sOUCU.isEmpty() && ! sTestID.isEmpty() )
+		int iTI=us.getDbTi();
+		if (sPI != null && !sPI.isEmpty() && ! sOUCU.isEmpty() && ! sTestID.isEmpty() )
 		{
 			try
 			{

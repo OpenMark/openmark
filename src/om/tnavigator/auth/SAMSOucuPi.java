@@ -4,8 +4,8 @@ import java.net.URL;
 
 import javax.xml.namespace.QName;
 
+import om.Log;
 import om.getOucuInfo.GetOucuInfoRequest;
-import om.getOucuInfo.GetOucuInfoResponse;
 import om.getOucuInfo.GetOucuInfoSoap;
 import om.getOucuInfo.GetOucuInfo_Service;
 import om.getOucuInfo.OucuInfo;
@@ -13,8 +13,6 @@ import om.getOucuInfo.RequestHeader;
 import om.getOucuInfo.User;
 import om.getOucuInfo.UserIds;
 import om.tnavigator.NavigatorConfig;
-import om.tnavigator.NavigatorServlet;
-import om.Log;
 
 
 public class SAMSOucuPi {
@@ -47,8 +45,7 @@ public class SAMSOucuPi {
 				URL uGetOucuInfoService = nc.getAuthParamURL("samsgetoucuinfoservice", true);
 				String sSAMSOucuServiceName=nc.getAuthParamString("samsgetoucuinfoservicename", true);
 				GetOucuInfo_Service service = new GetOucuInfo_Service(uGetOucuInfoService,new QName(sSAMSOucuServiceName, "GetOucuInfo"));	
-				GetOucuInfoSoap what = service.getGetOucuInfoSoap(); 
-				GetOucuInfoResponse OUCUInfo=new GetOucuInfoResponse();
+				GetOucuInfoSoap what = service.getGetOucuInfoSoap();
 				/* set up the header */
 				RequestHeader reqHead=new RequestHeader();
 				reqHead.setId(REQHEADERID);
