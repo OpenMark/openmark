@@ -1,8 +1,5 @@
 package om.administration.simpleSQLReporter;
 
-import java.text.MessageFormat;
-
-import om.administration.dataDeletion.DataDeletionException;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;

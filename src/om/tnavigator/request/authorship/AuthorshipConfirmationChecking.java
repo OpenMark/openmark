@@ -4,13 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
-import org.apache.commons.lang.StringUtils;
-
 import om.Log;
-import om.RenderedOutput;
+import om.abstractservlet.RenderedOutput;
 import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.DatabaseAccess.Transaction;
+import util.misc.Strings;
 
 /**
  * Used to determine if a user of a particular Test Instance has confirmed to 
@@ -69,7 +68,7 @@ public class AuthorshipConfirmationChecking {
 		int ti = us.getDbTi();
 		Object[] arguments = {"'" + new Integer(ti).toString() + "'"};
 		String formattedQuery = MessageFormat.format(query, arguments);
-		if (StringUtils.isEmpty(formattedQuery)) {
+		if (Strings.isEmpty(formattedQuery)) {
 			throw new AuthorshipConfirmationException("Unable to continue as"
 				+ " the formatting of the query returned empty.");
 		}

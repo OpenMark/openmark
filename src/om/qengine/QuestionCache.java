@@ -32,7 +32,6 @@ import om.OmDeveloperException;
 import om.OmException;
 import om.question.Question;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 
 import util.misc.ClosableClassLoader;
@@ -40,6 +39,7 @@ import util.misc.DynamicOMClassLoader;
 import util.misc.DynamicQuestionUtils;
 import util.misc.IO;
 import util.misc.OmClassLoaderContract;
+import util.misc.Strings;
 import util.xml.XML;
 
 /**
@@ -248,7 +248,7 @@ public class QuestionCache {
 	public File getFile(QuestionKey qk) {
 		String filePrefix = qk.getURLPart();
 		String contentType = qk.contentType;
-		if (StringUtils.isNotEmpty(contentType)) {
+		if (Strings.isNotEmpty(contentType)) {
 			return new File(fFolder, qk.getFileName());
 		} else {
 			File f = new File(fFolder, filePrefix + DOT_JAR);
@@ -312,7 +312,7 @@ public class QuestionCache {
 		// String className = qs.c.toString().substring("class ".length(),
 		// qs.c.toString().length());
 		if (qs.omclc instanceof DynamicOMClassLoader) {
-			if (StringUtils.isNotEmpty(qk.contentType)) {
+			if (Strings.isNotEmpty(qk.contentType)) {
 				qk.contentType = QuestionCache.dynamicQuestionType;
 			}
 		}

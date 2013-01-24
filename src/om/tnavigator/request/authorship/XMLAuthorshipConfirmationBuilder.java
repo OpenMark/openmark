@@ -1,7 +1,7 @@
 package om.tnavigator.request.authorship;
 
-import om.RequestAssociates;
-import om.RequestParameterNames;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestParameterNames;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

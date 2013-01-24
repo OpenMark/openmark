@@ -8,8 +8,8 @@ import javax.servlet.ServletContext;
 
 import om.AbstractTestCase;
 import om.Log;
-import om.RequestAssociates;
-import om.RequestParameterNames;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestParameterNames;
 import om.tnavigator.JUnitTestCaseUserSession;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.TestCaseServletContext;

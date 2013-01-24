@@ -6,8 +6,8 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import om.AbstractRequestHandler;
 import om.Log;
+import om.abstractservlet.AbstractRequestHandler;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
 

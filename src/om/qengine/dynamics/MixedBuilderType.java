@@ -8,10 +8,11 @@ import java.util.Map;
 
 import om.OmException;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import util.misc.Strings;
 
 public class MixedBuilderType implements QuestionHandlerTypeClassBuilding {
 
@@ -84,19 +85,19 @@ public class MixedBuilderType implements QuestionHandlerTypeClassBuilding {
 		List<String> ordered = new ArrayList<String>();
 		if (null != parts ? parts.size() == SUBSTITUTIONS : false) {
 			String packageSuffix = parts.get(PACKAGE_SUFFIX);
-			ordered.add(StringUtils.isNotEmpty(packageSuffix)
+			ordered.add(Strings.isNotEmpty(packageSuffix)
 				? packageSuffix : MIXED);
 			String imports = parts.get(ADDITIONAL_IMPORTS);
-			ordered.add(StringUtils.isNotEmpty(imports)
+			ordered.add(Strings.isNotEmpty(imports)
 				? applyImports(imports) : " ");
 			ordered.add(parts.get(CLASS_NAME));
 			String extending = parts.get(EXTENDS);
-			ordered.add(StringUtils.isNotEmpty(extending)
+			ordered.add(Strings.isNotEmpty(extending)
 				? applyExtends(extending) : " ");
 			String variables = parts.get(VARIABLES);
-			ordered.add(StringUtils.isNotEmpty(variables) ? variables : " ");
+			ordered.add(Strings.isNotEmpty(variables) ? variables : " ");
 			String init = parts.get(INIT);
-			ordered.add(StringUtils.isNotEmpty(init) ? init : " ");
+			ordered.add(Strings.isNotEmpty(init) ? init : " ");
 			ordered.add(parts.get(IS_RIGHT));
 		} else {
 			throw new OmException(ERROR_MESSAGE + parts);
@@ -109,7 +110,7 @@ public class MixedBuilderType implements QuestionHandlerTypeClassBuilding {
 
 	private String applyExtends(String s) {
 		String str = " ";
-		if (StringUtils.isNotEmpty(s)) {
+		if (Strings.isNotEmpty(s)) {
 			str = "extends " + s + " ";
 		}
 		return str;
@@ -118,7 +119,7 @@ public class MixedBuilderType implements QuestionHandlerTypeClassBuilding {
 	private String applyImports(String configuredImports) {
 		StringBuilder imports = new StringBuilder()
 			.append(getRequiredImports());
-		if (StringUtils.isNotEmpty(configuredImports)) {
+		if (Strings.isNotEmpty(configuredImports)) {
 			imports.append(configuredImports).append(LINE_SEPERATOR);
 		}
 		return imports.toString();

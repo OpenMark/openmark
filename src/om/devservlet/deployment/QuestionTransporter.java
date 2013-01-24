@@ -2,8 +2,7 @@ package om.devservlet.deployment;
 
 import java.util.Map;
 
-import om.RenderedOutput;
-
+import om.abstractservlet.RenderedOutput;
 import util.misc.GracefulFinalization;
 
 /**

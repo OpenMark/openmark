@@ -2,7 +2,7 @@ package om.administration.questionbank;
 
 import java.util.Map;
 
-import om.RequestAssociates;
+import om.abstractservlet.RequestAssociates;
 
 /**
  * Used to remove orphaned questions from the questionbank(s) as a means of

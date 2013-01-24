@@ -10,21 +10,19 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.AbstractRequestHandler;
 import om.Log;
-import om.RequestAssociates;
-import om.RequestHandlerEnums;
-import om.RequestHandlerSettings;
-import om.RequestHandlingException;
-import om.RequestManagement;
-import om.RequestParameterNames;
-import om.RequestResponse;
-
-import org.apache.commons.lang.StringUtils;
-
+import om.abstractservlet.AbstractRequestHandler;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlerEnums;
+import om.abstractservlet.RequestHandlerSettings;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestManagement;
+import om.abstractservlet.RequestParameterNames;
+import om.abstractservlet.RequestResponse;
 import util.misc.FinalizedResponse;
 import util.misc.IO;
 import util.misc.StandardFinalizedResponse;
+import util.misc.Strings;
 import util.misc.UtilityException;
 import util.xml.XML;
 
@@ -48,7 +46,7 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 		RequestResponse rr = super.handle(request, response, associates);
 		RequestManagement rm = getRequestManagement(associates);
 		String output = renderRequestHandlerSettings(associates, rm);
-		if (StringUtils.isNotEmpty(output)) {
+		if (Strings.isNotEmpty(output)) {
 			String responseString = applyOutputToTemplate(request,
 				associates, output);
 			getLog().logDebug(responseString);
@@ -72,7 +70,7 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 		String fullTemplatePath = null; 
 		String templateName = null != ra ? ra.getConfig(
 			AdministrationDisplayEnums.template.toString()) : null;		
-		if (StringUtils.isNotEmpty(templateName)) {
+		if (Strings.isNotEmpty(templateName)) {
 			fullTemplatePath = ra.getServletContext().getRealPath(templateName);
 		}
 		return fullTemplatePath;
@@ -125,7 +123,7 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 		Map<String, RequestHandlerSettings> rhs = getRequestHandlerSettings(rm);
 		if (null != rhs && null != associates) {
 			String contextPath = associates.getServletContext().getContextPath();
-			if (StringUtils.isNotEmpty(contextPath)) {
+			if (Strings.isNotEmpty(contextPath)) {
 				for (RequestHandlerSettings settings : rhs.values()) {
 					sb.append(renderRequestHandlerSettings(contextPath, settings));
 				}
@@ -147,15 +145,15 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 	protected StringBuffer renderRequestHandlerSettings(String contextPath,
 		RequestHandlerSettings rhs) {
 		StringBuffer sb = new StringBuffer();
-		if (null != rhs && StringUtils.isNotEmpty(contextPath)) {
+		if (null != rhs && Strings.isNotEmpty(contextPath)) {
 			String displayName = rhs.get(RequestHandlerEnums.displayName);
 			String description = rhs.get(RequestHandlerEnums.description);
 			String invocationPath = rhs.getInvocationPath();
 			String servletName=rhs.getServletName();
 
-			if (StringUtils.isNotEmpty(displayName)
-				&& StringUtils.isNotEmpty(description)
-				&& StringUtils.isNotEmpty(invocationPath)) {
+			if (Strings.isNotEmpty(displayName)
+				&& Strings.isNotEmpty(description)
+				&& Strings.isNotEmpty(invocationPath)) {
 				sb.append("<p>").append("<b><a href=\"")
 					.append("/").append(servletName).append(invocationPath)
 //					.append("/").append(SERVLETNAME).append(invocationPath)

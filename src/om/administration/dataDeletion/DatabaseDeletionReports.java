@@ -16,21 +16,20 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.AbstractRequestHandler;
-import om.DisplayUtils;
 import om.Log;
-import om.RenderedOutput;
-import om.RequestAssociates;
-import om.RequestHandlerEnums;
-import om.RequestHandlingException;
-import om.RequestParameterNames;
-import om.RequestResponse;
+import om.abstractservlet.AbstractRequestHandler;
+import om.abstractservlet.DisplayUtils;
+import om.abstractservlet.RenderedOutput;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlerEnums;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestParameterNames;
+import om.abstractservlet.RequestResponse;
 import om.administration.databaseCleaner.ExtractorException;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
-import om.administration.dataDeletion.DatabaseDeletionUtils;
+import util.misc.Strings;
 
-import org.apache.commons.lang.StringUtils;
 
 public class DatabaseDeletionReports extends AbstractRequestHandler {
 
@@ -127,7 +126,7 @@ public class DatabaseDeletionReports extends AbstractRequestHandler {
 		if (null != request && null != response && null != associates) {
 			initialise(associates);
 			String uri = request.getPathInfo();
-			if (StringUtils.isNotEmpty(filteredUrl)
+			if (Strings.isNotEmpty(filteredUrl)
 				? filteredUrl.equals(uri) : false) {
 				getLog().logDebug("Running the deletion Reports ...");
 				
@@ -452,12 +451,12 @@ public class DatabaseDeletionReports extends AbstractRequestHandler {
 	 */
 	List<String> convert(String s) {
 		List<String> lst = null;
-		if (StringUtils.isNotEmpty(s)) {
+		if (Strings.isNotEmpty(s)) {
 			String[] bits = s.split(",");
 			if (null != bits) {
 				for (int i = 0; i < bits.length; i++) {
 					String bit = bits[i];
-					if (StringUtils.isNotEmpty(bit)) {
+					if (Strings.isNotEmpty(bit)) {
 						if (null == lst) {
 							lst = new ArrayList<String>();
 						}

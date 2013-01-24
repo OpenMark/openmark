@@ -1,4 +1,4 @@
-package om;
+package om.abstractservlet;
 
 import java.io.Serializable;
 import java.util.Map;

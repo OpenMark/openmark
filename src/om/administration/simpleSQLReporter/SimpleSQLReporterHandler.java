@@ -11,21 +11,21 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.AbstractRequestHandler;
-import om.DisplayUtils;
-import om.RenderedOutput;
-import om.RequestAssociates;
-import om.RequestHandlerEnums;
-import om.RequestHandlingException;
-import om.RequestParameterNames;
-import om.RequestResponse;
+import om.abstractservlet.AbstractRequestHandler;
+import om.abstractservlet.DisplayUtils;
+import om.abstractservlet.RenderedOutput;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlerEnums;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestParameterNames;
+import om.abstractservlet.RequestResponse;
 import om.administration.dataDeletion.DataDeletionException;
 import om.administration.dataDeletion.DatabaseDeletionUtils;
 import om.administration.databaseCleaner.ExtractorException;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
+import util.misc.Strings;
 
-import org.apache.commons.lang.StringUtils;
 
 public class SimpleSQLReporterHandler extends AbstractRequestHandler {
 
@@ -58,7 +58,7 @@ public class SimpleSQLReporterHandler extends AbstractRequestHandler {
 			
 			initialise(associates);
 			String uri = request.getPathInfo();
-			if (StringUtils.isNotEmpty(filteredUrl)
+			if (Strings.isNotEmpty(filteredUrl)
 				? filteredUrl.equals(uri) : false) {
 			    Date now = new Date();
 				getLog().logDebug("Running the Sql Report  ...");

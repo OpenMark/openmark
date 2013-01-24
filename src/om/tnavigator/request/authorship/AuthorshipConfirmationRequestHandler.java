@@ -1,6 +1,6 @@
 package om.tnavigator.request.authorship;
 
-import om.PreProcessingRequestHandler;
+import om.abstractservlet.PreProcessingRequestHandler;
 
 /**
  * A template that defines the Authorship Confirmation that is required BEFORE

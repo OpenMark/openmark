@@ -2,10 +2,10 @@ package om.misc;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import util.misc.QuestionName;
+import util.misc.Strings;
 import util.misc.VersionUtil;
 
 public class TestVersionUtil extends TestCase {
@@ -28,7 +28,7 @@ public class TestVersionUtil extends TestCase {
 	@Test public void testRepresentedWithName() {
 		QuestionName qn = VersionUtil.represented("sdk125b6.question02f.1.2.jar");
 		assertNotNull(qn);
-		assertTrue(StringUtils.isNotEmpty(qn.getPrefix()));
+		assertTrue(Strings.isNotEmpty(qn.getPrefix()));
 		assertEquals(qn.getPrefix(), "sdk125b6.question02f");
 		assertNotNull(qn.getQuestionVersion());
 		assertEquals(qn.getQuestionVersion().iMajor, 1);
@@ -38,7 +38,7 @@ public class TestVersionUtil extends TestCase {
 	@Test public void testRepresentedWithValidName() {
 		QuestionName qn = VersionUtil.represented("sdk125b6.question02f.112.22.jar");
 		assertNotNull(qn);
-		assertTrue(StringUtils.isNotEmpty(qn.getPrefix()));
+		assertTrue(Strings.isNotEmpty(qn.getPrefix()));
 		assertEquals(qn.getPrefix(), "sdk125b6.question02f");
 		assertNotNull(qn.getQuestionVersion());
 		assertEquals(qn.getQuestionVersion().iMajor, 112);

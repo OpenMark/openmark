@@ -3,7 +3,7 @@ package util.misc;
 import javax.servlet.ServletContext;
 
 import om.OmException;
-import om.RequestParameterNames;
+import om.abstractservlet.RequestParameterNames;
 import om.tnavigator.auth.Authentication;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;

@@ -40,16 +40,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
-import om.AbstractOpenMarkServlet;
-import om.DisplayUtils;
 import om.Log;
 import om.OmException;
 import om.OmVersion;
-import om.RenderedOutput;
-import om.RequestAssociates;
-import om.RequestHandler;
-import om.RequestParameterNames;
-import om.RequestResponse;
+import om.abstractservlet.AbstractOpenMarkServlet;
+import om.abstractservlet.DisplayUtils;
+import om.abstractservlet.RenderedOutput;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandler;
+import om.abstractservlet.RequestParameterNames;
+import om.abstractservlet.RequestResponse;
 import om.devservlet.deployment.DeploymentEnum;
 import om.devservlet.deployment.DeploymentRequestHandler;
 import om.helper.FakeHttpServletRequest;
@@ -65,7 +65,6 @@ import om.question.Score;
 import om.stdquestion.StandardQuestion;
 import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -210,7 +209,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 		Object obj = getConfiguration(DeploymentEnum.HandleDeployLogTo.toString());
 		if (null != obj ? obj instanceof String : false) {
 			String logToLocation = (String) obj;
-			if (StringUtils.isNotEmpty(logToLocation)) {
+			if (Strings.isNotEmpty(logToLocation)) {
 				String debug = "false";
 				Object show = getConfiguration(
 					DeploymentEnum.HandleDeployShowDebug.toString());
@@ -892,7 +891,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			output = ((RenderedOutput) rr).toString();
 		}
 		rh.close(null);
-		Document d = XML.parse(StringUtils.isNotEmpty(output)? output.getBytes()
+		Document d = XML.parse(Strings.isNotEmpty(output)? output.getBytes()
 			: handleEmptyDeploymentRendering());
 		XHTML.output(d, request, response, "en");
 	}

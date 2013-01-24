@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import om.DisplayUtils;
-import om.RenderedOutput;
+import om.abstractservlet.DisplayUtils;
+import om.abstractservlet.RenderedOutput;
+import util.misc.Strings;
 
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Provides the visual represenation of the different options avaliable for the
@@ -63,7 +63,7 @@ public class QuestionDeploymentRenderer {
 	 */
 	private Set<String> identifyDeployableQuestions() {
 		Set<String> deployable = new HashSet<String>();
-		if (StringUtils.isNotEmpty(deployableQuestionLocation)) {
+		if (Strings.isNotEmpty(deployableQuestionLocation)) {
 			File f = new File(deployableQuestionLocation);
 			if (f.exists() ? f.isDirectory() : false) {
 				File[] deploys = f.listFiles(new TestQuestionFilter());
@@ -95,7 +95,7 @@ public class QuestionDeploymentRenderer {
 			outputRendering.append(START_SELECTION_FORM);
 			for (int i = 0; i < quest.size(); i++) {
 				String s = (String) quest.toArray()[i];
-				if (StringUtils.isNotEmpty(s)) {
+				if (Strings.isNotEmpty(s)) {
 					outputRendering.append("<div><span class='fields'>")
 						.append("<input type=\"checkbox\" name=\"FILE_")
 						.append(i).append(" \" value=\"")

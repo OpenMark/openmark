@@ -9,21 +9,19 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.AbstractRequestHandler;
-import om.DisplayUtils;
-import om.RenderedOutput;
-import om.RequestAssociates;
-import om.RequestHandlerEnums;
-import om.RequestHandlingException;
-import om.RequestParameterNames;
-import om.RequestResponse;
-import om.administration.questionbank.CleanQuestionBanks;
+import om.abstractservlet.AbstractRequestHandler;
+import om.abstractservlet.DisplayUtils;
+import om.abstractservlet.RenderedOutput;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlerEnums;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestParameterNames;
+import om.abstractservlet.RequestResponse;
 import om.administration.questionbank.CleaningException;
-import om.administration.questionbank.ClearanceResponse;
 import om.administration.questionbank.QuestionAndTestBankLocations;
 import om.tnavigator.NavigatorConfig;
+import util.misc.Strings;
 
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Provides http(s) request level access to a configured (or default)
@@ -74,7 +72,7 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 		if (null != request && null != response && null != associates) {
 			initialise(associates);
 			String uri = request.getPathInfo();
-			if (StringUtils.isNotEmpty(filteredUrl)
+			if (Strings.isNotEmpty(filteredUrl)
 				? filteredUrl.equals(uri) : false) {
 				getLog().logDebug(RUNNING);
 				StringBuilder output = new StringBuilder(DisplayUtils.header());
@@ -164,7 +162,7 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	private ExtractionResponse process(HttpServletRequest request,HttpServletResponse response,
 		RequestAssociates associates) throws ExtractorException {
 		String reportFromDate = request.getParameter(ExtractorEnums.reportFromDate.toString());
-		return StringUtils.isNotEmpty(reportFromDate)
+		return Strings.isNotEmpty(reportFromDate)
 			? generateDataExtraction(request, response,associates, reportFromDate)
 				: renderRequestForm(request, associates);
 	}
@@ -284,13 +282,13 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	protected List<String> retrieveXBank(RequestAssociates associates,
 		String key) throws RequestHandlingException {
 		List<String> banks = null;
-		if (null != associates ? StringUtils.isNotEmpty(key) : false) {
+		if (null != associates ? Strings.isNotEmpty(key) : false) {
 			String value = associates.getConfig(key);
-			if (StringUtils.isNotEmpty(value)) {
+			if (Strings.isNotEmpty(value)) {
 				String[] pieces = value.split(COMMA);
 				for (int i = 0; i < pieces.length; i++) {
 					String bit = pieces[i];
-					if (StringUtils.isNotEmpty(bit)) {
+					if (Strings.isNotEmpty(bit)) {
 						if (null == banks) {
 							banks = new ArrayList<String>();
 						}
@@ -339,7 +337,7 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	protected QueryQuestionBanks retrieveConfiguredCleaner(String className)
 		throws RequestHandlingException {
 		QueryQuestionBanks cqb = new QuestionBankQueryer();
-		if (StringUtils.isNotEmpty(className)) {
+		if (Strings.isNotEmpty(className)) {
 			try {
 				Class<?> cla = Class.forName(className);
 				if (null != cla) {
@@ -403,8 +401,8 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 			metaData.put(ExtractorEnums.postToUrl.toString(), postToUrl);
 			metaData.put(ExtractorEnums.navigatorConfigKey.toString(),
 				pickupNavigatorConfig(associates));
-			if (StringUtils.isNotEmpty(studentTi)
-				&& StringUtils.isNotEmpty(extractionFileNamePrefix)) {
+			if (Strings.isNotEmpty(studentTi)
+				&& Strings.isNotEmpty(extractionFileNamePrefix)) {
 				metaData.put(ExtractorEnums.extractionFileNamePrefix.toString(),
 					extractionFileNamePrefix);
 				metaData.put(RequestParameterNames.logPath.toString(), getLogPath());
@@ -434,12 +432,12 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	 */
 	List<String> convert(String s) {
 		List<String> lst = null;
-		if (StringUtils.isNotEmpty(s)) {
+		if (Strings.isNotEmpty(s)) {
 			String[] bits = s.split(",");
 			if (null != bits) {
 				for (int i = 0; i < bits.length; i++) {
 					String bit = bits[i];
-					if (StringUtils.isNotEmpty(bit)) {
+					if (Strings.isNotEmpty(bit)) {
 						if (null == lst) {
 							lst = new ArrayList<String>();
 						}

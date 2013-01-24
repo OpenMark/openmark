@@ -1,10 +1,11 @@
-package om;
+package om.abstractservlet;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import om.Log;
 import om.tnavigator.NavigatorConfig;
 import util.misc.GeneralUtils;
 

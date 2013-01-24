@@ -2,9 +2,8 @@ package om.administration.databaseCleaner;
 
 import java.util.Map;
 
-import om.RequestAssociates;
+import om.abstractservlet.RequestAssociates;
 import om.administration.questionbank.CleaningException;
-import om.administration.questionbank.ClearanceResponse;
 import om.administration.questionbank.QuestionAndTestBankLocations;
 
 /**

@@ -1,7 +1,6 @@
 package om.administration.dataDeletion;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -19,25 +18,21 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.AbstractRequestHandler;
-import om.DisplayUtils;
 import om.Log;
 import om.OmException;
 import om.OmUnexpectedException;
-import om.RenderedOutput;
-import om.RequestAssociates;
-import om.RequestHandlerEnums;
-import om.RequestHandlingException;
-import om.RequestParameterNames;
-import om.RequestResponse;
+import om.abstractservlet.AbstractRequestHandler;
+import om.abstractservlet.DisplayUtils;
+import om.abstractservlet.RenderedOutput;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlerEnums;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestParameterNames;
+import om.abstractservlet.RequestResponse;
 import om.administration.databaseCleaner.ExtractorException;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.reports.std.DeployedTestsReport.Test;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-
-import util.misc.GeneralUtils;
+import util.misc.Strings;
 
 public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 
@@ -108,7 +103,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 
 			
 			String uri = request.getPathInfo();
-			if (StringUtils.isNotEmpty(filteredUrl)
+			if (Strings.isNotEmpty(filteredUrl)
 				? filteredUrl.equals(uri) : false) {
 				getLog().logDebug("Running the Sql Generation ...");
 				StringBuilder output = new StringBuilder(DisplayUtils.header());
@@ -628,12 +623,12 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 	 */
 	List<String> convert(String s) {
 		List<String> lst = null;
-		if (StringUtils.isNotEmpty(s)) {
+		if (Strings.isNotEmpty(s)) {
 			String[] bits = s.split(",");
 			if (null != bits) {
 				for (int i = 0; i < bits.length; i++) {
 					String bit = bits[i];
-					if (StringUtils.isNotEmpty(bit)) {
+					if (Strings.isNotEmpty(bit)) {
 						if (null == lst) {
 							lst = new ArrayList<String>();
 						}

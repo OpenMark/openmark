@@ -5,9 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-
 import util.misc.QuestionVersion;
+import util.misc.Strings;
 import util.misc.VersionUtil;
 
 /**
@@ -59,8 +58,8 @@ public class QuestionPoolDetails {
 	 * @author Trevor Hinson
 	 */
 	public void addTo(String name, String locationFoundIn) {
-		if (StringUtils.isNotEmpty(name)
-			&& StringUtils.isNotEmpty(locationFoundIn)) {
+		if (Strings.isNotEmpty(name)
+			&& Strings.isNotEmpty(locationFoundIn)) {
 			Set<String> qu = questionsWithVersionNumbering.get(name);
 			if (null == qu) {
 				qu = new HashSet<String>();

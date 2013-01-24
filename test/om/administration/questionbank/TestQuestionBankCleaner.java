@@ -13,12 +13,12 @@ import java.util.Map;
 
 import om.AbstractTestCase;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import util.misc.GeneralUtils;
+import util.misc.Strings;
 
 /**
  * Testing the cleaning of QuestionBanks.
@@ -196,7 +196,7 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 	private void createCopy(File fileToCopy, String toLocation)
 		throws Exception {
 		assertNotNull(fileToCopy);
-		assertTrue(StringUtils.isNotEmpty(toLocation));
+		assertTrue(Strings.isNotEmpty(toLocation));
 		File newFile = new File(toLocation + File.separator
 				+ fileToCopy.getName());
 		GeneralUtils.copyFile(fileToCopy, newFile);

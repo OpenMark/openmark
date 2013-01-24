@@ -1,7 +1,7 @@
 package om.administration.questionbank;
 
 import junit.framework.TestCase;
-import om.RequestHandlingException;
+import om.abstractservlet.RequestHandlingException;
 
 import org.junit.Test;
 

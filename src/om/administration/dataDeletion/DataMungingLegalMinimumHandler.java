@@ -1,11 +1,11 @@
 	package om.administration.dataDeletion;
 	import javax.servlet.http.HttpServletRequest;
-	import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponse;
 
-	import om.RenderedOutput;
-	import om.RequestAssociates;
-	import om.RequestHandlingException;
-	import om.RequestResponse;
+import om.abstractservlet.RenderedOutput;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestResponse;
 	
 	public class DataMungingLegalMinimumHandler extends DatabaseDeletionSQLGeneration {
 		

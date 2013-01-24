@@ -9,7 +9,7 @@ import java.util.Date;
 import javax.servlet.ServletException;
 
 import om.OmUnexpectedException;
-import om.RequestHandlingException;
+import om.abstractservlet.RequestHandlingException;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;

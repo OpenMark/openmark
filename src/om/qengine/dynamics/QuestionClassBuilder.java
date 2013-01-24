@@ -5,8 +5,9 @@ import java.util.Map;
 
 import om.OmException;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Element;
+
+import util.misc.Strings;
 
 public class QuestionClassBuilder {
 
@@ -29,7 +30,7 @@ public class QuestionClassBuilder {
 		QuestionHandlerTypeClassBuilding qcb = null;
 		if (null != input) {
 			String handler = input.getAttribute(HANDLER_TYPE);
-			if (StringUtils.isNotEmpty(handler)) {
+			if (Strings.isNotEmpty(handler)) {
 				qcb = builders.get(handler);
 			}
 		}

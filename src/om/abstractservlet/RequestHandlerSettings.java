@@ -1,4 +1,4 @@
-package om;
+package om.abstractservlet;
 
 import java.util.Collections;
 import java.util.HashMap;

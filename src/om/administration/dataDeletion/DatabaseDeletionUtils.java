@@ -1,27 +1,10 @@
 package om.administration.dataDeletion;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.MessageFormat;
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.w3c.dom.Document;
-
-import om.DisplayUtils;
-import om.RenderedOutput;
-import om.RequestAssociates;
-import om.RequestHandler;
-import om.RequestHandlingException;
-import om.RequestResponse;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
-import util.xml.XHTML;
-import util.xml.XML;
-import util.xml.XMLException;
 
 public class DatabaseDeletionUtils {
 

@@ -6,7 +6,6 @@ import java.io.IOException;
 import om.OmException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -63,7 +62,7 @@ public class DynamicQuestionUtils {
 	public static Element retrieveElement(File f, String name)
 		throws OmException {
 		Element e = null;
-		if ((null != f ? f.exists() : false) && StringUtils.isNotEmpty(name)) {
+		if ((null != f ? f.exists() : false) && Strings.isNotEmpty(name)) {
 			try {
 				String s = FileUtils.readFileToString(f, UTF_8);
 				Document parent = XML.parse(s.getBytes());

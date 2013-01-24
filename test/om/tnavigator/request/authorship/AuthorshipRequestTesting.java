@@ -11,10 +11,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
-import om.RenderedOutput;
-import om.RequestAssociates;
-import om.RequestParameterNames;
-import om.RequestResponse;
+import om.abstractservlet.RenderedOutput;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestParameterNames;
+import om.abstractservlet.RequestResponse;
 import om.tnavigator.JUnitTestCaseHttpServletRequest;
 import om.tnavigator.JUnitTestCaseUserSession;
 import om.tnavigator.db.JUnitTestCaseOmQueries;

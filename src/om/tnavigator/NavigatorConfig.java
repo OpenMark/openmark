@@ -32,7 +32,6 @@ import java.util.Set;
 
 import om.tnavigator.db.OmQueries;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -365,7 +364,7 @@ public class NavigatorConfig
 	 */
 	private void establishRequestManagementPosition(Element eRoot) {
 		String s = retrieveElementText(eRoot, REQUEST_MANAGEMENT_NODE);
-		if (StringUtils.isNotEmpty(s)
+		if (Strings.isNotEmpty(s)
 			? REQUEST_BASED.equalsIgnoreCase(s) : false) {
 			requestManagementRequestBased = true;
 		}
@@ -382,7 +381,7 @@ public class NavigatorConfig
 	 */
 	private String retrieveElementText(Element eRoot, String nodeName) {
 		String s = null;
-		if (null != eRoot && StringUtils.isNotEmpty(nodeName)
+		if (null != eRoot && Strings.isNotEmpty(nodeName)
 			? XML.hasChild(eRoot, nodeName) : false) {
 			try {
 				Element e = XML.getChild(eRoot, nodeName);
@@ -405,7 +404,7 @@ public class NavigatorConfig
 	 */
 	private void establishPreProcessor(Element eRoot) {
 		String pre = retrieveElementText(eRoot, PRE_PROCESSOR);
-		if (StringUtils.isNotEmpty(pre)) {
+		if (Strings.isNotEmpty(pre)) {
 			try {
 				preProcessingRequestHandler = getClass().getClassLoader()
 					.loadClass(pre);

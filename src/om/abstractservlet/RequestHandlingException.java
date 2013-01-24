@@ -1,4 +1,4 @@
-package om;
+package om.abstractservlet;
 
 public class RequestHandlingException extends Exception {
 

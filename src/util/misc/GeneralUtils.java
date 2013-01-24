@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import om.Log;
 
-import org.apache.commons.lang.StringUtils;
 
 
 public class GeneralUtils implements Serializable {
@@ -60,7 +59,7 @@ public class GeneralUtils implements Serializable {
 	public static File generateFile(String name, String content)
 		throws FileNotFoundException, IOException {
 		File f = null;
-		if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(content)) {
+		if (Strings.isNotEmpty(name) && Strings.isNotEmpty(content)) {
 			f = new File(name);
 			f.createNewFile();
 			copyToFile(f, content);
@@ -147,7 +146,7 @@ public class GeneralUtils implements Serializable {
 	public static <T> T loadComponent(Class<T> clazz, String name)
 			throws UtilityException {
 		T t = null;
-		if (StringUtils.isNotEmpty(name) && null != clazz) {
+		if (Strings.isNotEmpty(name) && null != clazz) {
 			try {
 				Class<?> cla = Class.forName(name);
 				Object obj = load(cla);
@@ -230,7 +229,7 @@ public class GeneralUtils implements Serializable {
 
 	public static String questionNamePrefix(String fileName) {
 		String s = null;
-		if (StringUtils.isNotEmpty(fileName)) {
+		if (Strings.isNotEmpty(fileName)) {
 			int n = fileName.lastIndexOf(DOT);
 			if (n > -1 ? fileName.length() > n + 1 : false) {
 				s = fileName.substring(0, n);
@@ -243,7 +242,7 @@ public class GeneralUtils implements Serializable {
 
 	public static String stripLastDot(String str) {
 		String s = null;
-		if (StringUtils.isNotEmpty(str) ? str.contains(DOT) : false) {
+		if (Strings.isNotEmpty(str) ? str.contains(DOT) : false) {
 			int n = str.lastIndexOf(DOT);
 			if (n > -1 ? str.length() > n + 1 : false) {
 				s = str.substring(0, n);

@@ -6,6 +6,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
+import om.abstractservlet.RequestHandlerSettings;
+import om.abstractservlet.RequestHandlingConfiguration;
+
 import org.junit.Test;
 
 public class RequestHandlingConfigurationTests extends AbstractRequestHandlerTestCase {

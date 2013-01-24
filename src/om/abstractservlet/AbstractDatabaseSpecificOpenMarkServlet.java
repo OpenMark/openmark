@@ -1,4 +1,4 @@
-package om;
+package om.abstractservlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

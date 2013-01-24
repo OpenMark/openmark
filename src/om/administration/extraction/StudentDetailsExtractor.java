@@ -17,13 +17,11 @@ import om.PersistenceException;
 import om.tnavigator.AbstractPersistenceDelegator;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
-
-import org.apache.commons.lang.StringUtils;
-
 import util.misc.FinalizedResponse;
 import util.misc.GeneralUtils;
 import util.misc.GracefulFinalization;
 import util.misc.StandardFinalizedResponse;
+import util.misc.Strings;
 import util.misc.UtilityException;
 
 /**
@@ -273,7 +271,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	protected boolean validateStudentTestInstance(String ti)
 		throws ExtractorException {
 		boolean valid = false;
-		if (StringUtils.isNotEmpty(ti)) {
+		if (Strings.isNotEmpty(ti)) {
 			try {
 				Integer inte = new Integer(ti);
 				if (inte < SIZE) {
@@ -300,7 +298,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	 */
 	private void writeToFile(String fileName, StringBuilder output)
 		throws ExtractorException {
-		if (StringUtils.isNotEmpty(fileName)
+		if (Strings.isNotEmpty(fileName)
 			&& (null != output ? output.length() > 0 : false)) {
 			File f = new File(fileName);
 			if (f.exists()) {
@@ -352,7 +350,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 		ExtractionResponse er) throws ExtractorException {
 		QuestionInstanceIdentification qii = null;
 		for (String name : tableNamesByTestInstance) {
-			if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(ti)) {
+			if (Strings.isNotEmpty(name) && Strings.isNotEmpty(ti)) {
 				Object[] arguments = {name, ti};
 				String sql = MessageFormat.format(TEST_INSTANCE_SQL, arguments);
 				DatabaseAccess.Transaction dat = null;
@@ -393,10 +391,10 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	private void renderFromQuestionInstanceTables(InMemoryRepresentation imr,
 		StringBuilder output, QuestionInstanceIdentification qii,
 		ExtractionResponse er) throws ExtractorException {
-		if ((null != qii ? StringUtils.isNotEmpty(qii.toString()) : false)
+		if ((null != qii ? Strings.isNotEmpty(qii.toString()) : false)
 			&& null != output && null != er) {
 			for (String tableName : tableNamesByQuestionInstance) {
-				if (null != tableName ? StringUtils.isNotEmpty(tableName) : false) {
+				if (null != tableName ? Strings.isNotEmpty(tableName) : false) {
 					Object[] arguments = {tableName, qii.toString()};
 					String sql = MessageFormat.format(QUESTION_INSTANCE_SQL, arguments);
 					DatabaseAccess.Transaction dat = null;
@@ -441,7 +439,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 		String tableName, QuestionInstanceIdentification qii, ExtractionResponse er)
 		throws ExtractorException {
 		if (null != output && null != rs
-			&& (null != tableName ? StringUtils.isNotEmpty(tableName) : false)) {
+			&& (null != tableName ? Strings.isNotEmpty(tableName) : false)) {
 			try {
 				TableDetails td = new TableDetails(tableName);
 				ResultSetMetaData md = rs.getMetaData();
@@ -503,7 +501,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	 * @author Trevor Hinson
 	 */
 	private String getLineSeperator() {
-		if (StringUtils.isEmpty(lineSeperator)) {
+		if (Strings.isEmpty(lineSeperator)) {
 			lineSeperator = System.getProperty(LINE_SEPERATOR);
 		}
 		return lineSeperator;
@@ -521,7 +519,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 		String tableName) {
 		if (null != er
 			&& (null != insert
-				? StringUtils.isNotEmpty(insert.toString()) : false)) {
+				? Strings.isNotEmpty(insert.toString()) : false)) {
 			er.addInsertStatement(tableName, insert.toString());
 		}
 	}
@@ -538,7 +536,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	private void record(ExtractDataHolder edh, ExtractionResponse er,
 		String tableName) throws ExtractorException {
 		if (null != edh && null != er
-			&& StringUtils.isNotEmpty(tableName)) {
+			&& Strings.isNotEmpty(tableName)) {
 			er.addExtractDataHolder(tableName, edh);
 		}
 	}
@@ -579,7 +577,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	StringBuilder accomodateForDataType(String typeName, Object value)
 		throws PersistenceException {
 		StringBuilder res = new StringBuilder();
-		if (StringUtils.isNotEmpty(typeName)) {
+		if (Strings.isNotEmpty(typeName)) {
 			if (DataType.bit.toString().equalsIgnoreCase(typeName)) {
 				if (null != value ? value instanceof Boolean : false) {
 					Boolean b = (Boolean) value;
@@ -638,9 +636,9 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 			Object path = metaData.get(ExtractorEnums.logPath.toString());
 			if ((null != obj ? obj instanceof NavigatorConfig : false)
 				&& (null != path ? path instanceof String : false)) {
-				if ((null != ti ? StringUtils.isNotEmpty((String) ti) : false)
-					&& (null != fn ? StringUtils.isNotEmpty((String) fn) : false)
-					&& StringUtils.isNotEmpty((String) path)) {
+				if ((null != ti ? Strings.isNotEmpty((String) ti) : false)
+					&& (null != fn ? Strings.isNotEmpty((String) fn) : false)
+					&& Strings.isNotEmpty((String) path)) {
 					try {
 						initialise((NavigatorConfig) obj, (String) path,
 							isDebugging(metaData));
@@ -703,7 +701,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 				for (Object o : (List<?>) obj) {
 					if (null != o ? o instanceof String : false) {
 						String name = (String) o;
-						if (StringUtils.isNotEmpty(name)) {
+						if (Strings.isNotEmpty(name)) {
 							if (null == tables) {
 								tables = new ArrayList<String>();
 							}

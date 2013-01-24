@@ -1,6 +1,6 @@
 package om.administration.dataDeletion;
 
-import om.RequestHandlingException;
+import om.abstractservlet.RequestHandlingException;
 
 public class DataDeletionException extends RequestHandlingException {
 

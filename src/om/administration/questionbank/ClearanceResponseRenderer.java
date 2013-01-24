@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import om.RequestAssociates;
-import om.RequestHandlingException;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlingException;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 
 import util.misc.IO;
+import util.misc.Strings;
 import util.xml.XML;
 
 /**
@@ -261,7 +261,7 @@ public class ClearanceResponseRenderer implements Serializable {
 		if (null != locations ? locations.size() > 0 : false) {
 			for (Iterator<String> i = locations.iterator(); i.hasNext();) {
 				String loc = i.next();
-				if (StringUtils.isNotEmpty(loc)) {
+				if (Strings.isNotEmpty(loc)) {
 					sb.append(" - ").append(loc);
 					if (i.hasNext()) {
 						sb.append(BR);
@@ -466,7 +466,7 @@ public class ClearanceResponseRenderer implements Serializable {
 		String action = DEFAULT_FORM_ACTION;
 		if (null != associates) {
 			String value = associates.getConfig(ClearanceEnums.postToUrl.toString());
-			if (StringUtils.isNotEmpty(value)) {
+			if (Strings.isNotEmpty(value)) {
 				action = value;
 			}
 		}
@@ -601,7 +601,7 @@ public class ClearanceResponseRenderer implements Serializable {
 	 * @author Trevor Hinson
 	 */
 	public static String consistentPathSeperatorForDisplay(String s) {
-		return StringUtils.isNotEmpty(s) ? s.contains("/") ? "/" : "\\" : File.separator;
+		return Strings.isNotEmpty(s) ? s.contains("/") ? "/" : "\\" : File.separator;
 	}
 
 	/**
@@ -627,13 +627,13 @@ public class ClearanceResponseRenderer implements Serializable {
 			if (params.size() > 0) {
 				sb.append(BR).append(UL);
 				for (String sel : params.values()) {
-					if (StringUtils.isNotEmpty(sel) ? !isIn(isq, sel) : false) {
+					if (Strings.isNotEmpty(sel) ? !isIn(isq, sel) : false) {
 						if (!SUBMIT.equalsIgnoreCase(sel) && !RESET.equalsIgnoreCase(sel)) {
 							sb.append(LI);
 							List<String> qu = QuestionBankCleaner.getQuestions(sel);
 							if (null != qu ? qu.size() > 0 : false) {
 								for (String s : qu) {
-									if (StringUtils.isNotEmpty(s)) {
+									if (Strings.isNotEmpty(s)) {
 										sb.append(s).append(BR);
 									}
 								}
@@ -661,9 +661,9 @@ public class ClearanceResponseRenderer implements Serializable {
 	 */
 	protected boolean isIn(Set<IdentifiedSuperfluousQuestion> col, String name) {
 		boolean is = false;
-		if (null != col && StringUtils.isNotEmpty(name)) {
+		if (null != col && Strings.isNotEmpty(name)) {
 			for (IdentifiedSuperfluousQuestion q : col) {
-				if (null != q ? StringUtils.isNotEmpty(q.getName()) : false) {
+				if (null != q ? Strings.isNotEmpty(q.getName()) : false) {
 					if (name.equals(q.getName())) {
 						is = true;
 					}

@@ -22,7 +22,6 @@ import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Random;
 
-import org.apache.commons.lang.StringUtils;
 
 /** Utilities related to strings and string formatting */
 public class Strings
@@ -244,9 +243,17 @@ public class Strings
 		return str == null || str.length() == 0;
 	}
 
+	/**
+	 * @param str
+	 * @return true if the str is null or empty
+	 */
+	public static boolean isNotEmpty(String str) {
+		return !isEmpty(str);
+	}
+
 	public static String uppercaseFirstCharacter(String initial) {
 		String result = initial;
-		if (StringUtils.isNotEmpty(initial) ? initial.length() > 0 : false) {
+		if (Strings.isNotEmpty(initial) ? initial.length() > 0 : false) {
 			String c = initial.substring(0, 1);
 			result = c.toUpperCase() + initial.substring(1, initial.length());
 		}

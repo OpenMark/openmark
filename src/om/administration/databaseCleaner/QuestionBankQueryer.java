@@ -15,27 +15,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import om.RequestAssociates;
-import om.RequestHandlingException;
-import om.RequestParameterNames;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestParameterNames;
 import om.administration.questionbank.AllQuestionsPool;
-import om.administration.questionbank.BrokenTestQuestionReferences;
-import om.administration.questionbank.BrokenTestXML;
 import om.administration.questionbank.CleaningException;
 import om.administration.questionbank.ClearanceEnums;
-import om.administration.questionbank.ClearanceResponse;
-import om.administration.questionbank.ClearanceResponseRenderer;
 import om.administration.questionbank.IdentifiedSuperfluousQuestion;
 import om.administration.questionbank.QuestionAndTestBankLocations;
 import om.administration.questionbank.QuestionPoolDetails;
-import om.administration.questionbank.RemovalIssueDetails;
 import om.administration.questionbank.TestDetails;
 import om.administration.questionbank.TestQuestionsReferenced;
 import om.administration.questionbank.TestQuestionsReferencedPool;
-import om.administration.questionbank.TestSynchronizationCheck;
 import om.tnavigator.db.DatabaseAccess;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -43,6 +36,7 @@ import org.w3c.dom.Node;
 import util.misc.GeneralUtils;
 import util.misc.QuestionName;
 import util.misc.StandardFileFilter;
+import util.misc.Strings;
 import util.misc.VersionUtil;
 import util.xml.XML;
 
@@ -231,7 +225,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 		
 		Map<String, TestQuestionReferences> tqr) {
 		/* if there is a question name */
-		if (StringUtils.isNotEmpty(questionName)) {
+		if (Strings.isNotEmpty(questionName)) {
 			/* get the detailas */
 			QuestionPoolDetails qpd = questionPool.getDetails(questionName);
 			if (null != qpd) {
@@ -240,7 +234,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 					.getQuestionsWithVersionNumbering();
 				/* find the latest version */
 				String latestVersion = qpd.identifyLatestVersion();
-				if (null != verNum && StringUtils.isNotEmpty(latestVersion)) {
+				if (null != verNum && Strings.isNotEmpty(latestVersion)) {
 					Set<String> set = verNum.get(latestVersion);
 					if (null != set) {
 						if (set.size() != banks.numberOfQuestionBanks) {
@@ -300,7 +294,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 			Iterator<String> referencedQuestionNames = trq.getReferencedNames();
 			while (referencedQuestionNames.hasNext()) {
 				String referencedQuestionName = referencedQuestionNames.next();
-				if (StringUtils.isNotEmpty(referencedQuestionName)) {
+				if (Strings.isNotEmpty(referencedQuestionName)) {
 					identifySuperflousQuestionsFromTest(qp,
 							referencedQuestionName, cr, trq, ra);
 				}
@@ -326,18 +320,18 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 		String testReferencedQuestionName, QBTBQueryResponse cr,
 		TestQuestionsReferencedPool trq, RequestAssociates ra)
 		throws CleaningException {
-		if (null != qp && StringUtils.isNotEmpty(testReferencedQuestionName)
+		if (null != qp && Strings.isNotEmpty(testReferencedQuestionName)
 			&& null != cr && null != trq) {
 			QuestionPoolDetails details = qp
 				.getDetails(testReferencedQuestionName);
 			if (null != details) {
 				String latest = details.identifyLatestVersion();
 				if (null != details.getQuestionsWithVersionNumbering()
-					&& StringUtils.isNotEmpty(latest)) {
+					&& Strings.isNotEmpty(latest)) {
 					DatabaseAccess da = getDatabaseAccess(ra);
 					for (String fullName : details
 							.getQuestionsWithVersionNumbering().keySet()) {
-						if (StringUtils.isNotEmpty(fullName)) {
+						if (Strings.isNotEmpty(fullName)) {
 							if (!fullName.equals(latest)) {
 								if (!isOpenForAnyStudent(generateQuery(ra,
 										fullName), da)) {
@@ -396,7 +390,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	protected boolean isOpenForAnyStudent(String query, DatabaseAccess da)
 		throws CleaningException {
 		boolean isOpen = true;
-		if (StringUtils.isNotEmpty(query) && null != da) {
+		if (Strings.isNotEmpty(query) && null != da) {
 			DatabaseAccess.Transaction dat = null;
 			try {
 				dat = da.newTransaction();
@@ -470,10 +464,10 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	protected String generateQuery(RequestAssociates ra, String questionFullName)
 		throws CleaningException {
 		String query = null;
-		if (StringUtils.isNotEmpty(questionFullName) && null != ra) {
+		if (Strings.isNotEmpty(questionFullName) && null != ra) {
 			try {
 				String q = ra.getConfig(ClearanceEnums.query);
-				if (StringUtils.isNotEmpty(q)) {
+				if (Strings.isNotEmpty(q)) {
 					QuestionName qn = VersionUtil.represented(questionFullName);
 					if (null != qn ? qn.isValid() : false) {
 						Object[] args = {"'" + qn.getPrefix() + "'",
@@ -606,7 +600,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	protected void retrieveElementID(Element e, List<String> composedQuestions) {
 		if (null != e && null != composedQuestions) {
 			String id = e.getAttribute(ID);
-			if (StringUtils.isNotEmpty(id)) {
+			if (Strings.isNotEmpty(id)) {
 				composedQuestions.add(id);
 			}
 		}
@@ -626,7 +620,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 		AllQuestionsPool allQuestions = new AllQuestionsPool();
 		if (null != questionBanks ? questionBanks.size() > 0 : false) {
 			for (String location : questionBanks) {
-				if (StringUtils.isNotEmpty(location)) {
+				if (Strings.isNotEmpty(location)) {
 					File dir = new File(location);
 					if (dir.exists() ? dir.isDirectory() && dir.canRead()
 							: false) {
@@ -676,7 +670,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 		if (null != cr && (null != locations ? locations.size() > 0 : false)) {
 			/* for all the test banks */
 			for (String testLocation : locations) {
-				if (StringUtils.isNotEmpty(testLocation)) {
+				if (Strings.isNotEmpty(testLocation)) {
 					File dir = new File(testLocation);
 					/* read the files in the test bank */
 					if (null != dir ? dir.isDirectory() && dir.canRead() : false) {
@@ -746,7 +740,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 		if ((null != questions ? questions.size() > 0 : false) && null != isq
 			&& null != cr) {
 			for (String s : questions) {
-				if (StringUtils.isNotEmpty(s)) {
+				if (Strings.isNotEmpty(s)) {
 					File f = new File(s);
 					if (f.exists()) {
 						File dir = f.getParentFile();
@@ -798,9 +792,9 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	 */
 	public static List<String> getQuestions(String requestParameterValue) {
 		List<String> names = new ArrayList<String>();
-		if (StringUtils.isNotEmpty(requestParameterValue)) {
+		if (Strings.isNotEmpty(requestParameterValue)) {
 			String checkFor = splitter(requestParameterValue);
-			if (StringUtils.isNotEmpty(checkFor)) {
+			if (Strings.isNotEmpty(checkFor)) {
 				String[] bits = requestParameterValue.split(checkFor);
 				for (int i = 0; i < bits.length; i++) {
 					String bit = bits[i];
@@ -827,9 +821,9 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	 */
 	protected static String splitter(String s) {
 		String splitter = null;
-		if (StringUtils.isNotEmpty(s)) {
+		if (Strings.isNotEmpty(s)) {
 			x : for (String val : splitOn) {
-				if (StringUtils.isNotEmpty(val) ? s.contains(val) : false) {
+				if (Strings.isNotEmpty(val) ? s.contains(val) : false) {
 					splitter = val;
 					break x;
 				}

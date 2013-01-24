@@ -4,10 +4,10 @@ import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import om.Log;
-
 import org.apache.commons.lang.StringEscapeUtils;
 
+import om.Log;
+import util.xml.XML;
 
 
 public class SQLString {
@@ -201,11 +201,11 @@ public class SQLString {
 			{
 				if(LogIt)
 				{
-					l.logWithTag(DatabaseDeletionUtils.paragraphIt(StringEscapeUtils.escapeHtml(SQLString.toString())),tag);
+					l.logWithTag(DatabaseDeletionUtils.paragraphIt(XML.escape(SQLString.toString())),tag);
 				}
 				else
 				{
-					fullsqlstring.append(DatabaseDeletionUtils.paragraphIt(StringEscapeUtils.escapeHtml(SQLString.toString())));
+					fullsqlstring.append(DatabaseDeletionUtils.paragraphIt(XML.escape(SQLString.toString())));
 				}
 			}
 			else

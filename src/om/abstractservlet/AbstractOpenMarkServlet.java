@@ -1,4 +1,4 @@
-package om;
+package om.abstractservlet;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,12 +14,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
-
+import om.Log;
+import om.OmException;
 import om.tnavigator.NavigatorConfig;
 import util.misc.ErrorManagement;
 import util.misc.ErrorMessageParts;
 import util.misc.OMVisitor;
+import util.misc.Strings;
 import util.misc.UtilityException;
 
 /**
@@ -204,7 +205,7 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 		HttpServletResponse response, RequestAssociates ra, ErrorMessageParts emp) {
 		Map<String, String> replacements = new HashMap<String, String>();
 		replacements.put("TITLE", emp.getTitle());
-		replacements.put("MESSAGE", StringUtils.isNotEmpty(emp.getMessage())
+		replacements.put("MESSAGE", Strings.isNotEmpty(emp.getMessage())
 			? emp.getMessage() : "No message specified.");
 		if (null != emp.getThrowable()) {
 			Throwable t = emp.getThrowable();
@@ -263,7 +264,7 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 					Object key = i.next();
 					Object val = requestMap.get(key);
 					if ((null != key ?
-						key instanceof String ? StringUtils.isNotEmpty((String) key)
+						key instanceof String ? Strings.isNotEmpty((String) key)
 							: false : false) ) {
 						String value = null;
 						if (null != val) {

@@ -9,18 +9,16 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.AbstractRequestHandler;
-import om.DisplayUtils;
-import om.RenderedOutput;
-import om.RequestAssociates;
-import om.RequestHandlerEnums;
-import om.RequestHandlingException;
-import om.RequestParameterNames;
-import om.RequestResponse;
+import om.abstractservlet.AbstractRequestHandler;
+import om.abstractservlet.DisplayUtils;
+import om.abstractservlet.RenderedOutput;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlerEnums;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestParameterNames;
+import om.abstractservlet.RequestResponse;
 import om.tnavigator.NavigatorConfig;
-
-import org.apache.commons.lang.StringUtils;
-
+import util.misc.Strings;
 import util.misc.UtilityException;
 
 public class TestInstanceExtractionRequestHandler extends AbstractRequestHandler {
@@ -45,7 +43,7 @@ public class TestInstanceExtractionRequestHandler extends AbstractRequestHandler
 		if (null != request && null != response && null != associates) {
 			initialise(associates);
 			String uri = request.getPathInfo();
-			if (StringUtils.isNotEmpty(filteredUrl)
+			if (Strings.isNotEmpty(filteredUrl)
 				? filteredUrl.equals(uri) : false) {
 				getLog().logDebug("Running the extractor ...");
 				StringBuilder output = new StringBuilder(DisplayUtils.header());
@@ -135,7 +133,7 @@ public class TestInstanceExtractionRequestHandler extends AbstractRequestHandler
 	private ExtractionResponse process(HttpServletRequest request,
 		RequestAssociates associates) throws ExtractorException {
 		String studentTi = request.getParameter(ExtractorEnums.studentTi.toString());
-		return StringUtils.isNotEmpty(studentTi)
+		return Strings.isNotEmpty(studentTi)
 			? delegateForExtraction(request, associates, studentTi)
 				: renderRequestForm(request, associates);
 	}
@@ -213,8 +211,8 @@ public class TestInstanceExtractionRequestHandler extends AbstractRequestHandler
 			metaData.put(ExtractorEnums.postToUrl.toString(), postToUrl);
 			metaData.put(ExtractorEnums.navigatorConfigKey.toString(),
 				pickupNavigatorConfig(associates));
-			if (StringUtils.isNotEmpty(studentTi)
-				&& StringUtils.isNotEmpty(extractionFileNamePrefix)) {
+			if (Strings.isNotEmpty(studentTi)
+				&& Strings.isNotEmpty(extractionFileNamePrefix)) {
 				metaData.put(ExtractorEnums.extractionFileNamePrefix.toString(),
 					extractionFileNamePrefix);
 				metaData.put(RequestParameterNames.logPath.toString(), getLogPath());
@@ -243,12 +241,12 @@ public class TestInstanceExtractionRequestHandler extends AbstractRequestHandler
 	 */
 	List<String> convert(String s) {
 		List<String> lst = null;
-		if (StringUtils.isNotEmpty(s)) {
+		if (Strings.isNotEmpty(s)) {
 			String[] bits = s.split(",");
 			if (null != bits) {
 				for (int i = 0; i < bits.length; i++) {
 					String bit = bits[i];
-					if (StringUtils.isNotEmpty(bit)) {
+					if (Strings.isNotEmpty(bit)) {
 						if (null == lst) {
 							lst = new ArrayList<String>();
 						}

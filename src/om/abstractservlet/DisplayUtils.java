@@ -1,10 +1,11 @@
-package om;
+package om.abstractservlet;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import util.misc.Strings;
+
 
 /**
  * TODO : this mixes the presentation logic with the business logic.  Look to
@@ -56,9 +57,9 @@ public class DisplayUtils {
 		if (null != metaData) {
 			for (String key : metaData.keySet()) {
 				String value = metaData.get(key);
-				if (StringUtils.isNotEmpty(key)
+				if (Strings.isNotEmpty(key)
 					? key.startsWith(LOCATION) : false) {
-					if (StringUtils.isNotEmpty(value)) {
+					if (Strings.isNotEmpty(value)) {
 						locations.add(value);
 					}
 				}

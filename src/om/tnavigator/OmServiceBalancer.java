@@ -25,10 +25,10 @@ import javax.xml.rpc.ServiceException;
 import om.Log;
 import om.axis.qengine.*;
 import om.tnavigator.NavigatorServlet.RequestTimings;
+import om.tnavigator.servicebalancer.ServiceBalancer;
 
 import org.apache.axis.client.Stub;
 
-import util.servicebalancer.ServiceBalancer;
 
 /**
  * Handles load balancing (and error recovery when possible) for Om service

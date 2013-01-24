@@ -14,7 +14,6 @@ import om.qengine.dynamics.QuestionClassBuilder;
 import om.qengine.dynamics.QuestionRepresentation;
 import om.question.Question;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Element;
 
 import util.misc.DynamicCompilationReport;
@@ -23,6 +22,7 @@ import util.misc.DynamicJavaFile;
 import util.misc.DynamicOMClassLoader;
 import util.misc.DynamicQuestionUtils;
 import util.misc.DynamicQuestionsCompilationUtil;
+import util.misc.Strings;
 
 /**
  * An implementation of the QuestionLoader specifically designed for the
@@ -108,7 +108,7 @@ public class DynamicQuestionsLoader implements QuestionLoader {
 		if (null != classPathItems ? classPathItems.size() > 0 : false) {
 			for (Iterator<String> i = classPathItems.iterator(); i.hasNext();) {
 				String s = i.next();
-				if (StringUtils.isNotEmpty(s)) {
+				if (Strings.isNotEmpty(s)) {
 					path.append(s);
 					if (i.hasNext()) {
 						path.append(";");

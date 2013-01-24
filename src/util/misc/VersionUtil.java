@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 
 import om.OmException;
 
@@ -136,13 +135,13 @@ public class VersionUtil {
 
 	public static QuestionName represented(String fileName) {
 		QuestionName qn = null;
-		if (StringUtils.isNotEmpty(fileName) ? fileName.contains(DOT) : false) {
+		if (Strings.isNotEmpty(fileName) ? fileName.contains(DOT) : false) {
 			if (fileName.endsWith(DOT_JAR)) {
 				String questionName = GeneralUtils.questionNamePrefix(fileName);
-				if (StringUtils.isNotEmpty(questionName)) {
+				if (Strings.isNotEmpty(questionName)) {
 					String remainder = fileName.substring(questionName.length() + 1,
 						fileName.length() - DOT_JAR.length());
-					if (StringUtils.isNotEmpty(remainder)) {
+					if (Strings.isNotEmpty(remainder)) {
 						String[] bits = remainder.split("\\.");
 						if (null != bits ? bits.length == 2 : false) {
 							try {

@@ -9,20 +9,20 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.DisplayUtils;
 import om.Log;
-import om.RenderedOutput;
-import om.RequestAssociates;
-import om.RequestHandler;
-import om.RequestHandlingException;
-import om.RequestResponse;
+import om.abstractservlet.DisplayUtils;
+import om.abstractservlet.RenderedOutput;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandler;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Element;
 
 import util.misc.FinalizedResponse;
 import util.misc.GeneralUtils;
 import util.misc.StandardFinalizedResponse;
+import util.misc.Strings;
 import util.misc.UtilityException;
 import util.xml.XML;
 
@@ -115,7 +115,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 		if (null != metaData) {
 			String path = metaData.get(DeploymentEnum.HandleDeployLogTo.toString());
 			String debug = metaData.get(DeploymentEnum.HandleDeployShowDebug.toString());
-			if (StringUtils.isNotEmpty(path)) {
+			if (Strings.isNotEmpty(path)) {
 				try {
 					log = GeneralUtils.getLog(getClass(), path,
 						"true".equalsIgnoreCase(debug) ? true : false);
@@ -209,7 +209,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 	String determineQuestionFromPath() {
 		String questionFromPath = null;
 		String sPath = requestAssociates.getPath();
-		if (StringUtils.isNotEmpty(sPath)) {
+		if (Strings.isNotEmpty(sPath)) {
 			String s = sPath;
 			if (s.endsWith("/")) {
 				s = s.substring(0, s.length() -1);
@@ -249,7 +249,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 				}
 			}
 			String name = determineQuestionFromPath();
-			if (StringUtils.isNotEmpty(name)
+			if (Strings.isNotEmpty(name)
 				? !DEPLOY.equalsIgnoreCase(name) : false) {
 				names.add(name);
 			}
@@ -311,7 +311,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 			.append(QuestionDeploymentRenderer.DEPLOYMENT_RESULTS_PAGE_HEADING);
 		if (null != names ? names.size() > 0 && null != metaData : false) {
 			for (String name : names) {
-				if (StringUtils.isNotEmpty(name)) {
+				if (Strings.isNotEmpty(name)) {
 					log("Handling : " + name, null, true);
 					QuestionHolder qh = generateQuestionHolder(name, metaData);
 					if (null != qh) {
@@ -402,7 +402,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 		if (null != obj ? obj instanceof List<?> : false) {
 			for (Object o : (List<?>) obj) {
 				if (null != o ? o instanceof String
-					? StringUtils.isNotEmpty((String) o) : false : false) {
+					? Strings.isNotEmpty((String) o) : false : false) {
 					if (null == choices) {
 						choices = new ArrayList<String>();
 					}
@@ -453,7 +453,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 		Map<String, String> metaData = new HashMap<String, String>();
 		for (String key : requestAssociates.getConfiguration().keySet()) {
 			Object obj = requestAssociates.getConfiguration().get(key);
-			if (StringUtils.isNotEmpty(key)) {
+			if (Strings.isNotEmpty(key)) {
 				if (null != obj ? obj instanceof Element : false) {
 					if (XML.hasChild((Element) obj, LOCATION)) {
 						Element[] e = XML.getChildren((Element) obj, LOCATION);

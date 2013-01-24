@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import om.Log;
-import om.RenderedOutput;
-import om.RequestAssociates;
-import om.RequestHandlingException;
-import om.RequestParameterNames;
-import om.RequestResponse;
+import om.abstractservlet.RenderedOutput;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestParameterNames;
+import om.abstractservlet.RequestResponse;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
@@ -23,7 +23,6 @@ import om.tnavigator.db.OmQueries;
 import om.tnavigator.teststructure.TestDefinition;
 import om.tnavigator.teststructure.TestDeployment;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,6 +31,7 @@ import org.w3c.dom.Node;
 import util.misc.FinalizedResponse;
 import util.misc.RequestHelpers;
 import util.misc.StandardFinalizedResponse;
+import util.misc.Strings;
 import util.misc.UtilityException;
 import util.xml.XML;
 import util.xml.XMLException;
@@ -236,7 +236,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 		if (null != ra ? null != ra.getPrincipleObjects() : false) {
 			for (String key : requiresValidation.keySet()) {
 				Class<?> cls = requiresValidation.get(key);
-				if (StringUtils.isNotEmpty(key) && null != cls) {
+				if (Strings.isNotEmpty(key) && null != cls) {
 					Object obj = ra.getPrincipleObjects().get(key);
 					if (!(null != obj ? cls.isAssignableFrom(obj.getClass()) : false)) {
 						throwProblemBack(key, obj);
@@ -498,7 +498,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 		throws RequestHandlingException {
 		Document parentTemplate = getParentTemplate(ra);
 		if (null != ra && null != ro && null != parentTemplate
-			&& StringUtils.isNotEmpty(authorship)) {
+			&& Strings.isNotEmpty(authorship)) {
 			authorship = "<div id=\"question\"><div class=\"basicpage\">" + authorship + "</div></div>";
 			Map<String, Object> mReplace = setPreProcessingMapItems(ra);
 			try {
@@ -570,7 +570,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 	 */
 	public String stripForDisplay(String original) {
 		String changed = original;
-		if (StringUtils.isNotEmpty(original)) {
+		if (Strings.isNotEmpty(original)) {
 			if (changed.startsWith(ROOT_NODE)) {
 				changed = changed.substring(ROOT_NODE.length(), original.length());
 				if (changed.endsWith(DIV)) {

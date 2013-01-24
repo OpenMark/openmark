@@ -7,12 +7,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.AbstractRequestHandler;
-import om.RequestAssociates;
-import om.RequestHandlingException;
-import om.RequestResponse;
+import om.abstractservlet.AbstractRequestHandler;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestResponse;
+import util.misc.Strings;
 
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Provides http(s) request level access to a configured (or default)
@@ -82,7 +82,7 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 	protected CleanQuestionBanks retrieveConfiguredCleaner(String className)
 		throws RequestHandlingException {
 		CleanQuestionBanks cqb = new QuestionBankCleaner();
-		if (StringUtils.isNotEmpty(className)) {
+		if (Strings.isNotEmpty(className)) {
 			try {
 				Class<?> cla = Class.forName(className);
 				if (null != cla) {
@@ -160,7 +160,7 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 		Integer number = 1;
 		if (null != ra ? null != ra.getRequestParameters() : false) {
 			String s = ra.getRequestParameters().get(ClearanceEnums.page.toString());
-			if (StringUtils.isNotEmpty(s)) {
+			if (Strings.isNotEmpty(s)) {
 				try {
 					number = new Integer(s);
 				} catch (NumberFormatException x) {
@@ -213,7 +213,7 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 			Map<String, String> params = ra.getRequestParameters();
 			if (null != params ? params.size() > 0 : false) {
 				x : for (String str : params.keySet()) {
-					if (StringUtils.isNotEmpty(str)) {
+					if (Strings.isNotEmpty(str)) {
 						if (str.startsWith(
 							ClearanceResponseRenderer.QUESTION_FORM_NAME_PREFIX)) {
 							has = true;
@@ -305,13 +305,13 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 	protected List<String> retrieveXBank(RequestAssociates associates,
 		String key) throws RequestHandlingException {
 		List<String> banks = null;
-		if (null != associates ? StringUtils.isNotEmpty(key) : false) {
+		if (null != associates ? Strings.isNotEmpty(key) : false) {
 			String value = associates.getConfig(key);
-			if (StringUtils.isNotEmpty(value)) {
+			if (Strings.isNotEmpty(value)) {
 				String[] pieces = value.split(COMMA);
 				for (int i = 0; i < pieces.length; i++) {
 					String bit = pieces[i];
-					if (StringUtils.isNotEmpty(bit)) {
+					if (Strings.isNotEmpty(bit)) {
 						if (null == banks) {
 							banks = new ArrayList<String>();
 						}

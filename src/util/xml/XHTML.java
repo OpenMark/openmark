@@ -17,14 +17,24 @@
  */
 package util.xml;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
-import org.w3c.dom.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
+import util.misc.Strings;
 
 /** Class creates XHTML format data from DOM nodes. */
 public class XHTML
@@ -322,7 +332,7 @@ public class XHTML
 		boolean isIE9 = false;
 		if (null != request) {
 			String userAgent = request.getHeader(USER_AGENT);
-			if (StringUtils.isNotEmpty(userAgent)
+			if (Strings.isNotEmpty(userAgent)
 				? userAgent.contains(MSIE_9) : false) {
 				isIE9 = true;
 			}

@@ -1,4 +1,4 @@
-package om;
+package om.abstractservlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import om.Log;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.auth.Authentication;
 import om.tnavigator.auth.UserDetails;

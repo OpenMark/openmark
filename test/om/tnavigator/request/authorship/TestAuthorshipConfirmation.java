@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import om.RenderedOutput;
+import om.abstractservlet.RenderedOutput;
 import om.tnavigator.UserSession;
 import om.tnavigator.db.JUnitTestCaseOmQueries;
 import om.tnavigator.db.OmQueries;

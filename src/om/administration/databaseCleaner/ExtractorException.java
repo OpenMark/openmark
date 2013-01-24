@@ -1,6 +1,6 @@
 package om.administration.databaseCleaner;
 
-import om.RequestHandlingException;
+import om.abstractservlet.RequestHandlingException;
 
 public class ExtractorException extends RequestHandlingException {
 

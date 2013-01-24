@@ -1,4 +1,4 @@
-package om;
+package om.abstractservlet;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,12 +10,12 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import util.misc.Strings;
 import util.xml.XML;
 
 /**
@@ -168,8 +168,8 @@ public class RequestHandlingConfiguration {
 						config.put(el.getNodeName(), el.getTextContent());
 					}
 				}
-				if (StringUtils.isNotEmpty(fullClassName)
-					&& StringUtils.isNotEmpty(invocationPath)) {
+				if (Strings.isNotEmpty(fullClassName)
+					&& Strings.isNotEmpty(invocationPath)) {
 					Class<RequestHandler> rh = retrieveRequestHandlerClass(fullClassName);
 					settings = new RequestHandlerSettings(invocationPath, rh, config,servletName);
 				}
@@ -188,7 +188,7 @@ public class RequestHandlingConfiguration {
 	protected Class<RequestHandler> retrieveRequestHandlerClass(String className)
 		throws RequestHandlingException {
 		Class<RequestHandler> rh = null;
-		if (StringUtils.isNotEmpty(className)) {
+		if (Strings.isNotEmpty(className)) {
 			try {
 				Class<?> cla = getClass().getClassLoader().loadClass(className);
 				if (RequestHandler.class.isAssignableFrom(cla)) {

@@ -1,6 +1,6 @@
 package om.tnavigator.request.authorship;
 
-import om.RenderedOutput;
+import om.abstractservlet.RenderedOutput;
 import om.tnavigator.UserSession;
 
 public interface AuthorshipConfirmation {

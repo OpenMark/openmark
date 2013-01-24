@@ -55,20 +55,20 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
-import om.AbstractOpenMarkServlet;
 import om.Log;
 import om.OmException;
 import om.OmFormatException;
 import om.OmUnexpectedException;
 import om.OmVersion;
-import om.PreProcessingRequestHandler;
-import om.RenderedOutput;
-import om.RequestAssociates;
-import om.RequestHandler;
-import om.RequestHandlingException;
-import om.RequestParameterNames;
-import om.RequestResponse;
 import om.ShutdownManager;
+import om.abstractservlet.AbstractOpenMarkServlet;
+import om.abstractservlet.PreProcessingRequestHandler;
+import om.abstractservlet.RenderedOutput;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandler;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestParameterNames;
+import om.abstractservlet.RequestResponse;
 import om.axis.qengine.CustomResult;
 import om.axis.qengine.ProcessReturn;
 import om.axis.qengine.Resource;
@@ -94,7 +94,6 @@ import om.tnavigator.teststructure.TestInfo;
 import om.tnavigator.teststructure.TestLeaf;
 import om.tnavigator.teststructure.TestQuestion;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -494,7 +493,7 @@ public class NavigatorServlet extends HttpServlet {
 	private void setUpPreProcessingRequestHandler() {
 		String pre = getServletConfig().getInitParameter(
 				PRE_PROCESSING_REQUEST_HANDLER);
-		if (StringUtils.isNotEmpty(pre)) {
+		if (Strings.isNotEmpty(pre)) {
 			try {
 				preProcessingRequestHandler = getClass().getClassLoader()
 						.loadClass(pre);
@@ -1805,7 +1804,7 @@ public class NavigatorServlet extends HttpServlet {
 			boolean bIncludeAttempts, boolean bIncludeScore) throws Exception {
 		String useNew = getServletConfig().getInitParameter(
 				USE_NEW_SUMMARY_IMPLEMENTATION);
-		if (StringUtils.isNotEmpty(useNew) ? "true".equalsIgnoreCase(useNew)
+		if (Strings.isNotEmpty(useNew) ? "true".equalsIgnoreCase(useNew)
 				: false) {
 			addSummaryTableLatest(rt, us, nParent, bPlain, bIncludeQuestions,
 					bIncludeAttempts, bIncludeScore);
@@ -3482,7 +3481,7 @@ public class NavigatorServlet extends HttpServlet {
 	 */
 	public static String getAttemptsString(int iAttempts, TestDefinition td) {
 		String str = retrieveSummaryConfirmation(td);
-		boolean substitute = StringUtils.isNotEmpty(str);
+		boolean substitute = Strings.isNotEmpty(str);
 		switch (iAttempts) {
 		case ATTEMPTS_PARTIALLYCORRECT:
 			return "Partially correct";
@@ -4204,7 +4203,7 @@ public class NavigatorServlet extends HttpServlet {
 	 * @author Trevor Hinson
 	 */
 	private String subStringResourceName(String sResource) {
-		if (StringUtils.isNotEmpty(sResource)
+		if (Strings.isNotEmpty(sResource)
 			? sResource.startsWith(SCRIPT_JS) : false) {
 			int n = sResource.indexOf("?");
 			if (n > -1 ? sResource.length() > n + 1 : false) {

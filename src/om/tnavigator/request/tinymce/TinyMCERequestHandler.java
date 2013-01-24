@@ -16,17 +16,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.AbstractRequestHandler;
 import om.OmUnexpectedException;
-import om.RequestAssociates;
-import om.RequestHandlingException;
-import om.RequestResponse;
-
-import org.apache.commons.lang.StringUtils;
-
+import om.abstractservlet.AbstractRequestHandler;
+import om.abstractservlet.RequestAssociates;
+import om.abstractservlet.RequestHandlingException;
+import om.abstractservlet.RequestResponse;
 import util.misc.FileTypesEnum;
 import util.misc.IO;
 import util.misc.MimeTypes;
+import util.misc.Strings;
 
 public class TinyMCERequestHandler extends AbstractRequestHandler {
 
@@ -177,7 +175,7 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 
 	private String getFileNameSuffix(String filePath) {
 		String suffix = null;
-		if (StringUtils.isNotEmpty(filePath)) {
+		if (Strings.isNotEmpty(filePath)) {
 			int n = filePath.lastIndexOf(".");
 			if (n > -1 ? filePath.length() > n + 1 : false) {
 				suffix = filePath.substring(n + 1, filePath.length());

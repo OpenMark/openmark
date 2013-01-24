@@ -1,9 +1,11 @@
-package om;
+package om.abstractservlet;
 
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import om.Log;
 
 import util.misc.FinalizedResponse;
 import util.misc.GeneralUtils;

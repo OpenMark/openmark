@@ -15,7 +15,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package util.servicebalancer;
+package om.tnavigator.servicebalancer;
 
 /** Class provides a moving average that tracks a buffer of N integers */
 public class MovingAverage

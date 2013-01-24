@@ -1,6 +1,6 @@
 package om.administration;
 
-import om.AbstractDatabaseSpecificOpenMarkServlet;
+import om.abstractservlet.AbstractDatabaseSpecificOpenMarkServlet;
 
 /**
  * Simplification of the HttpServlet for the purpose of administration.  Relys

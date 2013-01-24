@@ -1,6 +1,6 @@
 package om.administration.simpleSQLReporter;
 
-import om.RequestHandlingException;
+import om.abstractservlet.RequestHandlingException;
 
 public class SimpleSQLReporterException extends RequestHandlingException {
 

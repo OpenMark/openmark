@@ -2,7 +2,8 @@ package om.administration.extraction;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import util.misc.Strings;
+
 
 /**
  * Here we continue with the existing presentation model and detail with requests
@@ -21,7 +22,7 @@ public class ExtractionFormRenderer implements Extractor {
 		throws ExtractorException {
 		ExtractionResponse er = new ExtractionResponse();
 		String extractUrl = retrieveExtractUrl(metaData);
-		if (StringUtils.isNotEmpty(extractUrl)) {
+		if (Strings.isNotEmpty(extractUrl)) {
 			er.setResponseMessage(generateStandardView(extractUrl));
 			er.setExtracted(true);
 		} else {

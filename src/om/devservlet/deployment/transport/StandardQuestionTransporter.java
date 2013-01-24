@@ -7,20 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import om.DisplayUtils;
 import om.Log;
-import om.RenderedOutput;
+import om.abstractservlet.DisplayUtils;
+import om.abstractservlet.RenderedOutput;
 import om.devservlet.deployment.DeploymentEnum;
 import om.devservlet.deployment.QuestionDeploymentRenderer;
 import om.devservlet.deployment.QuestionHolder;
 import om.devservlet.deployment.QuestionTransporter;
 import om.devservlet.deployment.QuestionTransporterException;
-
-import org.apache.commons.lang.StringUtils;
-
 import util.misc.FinalizedResponse;
 import util.misc.GeneralUtils;
 import util.misc.StandardFinalizedResponse;
+import util.misc.Strings;
 import util.misc.UtilityException;
 
 /**
@@ -78,7 +76,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	private void setUpLogging(Map<String, String> metaData) {
 		if (null != metaData) {
 			String path = metaData.get(DeploymentEnum.HandleDeployLogTo.toString());
-			if (StringUtils.isNotEmpty(path)) {
+			if (Strings.isNotEmpty(path)) {
 				String debug = metaData.get(DeploymentEnum.HandleDeployShowDebug.toString());
 				try {
 					log = GeneralUtils.getLog(getClass(), path,
@@ -153,7 +151,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	void appendConfiguredReportMessage(Map<String, String> metaData,
 		RenderedOutput ro) {
 		String msg = metaData.get(REPORT_TO_MESSAGE_KEY);
-		if (StringUtils.isNotEmpty(msg) && null != ro) {
+		if (Strings.isNotEmpty(msg) && null != ro) {
 			ro.append(QuestionDeploymentRenderer.BRS)
 				.append("<div class=\"alert\">").append(msg).append("</div>");
 		}
@@ -516,7 +514,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	 */
 	Versioner retrieveVersionerFromFileName(String name) {
 		Versioner v = null;
-		if (StringUtils.isNotEmpty(name) ? name.length() > 7 : false) {
+		if (Strings.isNotEmpty(name) ? name.length() > 7 : false) {
 			log("retrieving the version from : " + name, null);
 			String workWith = name;
 			if (workWith.endsWith(QuestionDeploymentRenderer.DEPLOY_FILE_SUFFIX)) {
@@ -550,7 +548,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	Versioner createVersioner(String s) {
 		Versioner v = null;
 		log("Trying to create a Versioner with : " + s);
-		if (StringUtils.isNotEmpty(s)) {
+		if (Strings.isNotEmpty(s)) {
 			int n = s.indexOf(".");
 			if (n > -1 ? s.length() > n + 1 : false) {
 				String first = s.substring(0, n);
