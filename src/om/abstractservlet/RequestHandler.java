@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import util.misc.GracefulFinalization;
 
 /**
  * For each request a <b>new</b> implementation of this contract is created.

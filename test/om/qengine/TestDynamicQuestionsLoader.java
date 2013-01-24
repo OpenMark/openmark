@@ -10,6 +10,8 @@ import java.net.URI;
 import java.net.URL;
 
 import om.AbstractTestCase;
+import om.qengine.dynamics.util.DynamicOMClassLoader;
+import om.qengine.dynamics.util.DynamicQuestionUtils;
 import om.question.Question;
 
 import org.apache.commons.io.FileUtils;
@@ -18,8 +20,6 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import util.misc.DynamicOMClassLoader;
-import util.misc.DynamicQuestionUtils;
 import util.xml.XML;
 
 public class TestDynamicQuestionsLoader extends AbstractTestCase {

@@ -12,16 +12,16 @@ import om.OmException;
 import om.qengine.QuestionCache.QuestionStuff;
 import om.qengine.dynamics.QuestionClassBuilder;
 import om.qengine.dynamics.QuestionRepresentation;
+import om.qengine.dynamics.util.DynamicCompilationReport;
+import om.qengine.dynamics.util.DynamicCompilationResponse;
+import om.qengine.dynamics.util.DynamicJavaFile;
+import om.qengine.dynamics.util.DynamicOMClassLoader;
+import om.qengine.dynamics.util.DynamicQuestionUtils;
+import om.qengine.dynamics.util.DynamicQuestionsCompilationUtil;
 import om.question.Question;
 
 import org.w3c.dom.Element;
 
-import util.misc.DynamicCompilationReport;
-import util.misc.DynamicCompilationResponse;
-import util.misc.DynamicJavaFile;
-import util.misc.DynamicOMClassLoader;
-import util.misc.DynamicQuestionUtils;
-import util.misc.DynamicQuestionsCompilationUtil;
 import util.misc.Strings;
 
 /**

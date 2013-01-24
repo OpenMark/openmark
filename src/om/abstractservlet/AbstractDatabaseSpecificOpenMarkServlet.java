@@ -9,8 +9,7 @@ import om.tnavigator.auth.AuthenticationFactory;
 import om.tnavigator.auth.AuthenticationInstantiationException;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
-import util.misc.ErrorManagement;
-import util.misc.OMVisitor;
+import om.tnavigator.util.OMVisitor;
 
 /**
  * Servlets (webapps) that require access to the OpenMark database should extend

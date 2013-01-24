@@ -1,4 +1,4 @@
-package util.misc;
+package om.tnavigator.util;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import om.Log;
 import om.tnavigator.NavigatorConfig;
+import util.misc.UtilityException;
 
 public class IPAddressCheckUtil {
 

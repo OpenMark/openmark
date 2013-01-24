@@ -20,10 +20,10 @@ import om.OmUnexpectedException;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.reports.*;
 import om.tnavigator.teststructure.TestDeployment;
+import om.tnavigator.util.IPAddressCheckUtil;
 
 import org.w3c.dom.*;
 
-import util.misc.IPAddressCheckUtil;
 import util.xml.XML;
 import util.xml.XMLException;
 

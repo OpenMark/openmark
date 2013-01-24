@@ -30,13 +30,13 @@ import java.util.jar.JarFile;
 
 import om.OmDeveloperException;
 import om.OmException;
+import om.qengine.dynamics.util.DynamicOMClassLoader;
+import om.qengine.dynamics.util.DynamicQuestionUtils;
 import om.question.Question;
 
 import org.w3c.dom.Document;
 
 import util.misc.ClosableClassLoader;
-import util.misc.DynamicOMClassLoader;
-import util.misc.DynamicQuestionUtils;
 import util.misc.IO;
 import util.misc.OmClassLoaderContract;
 import util.misc.Strings;

@@ -1,10 +1,12 @@
-package util.misc;
+package om.qengine.dynamics.util;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+
+import util.misc.OmClassLoaderContract;
 
 public class DynamicOMClassLoader extends ClassLoader
 	implements OmClassLoaderContract {

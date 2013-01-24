@@ -1,4 +1,4 @@
-package util.misc;
+package om.qengine.dynamics.util;
 
 import java.net.URI;
 

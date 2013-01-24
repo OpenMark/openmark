@@ -1,4 +1,4 @@
-package util.misc;
+package om.qengine.dynamics.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import util.misc.Strings;
 import util.xml.XML;
 
 public class DynamicQuestionUtils {

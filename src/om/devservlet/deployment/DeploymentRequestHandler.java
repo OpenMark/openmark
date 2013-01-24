@@ -16,12 +16,12 @@ import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandler;
 import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestResponse;
+import om.abstractservlet.StandardFinalizedResponse;
 
 import org.w3c.dom.Element;
 
 import util.misc.FinalizedResponse;
 import util.misc.GeneralUtils;
-import util.misc.StandardFinalizedResponse;
 import util.misc.Strings;
 import util.misc.UtilityException;
 import util.xml.XML;

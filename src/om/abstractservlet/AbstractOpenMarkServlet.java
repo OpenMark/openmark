@@ -17,9 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import om.Log;
 import om.OmException;
 import om.tnavigator.NavigatorConfig;
-import util.misc.ErrorManagement;
+import om.tnavigator.util.OMVisitor;
 import util.misc.ErrorMessageParts;
-import util.misc.OMVisitor;
 import util.misc.Strings;
 import util.misc.UtilityException;
 

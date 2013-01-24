@@ -30,12 +30,12 @@ import om.Log;
 import om.OmUnexpectedException;
 import om.OmVersion;
 import om.tnavigator.db.DatabaseAccess;
+import om.tnavigator.util.IPAddressCheckUtil;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import util.misc.IO;
-import util.misc.IPAddressCheckUtil;
 import util.misc.RequestHelpers;
 import util.misc.Strings;
 import util.xml.XHTML;

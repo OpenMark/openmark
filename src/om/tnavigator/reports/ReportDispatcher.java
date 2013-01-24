@@ -38,7 +38,7 @@ import om.tnavigator.reports.std.QuestionTestReport;
 import om.tnavigator.reports.std.TestUsageReport;
 import om.tnavigator.reports.std.UserTestReport;
 import om.tnavigator.reports.std.VariantsTestReport;
-import util.misc.IPAddressCheckUtil;
+import om.tnavigator.util.IPAddressCheckUtil;
 
 /**
  * Class for dispatching report requests.

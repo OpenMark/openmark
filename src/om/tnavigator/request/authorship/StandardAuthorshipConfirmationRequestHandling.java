@@ -16,6 +16,7 @@ import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
+import om.abstractservlet.StandardFinalizedResponse;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
@@ -30,7 +31,6 @@ import org.w3c.dom.Node;
 
 import util.misc.FinalizedResponse;
 import util.misc.RequestHelpers;
-import util.misc.StandardFinalizedResponse;
 import util.misc.Strings;
 import util.misc.UtilityException;
 import util.xml.XML;

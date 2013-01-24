@@ -1,4 +1,4 @@
-package util.misc;
+package om.tnavigator.util;
 
 import javax.servlet.ServletContext;
 

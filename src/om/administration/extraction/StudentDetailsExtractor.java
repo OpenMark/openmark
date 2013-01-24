@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.Map;
 
 import om.PersistenceException;
+import om.abstractservlet.GracefulFinalization;
+import om.abstractservlet.StandardFinalizedResponse;
 import om.tnavigator.AbstractPersistenceDelegator;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
 import util.misc.FinalizedResponse;
 import util.misc.GeneralUtils;
-import util.misc.GracefulFinalization;
-import util.misc.StandardFinalizedResponse;
 import util.misc.Strings;
 import util.misc.UtilityException;
 

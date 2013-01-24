@@ -16,11 +16,11 @@ import om.Log;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.auth.Authentication;
 import om.tnavigator.auth.UserDetails;
+import om.tnavigator.util.IPAddressCheckUtil;
 
 import org.w3c.dom.Document;
 
 import util.misc.FinalizedResponse;
-import util.misc.IPAddressCheckUtil;
 import util.misc.UtilityException;
 import util.xml.XHTML;
 import util.xml.XML;

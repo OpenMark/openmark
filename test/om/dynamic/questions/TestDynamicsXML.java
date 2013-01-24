@@ -14,14 +14,14 @@ import java.util.Arrays;
 import javax.tools.JavaFileObject;
 
 import om.AbstractTestCase;
+import om.qengine.dynamics.util.DynamicJavaFile;
+import om.qengine.dynamics.util.DynamicQuestionsCompilationUtil;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import util.misc.DynamicJavaFile;
-import util.misc.DynamicQuestionsCompilationUtil;
 import util.xml.XML;
 
 public class TestDynamicsXML extends AbstractTestCase {

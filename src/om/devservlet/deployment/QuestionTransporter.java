@@ -2,8 +2,8 @@ package om.devservlet.deployment;
 
 import java.util.Map;
 
+import om.abstractservlet.GracefulFinalization;
 import om.abstractservlet.RenderedOutput;
-import util.misc.GracefulFinalization;
 
 /**
  * Used in order to move actual Questions from the Question Developers local

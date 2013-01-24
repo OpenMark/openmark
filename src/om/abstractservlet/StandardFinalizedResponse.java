@@ -1,4 +1,6 @@
-package util.misc;
+package om.abstractservlet;
+
+import util.misc.FinalizedResponse;
 
 public class StandardFinalizedResponse implements FinalizedResponse {
 
