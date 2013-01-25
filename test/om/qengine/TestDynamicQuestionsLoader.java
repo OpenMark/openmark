@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import util.misc.IO;
 import util.xml.XML;
 
 public class TestDynamicQuestionsLoader extends AbstractTestCase {
@@ -43,9 +44,7 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 	}
 
 	@Test public void testIsInvalidDynamicQuestion() throws Exception {
-		File f = pickUpFile("mu120.module5.test.xml");
-		assertNotNull(f);
-		byte[] bytes = FileUtils.readFileToByteArray(f);
+		byte[] bytes = IO.loadBytes(ClassLoader.getSystemResourceAsStream("mu120.module5.test.xml"));
 		Document d = XML.parse(bytes);
 		assertFalse(DynamicQuestionUtils.isDynamicQuestion(d));
 	}
