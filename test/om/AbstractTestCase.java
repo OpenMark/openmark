@@ -68,10 +68,15 @@ public class AbstractTestCase {
 	}
 
 	protected String getLogPath() {
-		File fileLocation = pickUpFile(TEST_CASE_PROGRESS_SUMMARY);
-		assertNotNull(fileLocation);
-		return fileLocation.getAbsolutePath().substring(0,
-			fileLocation.getAbsolutePath().lastIndexOf(File.separator) + 1);
+		String configuredLocation = System.getProperty("buildDirectory");
+		if (configuredLocation != null) {
+			return configuredLocation + File.separator + "test-data";
+		} else {
+			File fileLocation = pickUpFile(TEST_CASE_PROGRESS_SUMMARY);
+			assertNotNull(fileLocation);
+			return fileLocation.getAbsolutePath().substring(0,
+					fileLocation.getAbsolutePath().lastIndexOf(File.separator) + 1);
+		}
 	}
 
 	protected File pickUpFile(String name) {

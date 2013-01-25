@@ -1,4 +1,4 @@
-package om.dynamic.questions;
+package om.qengine.dynamics.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
