@@ -17,7 +17,7 @@
  */
 package om.question;
 
-import om.helper.QEngineConfig;
+import om.qengine.QEngineConfig;
 
 /**
  * Parameters that are passed to a question when it is being initialised.

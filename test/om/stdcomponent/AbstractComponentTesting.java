@@ -9,7 +9,7 @@ import java.net.URL;
 
 import om.AbstractTestCase;
 import om.OmDeveloperException;
-import om.helper.QEngineConfig;
+import om.qengine.QEngineConfig;
 import om.question.InitParams;
 import om.stdquestion.StandardQuestion;
 

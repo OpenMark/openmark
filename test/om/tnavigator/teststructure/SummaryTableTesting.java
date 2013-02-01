@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import om.AbstractTestCase;
+import om.tnavigator.AbstractNavigatorTestCase;
 import om.tnavigator.JUnitTestCaseUserSession;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.JUnitTestCaseDatabaseAccess;
@@ -37,7 +37,7 @@ import util.xml.XML;
  * @author Trevor Hinson
  */
 
-public class SummaryTableTesting extends AbstractTestCase {
+public class SummaryTableTesting extends AbstractNavigatorTestCase {
 
 	private JUnitTestCaseDatabaseAccess testDatabaseAccess;
 

@@ -1,4 +1,4 @@
-package om.abstractservlet;
+package om;
 
 import java.util.ArrayList;
 import java.util.List;

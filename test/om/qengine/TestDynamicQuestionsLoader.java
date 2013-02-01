@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
@@ -20,7 +21,6 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import util.misc.IO;
 import util.xml.XML;
 
 public class TestDynamicQuestionsLoader extends AbstractTestCase {
@@ -30,7 +30,7 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 	private static String DYNAMIC_QUESTION = "sdk125b7.question22.1.1.omxml";
 
 	@Test public void testIsDynamicQuestion() throws Exception {
-		File f = pickUpFile(DYNAMIC_QUESTION);
+		File f = pickUpFile(DYNAMIC_QUESTION, TestDynamicQuestionsLoader.class);
 		assertNotNull(f);
 		byte[] bytes = FileUtils.readFileToByteArray(f);
 		String st = new String(bytes);
@@ -44,13 +44,13 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 	}
 
 	@Test public void testIsInvalidDynamicQuestion() throws Exception {
-		byte[] bytes = IO.loadBytes(ClassLoader.getSystemResourceAsStream("mu120.module5.test.xml"));
-		Document d = XML.parse(bytes);
+		InputStream is = pickUpStream("mu120.module5.test.xml", AbstractTestCase.class);
+		Document d = XML.parse(is);
 		assertFalse(DynamicQuestionUtils.isDynamicQuestion(d));
 	}
 
 	@Test public void testParse() throws Exception {
-		File f = pickUpFile(DYNAMIC_QUESTION);
+		File f = pickUpFile(DYNAMIC_QUESTION, TestDynamicQuestionsLoader.class);
 		assertNotNull(f);
 		assertTrue(f.exists());
 		byte[] bytes = FileUtils.readFileToByteArray(f);
@@ -61,7 +61,7 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 	}
 
 	@Test public void tester() throws Exception {
-		File f = pickUpFile(DYNAMIC_QUESTION);
+		File f = pickUpFile(DYNAMIC_QUESTION, TestDynamicQuestionsLoader.class);
 		//DynamicQuestionsLoader dql = new DynamicQuestionsLoader("");
 		Element e = DynamicQuestionUtils.retrieveElement(f, "question");
 		assertNotNull(e);
@@ -74,7 +74,7 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 		DynamicQuestionsLoader dql = new DynamicQuestionsLoader(
 			System.getProperty("java.class.path"));
 		QuestionCache.QuestionStuff qs = new QuestionCache.QuestionStuff();
-		File f = pickUpFile(TESTING_DYNAMIC_QUESTION);
+		File f = pickUpFile(TESTING_DYNAMIC_QUESTION, TestDynamicQuestionsLoader.class);
 		assertNotNull(f);
 		dql.loadMetaData(qs, f);
 		assertNotNull(qs.dMeta);
@@ -100,7 +100,7 @@ public class TestDynamicQuestionsLoader extends AbstractTestCase {
 		DynamicOMClassLoader d = new DynamicOMClassLoader("/Temp/dynamics/",
 			getClass().getClassLoader());
 		qs.omclc = d;
-		File f = pickUpFile(TESTING_DYNAMIC_QUESTION);
+		File f = pickUpFile(TESTING_DYNAMIC_QUESTION, TestDynamicQuestionsLoader.class);
 		assertNotNull(f);
 		dql.loadClass(qs, f);
 		assertNotNull(qs.c);

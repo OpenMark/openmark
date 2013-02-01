@@ -1,10 +1,11 @@
-package om;
+package om.abstractservlet;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
+import om.AbstractTestCase;
 import om.abstractservlet.RequestHandlerSettings;
 import om.abstractservlet.RequestHandlingConfiguration;
 
@@ -21,7 +22,7 @@ public abstract class AbstractRequestHandlerTestCase extends AbstractTestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 		configuration = new RequestHandlingConfiguration(
-			pickUpFile(REQUEST_HANDLER_XML));
+			pickUpFile(REQUEST_HANDLER_XML, AbstractRequestHandlerTestCase.class));
 	}
 
 	@Test public void testConfigurationLoading() throws Exception {

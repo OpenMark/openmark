@@ -34,7 +34,6 @@ import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
 import om.OmException;
-import om.helper.QEngineConfig;
 import om.question.ActionParams;
 import om.question.ActionRendering;
 import om.question.InitParams;

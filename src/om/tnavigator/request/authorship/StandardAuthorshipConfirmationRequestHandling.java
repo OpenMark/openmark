@@ -27,7 +27,6 @@ import om.tnavigator.teststructure.TestDeployment;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import util.misc.FinalizedResponse;
 import util.misc.RequestHelpers;
@@ -46,10 +45,6 @@ public class StandardAuthorshipConfirmationRequestHandling
 	implements AuthorshipConfirmationRequestHandler {
 
 	private static final long serialVersionUID = -7226664092547045144L;
-
-	private static String ROOT_NODE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><div class=\"authority-confirmation\">";
-
-	private static String DIV = "</div>";	
 
 	private static String REQUEST_ASSOCIATES = "RequestAssociates";
 
@@ -442,10 +437,8 @@ public class StandardAuthorshipConfirmationRequestHandling
 						.renderForDisplay(template, showError, ra);
 					if (null != output) {
 						try {
-							xml = XML.saveString(output);
-							xml = stripForDisplay(xml);
 							Document merged = applyResponseDetails(request,
-								xml, ra, ro);
+								output.getDocumentElement(), ra, ro);
 							if (null != merged) {
 								applyBodyOnLoadJavascript(merged);
 								ro.append(XML.saveString(merged));
@@ -494,19 +487,17 @@ public class StandardAuthorshipConfirmationRequestHandling
 	}
 
 	protected Document applyResponseDetails(HttpServletRequest request,
-		String authorship, RequestAssociates ra, RenderedOutput ro)
+		Element authorship, RequestAssociates ra, RenderedOutput ro)
 		throws RequestHandlingException {
 		Document parentTemplate = getParentTemplate(ra);
-		if (null != ra && null != ro && null != parentTemplate
-			&& Strings.isNotEmpty(authorship)) {
-			authorship = "<div id=\"question\"><div class=\"basicpage\">" + authorship + "</div></div>";
-			Map<String, Object> mReplace = setPreProcessingMapItems(ra);
+		if (null != ra && null != ro && null != parentTemplate) {
 			try {
-				Element txt = (Element) parentTemplate.importNode(XML.parse(authorship)
-					.getDocumentElement(), true);
 				Element questionDiv = XML.find(parentTemplate, ID, QUESTION);
-				Node parent = questionDiv.getParentNode();
-				parent.replaceChild(txt, questionDiv);
+				Element div = parentTemplate.createElement("div");
+				div.setAttribute("class", "basicpage");
+				questionDiv.appendChild(div);
+				XML.importChildren(div, authorship);
+				Map<String, Object> mReplace = setPreProcessingMapItems(ra);
 				XML.replaceTokens(parentTemplate, mReplace);
 				buildPreProcessedPageOutput(request, parentTemplate, getUserSession(ra));
 			} catch (XMLException x) {
@@ -559,27 +550,6 @@ public class StandardAuthorshipConfirmationRequestHandling
 		mReplace.put("RESOURCES", "resources/" + us.getTestPosition());
 		mReplace.put("IDPREFIX", "");
 		return mReplace;
-	}
-
-	/**
-	 * Removed certain elements of the Authorship template output so that it can
-	 *  be used within the parent template.
-	 * @param original
-	 * @return
-	 * @author Trevor Hinson
-	 */
-	public String stripForDisplay(String original) {
-		String changed = original;
-		if (Strings.isNotEmpty(original)) {
-			if (changed.startsWith(ROOT_NODE)) {
-				changed = changed.substring(ROOT_NODE.length(), original.length());
-				if (changed.endsWith(DIV)) {
-					changed = changed.substring(0,
-						changed.length() - DIV.length());
-				}
-			}
-		}
-		return changed;
 	}
 
 	/**

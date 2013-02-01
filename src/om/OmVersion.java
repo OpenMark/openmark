@@ -18,34 +18,46 @@
 package om;
 
 import java.io.IOException;
-
-import util.misc.IO;
+import java.util.Properties;
 
 /** Static class that only provides information about the build version */
 public abstract class OmVersion
 {
-	private static String loadVersion()
+	private static String version;
+	private static String buildInfo;
+
+	private static void loadVersion()
 	{
+		if (version != null) {
+			return;
+		}
 		try
 		{
-			return IO.loadString(OmVersion.class.getResourceAsStream("version.txt"));
+			Properties versionInfo = new Properties();
+			versionInfo.load(OmVersion.class.getResourceAsStream("version.properties"));
+			version = versionInfo.getProperty("buildversion");
+			buildInfo = versionInfo.getProperty("gitbranch") + " (" +
+					versionInfo.getProperty("githash", "Err") + ")";
 		}
 		catch(IOException ioe)
 		{
-			return "Err|0000-00-00 00:00:00";
+			version = "Err";
+			buildInfo = "Err";
 		}
 	}
 
 	/** @return Version identifier for this version of the system, e.g. "M12" or "1.0" */
 	public static String getVersion()
 	{
-		return loadVersion().split("\\|")[0];
+		loadVersion();
+		return version;
 	}
 
 	/** @return Build date for this version of the system, e.g. "2005-10-06 14:45:22" */
 	public static String getBuildDate()
 	{
-		return loadVersion().split("\\|")[1];
+		loadVersion();
+		return buildInfo;
 	}
 
 	/**

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import om.abstractservlet.DisplayUtils;
+import om.DisplayUtils;
 import om.abstractservlet.RenderedOutput;
 import util.misc.Strings;
 

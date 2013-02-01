@@ -22,7 +22,7 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import om.*;
-import om.helper.QEngineConfig;
+import om.qengine.QEngineConfig;
 import om.question.*;
 import om.stdcomponent.*;
 

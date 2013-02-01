@@ -6,10 +6,10 @@ import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 
-import om.AbstractTestCase;
 import om.Log;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestParameterNames;
+import om.tnavigator.AbstractNavigatorTestCase;
 import om.tnavigator.JUnitTestCaseUserSession;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.TestCaseServletContext;
@@ -25,7 +25,7 @@ import om.tnavigator.teststructure.TestDeployment;
 
 import org.w3c.dom.Document;
 
-public abstract class AbstractAuthorshipTestCase extends AbstractTestCase {
+public abstract class AbstractAuthorshipTestCase extends AbstractNavigatorTestCase {
 
 	protected TestAuthorshipConfirmationTransaction dummyTransaction;
 
@@ -56,11 +56,11 @@ public abstract class AbstractAuthorshipTestCase extends AbstractTestCase {
 	protected abstract OmQueries getOmQueries(String s) throws Exception;
 
 	protected Document getParentTemplate() throws Exception {
-		return getPickUpDocument(PARENT_TEMPLATE);
+		return getPickUpDocument(PARENT_TEMPLATE, AbstractNavigatorTestCase.class);
 	}
 
 	protected Document template() throws Exception {
-		return getPickUpDocument(AUTHORSHIP_CONFIRMATION_TEMPLATE_NAME);
+		return getPickUpDocument(AUTHORSHIP_CONFIRMATION_TEMPLATE_NAME, AbstractNavigatorTestCase.class);
 	}
 
 	protected TestCaseNavigationServlet newTestCaseNavigationServlet()

@@ -18,17 +18,6 @@ import util.xml.XML;
 
 public class XMLAuthorshipConfirmationBuilderTestCases extends AbstractAuthorshipTestCase {
 
-	@Test public void testDisplay() throws Exception {
-		Document doc = template();
-		assertNotNull(doc);
-		String output = XML.saveString(doc);
-		assertNotNull(output);
-		StandardAuthorshipConfirmationRequestHandling rh = new StandardAuthorshipConfirmationRequestHandling();
-		output = rh.stripForDisplay(output);
-		assertFalse(output.contains("<div class=\"authority-confirmation\">"));
-		assertFalse(output.endsWith("</div>"));
-	}
-
 	@Test public void testPickUpTemplate() throws Exception {
 		Document doc = template();
 		assertNotNull(doc);

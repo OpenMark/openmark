@@ -24,7 +24,7 @@ public class TestQuestionBankCleanerParse extends AbstractTestCase {
 	}
 
 	@Test public void testRetrieveCompositeQuestionsAlternative() throws Exception {
-		File f = pickUpFile(ICMA);
+		File f = pickUpFile(ICMA, TestQuestionBankCleanerParse.class);
 		assertNotNull(f);
 		QuestionBankCleaner qbc = new QuestionBankCleaner();
 		List<String> questions = qbc.retrieveCompositeQuestions(f);

@@ -58,7 +58,7 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 		imageTypes.add(FileTypesEnum.png.toString());
 		imageTypes.add(FileTypesEnum.jpg.toString());
 		imageTypes.add(FileTypesEnum.gif.toString());
-		Collections.unmodifiableList(imageTypes);
+		imageTypes = Collections.unmodifiableList(imageTypes);
 	}
 
 	public RequestResponse handle(HttpServletRequest request,

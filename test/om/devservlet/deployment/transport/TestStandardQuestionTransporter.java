@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
-import om.abstractservlet.DisplayUtils;
+import om.DisplayUtils;
 import om.abstractservlet.RenderedOutput;
 import om.devservlet.deployment.QuestionHolder;
 import om.devservlet.deployment.transport.StandardQuestionTransporter.LatestNameAndVersion;

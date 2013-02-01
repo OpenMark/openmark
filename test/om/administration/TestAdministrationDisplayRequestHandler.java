@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
-import om.AbstractRequestHandlerTestCase;
+import om.abstractservlet.AbstractRequestHandlerTestCase;
 import om.abstractservlet.RequestHandlerSettings;
 
 import org.junit.Test;
