@@ -56,15 +56,28 @@ public class TestDefinition
 	 */
 	TestDefinition(File f) throws OmException
 	{
+		this(parseFile(f));
+	}
+
+	private static Document parseFile(File f) throws OmException {
 		try
 		{
-			// Parse XML
-			dTest=XML.parse(f);
+			return XML.parse(f);
 		}
 		catch(IOException ioe)
 		{
 			throw new OmException("Error loading/parsing test definition: "+f,ioe);
 		}
+	}
+
+	/**
+	 * Constructs test definition and checks format.
+	 * @param f File to use
+	 * @throws OmFormatException Anything wrong with the specific format
+	 */
+	TestDefinition(Document d) throws OmException
+	{
+		dTest = d;
 
 		try
 		{
@@ -132,7 +145,7 @@ public class TestDefinition
 		}
 		catch(XMLException xe)
 		{
-			throw new OmFormatException("Error processing test definition: "+f,xe);
+			throw new OmFormatException("Error processing test definition", xe);
 		}
 	}
 

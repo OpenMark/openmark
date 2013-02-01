@@ -28,11 +28,11 @@ public class AbstractNavigatorTestCase extends AbstractTestCase {
 	}
 
 	protected TestDeployment pickUpTestDeployment(String name) throws Exception {
-		return new TestDeployment(pickUpFile(name));
+		return new TestDeployment(getPickUpDocument(name, AbstractTestCase.class), null, name);
 	}
 
 	protected JUnitTestCaseTestDefinition pickUpTestDefinition(String name) throws Exception {
-		return new JUnitTestCaseTestDefinition(pickUpFile(name));
+		return new JUnitTestCaseTestDefinition(getPickUpDocument(name, AbstractTestCase.class));
 	}
 
 	protected class TestCaseNavigationServlet extends NavigatorServlet {

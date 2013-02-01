@@ -42,7 +42,7 @@ public class AbstractTestCase {
 		if (configuredLocation != null) {
 			return configuredLocation + File.separator + "test-data";
 		} else {
-			File fileLocation = pickUpFile(TEST_CASE_PROGRESS_SUMMARY);
+			File fileLocation = pickUpFile(TEST_CASE_PROGRESS_SUMMARY, AbstractTestCase.class);
 			assertNotNull(fileLocation);
 			return fileLocation.getAbsolutePath().substring(0,
 					fileLocation.getAbsolutePath().lastIndexOf(File.separator) + 1);

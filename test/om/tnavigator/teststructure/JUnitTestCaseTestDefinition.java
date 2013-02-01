@@ -1,6 +1,5 @@
 package om.tnavigator.teststructure;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -8,8 +7,8 @@ import java.util.Random;
 
 import om.OmException;
 import om.OmFormatException;
-import om.tnavigator.teststructure.TestDefinition;
-import om.tnavigator.teststructure.TestGroup;
+
+import org.w3c.dom.Document;
 
 public class JUnitTestCaseTestDefinition extends TestDefinition {
 
@@ -17,8 +16,8 @@ public class JUnitTestCaseTestDefinition extends TestDefinition {
 
 	private static String GET = "get";
 
-	public JUnitTestCaseTestDefinition(File f) throws OmException {
-		super(f);
+	public JUnitTestCaseTestDefinition(Document d) throws OmException {
+		super(d);
 	}
 
 	TestGroup getResolvedContent(long lRandomSeed) throws OmFormatException {

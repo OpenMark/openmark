@@ -154,8 +154,6 @@ public class TestDeployment
 	public boolean isUsingEmailStudents() {
 		return bhasEmailStudents;
 	}
-	
-	
 
 	/**
 	 * Constructs test definition and checks format.
@@ -165,19 +163,30 @@ public class TestDeployment
 	 */
 	public TestDeployment(File f) throws OmException
 	{
-		String sErrorIdentifier=f.getName();
+		this(parseFile(f), f.getParentFile(), f.getName());
+	}
 
+	private static Document parseFile(File f) throws OmException {
 		try
 		{
-			// Parse XML
-			dDeploy=XML.parse(f);
+			return XML.parse(f);
 		}
 		catch(IOException ioe)
 		{
-			throw new OmException("Error loading/parsing "+sErrorIdentifier,ioe);
+			throw new OmException("Error loading/parsing " + f.getName(),ioe);
 		}
+	}
 
-		testBank = f.getParentFile();
+	/**
+	 * Constructs test definition and checks format.
+	 * @param f File to use
+	 * @throws OmException Failure loading file or parsing XML
+	 * @throws OmFormatException Anything wrong with the specific format
+	 */
+	public TestDeployment(Document d, File bank, String sErrorIdentifier) throws OmException
+	{
+		dDeploy = d;
+		testBank = bank;
 
 		try
 		{
