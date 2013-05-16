@@ -2,7 +2,9 @@ package om.devservlet.deployment;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,11 +64,12 @@ public class QuestionDeploymentRenderer {
 	 * @author Trevor Hinson
 	 */
 	private Set<String> identifyDeployableQuestions() {
-		Set<String> deployable = new HashSet<String>();
+		Set<String> deployable = new LinkedHashSet<String>();
 		if (Strings.isNotEmpty(deployableQuestionLocation)) {
 			File f = new File(deployableQuestionLocation);
 			if (f.exists() ? f.isDirectory() : false) {
 				File[] deploys = f.listFiles(new TestQuestionFilter());
+				Arrays.sort(deploys);
 				for (int i = 0; i < deploys.length; i++) {
 					File fi = deploys[i];
 					if (null != fi ? fi.canRead() : false) {
@@ -223,6 +226,7 @@ public class QuestionDeploymentRenderer {
 
 	private String renderSelectedQuestions(List<String> names) {
 		StringBuffer sb = new StringBuffer("<ul>");
+		Collections.sort(names);
 		for (String name : names) {
 			sb.append("<li>").append(name).append("</li>");
 		}
