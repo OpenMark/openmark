@@ -10,10 +10,17 @@ iframe
 {
 	border:1px DOTTED;
 }
-
+.editadvancedfield.readonly
+{
+    margin: 0;
+    padding: 0;
+}
 .editadvancedfield.readonly span.answer
 {
 	background-color: white;
-	border: 1px rgb(187,187,187) solid;
-	padding: 0.3em;
+	border: 1px %%COLOUR:disabledtext%% solid;
+	margin: 0;
+    padding: 1px 0 0 3px;
+	display: block;
+    overflow-x: auto;
 }

@@ -31,7 +31,9 @@ import om.stdquestion.QDocument;
 import org.w3c.dom.Element;
 
 import util.misc.Strings;
+import util.xml.XHTML;
 import util.xml.XML;
+import util.xml.XMLException;
 
 /**
  * A text field that can allow the user to enter superscripts and subscripts, or
@@ -292,17 +294,24 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 
 	protected void applyTextArea(QContent qc, Element eDiv, SubSupEnum enu,
 		double dZoom) throws OmException {
-		
+		int pixelHeight = (int) (60 * dZoom);
+		int pixelWidth = (int) (10 * dZoom * getInteger(PROPERTY_COLS));
 		// Don't use a text area or editor when question is read only
 		if (!isEnabled()) {
 			Element div = qc.createElement("div");
-			double spacerHeight = 36*dZoom;
+			double spacerHeight = 30*dZoom;
 			div.setAttribute("style", "height:"+spacerHeight+"px");
 			div.setAttribute("class", "answerSpacer");
 			eDiv.appendChild(div);
+			eDiv.setAttribute("style", "width:"+pixelWidth+"px");
 			Element span = qc.createElement("span");
-			span.setTextContent(getValue());
+			try {
+				XML.importChildren(span, XML.parse("<div>" + getValue() + "</div>").getDocumentElement());
+			} catch (XMLException e) {
+				throw new OmException(e);
+			}
 			span.setAttribute("class", "answer");
+			span.setAttribute("style", "height:"+(pixelHeight-23)+"px");
 			eDiv.appendChild(span);
 			addLangAttributes(span);
 			return;
@@ -320,8 +329,8 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 		String elements = QDocument.ID_PREFIX + QDocument.OM_PREFIX
 			+ getID() + "_iframe";
 		s2.setAttribute("src", TINYMCE+"tiny_mce_settings.js?"
-			+ "&h=" + "" + (int) (60 * dZoom)
-			+ "&w=" + (int) (10 * dZoom * getInteger(PROPERTY_COLS))
+			+ "&h=" + pixelHeight
+			+ "&w=" + pixelWidth
 			+ "&t=" + outputType
 			+ "&e=" + elements
 			+ "&ro=" + isEnabled()
