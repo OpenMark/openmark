@@ -372,17 +372,19 @@ public class QDocument
 	{
 		String[] asParams=ap.getParameterList();
 
-		// Send the specific value sets to their components
-		for(int iParam=0;iParam<asParams.length;iParam++)
-		{
-			if(asParams[iParam].startsWith(VALUE_PREFIX))
-				find(asParams[iParam].substring(VALUE_PREFIX.length())).formSetValue(
-					ap.getParameter(asParams[iParam]),ap);
-		}
+		if (!Arrays.asList(asParams).contains("-finish")) {
+			// Send the specific value sets to their components
+			for(int iParam=0;iParam<asParams.length;iParam++)
+			{
+				if(asParams[iParam].startsWith(VALUE_PREFIX))
+					find(asParams[iParam].substring(VALUE_PREFIX.length())).formSetValue(
+						ap.getParameter(asParams[iParam]),ap);
+			}
 
-		// Tell all components that values were set (this allows components that
-		// either receive something or nothing, like checkboxes, to work)
-		informFormValuesSet(qcRoot,ap);
+			// Tell all components that values were set (this allows components that
+			// either receive something or nothing, like checkboxes, to work)
+			informFormValuesSet(qcRoot,ap);
+		}
 
 		// Pass on action calls
 		for(int iParam=0;iParam<asParams.length;iParam++)
