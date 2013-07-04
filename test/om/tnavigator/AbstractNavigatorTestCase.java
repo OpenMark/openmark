@@ -10,7 +10,6 @@ import java.util.Map;
 import om.AbstractTestCase;
 import om.Log;
 import om.axis.qengine.Score;
-import om.tnavigator.NavigatorServlet;
 import om.tnavigator.scores.CombinedScore;
 import om.tnavigator.teststructure.JUnitTestCaseTestDefinition;
 import om.tnavigator.teststructure.TestDeployment;
