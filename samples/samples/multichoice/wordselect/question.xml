@@ -1,0 +1,130 @@
+<question class="samples.multichoice.wordselect.WordSelect" plainmode="no">
+
+	<scoring>
+		<marks>100</marks>
+	</scoring>
+
+	<layout>
+		<row height="0"/>
+		<row height="0"/>
+		<column width="592"/>
+	</layout>
+
+	<!-- Defines the left-hand question box -->
+	<box gridx="0" gridy="0" id="inputbox" background="input">
+		<emphasis>wordselect</emphasis><break/>
+		<t id="scrolldown" display="no">
+			 <emphasis>Feedback is now shown at the
+				 bottom of screen. You may have to scroll down.
+			 </emphasis>
+			 <gap/>
+		 </t>
+
+		Can you find the finite verbs in the text
+		below from the OU Student Code? You only need to mark
+		the first word of any finite verbal group.
+		<gap/>
+
+		<emphasis type="italic">Select words by clicking on them or use
+			the tab key to cycle through the words and the
+			space bar to select/deselect words
+		</emphasis>
+		<gap/>
+
+		<wordselect id="para_0">
+			The purpose of this policy <sw>is*</sw> to assist in developing and
+			encouraging a learning environment and culture in which
+			bullying and harassment <sw>are*</sw> unacceptable. The policy
+			<sw>explains*</sw> what bullying and harassment <sw>are*</sw> and what
+			steps individuals <sw>can*</sw> take if they <sw>encounter*</sw> such behaviour.
+		</wordselect>
+		<break/>
+		[..]
+		<break/>
+		<wordselect id="para_1">
+			Some behaviour <sw>can*</sw> cause offence where there <sw>is*</sw> no
+			malicious intent. The impact of behaviour on a person
+			affected by it <sw>is*</sw> more relevant than the motive
+			behind it. It <sw>is*</sw> relevant to ask the question: <sw>Would*</sw> a
+			reasonable person think that the behaviour <sw>amounted*</sw> to bullying or
+			harassment? In most cases people <sw>know*, </sw> or <sw>should*</sw> know, that
+			remarks or actions <sw>are*</sw> causing offence, and that causing
+			such offence <sw>is*</sw> unacceptable.
+		</wordselect>
+		<break/>
+		<wordselect id="para_2">
+			One trivial incident <sw>will*</sw> not constitute bullying or harassment.
+			However, a series of such incidents <sw>might*</sw> do so, particularly
+			where someone <sw>has*</sw> expressed a dislike of such behaviour or <sw>has*</sw> asked
+			for it to stop. Threatened violence, threats relating to assessment
+			issues, promises of special treatment in return for sexual
+			favours, <sw>are*</sw> examples where one incident <sw>would*</sw> be sufficient.
+		</wordselect>
+		<break/>
+		<wordselect id="para_3">
+			Some forms of harassment <sw>are*</sw> covered by legislation including
+			the Sex Discrimination Act, the Disability Discrimination Act,
+			and the Race Relations Act.
+		</wordselect>
+		<gap/>
+		Open University (2007) Student Code for Dealing with Bullying and Harassment.
+		<break/>
+		Available from: http://www3.open.ac.uk/our-student-policies/pdf/bullying.pdf
+		<gap/>
+
+		<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+
+	</box>
+
+	<!-- Defines the right-hand answer box, which is initially hidden  -->
+	<box gridx="0" gridy="1" id="answerbox" display="no" background="answer">
+
+	<t id="answerboxtext">
+		<t id="right">Well done! Your answer is correct.</t>
+		<t id="partial">Your answer is partially correct.</t>
+		<t id="wrong"><t id="still"></t></t>
+		<gap/>
+
+		<t id="howmany">
+			You have selected __TOTALSELECTED__ words. You have correctly identified
+			__SWWORDS__ of the __TOTALSWWORDS__ finite verbs in the text.
+			<gap/>
+		</t>
+
+		<t id="feedback">
+				Remember that finite verbs can change from singular to plural
+				(e.g. is - are), or from present to past tense (e.g. come - came),
+				whereas non-finite verbs are not marked for number or for tense.
+				The exceptions are modal verbs and imperatives, which are always
+				finite even when they do not show number/tense.
+		</t>
+
+		<t id="showAns" display="no">
+			You correctly identified
+			__SWWORDS__ of the __TOTALSWWORDS__ finite verbs
+			in the text<t id="extraSelections" display="no">
+			 but you have also selected __TOTALINCORRECTSELECS__ other words</t>.
+			<gap/>
+			Correct choices are shown with dots underneath.<break/>
+			Incorrect choices are shown with a single underline.<break/>
+			Omitted finite verbs are shown with a double underline.
+			<gap/>
+		</t>
+
+		<t id="answer">
+			Your percentage score on this question is __PERCENT__%.
+			<t id="not100" display="no">
+				<break/>
+				(To obtain 100% you must identify all finite verbs at your first attempt.)
+			</t>
+		</t>
+
+		<gap/>
+	</t>
+
+		<button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
+
+	</box>
+
+</question>

@@ -278,7 +278,7 @@ public class WordSelectComponent extends QComponent
 					Element script=XML.createChild(outerBox,"script");
 					script.setAttribute("type","text/javascript");
 					XML.createText(script,
-						"addOnLoad(function() { geckoborder('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"'); });");
+						"addOnLoad(function() { wordGeckoBorder('"+getID()+checkwordID+"','"+QDocument.ID_PREFIX+"'); });");
 				}
 				String labelclass = "";
 

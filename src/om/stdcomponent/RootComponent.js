@@ -433,3 +433,11 @@ function om_attachEvent(e, code, element)
 		element.attachEvent('on'+e, code);
 	}
 }
+
+function khtmlForceRepaint(element)
+{
+	var oldDisplay = element.style.display;
+	element.style.display = "none";
+	element.offsetHeight;
+	element.style.display = oldDisplay;
+}

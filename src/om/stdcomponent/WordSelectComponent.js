@@ -7,7 +7,12 @@ function wordOnClick(checkboxID,idPrefix)
 	if (checkbox.checked) {
 		label.className = label.className + " selectedhilight";
 	} else {
-		label.className = label.className.replace("selectedhilight", "");
+		label.className = label.className.replace(" selectedhilight", "");
+	}
+	if (isKHTML) {
+		// Fix some Chrome layout glitches.
+		khtmlForceRepaint(label.parentNode);
+		checkbox.focus();
 	}
 }
 
@@ -19,9 +24,13 @@ function wordOnFocus(checkboxID,idPrefix)
 	if(!isIE7OrBelow){
 		div.className = div.className + " borderfocus";
 	}
+	if (isKHTML) {
+		// Fix some Chrome layout glitches.
+		khtmlForceRepaint(div);
+	}
 }
 
-function geckoborder(checkboxID,idPrefix)
+function wordGeckoBorder(checkboxID,idPrefix)
 {
 	// This is called onLoad and ulimately adds a transparent border around the
 	//the displayed word. This stops the words from moving around as the focus
@@ -36,5 +45,9 @@ function geckoborder(checkboxID,idPrefix)
 function wordOnBlur(checkboxID,idPrefix)
 {
 	var div = document.getElementById(idPrefix+'div_wordselectword_'+checkboxID);
-	div.className = div.className.replace("borderfocus", "");
+	div.className = div.className.replace(" borderfocus", "");
+	if (isKHTML) {
+		// Fix some Chrome layout glitches.
+		khtmlForceRepaint(div);
+	}
 }
