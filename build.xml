@@ -210,7 +210,7 @@
 			<include name="om/helper/"/>
 			<include name="om/qengine/"/>
 			<include name="om/question/"/>
-			<include name="om/stdcomponent/"/>
+			<include name="om/stdcomponent/*"/>
 			<include name="om/stdquestion/"/>
 			<include name="om/getOucuInfo/"/>
 			<include name="util/"/>
