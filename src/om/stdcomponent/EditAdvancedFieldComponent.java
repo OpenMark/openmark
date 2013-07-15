@@ -36,13 +36,11 @@ import util.xml.XML;
 import util.xml.XMLException;
 
 /**
- * A text field that can allow the user to enter superscripts and subscripts, or
- * performs automatic subscript formatting for chemical formulae.<br/>
+ * A text field that can allow the user to enter superscripts and subscripts.<br/>
  * Subscript and superscript modes can be changed using linked checkboxes or by
  * using the up and down arrow keys. <br/>
  * The <b>plain</b> text version of the control asks the user to type the sub
- * and sup tags themselves and in the chemical formula mode to ignore the
- * formatting. <br/>
+ * and sup tags themselves. <br/>
  * 
  * <h2>XML usage</h2> &lt;editadvancedfield id='reaction' type='superscript' /&gt;
  * <h2>Properties</h2>
@@ -85,7 +83,7 @@ import util.xml.XMLException;
  * </tr>
  * <tr>
  * <td>type</td>
- * <td>(string; 'superscript' | 'subscript' | 'both' | 'chem')</td>
+ * <td>(string; 'superscript' | 'subscript' | 'both')</td>
  * <td>Type of field.</td>
  * </tr>
  * </table>
@@ -169,7 +167,7 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 		defineString(PROPERTY_VALUE);
 		defineInteger(PROPERTY_COLS);
 		defineString(PROPERTY_LABEL);
-		defineString(PROPERTY_TYPE, "superscript|subscript|both|chem");
+		defineString(PROPERTY_TYPE, "superscript|subscript|both");
 		setString(PROPERTY_VALUE, "");
 		setInteger(PROPERTY_COLS, 20);
 	}
@@ -240,7 +238,7 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 	}
 
 	protected String determineOutputType(SubSupEnum enu) throws OmException {
-		String queryString = "sub_sup";
+		String queryString = "sub,sup";
 		if (SubSupEnum.superscript.toString().equals(enu.toString())) {
 			queryString = "sup";
 		} else if (SubSupEnum.subscript.toString().equals(enu.toString())) {	
@@ -401,9 +399,6 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 								+ ((sType.equals("subscript") || sType
 										.equals("both")) ? " Type [ before, and "
 										+ "] after, any text you want subscripted."
-										: "")
-								+ ((sType.equals("chem")) ? " Type your answer ignoring subscripting. "
-										+ "For example, two water molecules should be entered as 2H2O."
 										: "") + ")");
 
 		Element eInput = XML.createChild(eDiv, "input");
@@ -495,9 +490,8 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 			sValue = sValue.replaceAll("</SUB>", "</sub>");
 			// remove redundant pairs
 			sValue = sValue.replaceAll("</sup><sup>|</sub><sub>", "");
-			// if not chemical formula need to save sup and sub
-			if (!getString(PROPERTY_TYPE).equals("chem"))
-				sValue = sValue.replaceAll("<(sup|/sup|sub|/sub)>",
+			// need to save sup and sub
+			sValue = sValue.replaceAll("<(sup|/sup|sub|/sub)>",
 						"`om~$1~mo`");
 			// remove all other tags
 			sValue = sValue.replaceAll("<[^<]+>", "");

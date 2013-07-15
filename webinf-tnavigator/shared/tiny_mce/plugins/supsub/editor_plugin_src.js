@@ -37,6 +37,29 @@
          * @param {string} url Absolute URL to where the plugin is located.
          */
         init : function(ed, url) {
+            var t = this;
+
+            t.editor = ed;
+            
+            var enabled = [];
+            enabled['superscript']=true;
+            enabled['subscript']=true;
+            t.enabled = enabled;
+            
+            function setEnabled (n, v) {
+                enabled[n] = v;
+            }
+            t.setEnabled = setEnabled;
+            
+            function isEnabled (n) {
+                return t.enabled[n];
+            } 
+            t.isEnabled = isEnabled;
+            
+         // Register commands
+            ed.addCommand('supsubSetEnabled', setEnabled, t);
+            ed.addCommand('supsubIsEnabled', isEnabled, t);
+            
             ed.onKeyDown.add(function(ed, e) {
                 switch (e.keyCode) {
 
@@ -50,7 +73,7 @@
                     } else if (ed.queryCommandState('subscript')) {
                         // Is subscript. Do subscript again to turn it off.
                         ed.execCommand('subscript');
-                    } else {
+                    } else if(t.isEnabled('superscript')){
                         // Normal text. Make it superscript.
                         ed.execCommand('superscript');
                     }
@@ -63,7 +86,7 @@
                         ed.execCommand('superscript');
                     } else if (ed.queryCommandState('subscript')) {
                         // Already subscript. Do nothing.
-                    } else {
+                    } else if(t.isEnabled('subscript')){
                         // Normal text. Make it subscript.
                         ed.execCommand('subscript');
                     }
