@@ -540,7 +540,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 		mReplace.put("TITLEBAR", "Authorship Confirmation");
 		mReplace.put("CSSINDEX", "" + us.getICSSIndex());
 		mReplace.put("RESOURCES", "resources/" + us.getTestPosition());
-		mReplace.put("TINYMCE", "tiny_mce");
+		mReplace.put("TINYMCE", "tiny_mce/3.5.7b");
 		mReplace.put("ACCESS", getPrincipleObject(ra,
 			RequestParameterNames.AccessCSSAppend.toString()));
 		mReplace.put("TESTTITLE", us.getTestDefinition().getName());

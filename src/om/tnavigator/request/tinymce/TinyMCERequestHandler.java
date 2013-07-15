@@ -51,6 +51,14 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 	private static String UTF_8 = "UTF-8";
 
 	private static String SETTINGS = "settings";
+	
+	private static String CSS = "tinymce.css";
+	
+	private static String EXTRACSS = "extra.css";
+	
+	private static String VERSION = "3.5.7b";
+	
+	private static String TINYMCE = "tiny_mce";
 
 	private static List<String> imageTypes = new ArrayList<String>();
 
@@ -184,7 +192,7 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 		return suffix;
 	}
 
-	private String determineTinyMCEResourceFullPath(String filePath,
+	private String determineTinyMCEResourceFullPath (String filePath,
 		ServletContext sc) {
 		if (filePath.startsWith("/")) {
 			filePath = filePath.substring(1, filePath.length());
@@ -195,12 +203,25 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 			int k = fileName.indexOf("?");
 			fileName = fileName.substring(0, k);
 		}
+		
 		String fullPath = null;
 		if (fileName.startsWith(SHARED_AREA)) {
 			fullPath = sc.getRealPath(fileName);
 		} else {
+			if (fileName.contains(SETTINGS) || fileName.contains(CSS)) {
+				// Remove version number from fileName.
+				n = fileName.indexOf("/");
+				int l = fileName.lastIndexOf("/");
+				fileName = fileName.substring(0, n+1)+fileName.substring(l+1, fileName.length());
+			} else if (fileName.contains(EXTRACSS)) {
+				// Remove double TINYMCE reference from fileName.
+				n = fileName.lastIndexOf(TINYMCE);
+				int l = fileName.lastIndexOf(TINYMCE);
+				fileName = fileName.substring(0, n)+fileName.substring(l+TINYMCE.length()+1, fileName.length());
+			}
 			fullPath = sc.getRealPath(SHARED_AREA + fileName);
 		}
+
 		return fullPath;
 	}
 

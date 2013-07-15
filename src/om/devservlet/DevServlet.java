@@ -129,7 +129,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 
 	private Log deployLog;
 	
-	private static String TINYMCE="tiny_mce/";
+	private static String TINYMCE="tiny_mce/3.5.7b/";
 
 	/** Clear/reset question data */
 	private void resetQuestion()
@@ -1032,7 +1032,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 		Map<String,String> mReplace=new HashMap<String,String>(getLabelReplaceMap());
 		mReplace.put("RESOURCES","resources");
 		mReplace.put("IDPREFIX","");
-		mReplace.put("TINYMCE","tiny_mce");
+		mReplace.put("TINYMCE",TINYMCE);
 
 		XML.replaceTokens(eQuestion,mReplace);
 
