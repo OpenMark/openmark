@@ -3425,6 +3425,9 @@ public class NavigatorServlet extends HttpServlet {
 				sCurrentSection = tl.getSection();
 			}
 			if (tl instanceof TestQuestion) {
+				
+				iNumInSection++;			
+
 				// getNumber is wrong, need to get the numb
 				if (((TestQuestion) tl).getNumber() == tq.getNumber()) {
 					return iNumInSection;
