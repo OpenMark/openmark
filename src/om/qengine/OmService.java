@@ -333,6 +333,7 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 				{
 					// Question used during automated check
 					bytes=IO.loadBytes(getClass().getResourceAsStream("testquestion.jar"));
+					qk.setContentType(QuestionCache.jarQuestionType);
 				}
 				else
 				{

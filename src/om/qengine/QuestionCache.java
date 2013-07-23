@@ -119,8 +119,7 @@ public class QuestionCache {
 		}
 
 		public boolean isDynamicQuestion() {
-			return null != contentType ? dynamicQuestionType
-					.equals(contentType) : false;
+			return null != contentType && dynamicQuestionType.equals(contentType);
 		}
 
 		public void setContentType(String s) {
@@ -421,8 +420,18 @@ public class QuestionCache {
 	 */
 	protected OmClassLoaderContract determineClassLoader(File f,
 			QuestionCache.QuestionKey qk) throws OmException {
-		return null != qk ? qk.isDynamicQuestion() ? newDynamicOMClassLoader(f,
-				qk) : newClosableClassLoader(f, qk) : null;
+		if (null == qk)
+		{
+			return null; // Wouldn't it be better to throw the NPE, and find and fix the problem?
+		}
+		if (qk.isDynamicQuestion())
+		{
+			return newDynamicOMClassLoader(f, qk);
+		}
+		else
+		{
+			return newClosableClassLoader(f, qk);
+		}
 	}
 
 	protected DynamicOMClassLoader newDynamicOMClassLoader(File f,
