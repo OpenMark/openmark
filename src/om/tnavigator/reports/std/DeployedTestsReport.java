@@ -5,10 +5,16 @@ package om.tnavigator.reports.std;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,12 +25,18 @@ import om.OmException;
 import om.OmUnexpectedException;
 import om.administration.dataDeletion.DataDeletionTestBank;
 import om.tnavigator.NavigatorServlet;
-import om.tnavigator.reports.*;
+import om.tnavigator.reports.HtmlReportWriter;
+import om.tnavigator.reports.OmReport;
+import om.tnavigator.reports.TabularReportBase;
+import om.tnavigator.reports.TabularReportWriter;
 import om.tnavigator.teststructure.TestDeployment;
 import om.tnavigator.util.IPAddressCheckUtil;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
+import util.misc.UtilityException;
 import util.xml.XML;
 import util.xml.XMLException;
 
@@ -340,7 +352,7 @@ public class DeployedTestsReport implements OmReport {
 			try {
 				linkToDownloads = IPAddressCheckUtil.checkSecureIP(
 					request, ns.getLog(), ns.getNavigatorConfig());
-			} catch (UnknownHostException e) {
+			} catch (UtilityException e) {
 				// Ingore this, we just don't show the links in this case.
 			}
 

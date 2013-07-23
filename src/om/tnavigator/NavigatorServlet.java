@@ -1524,15 +1524,7 @@ public class NavigatorServlet extends HttpServlet {
 			// This just means that data was already sent to user
 		} catch (Throwable t) {
 			try {
-				String mess;
-				if (t.getMessage() == null)
-				{
-					mess = "Unknown error";
-				}
-				else
-				{
-					mess = t.getMessage();
-				}
+				String mess = t.getMessage() == null ? "Unknown error" : t.getMessage();
 				sendError(null, request, response,
 						HttpServletResponse.SC_FORBIDDEN,
 						false, false,null,

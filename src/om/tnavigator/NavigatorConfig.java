@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import om.tnavigator.db.OmQueries;
+import om.tnavigator.util.IPAddressCheckUtil;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -228,20 +229,19 @@ public class NavigatorConfig
 		authClass=XML.getRequiredAttribute(eAuth,"plugin");
 		authParams=getParams(eAuth);
 
-		trustedAddresses=XML.getTextFromChildren(XML.getChild(eRoot,"trustedaddresses"),"address");
-		for(int i=0;i<trustedAddresses.length;i++)
+		try
 		{
-			if(!("."+trustedAddresses[i]).matches("(.(([0-9]+(-[0-9]+)?)|\\*)){4}"))
-				throw new IOException(
-					"navigator.xml: <trustedaddresses> <address> not in valid format: "+trustedAddresses[i]);
-		}
+			trustedAddresses=XML.getTextFromChildren(XML.getChild(eRoot,"trustedaddresses"),"address");
+			IPAddressCheckUtil.checkIpAddressPatterns(trustedAddresses,
+					"navigator.xml: <trustedaddresses> <address> not in valid format: ");
 
-		secureAddresses=XML.getTextFromChildren(XML.getChild(eRoot,"secureaddresses"),"address");
-		for(int i=0;i<secureAddresses.length;i++)
+			secureAddresses=XML.getTextFromChildren(XML.getChild(eRoot,"secureaddresses"),"address");
+			IPAddressCheckUtil.checkIpAddressPatterns(secureAddresses,
+					"navigator.xml: <secureaddresses> <address> not in valid format: ");
+		}
+		catch(Exception e)
 		{
-			if(!("."+secureAddresses[i]).matches("(.(([0-9]+(-[0-9]+)?)|\\*)){4}"))
-				throw new IOException(
-					"navigator.xml: <secureaddresses> <address> not in valid format: "+secureAddresses[i]);
+			throw new IOException(e);
 		}
 
 		Mail.setSMTPHost(XML.getText(eRoot,"smtpserver"));

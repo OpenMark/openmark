@@ -210,6 +210,8 @@ public class RequestDelegation implements RequestManagement {
 				}
 			} catch (UnknownHostException x) {
 				throw new RequestHandlingException(x);
+			} catch (UtilityException x) {
+				throw new RequestHandlingException(x);
 			}
 		}
 		return allowed;

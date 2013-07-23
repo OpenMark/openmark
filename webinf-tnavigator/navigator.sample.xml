@@ -32,18 +32,17 @@ requests for this file, so your database password should be safe.
 			 production system, or ensure that nobody who shouldn't have access to
 			 this information can log onto the specified addresses. -->
 	<trustedaddresses>
-		<address>127.0.0.1</address>
-		<!-- Examples of other ways to specify this data (you can have multiple
-				 addresses, too):
+		<!-- Examples ways to specify this. Remote IPs that match any one of these options are permitted. -->
+		<address>127.0.0.1</address>                   <!-- Particular IP4 address. -->
+		<address>137.108.*.*</address>                 <!-- IP4 address with some bytes unrestricted. -->
+		<address>194.66.128-159.*</address>            <!-- You can also specify ranges for a byte for IP4. -->
 
-				 <address>137.108.*.*</address>
-				 <address>194.66.128-159.*</address>
-
-				 IPv4 only; IPv6 addresses will never be seen as trusted (unless they are
-				 wrappers around IPv4 addresses). -->
+		<address>fe80::d1ae:e8:fdf0:1274/128</address> <!-- Particular IP6 address. -->
+		<address>1:2:3:4::/64</address>                <!-- IP6 address range. -->
 	</trustedaddresses>
 
-	<!-- IP addresses from which you can run system reports. -->
+	<!-- IP addresses from which you can run system reports.
+			Same format as <trustedaddresses>. -->
 	<secureaddresses>
 		<address>127.0.0.1</address>
 	</secureaddresses>
