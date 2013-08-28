@@ -18,8 +18,10 @@
 package om.helper;
 
 import util.misc.Strings;
+
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.ArrayList;
 
 /**
  * <p>The OpenMark <code>PMatch</code> (pattern match) class is used to test
@@ -32,6 +34,13 @@ import java.util.regex.Matcher;
  * </ul>
  * </p>
  *
+ * <p>Changes since OpenMark 1.16<br>
+ * It is now possible to define synonyms for words with
+ * m.synonym("word", "synonym list");
+ * enabling the single "word" to be placed in various matches rather than having
+ * to repeat the "synonym list" time and again. Before the match is carried out the
+ * "word" is replaced (note replaced and not extended) by the "synonym list".
+ * </p>
  * <p>Changes since OpenMark 1.7.2<br>
  * <ul>
  * <li>Experience has shown that the proximity function delivers much of
@@ -306,7 +315,9 @@ public class PMatch
 	private String 	patternWords[];
 	private String	words[];
 	private	int		wordsLessEndSentences;
-
+	
+	private ArrayList<String>	synonymPattern, synonyms;
+	
 	/**
 	  * Constructs a response object via setResponse()
 	  * @param String response
@@ -314,6 +325,9 @@ public class PMatch
 	  */
 	public PMatch(String response) {
 
+		synonymPattern = new ArrayList<String>();
+		synonyms = new ArrayList<String>();
+		
 		setResponse(response);
 	}
 
@@ -322,6 +336,10 @@ public class PMatch
 	  * using setResponse().
 	  */
 	public PMatch() {
+
+		synonymPattern = new ArrayList<String>();
+		synonyms = new ArrayList<String>();
+
 		setResponse("");
 	}
 
@@ -1030,12 +1048,21 @@ public class PMatch
 		int				i;
 		String			lPattern;
 		StringBuilder	sb = new StringBuilder(100);
+		String			patternsy;
 		
-		// start by searching for word sequences contained in [] which are
+		// start by adding in synonyms
+		patternsy = pattern;
+		if (synonyms.size() > 0) {
+			for (i = 0; i < synonyms.size(); ++i) {
+				patternsy = patternsy.replaceAll((String)synonymPattern.get(i), (String)synonyms.get(i));
+			}
+		}
+		
+		// continue by searching for word sequences contained in [] which are
 		// alternatives to other single words or other sequences in []
 		
 		sb.delete(0, 100);
-		sb.insert(0, pattern);
+		sb.insert(0, patternsy);
 		do {
 			bracketedSequenceFound = false;
 			braPtr = sb.indexOf("[", ketPtr+1);
@@ -1056,7 +1083,7 @@ public class PMatch
 		} while (bracketedSequenceFound);
 		
 		if (bracketedSequenceCount == 0) { // single match without alternative phrases starts here
-			return(matchMain(pattern));
+			return(matchMain(patternsy));
 		}
 		else { // this match has alternative phrases that require splitting
 			lPattern = sb.toString();
@@ -1188,6 +1215,17 @@ public class PMatch
 		++iptr;
 	} while (iptr < fullLength);
 	return(length);
+	}
+	////////////////////////////////////////////////////////////////////////////////
+
+	/** Store synonyms
+	  * @param String synonymPattern, synonyms
+	  * 
+	 **/
+	public void synonym(String lsynonymPattern, String lsynonyms)
+	{
+		synonymPattern.add(lsynonymPattern);
+		synonyms.add(lsynonyms);
 	}
 
 }
