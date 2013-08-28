@@ -788,10 +788,12 @@ public class CanvasComponent extends QComponent implements World.Context
 			{
 				try
 				{
-					m.iX=(int)(Integer.parseInt(
-						ap.getParameter("canvasmarker_"+getID()+"_"+i+"x")) / dZoom);
-					m.iY=(int)(Integer.parseInt(
-						ap.getParameter("canvasmarker_"+getID()+"_"+i+"y")) / dZoom);
+					/* convert it as a float first, then round and convert to integer, that way
+					 * we catch if the javascript is sending us floats */
+					m.iX=(int)(Math.round(Float.parseFloat(
+						ap.getParameter("canvasmarker_"+getID()+"_"+i+"x")) / dZoom));
+					m.iY=(int)(Math.round(Float.parseFloat(
+						ap.getParameter("canvasmarker_"+getID()+"_"+i+"y")) / dZoom));
 				}
 				catch(NumberFormatException nfe)
 				{
