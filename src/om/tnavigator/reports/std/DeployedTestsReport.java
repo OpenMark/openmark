@@ -34,6 +34,8 @@ import util.xml.XMLException;
 public class DeployedTestsReport implements OmReport {
 	private final static Pattern filenamePattern = Pattern.compile("^(.*)\\.deploy\\.xml$");
 	private final static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private final static DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private final static  String FILE_MISSING="File missing";
 
 	private NavigatorServlet ns;
 
@@ -97,7 +99,7 @@ public class DeployedTestsReport implements OmReport {
 		
 		public Test(String deploy, File deployFile, File testBank) throws OmException {
 			this.deploy = deploy;
-			deployModified = dateFormat.format(deployFile.lastModified());
+			deployModified = dateTimeFormat.format(deployFile.lastModified());
 			TestDeployment def;
 			try {
 				def = new TestDeployment(deployFile);
@@ -121,9 +123,9 @@ public class DeployedTestsReport implements OmReport {
 				test = def.getDefinition();
 				File testFile = new File(testBank, test + ".test.xml");
 				if (testFile.exists()) {
-					testModified = dateFormat.format(testFile.lastModified());
+					testModified = dateTimeFormat.format(testFile.lastModified());
 				} else {
-					testModified = "File missing";
+					testModified = FILE_MISSING;
 				}
 			}
 			deployFileName=deployFile.getAbsolutePath();
@@ -141,13 +143,17 @@ public class DeployedTestsReport implements OmReport {
 			Map<String, String> row = new HashMap<String, String>();
 			row.put("deploy", deploy);
 			row.put("deploy" + HtmlReportWriter.LINK_SUFFIX, "../" + deploy + "/");
+			//row.put("deployfile", deploy);
+			//row.put("deployfile" + HtmlReportWriter.LINK_SUFFIX, "../!deploy/" + deploy);
 			row.put("deploymodified", deployModified);
+			row.put("deploymodified" + HtmlReportWriter.NOWRAP_SUFFIX, "");
 			row.put("test", test);
 			row.put("testmodified", testModified);
 			if (linkToDownloads) {
 				row.put("deploymodified" + HtmlReportWriter.LINK_SUFFIX, "../!deploy/" + deploy);
-				if (!"".equals(testModified)) {
+				if (!"".equals(testModified)&& !FILE_MISSING.equalsIgnoreCase(testModified)) {
 					row.put("testmodified" + HtmlReportWriter.LINK_SUFFIX, "../!test/" + test);
+					row.put("testmodified" + HtmlReportWriter.NOWRAP_SUFFIX, "");
 				}
 			}
 			row.put("open", open ? "Yes" : "No");
@@ -277,6 +283,7 @@ public class DeployedTestsReport implements OmReport {
 			for (Test test : tests) {
 				reportWriter.printRow(test.toRow(linkToDownloads));
 			}
+			return;
 		}
 
 		/* (non-Javadoc)

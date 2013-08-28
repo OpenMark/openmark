@@ -39,6 +39,8 @@ public class HtmlReportWriter extends TabularReportWriter
 	/** To make the HTML report render the "frog" column as a hyperlink, add a 
 	 * "frog_link" key to the data hash. */
 	public static final String LINK_SUFFIX = "_link";
+	public static final String NOWRAP_SUFFIX = "_nowrap";
+
 	private int row = 0;
 	private Document template;
 	private Element tableBody;
@@ -117,11 +119,14 @@ public class HtmlReportWriter extends TabularReportWriter
 			tableRow.setAttribute("class", "error");
 		} else {
 			tableRow.setAttribute("class", row%2 == 0 ? "even" : "odd");
-		}	
+		}
 		for (TabularReportBase.ColumnDefinition column : columns)
 		{
 			Element cell = XML.createChild(tableRow, "td");
 			cell.setAttribute("class" , column.id);
+			if (data.containsKey(column.id + NOWRAP_SUFFIX)) {
+				cell.setAttribute("style" , "white-space:nowrap");
+			}
 			if (data.containsKey(column.id + LINK_SUFFIX)) {
 				Element link = XML.createChild(cell, "a");
 				link.setAttribute("href", data.get(column.id + LINK_SUFFIX));
