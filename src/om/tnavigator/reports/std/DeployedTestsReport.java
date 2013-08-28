@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import om.OmException;
 import om.OmUnexpectedException;
+import om.administration.dataDeletion.DataDeletionTestBank;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.reports.*;
 import om.tnavigator.teststructure.TestDeployment;
@@ -35,7 +36,11 @@ public class DeployedTestsReport implements OmReport {
 	private final static Pattern filenamePattern = Pattern.compile("^(.*)\\.deploy\\.xml$");
 	private final static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	private final static DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 	private final static  String FILE_MISSING="File missing";
+
+	private final static String NEWPARA="<p>";
+	private static String ENDPARA="</p>";
 
 	private NavigatorServlet ns;
 
@@ -81,6 +86,8 @@ public class DeployedTestsReport implements OmReport {
 		String feedbackDate;
 		String supportcontacts;
 		boolean isAssessed=false;
+		boolean isArchiveable=false;
+		String archiveDate="";
 
 		public Test()
 		{
@@ -94,15 +101,21 @@ public class DeployedTestsReport implements OmReport {
 			forbidDate = "";
 			feedbackDate = "";
 			supportcontacts = "[deploy file is invalid XML]";
+			isArchiveable=false;
+			archiveDate="";
 			return;
 		}
 		
-		public Test(String deploy, File deployFile, File testBank) throws OmException {
+		public Test(String deploy, File deployFile, File testBank) throws OmException 
+		{
 			this.deploy = deploy;
 			deployModified = dateTimeFormat.format(deployFile.lastModified());
 			TestDeployment def;
 			try {
 				def = new TestDeployment(deployFile);
+				initialise( def,deployFile,testBank);
+				isArchiveable=isArchiveable(getYearsAsCal(DataDeletionTestBank.ISASSESSEDYEARS),getYearsAsCal(DataDeletionTestBank.NOTASSESSEDYEARS), def);
+
 			} catch (OmException e) {
 				test = "";
 				deployFileName="";
@@ -116,6 +129,66 @@ public class DeployedTestsReport implements OmReport {
 				supportcontacts = "[deploy file is invalid XML]";
 				return;
 			}
+		}
+		
+		
+		public Test(String deploy, File deployFile, File testBank,Calendar archiveDateIsAssessed, Calendar archivedateNotassessed) throws OmException 
+		{
+			
+			this.deploy = deploy;
+			deployModified = dateTimeFormat.format(deployFile.lastModified());
+			TestDeployment def;
+			try {
+				def = new TestDeployment(deployFile);
+				initialise( def,deployFile,testBank);
+				isArchiveable=isArchiveable(archiveDateIsAssessed,archivedateNotassessed, def);
+			} catch (OmException e) {
+				test = "";
+				deployFileName="";
+				testModified = "";
+				open = false;
+				world = false;
+				openDate = "";
+				closeDate = "";
+				forbidDate = "";
+				feedbackDate = "";
+				supportcontacts = "[deploy file is invalid XML]";
+				return;
+			}
+		}
+
+		/* get x years from now as calendar */
+		private Calendar getYearsAsCal(int years)
+		{
+			Calendar cDate=Calendar.getInstance();
+			cDate.add(Calendar.YEAR, years);
+			return cDate;
+		}
+		
+		private boolean isArchiveable(Calendar assessedDate, Calendar notAssessedDate,TestDeployment def)
+		{
+			
+			try
+			{
+				Calendar cArchiveDate=notAssessedDate;
+				if (def.isAssessed())
+				{
+					cArchiveDate=assessedDate;
+				}
+
+				archiveDate=dateFormat.format(cArchiveDate.getTime());
+				boolean ia= def.isDateAfterForbid(cArchiveDate.getTimeInMillis());
+				return ia;
+			}
+			catch (OmException e) {
+				return false;
+			}
+		}
+		
+		
+		public void initialise(TestDeployment def, File deployFile,File testBank) throws OmException 
+		{
+
 			if (def.isSingleQuestion()) {
 				test = "[single question]";
 				testModified = "";
@@ -137,6 +210,7 @@ public class DeployedTestsReport implements OmReport {
 			feedbackDate = def.displayFeedbackDate();
 			supportcontacts = def.getSupportContacts();
 			isAssessed=def.isAssessed();
+
 		}
 
 		private Map<String, String> toRow(boolean linkToDownloads) {
@@ -164,7 +238,6 @@ public class DeployedTestsReport implements OmReport {
 			row.put("feedbackdate", feedbackDate);
 			row.put("supportcontacts", supportcontacts);
 			row.put("supportcontacts", supportcontacts);
-
 			return row;
 		}
 		
@@ -174,18 +247,65 @@ public class DeployedTestsReport implements OmReport {
 		}
 		
 		
+		public String getTest()
+		{
+			return test;
+		}
+		
 		public boolean isAssessed()
 		{
 			return isAssessed;
 		}
 		
+	
 		public String getDeployFileName()
 		{
 			return deployFileName;
 		}
 		
 		
+		public String getArchiveDate()
+		{
+			return archiveDate;
+		}
+
+		
+		public String getDateClosed()
+		{
+			if(!forbidDate.isEmpty())
+			{
+				return forbidDate;
+			}
+			else if (!closeDate.isEmpty())
+			{
+				return closeDate;
+			} else {
+				return "";
+			}
+		}
+	
+		
+		public boolean isArchiveable()
+		{
+			return isArchiveable;
+		}
+
+		public static Comparator<Test> testNameComparator 
+	    = new Comparator<Test>() 
+		{
+		
+			public int compare(Test rhs1, Test rhs2) 
+			{
+			String rhs1Name = rhs1.getTestName().toUpperCase();
+			String rhs2Name = rhs2.getTestName().toUpperCase();
+			//ascending order
+			 int ret=rhs1Name.compareTo(rhs2Name);
+			 return ret;
+			}
+
+		};
 	}
+
 
 	private class DeployedTestsTabularReport extends TabularReportBase {
 		private final String prefix;
@@ -240,6 +360,8 @@ public class DeployedTestsReport implements OmReport {
 			columns.add(new ColumnDefinition("feedbackdate", "Feedback date"));
 			columns.add(new ColumnDefinition("supportcontacts", "Support Contacts"));
 			columns.add(new ColumnDefinition("isassessed", "Is Assessed?"));
+			columns.add(new ColumnDefinition("isassessed", "Is Assessed?"));
+
 			return columns;
 		}
 
@@ -326,4 +448,7 @@ public class DeployedTestsReport implements OmReport {
 	public boolean isSecurityRestricted() {
 		return false;
 	}
+	
+
+	
 }

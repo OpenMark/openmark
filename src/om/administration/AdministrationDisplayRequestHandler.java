@@ -3,8 +3,12 @@ package om.administration;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -118,19 +122,29 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 	 * @author Trevor Hinson
 	 */
 	protected String renderRequestHandlerSettings(RequestAssociates associates,
-		RequestManagement rm) throws RequestHandlingException {
+		RequestManagement rm) throws RequestHandlingException 
+	{
 		StringBuffer sb = new StringBuffer();
 		Map<String, RequestHandlerSettings> rhs = getRequestHandlerSettings(rm);
-		if (null != rhs && null != associates) {
+		/* get the values into a list */
+	    List<RequestHandlerSettings> rhsValues = new ArrayList<RequestHandlerSettings>(rhs.values());
+		Comparator<RequestHandlerSettings> rhsComp=RequestHandlerSettings.rhsDisplayNameComparator;
+	    Collections.sort(rhsValues,rhsComp);	
+		if (null != rhs && null != associates) 
+		{
 			String contextPath = associates.getServletContext().getContextPath();
-			if (Strings.isNotEmpty(contextPath)) {
-				for (RequestHandlerSettings settings : rhs.values()) {
+			if (Strings.isNotEmpty(contextPath)) 
+			{
+				for (RequestHandlerSettings settings : rhsValues) 
+				{
 					sb.append(renderRequestHandlerSettings(contextPath, settings));
 				}
 			}
 		}
 		return sb.toString();
 	}
+	 
+
 
 	/**
 	 * Renders an individual RequestHandlerSettings to an xhtml format for

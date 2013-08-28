@@ -19,6 +19,7 @@ import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.tnavigator.db.DatabaseAccess;
+import om.tnavigator.reports.std.DeployedTestsReport.Test;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -48,6 +49,9 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 	private static String DIRECTORY_TIME_FORMAT = "HHmm";
 	
 	private static String FILENAME_SEPARATOR = "_";
+	
+	private static String FULLSTOP = ".";
+
 
 	private static String TEST = "test";
 
@@ -62,8 +66,11 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 	private static String COMMA = ",";
 
 	private static String DOT_TEST_DOT_XML = ".test.xml";
+	private static String DOT_DEPLOY_DOT_XML = ".deploy.xml";
 
-	private FileFilter fileFilter = new StandardFileFilter(DOT_TEST_DOT_XML);
+
+	private FileFilter testFileFilter = new StandardFileFilter(DOT_TEST_DOT_XML);
+	private FileFilter deployFileFilter = new StandardFileFilter(DOT_DEPLOY_DOT_XML);
 
 	private FileFilter questionFilter = new StandardFileFilter(VersionUtil.DOT_JAR);
 	
@@ -85,12 +92,20 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 		questionFilter = qff;
 	}
 
-	public void setFileFilter(FileFilter f) {
-		fileFilter = f;
+	public void setTestFileFilter(FileFilter f) {
+		testFileFilter = f;
 	}
 
-	public FileFilter getFileFilter() {
-		return fileFilter;
+	public FileFilter getTestFileFilter() {
+		return testFileFilter;
+	}
+	
+	public void setDeployFileFilter(FileFilter f) {
+		deployFileFilter = f;
+	}
+
+	public FileFilter getDeployFileFilter() {
+		return deployFileFilter;
 	}
 
 	@Override
@@ -104,8 +119,8 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 			banks.numberOfTestBanks = qbl.getTestBanks().size();
 			if (banks.numberOfQuestionBanks > 0 && banks.numberOfTestBanks > 0) {
 				try {
-					Map<String, TestSynchronizationCheck> tests = identifyAllTests(
-							qbl.getTestBanks(), cr);
+					Map<String, TestSynchronizationCheck> tests = identifyAllTests(qbl.getTestBanks(), cr,testFileFilter);
+					Map<String, String> deploys = identifyAllDeploys(qbl.getTestBanks(), cr,deployFileFilter);
 					AllQuestionsPool allQuestionsPool = identifyAllQuestions(qbl
 							.getQuestionBanks());
 					if (null != tests ? tests.size() > 0 : false) {
@@ -117,8 +132,8 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 							if (!identifySyncStatus(testCheck, banks)) {
 								cr.addOutOfSyncTest(testCheck);
 							}
-							determineBrokenTests(testCheck, allQuestionsPool,
-									cr, banks);
+							determineBrokenTests(testCheck, allQuestionsPool,cr, banks);
+							determineOrphanTests(testCheck,deploys, cr);
 						}
 						identifySuperflousQuestions(pool, allQuestionsPool, cr,
 								ra);
@@ -173,6 +188,52 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 			}
 		}
 	}
+	
+	/**
+	* an orphan test is one which is not erferenced by a deploy 
+	 * 
+	 * @param testCheck
+	 * @param cr
+	 * @param banks
+	 * @authorSarah wood
+	 */
+	protected void determineOrphanTests(TestSynchronizationCheck testCheck, Map<String, String> deploys,ClearanceResponse cr) 
+	{
+		if (null != testCheck && null != deploys && null != cr)
+		{
+
+			if (null != testCheck.getTestDetails()) 
+			{
+				for (String location : testCheck.getTestDetails().keySet())
+				{
+					TestDetails td = testCheck.getTestDetails().get(location);
+					if (null != td ? null != td.getTestDefinition() : false)
+					{
+						/* get the test name and see if its in the deploy list */	
+						/* lose the filename part */
+						String testDef = td.getTestDefinitionName();
+						if(testDef.contains(DOT_TEST_DOT_XML))
+							{	
+								String[] bits = testDef.split(DOT_TEST_DOT_XML);
+								testDef=bits[0];
+							}
+
+						if (null != testDef && !testDef.isEmpty()) 
+						{
+							if (deploys.get(testDef)==null)
+							{
+									cr.addOrphanTestXML(new BrokenTestXML(td.getTestDefinition().getAbsolutePath()));							
+							}
+						}
+						else
+						{
+							cr.addOrphanTestXML(new BrokenTestXML(td.getTestDefinition().getAbsolutePath()));
+						}
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * Looks to see if the questionName is found within the questionPool and if
@@ -218,6 +279,7 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 			}
 		}
 	}
+	
 
 	/**
 	 * Simplified means of keeping reference to the number of Question and Test
@@ -409,12 +471,16 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 			for (String key : qp.getQuestionDetails().keySet()) {
 				QuestionPoolDetails qpd = qp.getQuestionDetails().get(key);
 				if (null != qpd ? null != qpd
-						.getQuestionsWithVersionNumbering() : false) {
+						.getQuestionsWithVersionNumbering() : false) 
+				{
+					String latest=qpd.identifyLatestVersion();
 					DatabaseAccess da = getDatabaseAccess(ra);
 					for (String fullName : qpd
-							.getQuestionsWithVersionNumbering().keySet()) {
-						if (!isOpenForAnyStudent(generateQuery(ra, fullName),
-								da)) {
+							.getQuestionsWithVersionNumbering().keySet()) 
+					{
+						/* if its not open for any student, and its not the latest verssion then its superflous */
+						if (!isOpenForAnyStudent(generateQuery(ra, fullName),da) && !fullName.equals(latest)) 
+						{
 							Set<String> locations = qpd
 								.getQuestionsWithVersionNumbering().get(fullName);
 							cr.addSuperfluousQuestion(
@@ -448,7 +514,8 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 					if (null != qn ? qn.isValid() : false) {
 						Object[] args = {"'" + qn.getPrefix() + "'",
 							qn.getQuestionVersion().iMajor,
-							qn.getQuestionVersion().iMinor};
+							qn.getQuestionVersion().iMinor,
+							"'"+FULLSTOP+"'"};
 						query = MessageFormat.format(q, args);
 					}
 				}
@@ -611,7 +678,7 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 	 * @author Trevor Hinson
 	 */
 	protected Map<String, TestSynchronizationCheck> identifyAllTests(
-		List<String> locations, ClearanceResponse cr) throws IOException {
+		List<String> locations, ClearanceResponse cr,FileFilter ff) throws IOException {
 		Map<String, TestSynchronizationCheck> found
 			= new HashMap<String, TestSynchronizationCheck>();
 		if (null != cr && (null != locations ? locations.size() > 0 : false)) {
@@ -619,7 +686,7 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 				if (Strings.isNotEmpty(testLocation)) {
 					File dir = new File(testLocation);
 					if (null != dir ? dir.isDirectory() && dir.canRead() : false) {
-						File[] testFiles = dir.listFiles(getFileFilter());
+						File[] testFiles = dir.listFiles(ff);
 						for (int i = 0; i < testFiles.length; i++) {
 							File test = testFiles[i];
 							if (null != test ? test.canRead() : false) {
@@ -650,6 +717,42 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 		}
 		return found;
 	}
+	
+	protected Map<String, String> identifyAllDeploys(
+			List<String> locations, ClearanceResponse cr,FileFilter ff) throws IOException {
+			Map<String, String> found	= new HashMap <String,String>();
+			if (null != cr && (null != locations ? locations.size() > 0 : false)) {
+				for (String testLocation : locations) {
+					if (Strings.isNotEmpty(testLocation)) {
+						File dir = new File(testLocation);
+						if (null != dir ? dir.isDirectory() && dir.canRead() : false) {
+							File[] deployFiles = dir.listFiles(ff);
+							for (int i = 0; i < deployFiles.length; i++) {
+								File deploy = deployFiles[i];
+								if (null != deploy ? deploy.canRead() : false) 
+								{
+
+									try 
+									{	
+										/* create a map of test and deploy file */
+										Test thistest= new Test(deploy.getName(),deploy,dir);
+										found.put( thistest.getTest(),deploy.getName());
+										
+									} 
+									catch (Exception x) 
+									{
+										cr.addBrokenTestXML(
+												new BrokenTestXML(deploy.getAbsolutePath()));
+									
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			return found;
+		}
 
 	@Override
 	public ClearanceResponse clearSelected(ClearanceResponse cr,

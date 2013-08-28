@@ -1,6 +1,7 @@
 package om.abstractservlet;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +38,12 @@ public class RequestHandlerSettings {
 	}
 
 	public String get(RequestHandlerEnums rhe) {
-		return getParameters().get(rhe.toString());
+		String param="";
+		if(getParameters().get(rhe.toString())!= null)
+		{
+			param=getParameters().get(rhe.toString());
+		}
+		return param;
 	}
 
 	protected boolean is(RequestHandlerEnums rhe) {
@@ -111,4 +117,19 @@ public class RequestHandlerSettings {
 		}
 		return servletName;
 	}
+	
+	public static Comparator<RequestHandlerSettings> rhsDisplayNameComparator 
+    = new Comparator<RequestHandlerSettings>() 
+	{
+	
+		public int compare(RequestHandlerSettings rhs1, RequestHandlerSettings rhs2) 
+		{
+		String rhs1Name = rhs1.get(RequestHandlerEnums.displayName).toUpperCase();
+		String rhs2Name = rhs2.get(RequestHandlerEnums.displayName).toUpperCase();
+		//ascending order
+		 int ret=rhs1Name.compareTo(rhs2Name);
+		 return ret;
+		}
+
+	};
 }

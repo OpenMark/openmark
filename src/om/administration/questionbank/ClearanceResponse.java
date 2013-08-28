@@ -19,6 +19,9 @@ public class ClearanceResponse {
 	
 	private List<BrokenTestXML> brokenTestXML = new ArrayList<BrokenTestXML>();
 	
+	private List<BrokenTestXML> orphanTestXML = new ArrayList<BrokenTestXML>();
+
+	
 	private Map<IdentifiedSuperfluousQuestion, RemovalIssueDetails> problemRemoving
 		= new HashMap<IdentifiedSuperfluousQuestion, RemovalIssueDetails>();
 	
@@ -55,12 +58,21 @@ public class ClearanceResponse {
 		return brokenTestXML;
 	}
 
+	public List<BrokenTestXML> getOrphanTestXML() {
+		return orphanTestXML;
+	} 
+	
 	public void addBrokenTestXML(BrokenTestXML broken) {
 		if (null != broken) {
 			getBrokenTestXML().add(broken);
 		}
 	}
 
+	public void addOrphanTestXML(BrokenTestXML orphan) {
+		if (null != orphan) {
+			getOrphanTestXML().add(orphan);
+		}
+	}
 	public List<BrokenTestQuestionReferences> getBrokenTests() {
 		if (null == brokenTests) {
 			brokenTests = new ArrayList<BrokenTestQuestionReferences>(); 

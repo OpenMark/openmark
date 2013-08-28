@@ -542,7 +542,13 @@ public class TestDeployment
 	{
 		return isAfterDate("forbid","23:59:59",false,null,-1);
 	}
+	
+	public boolean isDateAfterForbid(long when) throws OmFormatException
+	{
+		return isAfterDate("forbid","23:59:59",false,null,when);
+	}
 
+	
 	/**
 	 * After the forbid date there is a 4 hour extension during which you can
 	 * submit the test but can't do anything else.

@@ -112,7 +112,9 @@ public class ClearanceResponseRenderer implements Serializable {
 				sb.append(BR).append(BR).append(B).append("Analysis Refresh : ")
 					.append(B_CLOSE).append(renderResetCheckBox())
 					.append(renderSubmitButton())
-					.append(renderBrokenTestXML(cr.getBrokenTestXML()));
+					.append(renderBrokenTestXML(cr.getBrokenTestXML(),"Test XML that did not parse and therefore can not be analysed"))
+					.append(renderBrokenTestXML(cr.getOrphanTestXML(),"Orphan tests not referenced by a deploy file"));
+
 				sb.append(renderOutOfSyncTests(cr.getOutOfSyncTests()));
 				sb.append(renderBrokenTests(cr.getBrokenTests()));
 				sb.append(CLOSE_FORM);
@@ -124,12 +126,11 @@ public class ClearanceResponseRenderer implements Serializable {
 		return rcr;
 	}
 
-	protected StringBuffer renderBrokenTestXML(List<BrokenTestXML> broken) {
+	protected StringBuffer renderBrokenTestXML(List<BrokenTestXML> broken,String mess) {
 		StringBuffer sb = new StringBuffer();
 		if (null != broken ? broken.size() > 0 : false) {
 			sb.append(HR).append(H2)
-				.append("Test XML that did not parse and therefore")
-				.append(" can not be analysed.").append(H2_CLOSE).append(UL);
+				.append(mess).append(H2_CLOSE).append(UL);
 			for (BrokenTestXML b : broken) {
 				if (null != b) {
 					String path = FilenameUtils.separatorsToSystem(b.getFullPath());

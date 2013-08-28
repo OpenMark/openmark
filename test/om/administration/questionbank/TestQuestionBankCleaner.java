@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import util.misc.GeneralUtils;
+import util.misc.StandardFileFilter;
 import util.misc.Strings;
 
 /**
@@ -249,7 +250,7 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		ClearanceResponse cr = new ClearanceResponse();
 		QuestionBankCleaner cqb = new QuestionBankCleaner();
 		Map<String, TestSynchronizationCheck> tests = cqb.identifyAllTests(
-			pickUpTestLocations(), cr);
+			pickUpTestLocations(), cr, new StandardFileFilter("*.xml"));
 		assertNotNull(tests);
 		assertEquals(tests.size(), 5);
 	}
@@ -308,7 +309,7 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		ClearanceResponse cr = new ClearanceResponse();
 		QuestionBankCleaner cqb = new QuestionBankCleaner();
 		Map<String, TestSynchronizationCheck> checks = cqb.identifyAllTests(
-			pickUpTestLocations(), cr);
+			pickUpTestLocations(), cr, new StandardFileFilter("*.xml"));
 		assertNotNull(checks);
 		QuestionBankCleaner.Banks b = cqb.new Banks();
 		b.numberOfTestBanks = 2;

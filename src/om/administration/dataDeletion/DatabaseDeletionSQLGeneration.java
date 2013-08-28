@@ -7,6 +7,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -228,6 +230,8 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 							{
 								/* as we blow the java heap space if we do all the tests at once, we have to do it one test at a time sometimes
 								 * specified in the requesthandling file */
+								Comparator<Test> testNameComp=Test.testNameComparator;
+							    Collections.sort(deployData,testNameComp);
 								for (Test thisTest:deployData)
 								{
 									
@@ -298,26 +302,27 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 			output.append("<h1>"+testName+"</h1>");		
 			try
 			{
+				String tableSQLISstring=SQLIDString+"_"+testName;
 				LinkedList<String> TIwhereConditions=setWhereConditionsString(tiqiList.getTIs(),WHERESTRING2);
 				LinkedList<String> QIwhereConditions=setWhereConditionsString(tiqiList.getQIs(),WHERESTRING3);
 				
 				/* first generate the select */	
 				output.append("<h2>Generating SELECT statements</h2>");
-				output.append(getSql(SQL4,TIwhereConditions,QIwhereConditions,l));
+				output.append(getSql(SQL4,TIwhereConditions,QIwhereConditions,l,testName));
 		
 				/* now we do it again for the delete strings */
 				/* first we do the TI tables */
 				output.append("<h2>Generating DELETE statements</h2>");
 	
-				output.append(getSql(SQL5,TIwhereConditions,QIwhereConditions,l));
+				output.append(getSql(SQL5,TIwhereConditions,QIwhereConditions,l,testName));
 				
 				/* now we just output a list of tis and qis  to the screen */
-				l.logWithTag("<h1>TI List</h1>",SQLIDString);
-				l.logWithTag(logInstancesAsString(TIwhereConditions,SQLIDString,l),SQLIDString);
+				l.logWithTag("<h1>TI List</h1>",tableSQLISstring);
+				l.logWithTag(logInstancesAsString(TIwhereConditions,tableSQLISstring,l),tableSQLISstring);
 				//output.append(getInstancesAsString(TIwhereConditions,l));
 				//output.append("<h1>QI List</h1>");
-				l.logWithTag("<h1>QI List</h1>",SQLIDString);
-				l.logWithTag(logInstancesAsString(QIwhereConditions,SQLIDString,l),SQLIDString);
+				l.logWithTag("<h1>QI List</h1>",tableSQLISstring);
+				l.logWithTag(logInstancesAsString(QIwhereConditions,tableSQLISstring,l),tableSQLISstring);
 				//output.append(getInstancesAsString(QIwhereConditions));
 			}
 			catch ( Exception x)
@@ -329,7 +334,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 		return output.toString();
 	}
 	
-	private String getSql(String whatToDO,LinkedList<String> TIwhereConditions,LinkedList<String> QIwhereConditions,Log l)
+	private String getSql(String whatToDO,LinkedList<String> TIwhereConditions,LinkedList<String> QIwhereConditions,Log l,String testName)
 	throws DataDeletionException 
 	{
 		StringBuilder output=new StringBuilder();
@@ -341,7 +346,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 						sDateDeleteBeforeIsAssessed,sDateDeleteBeforeNotAssessed,TIwhereConditions);						
 				output.append(sqlT.getHeader()+nc.getDBPrefix()+tableName+" select on TI<br/>");
 				//output.append(sqlT.getFullSQLasHTML());
-				sqlT.logFullSQLasPlainText(SQLIDString+"_"+nc.getDBPrefix()+tableName,l);
+				sqlT.logFullSQLasPlainText(SQLIDString+"_"+testName+"_"+nc.getDBPrefix()+tableName,l);
 			}
 			/* then we do the QITables */
 			for (String tableName: qiTables)
@@ -350,7 +355,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 						sDateDeleteBeforeIsAssessed,sDateDeleteBeforeNotAssessed,QIwhereConditions);						
 				output.append(sqlT.getHeader()+nc.getDBPrefix()+tableName +" select on QI<br/>");
 				//output.append(sqlT.getFullSQLasHTML());
-				sqlT.logFullSQLasPlainText(SQLIDString+"_"+nc.getDBPrefix()+tableName,l);
+				sqlT.logFullSQLasPlainText(SQLIDString+"_"+testName+"_"+nc.getDBPrefix()+tableName,l);
 			}
 		}
 		catch ( Exception x)
