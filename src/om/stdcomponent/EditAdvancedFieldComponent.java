@@ -109,6 +109,10 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 
 	protected static String SUBSCRIPT = "subscript";
 
+	private static String BR = "br";
+
+	private static String NEW_LINE = "\n";
+
 	private static String INPUT = "input";
 
 	private static String TYPE = "type";
@@ -248,7 +252,11 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 		String sType = enu.toString();
 		Element eDiv = qc.createElement(DIV);
 		qc.addInlineXHTML(eDiv);
-		eDiv.setAttribute(CLASS, ADVANCED_FIELD);
+		String classname = ADVANCED_FIELD;
+		if (!isEnabled()) {
+			classname += " readonly";
+		}
+		eDiv.setAttribute(CLASS, classname);
 		double dZoom = getQuestion().getZoom();
 		applyTextArea(qc, eDiv, enu, dZoom);
 		applyHiddenInputField(qc, eDiv);
@@ -265,6 +273,11 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 		return Strings.uppercaseFirstCharacter(initial);
 	}
 
+	private void applyLineBreaks(QContent qc, Element eDiv) {
+		eDiv.appendChild(qc.createElement(BR));
+		eDiv.appendChild(qc.getOutputDocument().createTextNode(NEW_LINE));
+	}
+
 	protected void applyHiddenInputField(QContent qc, Element eDiv)
 		throws OmException {
 		Element eHidden = qc.createElement(INPUT);
@@ -279,6 +292,21 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 
 	protected void applyTextArea(QContent qc, Element eDiv, SubSupEnum enu,
 		double dZoom) throws OmException {
+		
+		// Don't use a text area or editor when question is read only
+		if (!isEnabled()) {
+			Element div = qc.createElement("div");
+			double spacerHeight = 36*dZoom;
+			div.setAttribute("style", "height:"+spacerHeight+"px");
+			div.setAttribute("class", "answerSpacer");
+			eDiv.appendChild(div);
+			Element span = qc.createElement("span");
+			span.setTextContent(getValue());
+			span.setAttribute("class", "answer");
+			eDiv.appendChild(span);
+			addLangAttributes(span);
+			return;
+		}
 		if (!appliedTinyMCEByAnotherComponentInDocument) {
 			Element s1 = qc.createElement("script");
 			s1.setAttribute("type", "text/javascript");
@@ -332,10 +360,10 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 
 		// Can be focused (hopefully)
 		if (isEnabled()) {
-//			qc.informFocusableFullJS(QDocument.ID_PREFIX + getID(),
-//				 QDocument.ID_PREFIX
-//					+ QDocument.OM_PREFIX + getID()
-//					+ "_iframe", false);
+			String sID =  QDocument.ID_PREFIX
+					+ QDocument.OM_PREFIX + getID()
+					+ "_iframe";
+			qc.informFocusable(sID, false);
 		}
 	}
 

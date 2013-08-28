@@ -2,11 +2,18 @@ iframe
 {
 	border:1px SOLID %%COLOUR:text%%;
 }
-.advancedfielddisabled
+.editadvancedfielddisabled
 {
     border-color: %%COLOUR:innerbg%%;
 }
-.advancedfielddisabledfixed
+.editadvancedfielddisabledfixed
 {
 	border:1px DOTTED;
+}
+
+.editadvancedfield.readonly span.answer
+{
+	background-color: white;
+	border: 1px rgb(187,187,187) solid;
+	padding: 0.3em;
 }

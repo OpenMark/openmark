@@ -98,6 +98,7 @@ function editadvancedfieldFix(fieldName,idPrefix,enabled,type,dZoom, sfg,sbg) {
 function editadvancedfieldInit(fieldName, idPrefix, type) {	
 	addPreSubmit(document.getElementById(idPrefix+"omval_"+fieldName).form,
 		function() { editadvancedfieldPreSubmit(fieldName, idPrefix, type); });
+	editadvancedfieldSupSubInit(fieldName, idPrefix, type);
 }
 
 function editadvancedfieldPreSubmit(fieldName, idPrefix, type) {
@@ -106,4 +107,21 @@ function editadvancedfieldPreSubmit(fieldName, idPrefix, type) {
     var content = editor.getContent();
     if (type=="chem") content=toChemHtml(content);
     document.getElementById(idPrefix+"omval_"+fieldName).value = content;
+}
+
+/**
+ * Disable Subscript option in tinymce supsub plugin
+ * @param string fieldName name of target field
+ * @param string idPrefix 
+ * @param string type of editor available
+ */
+function editadvancedfieldSupSubInit(fieldName, idPrefix, type){
+    var editor = tinyMCE.get(idPrefix+"om_" + fieldName + "_iframe");
+    if(!editor){
+        setTimeout(function() { editadvancedfieldSupSubInit(fieldName, idPrefix, type),100});
+        return;
+    }
+    // Disable subscript
+    editor.execCommand('supsubSetEnabled', 'subscript', false);
+
 }
