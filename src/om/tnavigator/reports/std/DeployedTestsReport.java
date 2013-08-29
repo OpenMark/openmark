@@ -39,9 +39,6 @@ public class DeployedTestsReport implements OmReport {
 
 	private final static  String FILE_MISSING="File missing";
 
-	private final static String NEWPARA="<p>";
-	private static String ENDPARA="</p>";
-
 	private NavigatorServlet ns;
 
 	/**

@@ -76,6 +76,7 @@ public class Test extends JFrame
 		System.out.println(XML.saveString(TextEquation.process(sEquation,d)));
 	}
 
+	@SuppressWarnings("unused")
 	Test() throws Exception
 	{
 		super("Equation test");
@@ -165,7 +166,7 @@ public class Test extends JFrame
 
 		((JComponent)getContentPane()).setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 		getContentPane().setLayout(new GridLayout(0,iCols,10,10));
-		if(sSolo==null) {
+		if (sSolo==null) {
 			for(int i=0;i<asTest.length;i++) {
 				getContentPane().add(getEquation(asTest[i],bAntiAlias,fSize));
 			}

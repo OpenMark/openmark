@@ -63,7 +63,6 @@ public class VersionUtil {
 		int iRequiredVersion, QuestionVersion qv, File[] af, Pattern p)
 		throws OmException {
 		boolean bFound = false;
-		String found = null;
 		for (int i = 0; i < af.length; i++) {
 			Matcher toUse = null;
 			// See if it's the question we're looking for
@@ -77,9 +76,8 @@ public class VersionUtil {
 				} 
 			}
 			if (null != toUse) {
-				//bFound = isGreater(m, qv, iRequiredVersion);
-				int iMajor = Integer.parseInt(toUse.group(1)), iMinor = Integer
-					.parseInt(toUse.group(2));
+				int iMajor = Integer.parseInt(toUse.group(1)),
+						iMinor = Integer.parseInt(toUse.group(2));
 				if (
 				// Major version is better than before and either matches version or
 				// unspec
@@ -89,12 +87,10 @@ public class VersionUtil {
 					(iMajor == qv.iMajor && iMinor > qv.iMinor)) {
 					qv.iMajor = iMajor;
 					qv.iMinor = iMinor;
-					found = af[i].getName();
 					bFound = true;
 				}
 			}
 		}
-		//System.out.println("FOUND : " + found);
 		return bFound;
 	}
 

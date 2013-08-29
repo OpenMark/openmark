@@ -10,15 +10,6 @@ public class SimpleSQLReporterUtils {
     public static String NAVTESTS2="NAVTESTS2";
     public static String NAVTESTS3="NAVTESTS3";
 
-  	private static String SELECTSTRING1="select {2} from [{0}].[dbo].[{1}] where ";
-	private static String UPDATESTRING1="update [{0}].[dbo].[{1}] set oucu={2}, pi={2} where ti in ";
-	private static String WHERESTRING1="( deploy={0} and finishedclock &lt; {1} )";
-	private static String DELSTRING="DELETED";
-
-	/* atable names */
-    private static String NAVTESTS="nav_tests";
-
-    
 	public static DatabaseAccess getDatabaseConnection(NavigatorConfig nc) throws SimpleSQLReporterException 
 	{
 		String dbClass = nc.getDBClass();
@@ -59,23 +50,4 @@ public class SimpleSQLReporterUtils {
 		return para.toString();
 		
 	}
-
-	/* we are processing in batches, so we need to know if its time to process */
-	private boolean timeToProcess(int cntr,int batch) throws SimpleSQLReporterException
-	{
-		try
-		{
-			/* divide by batch number, and if it divides evenly, its time to process */
-			Integer t1=(cntr/batch);
-			double t2=cntr/(double)batch;
-			double t3=(double) t1;
-			return(t3==t2);
-
-		}
-		catch (Exception x)
-		{
-			throw new SimpleSQLReporterException(x);
-		}
-	}
-	
 }

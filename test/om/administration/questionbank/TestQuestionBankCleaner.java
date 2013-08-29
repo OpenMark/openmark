@@ -250,9 +250,9 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		ClearanceResponse cr = new ClearanceResponse();
 		QuestionBankCleaner cqb = new QuestionBankCleaner();
 		Map<String, TestSynchronizationCheck> tests = cqb.identifyAllTests(
-			pickUpTestLocations(), cr, new StandardFileFilter("*.xml"));
+			pickUpTestLocations(), cr, new StandardFileFilter(".test.xml"));
 		assertNotNull(tests);
-		assertEquals(tests.size(), 5);
+		assertEquals(5, tests.size());
 	}
 
 	@Test public void testRetrieveCompositeQuestions() throws Exception {
@@ -309,7 +309,7 @@ public class TestQuestionBankCleaner extends AbstractTestCase {
 		ClearanceResponse cr = new ClearanceResponse();
 		QuestionBankCleaner cqb = new QuestionBankCleaner();
 		Map<String, TestSynchronizationCheck> checks = cqb.identifyAllTests(
-			pickUpTestLocations(), cr, new StandardFileFilter("*.xml"));
+			pickUpTestLocations(), cr, new StandardFileFilter(".test.xml"));
 		assertNotNull(checks);
 		QuestionBankCleaner.Banks b = cqb.new Banks();
 		b.numberOfTestBanks = 2;

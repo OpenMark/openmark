@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,12 +27,10 @@ import util.misc.Strings;
 
 
 public class SimpleSQLReporterHandler extends AbstractRequestHandler {
+	private static final long serialVersionUID = 7717187545918796405L;
 
 	private String filteredUrl;
 
-	private String postToUrl;
-	
-	
 	public static SimpleDateFormat DATEFORMAT=new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
 	//  private static int BATCHAMOUNT=10;
@@ -110,13 +107,10 @@ public class SimpleSQLReporterHandler extends AbstractRequestHandler {
 	private String process(HttpServletRequest request,
 		RequestAssociates associates) throws SimpleSQLReporterException {
 		StringBuilder output = new StringBuilder();
-		Map<String, Object> metaData = new HashMap<String, Object>();
 
 		try
 		{
 			NavigatorConfig nc=pickupNavigatorConfig(associates);
-			/* note this doesnt actually do much yet */
-			metaData=generateMetaData(request, associates);
 			/* read all the questions */
 			String SQLReport=getDataFromDB(nc);
 			
@@ -212,47 +206,6 @@ public class SimpleSQLReporterHandler extends AbstractRequestHandler {
 		return navigatorConfig;
 	}
 
-
-
-
-	/**
-	 * Builds the metaData map from the various parameters needed to handle
-	 *  the request.
-	 * @param request
-	 * @return
-	 * @throws ExtractorException
-	 * @author Trevor Hinson
-	 */
-	private Map<String, Object> generateMetaData(HttpServletRequest request,
-		RequestAssociates associates) throws SimpleSQLReporterException 
-		{
-		/* doesnt actually do much for now, just a load of nulls, will fill it in later */
-		Map<String, Object> metaData = new HashMap<String, Object>();
-		try {
-			metaData.put(SimpleSQLReporterEnums.SimpleSQLReporterUrl.toString(), filteredUrl);
-			metaData.put(SimpleSQLReporterEnums.postToUrl.toString(), postToUrl);
-			metaData.put(SimpleSQLReporterEnums.navigatorConfigKey.toString(),
-				pickupNavigatorConfig(associates));
-			metaData.put(RequestParameterNames.logPath.toString(), getLogPath());
-			if (null != SQLString) {
-				metaData.put(SimpleSQLReporterEnums.SQLString.toString(),
-						SQLString);
-			}
-			if (null != separator) {
-				metaData.put(SimpleSQLReporterEnums.separator.toString(),
-						separator);
-			}
-			//metaData.put(SimpleSQLReporterEnums.batchNumber.toString(),
-			//		batchNumber);
-			
-
-		} catch (IOException x) {
-			throw new SimpleSQLReporterException(x);
-		}
-		return metaData;
-	}
-
-	
 	public void initialise(RequestAssociates associates)
 	throws RequestHandlingException {
 	
@@ -290,9 +243,6 @@ public class SimpleSQLReporterHandler extends AbstractRequestHandler {
 		{
 			throw new RequestHandlingException(e);
 		}
-
 	}
-	
-	
 
 }

@@ -40,7 +40,7 @@ public class TNTester
 	private final static int THREADS=30;
 
 	/** Which server to use (-1 = both, random pick) */
-	private final static int USESERVER=-1;
+	private static int USESERVER=-1;
 	private final static String[] HOSTS={"pclt166.open.ac.uk","sparrow.open.ac.uk"};
 	private final static int[] PORTS={8080,80};
 
@@ -115,7 +115,6 @@ public class TNTester
 	/** Track how many threads have finished */
 	private int iFinished=0;
 
-	@SuppressWarnings("unused")
 	private TNTester() throws Exception
 	{
 		if(USESERVER!=-1)
@@ -329,7 +328,7 @@ public class TNTester
 		{
 			start();
 		}
-		@SuppressWarnings("unused")
+
 		@Override
 		public void run()
 		{
