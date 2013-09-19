@@ -36,8 +36,7 @@ public abstract class OmVersion
 			Properties versionInfo = new Properties();
 			versionInfo.load(OmVersion.class.getResourceAsStream("version.properties"));
 			version = versionInfo.getProperty("buildversion");
-			buildInfo = versionInfo.getProperty("gitbranch") + " (" +
-					versionInfo.getProperty("githash", "Err") + ")";
+			buildInfo = versionInfo.getProperty("buildinfo");
 		}
 		catch(IOException ioe)
 		{

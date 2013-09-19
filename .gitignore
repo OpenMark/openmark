@@ -2,4 +2,5 @@
 /.settings/
 /.project
 /bin/
+/build.local.properties
 Thumbs.db

@@ -7,120 +7,15 @@
 		J2EE) elsewhere in your application server.
 	</description>
 
-	<!--
-		1. Prerequisite locations
+	<!-- Overridden build properties. We must load these first since <propery>
+	     task only sets things that have not already been set. -->
+	<property file="build.local.properties"/>
 
-		You definitely need to set the following properties.
-		-->
-
-	<!--
-		Modify Axis home. Should point to an Axis 1.4 install on the build
-		machine. Used to obtain Axis lib files.
-		-->
-	<property name="axishome" value=""/>
-
-	<!--
-		Set location for Java Activation Framework install, used for activation.jar.
-		-->
-	<property name="jafhome" value=""/>
-
-	<!--
-		Set location for Java Mail install, used for mail.jar.
-		-->
-	<property name="javamailhome" value=""/>
-
-		<!--
-			Provide location for the servlet-api.jar file. If you are using Tomcat,
-			this should be set to [tomcathome]/common/lib
-			-->
-	<property name="servletapi" value=""/>
-
-	<!--
-		Set location for the xerces jars.
-		-->
-	<property name="xerceshome" value=""/>
-
-	<!--
-		Set location for JEuclid jars, required for MathML component. These jars should
-		come from jeuclid-minimal-3.1.5\repo.
-		-->
-	<property name="jeuclidhome" value=""/>
-
-	<!-- Set location for jazzy-core.jar file -->
-	<property name="jazzyhome" value=""/>
-
-
-	<!--
-		2. Other locations
-
-		On a Unix/OS X machine, the following properties may be OK, but you might
-		want to configure them.
-		-->
-
-	<!--
-		Specify the desired build folder. This folder is COMPLETELY DELETED each
-		time you build! Please bear that in mind.
-		-->
-	<property name="build" value="/tmp/om-build"/>
-
-	<!--
-		Alter where the results of the 'javadoc' target are built to.
-		This folder is COMPLETELY DELETED when you build the javadoc target.
-		-->
-	<property name="javadoc" value="${build}/javadoc"/>
-
-
-	<!--
-		3 Developer servlet defaults
-
-		These just set up options in the devservlet's web.xml file. They default
-		to options that should work on your machine, but may not be appropriate
-		for question author machines, so change if needed. You can also directly
-		modify the devservlet's web.xml after building.
-		-->
-
-	<!--
-		Modify JDK home if necessary - this sets the default for the developer
-		servlet, to make life easier for question developers.
-		-->
-	<property name="jdkhome" value="${java.home}"/>
-
-	<!--
-		Modify Ant home if necessary - this sets the default for the developer
-		servlet, to make life easier for question developers. Should point to
-		an Ant 1.7 install on developer machines.
-		-->
-	<property name="anthome" value="${ant.home}"/>
-
-
-	<!--
-		4. Settings relating to deployment tasks.
-		-->
-
-	<!--
-		If you want to use the localhost-install task, then set this
-		to the path to your Tomcat webapps folder.
-		-->
-	<property name="localhostwebapps" value=""/>
-
-
-	<!--
-		5. Things you don't need to change.
-
-		Don't mess with these unless you know what you're doing.
-		-->
-
-	<!--
-		If building the equationgrammar target (not necessary unless altering
-		grammar), you need to install JavaCC and put its location here
-	-->
-	<property name="javacchome" value=""/>
+	<!-- Build properties -->
+	<property file="build.properties"/>
 
 	<!-- Version number - loaded into ${buildversion} -->
 	<property file="version.properties"/>
-
-	<!-- URL of our dev.java.net project. -->
-	<property name="projecturl" value="https://openmark.dev.java.net/"/>
 
 
 	<!-- Create fresh build folder -->
@@ -181,21 +76,26 @@
 		</copy>
 
 		<!-- Write version file -->
-		<echo file="${build}/compiled/om/version.txt" append="false" >${buildversion}|${buildstamp}</echo>
+		<propertyfile file="${build}/compiled/om/version.properties">
+			<entry key="buildversion" value="${buildversion}"/>
+			<entry key="buildinfo" value="${buildstamp}"/>
+		</propertyfile>
 	</target>
 
 
 	<!-- Create jar files -->
-	<target name="jar" depends="compile,copydata">
+	<target name="jar" depends="compile, copydata">
 
 		<mkdir dir="${build}/jars"/>
 
 		<jar jarfile="${build}/jars/om-dev.jar" basedir="${build}/compiled">
 			<include name="om/*"/>
+			<include name="om/abstractservlet/"/>
 			<include name="om/devservlet/"/>
 			<include name="om/equation/"/>
 			<include name="om/graph/"/>
 			<include name="om/helper/"/>
+			<include name="om/qengine/"/>
 			<include name="om/question/"/>
 			<include name="om/stdcomponent/"/>
 			<include name="om/stdquestion/"/>
@@ -218,6 +118,7 @@
 
 		<jar jarfile="${build}/jars/om-navigator.jar" basedir="${build}/compiled">
 			<include name="om/*"/>
+			<include name="om/abstractservlet/"/>
 			<include name="om/axis/qengine/"/>
 			<include name="om/tnavigator/"/>
 			<include name="om/getOucuInfo/"/>
@@ -226,6 +127,7 @@
 
 		<jar jarfile="${build}/jars/om-administration.jar" basedir="${build}/compiled">
 			<include name="om/*"/>
+			<include name="om/abstractservlet/"/>
 			<include name="om/administration/*"/>
 			<include name="om/administration/extraction/*"/>
 			<include name="om/administration/questionbank/*"/>
@@ -382,13 +284,19 @@
 			<fileset dir="${xerceshome}">
 				<include name="*.jar"/>
 			</fileset>
+			<fileset dir="${sqlserverhome}">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${postgresqlhome}">
+				<include name="*.jar"/>
+			</fileset>
 		</copy>
 		<jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn"/>
 	</target>
 
 
 	<!-- Build test navigator webapp -->
-	<target name="omAdministrator-base" depends="jar">
+	<target name="adminserver-base" depends="jar">
 
 		<mkdir dir="${build}/webapps/om-admin"/>
 		<mkdir dir="${build}/webapps/om-admin/WEB-INF"/>
@@ -418,7 +326,7 @@
 	</target>
 
 
-	<target name="omAdministrator" depends="omAdministrator-base">
+	<target name="adminserver" depends="adminserver-base">
 		<copy todir="${build}/webapps/om-admin/WEB-INF/lib">
 			<fileset dir="${axishome}/lib">
 				<include name="*.jar"/>
@@ -438,17 +346,23 @@
 			<fileset dir="${xerceshome}">
 				<include name="*.jar"/>
 			</fileset>
+			<fileset dir="${sqlserverhome}">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${postgresqlhome}">
+				<include name="*.jar"/>
+			</fileset>
 		</copy>
 		<jar jarfile="${build}/webapps/om-admin.war" basedir="${build}/webapps/om-admin"/>
 	</target>
 
-	<target name="all" depends="qengine,tnavigator,omAdministrator,devserver"
+	<target name="all" depends="qengine, tnavigator, adminserver, devserver"
 		description="Build question engine, test navigator, administrator and devserver webapps"/>
 
-	<target name="all-nolibs" depends="qengine-nolibs,tnavigator-nolibs,devserver"
+	<target name="all-nolibs" depends="qengine-nolibs, tnavigator-nolibs, devserver"
 		description="Build question engine, test navigator, and devserver webapps without external libraries"/>
 
-	<target name="localhost-install" depends="all,update-localhost"
+	<target name="localhost-install" depends="all, update-localhost"
 		description="Rebuild everything, and update the localhost install."/>
 
 	<target name="update-localhost"
@@ -477,9 +391,7 @@
 			</fileset>
 		</zip>
 		<echo level="info" message="To be uploaded to: ${projecturl}servlets/ProjectDocumentAdd?folderID=7783&amp;name=openmark_${buildversion}_src.zip&amp;status=Draft&amp;description=Source%20bundle%20of%20the%20${buildversion}%20development%20snapshot.&amp;type=file"/>
-
 	</target>
-
 
 	<path id="axis.classpath">
 		<fileset dir="${axishome}/lib">
@@ -493,7 +405,7 @@
 	<!-- The next line may show as a warning because axishome isn't set. -->
 	<taskdef resource="axis-tasks.properties" classpathref="axis.classpath"/>
 
-
+	
 	<!-- Standalone target: not built by all -->
 	<target name="stubs-qengine" depends="init" description="Create question engine stubs using Apache Axis">
 
@@ -565,8 +477,8 @@
 		<mkdir dir="${javadoc}"/>
 
 		<javadoc sourcepath="src" destdir="${javadoc}" source="1.6" encoding="UTF-8"
-			packagenames="om.*,util.*"
-			excludepackagenames="om.equation.generated.*,om.axis.*">
+			packagenames="om.*, util.*"
+			excludepackagenames="om.equation.generated.*, om.axis.*">
 			<classpath>
 				<fileset dir="${servletapi}">
 					<include name="servlet-api.jar"/>
