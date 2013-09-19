@@ -55,12 +55,111 @@ with debugging HTML, CSS and JavaScript problems.</dd>
 
 <h2>Question engine</h2>
 
-<p>TODO</p>
+
+<dl>
+<dt>/check</dt>
+<dd>Status check page.</dd>
+<dt>/services/Om</dt>
+<dd>SOAP web service endpoint.</dd>
+<dt>/services/Om?wsdl</dt>
+<dd>SOAP web service WSDL.</dd>
+</dl>
 
 
 <h2>Test navigator</h2>
 
-<p>TODO</p>
+<dl>
+<dt>/!question/list</dt>
+<dd>treated the same as /!report/allquestions?format=xml</dd>
+<dt>/!question/{questionid.version}</dt>
+<dd>Download the question jar. Processed by handleQuestion.</dd>
+<dt>/!test/{testname}</dt>
+<dd>Download a test definition file. Processed by handleTest.</dd>
+<dt>/!deploy/{deployname}</dt>
+<dd>Download a deploy file. Processed by handleDeploy.</dd>
+<dt>/!forbid/{username}</dt>
+<dd>Add this username to the list of users being handled by another server.
+Prevents problems if the sticky load-balancing goes wrong.</dd>
+<dt>/!status/</dt>
+<dd>Human-readable status page.</dd>
+<dt>/!status/check</dt>
+<dd>Machine-readable status page.</dd>
+<dt>/!status/log-{datestamp}</dt>
+<dd>View the logs.</dd>
+<dt>/!status/stats-{datestamp}</dt>
+<dd>View the statistics derived from the logs.</dd>
+<dt>/navigator.css</dt>
+<dt>/navigator-{options}.css</dt>
+<dd>Get the CSS.</dd>
+<dt>*tiny_mce* or *subsup.html*</dt>
+<dd>Stuff related to TinyMCE. Note, this probably currently breaks a URL like a resource whose name contains subsub.html.</dd>
+<dt>/!auth/*</dt>
+<dd>Passed to the auth plugin.</dd>
+<dt>/!test/</dt>
+<dd>Switch to a test user account.</dd>
+<dt>/!report/..."</dt>
+<dd>Sent to the appropriate report plugin.</dd>
+<dt>/{testid}/</dt>
+<dt>/{testid}/_{*}</dt>
+<dd><p>Main URL for serving a test. _{*} form used in single question mode to allow different URLs to be used.</p>
+<p>All test URLs require the user to be authenticated in the context of that test.</p>
+<p>GET = show current state of question (starting if necessary). POST = process response.</p></dd>
+<dt>/{testid}/?restart</dt>
+<dd>Restart a question in single question mode.</dd>
+<dd>Restart a question in test mode.</dd>
+<dt>/{testid}/?autofocus=</dt>
+<dd>Restart a question and auto-focus it in single question mode.</dd>
+<dt>/{testid}/?variant={number}</dt>
+<dd>Restart a question and swich to a particular variant in single question mode.</dd>
+<dd>Restart a question and swich to a particular variant in test mode.</dd>
+<dt>/{testid}/?access</dt>
+<dd>Show, handle changing accessibilitiy options.</dd>
+<dt>/{testid}/?plainmode</dt>
+<dd>Toggle plain mode</dd>
+<dt>/{testid}/reports!{stuff}</dt>
+<dd>Handle reports for this test.</dd>
+<dt>/{testid}/?redo</dt>
+<dd>Redo the current question in place.</dd>
+<dt>GET /{testid}/?end</dt>
+<dd>Show the summary screen at the end of the test.</dd>
+<dt>POST /{testid}/?end</dt>
+<dd>Submit the test attempt.</dd>
+<dt>/{testid}/?jump={number}</dt>
+<dd>Jump to a particular question.</dd>
+<dt>/{testid}/?next</dt>
+<dd>Go to the next question.</dd>
+<dt>/{testid}/?summary</dt>
+<dd>Show the summary of the students answers, if permitted.</dd>
+<dt>/{testid}/resources/{test position}/style-{accessibility option>.css</dt>
+<dd>Serve question CSS.</dd>
+<dt>/{testid}/resources/{test position}/{path}</dt>
+<dd>Serve question resource.</dd>
+</dl>
+
+<p>Cookies</p>
+
+<dl>
+<dt>openmark-letmein</dt>
+<dd>Used to let admins get around maintenance mode.</dd>
+<dt>tnavigator_session_" + testId</dt>
+<dd>Track's the user's session on each test.</dd>
+<dt>tnavigator_xid</dt>
+<dd>Stores the fake OUCU we use for this user. This is also used in the authHash.</dd>
+<dt>tnavigator_access</dt>
+<dd>Stores the user's preferred accessibility options.</dd>
+</dl>
+
+<p>Test navigatory requests fall into the following categories:</p>
+
+<dl>
+<dt>IP address checked - local</dt>
+<dd>E.g. the /!status/check URL. The client's IP address must be on a relatively permissive list.</dd>
+<dt>IP address checked - secure</dt>
+<dd>E.g. downloading tests or questions </dd>
+<dt>IP address checked - secure</dt>
+<dd>E.g. the /!status/check URL</dd>
+</dl>
+
 
 </body>
 </html>
