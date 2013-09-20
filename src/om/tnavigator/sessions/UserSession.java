@@ -15,7 +15,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package om.tnavigator;
+package om.tnavigator.sessions;
 
 import java.io.File;
 import java.util.HashMap;
@@ -24,6 +24,8 @@ import java.util.Map;
 import om.OmException;
 import om.OmVersion;
 import om.axis.qengine.Resource;
+import om.tnavigator.NavigatorServlet;
+import om.tnavigator.OmServiceBalancer;
 import om.tnavigator.auth.UserDetails;
 import om.tnavigator.teststructure.TestDefinition;
 import om.tnavigator.teststructure.TestDeployment;
@@ -37,13 +39,13 @@ public class UserSession
 	private NavigatorServlet ns;
 
 	/** Cookie (key of map too, but duplicated here) */
-	String sCookie;
+	public String sCookie;
 
 	/** Question session ID for question engine */
 	public OmServiceBalancer.OmServiceSession oss=null;
 
 	/** Sequence used to check you don't do things out of order */
-	String sSequence;
+	public String sSequence;
 
 	/** Time of session start */
 	public long lSessionStart=System.currentTimeMillis();
@@ -66,16 +68,16 @@ public class UserSession
 	private int testPosition;
 
 	/** User login details */
-	UserDetails ud=null;
+	public UserDetails ud=null;
 
 	/** OUCU (real or fake) */
-	String sOUCU;
+	public String sOUCU;
 
 	/**
 	 * Hash of cookies that determine ud and without which the session
 	 * should be dumped
 	 */
-	int iAuthHash=0;
+	public int iAuthHash=0;
 
 	/** Whether they have admin access */
 	public boolean bAdmin=false;
@@ -87,13 +89,13 @@ public class UserSession
 	public boolean bHasGeneratedFinalPCDC=false;
 	
 	/** Map of String (filename) -> Resource */
-	Map<String,Resource> mResources=new HashMap<String,Resource>();
+	public Map<String,Resource> mResources=new HashMap<String,Resource>();
 
 	/** CSS */
-	String sCSS="";
+	public String sCSS="";
 
 	/** Progress info */
-	String sProgressInfo="";
+	public String sProgressInfo="";
 
 	/** Database ID for test, question, sequence */
 	private int dbTi;
@@ -104,34 +106,34 @@ public class UserSession
 	private boolean bFinished;
 
 	/** The version of the test navigator software that started this attempt. */
-	String navigatorVersion;
+	public String navigatorVersion;
 
 	/**
 	 * Set true only for specific requests that are permitted after the forbid
 	 * date (up to the forbid-extension date)
 	 */
-	boolean bAllowAfterForbid;
+	public boolean bAllowAfterForbid;
 
 	/**
 	 * True if their browser has been checked and found OK, or they have
 	 * decided to ignore the warning.
 	 */
-	boolean bCheckedBrowser;
+	public boolean bCheckedBrowser;
 
 	/**
 	 * Once we've seen their OUCU and checked that we only hold one session
 	 * for them, this is set to OUCU-testID.
 	 */
-	String sCheckedOUCUKey;
+	public String sCheckedOUCUKey;
 
 	/** Index increments whenever there is a new CSS version */
-	int iCSSIndex=0;
+	public int iCSSIndex=0;
 
 	/**
 	 * Very hacky way to store the situation when confirm emails are sent
 	 * or not. 1=sent, -1=error
 	 */
-	int iEmailSent=0;
+	public int iEmailSent=0;
 
 	// A place where any extra information can be stored in the session.
 	private Map<String,Object> extraSessionInfo = new HashMap<String, Object>();
@@ -147,7 +149,7 @@ public class UserSession
 	/**
 	 * @param owner
 	 */
-	protected UserSession(NavigatorServlet owner, String cookie) {
+	public UserSession(NavigatorServlet owner, String cookie) {
 		this.ns = owner;
 		this.lSessionStart = System.currentTimeMillis();
 		this.sCookie = cookie;
@@ -207,21 +209,21 @@ public class UserSession
 	/**
 	 * @return the lRandomSeed
 	 */
-	long getRandomSeed() {
+	public long getRandomSeed() {
 		return testRealisation.getRandomSeed();
 	}
 
 	/**
 	 * @param fixedVariant the iFixedVariant to set.
 	 */
-	void setFixedVariant(int fixedVariant) {
+	public void setFixedVariant(int fixedVariant) {
 		testRealisation.setFixedVariant(fixedVariant);
 	}
 
 	/**
 	 * @return the iFixedVariant
 	 */
-	int getFixedVariant() {
+	public int getFixedVariant() {
 		return testRealisation.getFixedVariant();
 	}
 
@@ -242,21 +244,21 @@ public class UserSession
 	/**
 	 * @param iIndex the iIndex to set
 	 */
-	void setTestPosition(int iIndex) {
+	public void setTestPosition(int iIndex) {
 		this.testPosition = iIndex;
 	}
 
 	/**
 	 * @param bFinished the bFinished to set
 	 */
-	void setFinished(boolean bFinished) {
+	public void setFinished(boolean bFinished) {
 		this.bFinished = bFinished;
 	}
 
 	/**
 	 * @return the bFinished
 	 */
-	boolean isFinished() {
+	public boolean isFinished() {
 		return bFinished;
 	}
 	
@@ -290,7 +292,7 @@ public class UserSession
 	/**
 	 * @param dbTi the dbTi to set.
 	 */
-	void setDbTi(int dbTi) {
+	public void setDbTi(int dbTi) {
 		this.dbTi = dbTi;
 		if (testRealisation != null) testRealisation.setDbTi(dbTi);
 	}
@@ -312,7 +314,7 @@ public class UserSession
 	/**
 	 * Update the last action time, to record the fact this session has just been used again.
 	 */
-	void touch() {
+	public void touch() {
 		this.lastActionTime = System.currentTimeMillis();
 	}
 
@@ -320,7 +322,7 @@ public class UserSession
 	 * Set the last action time to a long way in the past, so this session
 	 * is expired the next time the session expirer runs.
 	 */
-	void markForDiscard() {
+	public void markForDiscard() {
 		this.lastActionTime = 0;
 	}
 

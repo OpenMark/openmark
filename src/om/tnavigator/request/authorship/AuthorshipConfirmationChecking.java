@@ -6,9 +6,9 @@ import java.text.MessageFormat;
 
 import om.Log;
 import om.abstractservlet.RenderedOutput;
-import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.DatabaseAccess.Transaction;
+import om.tnavigator.sessions.UserSession;
 import util.misc.Strings;
 
 /**

@@ -18,9 +18,9 @@ import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
 import om.abstractservlet.StandardFinalizedResponse;
 import om.tnavigator.NavigatorServlet;
-import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
+import om.tnavigator.sessions.UserSession;
 import om.tnavigator.teststructure.TestDefinition;
 
 import org.w3c.dom.DOMException;

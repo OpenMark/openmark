@@ -18,8 +18,8 @@ import om.OmException;
 import om.OmTransientQuestionException;
 import om.tnavigator.Mail;
 import om.tnavigator.NavigatorConfig;
-import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
+import om.tnavigator.sessions.UserSession;
 import om.tnavigator.util.OMVisitor;
 
 import org.apache.axis.AxisFault;

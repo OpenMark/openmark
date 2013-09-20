@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,8 +38,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -85,6 +82,9 @@ import om.tnavigator.db.OmQueries;
 import om.tnavigator.reports.ReportDispatcher;
 import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 import om.tnavigator.scores.CombinedScore;
+import om.tnavigator.sessions.NewSession;
+import om.tnavigator.sessions.SessionManager;
+import om.tnavigator.sessions.UserSession;
 import om.tnavigator.teststructure.PreCourseDiagCode;
 import om.tnavigator.teststructure.SummaryDetails;
 import om.tnavigator.teststructure.SummaryDetailsGeneration;
@@ -103,12 +103,10 @@ import org.w3c.dom.Node;
 
 import util.misc.ErrorMessageParts;
 import util.misc.GeneralUtils;
-import util.misc.HTTPS;
 import util.misc.IO;
 import util.misc.LabelSets;
 import util.misc.MimeTypes;
 import util.misc.NameValuePairs;
-import util.misc.PeriodicThread;
 import util.misc.QuestionVersion;
 import util.misc.RequestHelpers;
 import util.misc.StopException;
@@ -202,36 +200,14 @@ public class NavigatorServlet extends HttpServlet {
 
 	private ErrorManagement errorManagement;
 
-	// *************************************************************************
-	// TMH - FIX THESE - get them out of here and change the implementation .....
-	// *************************************************************************
-	
-	/** Map of cookie value (String) -> UserSession */
-	private Map<String, UserSession> sessions = new HashMap<String, UserSession>();
-
-	/** Map of OUCU-testID (String) -> UserSession */
-	private Map<String, UserSession> usernames = new HashMap<String, UserSession>();
-
-	/** Map of OUCU-testID (String) -> Long (date that prohibition expires) */
-	private Map<String, Long> tempForbid = new HashMap<String, Long>();
-
 	/** Load balancer for Om question engines */
 	private OmServiceBalancer osb;
 
-	/** Session expiry thread */
-	private SessionExpirer sessionExpirer;
-
-	/** Tracks when last error occurred while sending forbids to each other nav */
-	private long[] lastSessionKillerError;
-
-	private Object sessionKillerErrorSynch = new Object();
-
 	/**
-	 * List of NewSession objects that are stored to check we don't start a new
-	 * session twice in a row to same address (= cookies off)
+	 * Manages the user/test sessions.
 	 */
-	private LinkedList<NewSession> cookiesOffCheck = new LinkedList<NewSession>();
-
+	private SessionManager sessionManager;
+	
 	/**
 	 * Cache of question metadata: String (ID\nversion) -> Document.
 	 * <p>
@@ -246,15 +222,6 @@ public class NavigatorServlet extends HttpServlet {
 
 	private LabelSets labelSets = null;
 
-	// *************************************************************************
-	// TMH - END OF ............................................................
-	// *************************************************************************
-	
-	private static class NewSession {
-		long lTime;
-		String sAddr;
-	}	
-	
 	/** Log */
 	protected Log l;
 
@@ -279,12 +246,6 @@ public class NavigatorServlet extends HttpServlet {
 	private static String PRE_PROCESSING_REQUEST_HANDLER = "PreProcessingRequestHandler";
 
 	private Class<?> preProcessingRequestHandler;
-
-	/** How long an unused session lurks around before expiring (8 hrs) */
-	private final static int SESSIONEXPIRY = 8 * 60 * 60 * 1000;
-
-	/** How often we check for expired sessions (15 mins) */
-	private final static int SESSIONCHECKDELAY = 15 * 60 * 1000;
 
 	/**
 	 * File that is included to put up a maintenance message during problem
@@ -406,8 +367,6 @@ public class NavigatorServlet extends HttpServlet {
 
 		labelSets = new LabelSets(new File(sc.getRealPath("WEB-INF/labels/")));
 
-		lastSessionKillerError = new long[nc.getOtherNavigators().length];
-
 		String dbClass = nc.getDBClass();
 		String dbPrefix = nc.getDBPrefix();
 		try {
@@ -461,7 +420,7 @@ public class NavigatorServlet extends HttpServlet {
 		}
 
 		// Start expiry thread
-		sessionExpirer = new SessionExpirer();
+		sessionManager = new SessionManager(nc, l);
 		setUpPreProcessingRequestHandler();
 		
 		// log that we are procfessing dynamic questions
@@ -536,42 +495,10 @@ public class NavigatorServlet extends HttpServlet {
 		return pre;
 	}
 
-	/** Thread that gets rid of unused sessions */
-	class SessionExpirer extends PeriodicThread {
-		SessionExpirer() {
-			super(SESSIONCHECKDELAY);
-		}
-
-		@Override
-		protected void tick() {
-			synchronized (sessions) {
-				// See if any sessions need expiring
-				long lNow = System.currentTimeMillis();
-				long lExpiry = lNow - SESSIONEXPIRY;
-
-				for (Iterator<UserSession> i = sessions.values().iterator(); i
-						.hasNext();) {
-					UserSession us = i.next();
-					if (us.getLastActionTime() < lExpiry) {
-						i.remove();
-						usernames.remove(us.sCheckedOUCUKey);
-					}
-				}
-
-				for (Iterator<Long> i = tempForbid.values().iterator(); i
-						.hasNext();) {
-					if (lNow > i.next()) {
-						i.remove();
-					}
-				}
-			}
-		}
-	}
-
 	@Override
 	public void destroy() {
-		// Kill expiry thread
-		sessionExpirer.close();
+		// Close the session handler.
+		sessionManager.close();
 		// Close SAMS and kill their threads
 		getAuthentication().close();
 		// Close database connections
@@ -693,57 +620,6 @@ public class NavigatorServlet extends HttpServlet {
 		public void setDatabaseElapsedTime(long lDatabaseElapsed)
 		{
 			this.lDatabaseElapsed = lDatabaseElapsed;
-		}
-	}
-
-	/** Thread used to 'kill' a session on other servers by sending forbid calls */
-	private class RemoteSessionKiller extends Thread {
-		private String sOUCUTest;
-
-		RemoteSessionKiller(String sOUCUTest) {
-			this.sOUCUTest = sOUCUTest;
-			start();
-		}
-
-		@Override
-		public void run() {
-			String[] asURL = nc.getOtherNavigators();
-			for (int i = 0; i < asURL.length; i++) {
-				try {
-					URL u = new URL(asURL[i] + "!forbid/" + sOUCUTest);
-					HttpURLConnection huc = (HttpURLConnection) u
-							.openConnection();
-					HTTPS.allowDifferentServerNames(huc);
-					HTTPS.considerCertificatesValid(huc);
-
-					huc.connect();
-					if (huc.getResponseCode() != HttpServletResponse.SC_OK)
-						throw new IOException("Error with navigator "
-								+ huc.getResponseCode());
-					IO.eat(huc.getInputStream());
-					if (lastSessionKillerError[i] != 0) {
-						synchronized (sessionKillerErrorSynch) {
-							lastSessionKillerError[i] = 0;
-						}
-						// Because we only display errors once per hour, better
-						// display the
-						// 'OK' state too if it was marked as error before
-						l.logNormal("Forbids", asURL[i]
-								+ ": Forbid call OK now");
-					}
-				} catch (IOException ioe) {
-					// Display an error once per hour if it's still erroring
-					long lNow = System.currentTimeMillis();
-					synchronized (sessionKillerErrorSynch) {
-						if (lastSessionKillerError[i] == 0
-								|| (lNow - lastSessionKillerError[i]) > 60 * 60 * 1000) {
-							l.logWarning("Forbids", asURL[i]
-									+ ": Forbid call failed", ioe);
-							lastSessionKillerError[i] = lNow;
-						}
-					}
-				}
-			}
 		}
 	}
 
@@ -1011,25 +887,25 @@ public class NavigatorServlet extends HttpServlet {
 			// redirect.
 			boolean bNewCookie = false, bTempForbid = false;
 			String sKillOtherSessions = null;
-			synchronized (sessions) {
+			synchronized (sessionManager.sessions) {
 				// Remove entries from cookies-off list after 1 second
-				while (!cookiesOffCheck.isEmpty()
-						&& rt.lStart - (cookiesOffCheck.getFirst()).lTime > 1000) {
-					cookiesOffCheck.removeFirst();
+				while (!sessionManager.cookiesOffCheck.isEmpty()
+						&& rt.lStart - (sessionManager.cookiesOffCheck.getFirst()).lTime > 1000) {
+					sessionManager.cookiesOffCheck.removeFirst();
 				}
 
 				// Check whether they already have a session or not
-				if (sCookie == null || !sessions.containsKey(sCookie)) {
+				if (sCookie == null || !sessionManager.sessions.containsKey(sCookie)) {
 					// No session, need a new one
 					bNewCookie = true;
 				} else {
 					// Get session
-					us = sessions.get(sCookie);
+					us = sessionManager.sessions.get(sCookie);
 
 					// Check cookies in case they changed
 					if (us.iAuthHash != 0 && us.iAuthHash != iAuthHash) {
 						// If credentials change, they need a new session
-						sessions.remove(sCookie);
+						sessionManager.sessions.remove(sCookie);
 						bNewCookie = true;
 					}
 				}
@@ -1041,7 +917,7 @@ public class NavigatorServlet extends HttpServlet {
 
 
 					// Check if we've already been redirected
-					for (NewSession ns : cookiesOffCheck) {
+					for (NewSession ns : sessionManager.cookiesOffCheck) {
 						if(ns.sAddr.equals(sAddr)) {
 								sendError(null, request, response,
 										HttpServletResponse.SC_FORBIDDEN,
@@ -1057,17 +933,17 @@ public class NavigatorServlet extends HttpServlet {
 					NewSession ns = new NewSession();
 					ns.lTime = rt.lStart;
 					ns.sAddr = sAddr;
-					cookiesOffCheck.addLast(ns);
+					sessionManager.cookiesOffCheck.addLast(ns);
 
 					do {
 						// Make 7-letter random cookie
 						sCookie = Strings.randomAlNumString(7);
-					} while (sessions.containsKey(sCookie)); // And what are the
+					} while (sessionManager.sessions.containsKey(sCookie)); // And what are the
 					// chances of
 					// that?
 
 					us = new UserSession(this, sCookie);
-					sessions.put(sCookie, us);
+					sessionManager.sessions.put(sCookie, us);
 					// We do the actual redirect later on outside this synch
 
 					// At same time as creating new session, if they're logged
@@ -1111,25 +987,25 @@ public class NavigatorServlet extends HttpServlet {
 					us.sCheckedOUCUKey = sOUCU + "-" + sTestID;
 
 					// Check the temp-forbid list
-					Long lTimeout = tempForbid.get(us.sCheckedOUCUKey);
+					Long lTimeout = sessionManager.tempForbid.get(us.sCheckedOUCUKey);
 					if (lTimeout != null
 							&& lTimeout.longValue() > System
 									.currentTimeMillis()) {
 						// Kill session from main list & mark it to send error
 						// message later
-						sessions.remove(us.sCookie);
+						sessionManager.sessions.remove(us.sCookie);
 						bTempForbid = true;
 					} else {
 						// If it was a timed-out forbid, get rid of it
 						if (lTimeout != null)
-							tempForbid.remove(us.sCheckedOUCUKey);
+							sessionManager.tempForbid.remove(us.sCheckedOUCUKey);
 
 						// Put this in the OUCU->session map
-						UserSession usOld = usernames.put(us.sCheckedOUCUKey,
+						UserSession usOld = sessionManager.usernames.put(us.sCheckedOUCUKey,
 								us);
 						// If there was one already there, get rid of it
 						if (usOld != null) {
-							sessions.remove(usOld.sCookie);
+							sessionManager.sessions.remove(usOld.sCookie);
 						}
 						sKillOtherSessions = us.sCheckedOUCUKey;
 					}
@@ -1137,8 +1013,10 @@ public class NavigatorServlet extends HttpServlet {
 			}
 			// If they started a session, tell other servers to kill that
 			// session (in thread)
-			if (sKillOtherSessions != null)
-				new RemoteSessionKiller(sKillOtherSessions);
+			if (sKillOtherSessions != null) {
+				sessionManager.killOtherSessions(sKillOtherSessions);
+			}
+
 			// Error if forbidden
 			if (bTempForbid) {
 				sendError(
@@ -4029,11 +3907,11 @@ public class NavigatorServlet extends HttpServlet {
 					null);
 		}
 
-		synchronized (sessions) {
+		synchronized (sessionManager.sessions) {
 			// Ditch existing session
-			UserSession us = usernames.remove(sOucuTest);
+			UserSession us = sessionManager.usernames.remove(sOucuTest);
 			if (us != null)
-				sessions.remove(us.sCookie);
+				sessionManager.sessions.remove(us.sCookie);
 
 			// Forbid that user for 1 minute [this is intended to prevent the
 			// possibility of timing issues allowing a user to get logged on to
@@ -4041,7 +3919,7 @@ public class NavigatorServlet extends HttpServlet {
 			// servers at once; should that happen, chances are they'll instead
 			// be
 			// *dumped* from both servers at once (for 60 seconds).
-			tempForbid.put(sOucuTest, System.currentTimeMillis() + 60000L);
+			sessionManager.tempForbid.put(sOucuTest, System.currentTimeMillis() + 60000L);
 
 			// Send response
 			response.setContentType("text/plain");
@@ -4264,9 +4142,9 @@ public class NavigatorServlet extends HttpServlet {
 				- Runtime.getRuntime().freeMemory());
 		m.put("MEMORY", sMemoryUsed);
 
-		synchronized (sessions) {
-			m.put("SESSIONS", sessions.size() + "");
-			m.put("TEMPFORBIDS", tempForbid.size() + "");
+		synchronized (sessionManager.sessions) {
+			m.put("SESSIONS", sessionManager.sessions.size() + "");
+			m.put("TEMPFORBIDS", sessionManager.tempForbid.size() + "");
 		}
 
 		m.put("VERSION", OmVersion.getVersion());

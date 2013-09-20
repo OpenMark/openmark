@@ -11,9 +11,9 @@ import javax.servlet.ServletException;
 import om.OmUnexpectedException;
 import om.abstractservlet.RequestHandlingException;
 import om.tnavigator.NavigatorServlet;
-import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
+import om.tnavigator.sessions.UserSession;
 
 /* generate a code to be used by the Are You ready for tests
  *  

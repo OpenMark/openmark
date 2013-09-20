@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.tnavigator.UserSession;
+import om.tnavigator.sessions.UserSession;
 
 /**
  * Template contract for things that need to be handled before the rest of the

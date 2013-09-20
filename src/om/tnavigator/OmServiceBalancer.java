@@ -34,7 +34,7 @@ import org.apache.axis.client.Stub;
  * Handles load balancing (and error recovery when possible) for Om service
  * access.
  */
-class OmServiceBalancer extends ServiceBalancer<OmService> {
+public class OmServiceBalancer extends ServiceBalancer<OmService> {
 	/**
 	 * @param serviceUrls Array of available services
 	 */

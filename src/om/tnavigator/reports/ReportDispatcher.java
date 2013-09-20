@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import om.OmException;
 import om.tnavigator.NavigatorServlet;
-import om.tnavigator.UserSession;
 import om.tnavigator.reports.std.DeployedQuestionsReport;
 import om.tnavigator.reports.std.DeployedTestsReport;
 import om.tnavigator.reports.std.HomeTestReport;
@@ -38,6 +37,7 @@ import om.tnavigator.reports.std.QuestionTestReport;
 import om.tnavigator.reports.std.TestUsageReport;
 import om.tnavigator.reports.std.UserTestReport;
 import om.tnavigator.reports.std.VariantsTestReport;
+import om.tnavigator.sessions.UserSession;
 import om.tnavigator.util.IPAddressCheckUtil;
 
 /**

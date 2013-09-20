@@ -2,6 +2,7 @@ package om.tnavigator;
 
 import java.lang.reflect.Field;
 
+import om.tnavigator.sessions.UserSession;
 import om.tnavigator.teststructure.JUnitTestCaseTestDefinition;
 import om.tnavigator.teststructure.JUnitTestCaseTestRealisation;
 import om.tnavigator.teststructure.TestDeployment;

@@ -15,6 +15,7 @@ import om.axis.qengine.Score;
 import om.tnavigator.*;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.reports.OmTestReport;
+import om.tnavigator.sessions.UserSession;
 import om.tnavigator.teststructure.TestDeployment;
 
 /**

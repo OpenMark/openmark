@@ -20,7 +20,7 @@ package om.tnavigator.reports;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import om.tnavigator.UserSession;
+import om.tnavigator.sessions.UserSession;
 import om.tnavigator.teststructure.TestDeployment;
 
 /**
