@@ -532,7 +532,7 @@ public class NavigatorServlet extends HttpServlet {
 					x);
 			}
 		} else {
-			String msg = "The <preprocessing> node has not been specified"
+			String msg = "The <preprocessor> node has not been specified"
 				+ " in the navigator.xml.";
 			l.logError(msg);
 			errorManagement.sendAdminAlert(msg, null);
