@@ -131,8 +131,6 @@ public class NavigatorServlet extends HttpServlet {
 
 	private static final String SEQUENCEFIELD = "sequence";
 
-	private static final String COOKIENAME = "tnavigator_session";
-
 	private static final String FAKEOUCUCOOKIENAME = "tnavigator_xid";
 
 	private static String SCRIPT_JS = "script.js";
@@ -871,10 +869,9 @@ public class NavigatorServlet extends HttpServlet {
 						"An error occurred while attempting to authenticate your request.",
 						null);
 			}
-			
+
 			// See if they've got a cookie for this test
-			String sTestCookieName = COOKIENAME + "_" + sTestID;
-			String sCookie = getCookie(request, sTestCookieName);
+			String sCookie = getCookie(request, sessionManager.getTestCookieName(sTestID));
 
 			// See if they've got a fake OUCU (null if none)
 			String sFakeOUCU = getCookie(request, FAKEOUCUCOOKIENAME);
@@ -895,23 +892,21 @@ public class NavigatorServlet extends HttpServlet {
 				}
 
 				// Check whether they already have a session or not
-				if (sCookie == null || !sessionManager.sessions.containsKey(sCookie)) {
-					// No session, need a new one
-					bNewCookie = true;
-				} else {
-					// Get session
+				if (sCookie != null) {
 					us = sessionManager.sessions.get(sCookie);
+				}
 
+				if (us != null) {
 					// Check cookies in case they changed
 					if (us.iAuthHash != 0 && us.iAuthHash != iAuthHash) {
 						// If credentials change, they need a new session
-						sessionManager.sessions.remove(sCookie);
-						bNewCookie = true;
+						sessionManager.sessions.remove(us.sCookie);
+						us = null;
 					}
 				}
 
 				// New sessions!
-				if (bNewCookie) {
+				if (us == null) {
 					String sAddr = request.getRemoteAddr();
 
 					// Check if we've already been redirected
@@ -940,8 +935,8 @@ public class NavigatorServlet extends HttpServlet {
 					// And what are the chances of that?
 
 					us = new UserSession(this, sCookie);
-					sessionManager.sessions.put(sCookie, us);
-					// We do the actual redirect later on outside this synch
+					sessionManager.sessions.put(us.sCookie, us);
+					// We do the actual redirect later on outside this synch.
 
 					// At same time as creating new session, if they're logged
 					// in supposedly, check it's for real. If their cookie doesn't
@@ -1042,7 +1037,7 @@ public class NavigatorServlet extends HttpServlet {
 				// chuck away
 				// their session...
 				if (us.ud != null && sOUCU != null && !us.ud.isLoggedIn()) {
-					Cookie c = new Cookie(sTestCookieName, "");
+					Cookie c = new Cookie(sessionManager.getTestCookieName(sTestID), "");
 					c.setMaxAge(0);
 					c.setPath("/");
 					response.addCookie(c);
@@ -1087,10 +1082,11 @@ public class NavigatorServlet extends HttpServlet {
 					// next request.
 					debugPI(us,l,"5");
 
-					if (bNewCookie) {
-						Cookie c = new Cookie(sTestCookieName, sCookie);
+					if (!us.cookieCreated) {
+						Cookie c = new Cookie(sessionManager.getTestCookieName(sTestID), us.sCookie);
 						c.setPath("/");
 						response.addCookie(c);
+						us.cookieCreated = true;
 					}
 
 					// If they're not logged in, give them a not-logged-in
@@ -1150,7 +1146,7 @@ public class NavigatorServlet extends HttpServlet {
 						&& !(us.bAllowAfterForbid && !us.getTestDeployment()
 								.isAfterForbidExtension())) {
 					// It is forbidden. Drop session.
-					Cookie c = new Cookie(sTestCookieName, "false");
+					Cookie c = new Cookie(sessionManager.getTestCookieName(sTestID), "false");
 					c.setMaxAge(0);
 					c.setPath("/");
 					response.addCookie(c);

@@ -104,6 +104,8 @@ public class UserSession
 	public int iDBqi;
 	public int iDBseq;
 
+	public boolean cookieCreated = false;
+
 	/** True if they have finished the test */
 	private boolean bFinished;
 

@@ -64,4 +64,13 @@ public class SessionManager
 	{
 		new RemoteSessionKiller(this, sKillOtherSessions, nc.getOtherNavigators());
 	}
+
+	/**
+	 * Get the name of the per-test session cookie for a given test.
+	 * @param testId the test id, that is the key bit of the deploy file name/URL.
+	 * @return the cookie name.
+	 */
+	public String getTestCookieName(String testId) {
+		return "tnavigator_session_" + testId;
+	}
 }
