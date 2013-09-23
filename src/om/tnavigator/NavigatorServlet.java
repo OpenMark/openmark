@@ -280,55 +280,6 @@ public class NavigatorServlet extends HttpServlet {
 		}
 	}
 
-	/* sime debugging stuff for pi problem to be removed */
-	private StringBuffer bufferIt(String s,String name)
-	throws Exception
-	{
-		StringBuffer m= new StringBuffer();
-		try
-		{
-			if(s!=null)
-			{
-				m.append(name+" is not null, value=");
-				if (s.isEmpty())
-				{
-					m.append(name+" empty ");
-				}
-				m.append(s);
-			}
-		}
-		catch (Exception e)
-		{
-			m.append("oops bufferit went wrong ");
-			m.append(e.getMessage());
-		}
-		
-		return m;
-	}
-	
-	private void  debugPI(UserSession us, Log l, String i)
-	{			
-		StringBuffer mess=new StringBuffer();
-		mess.append("DEBUGPI navigatorservlet "+i+": ");
-		try
-		{
-			mess.append(bufferIt(us.sOUCU,"oucu").toString()+", ");
-			String pitest=us.ud.isLoggedIn() ? us.ud.getPersonID() : us.sOUCU;
-			String cookie=us.ud.getCookie();
-			mess.append(bufferIt(pitest,"pitest").toString()+", ");
-			mess.append(bufferIt(cookie,"cookie").toString());
-			l.logDebug(mess.toString());
-
-
-		}
-		catch(Exception e)
-		{
-			l.logDebug(mess.toString()+" debugPI errored "+e.getMessage());
-		}
-	
-	}
-	
-	
 	@Override
 	public void init() throws ServletException {
 		ServletContext sc = getServletContext();
@@ -623,12 +574,10 @@ public class NavigatorServlet extends HttpServlet {
 
 	/**
 	 * Obtains cookie based on its name.
-	 * 
-	 * @param request
-	 *            HTTP request
-	 * @param sName
-	 *            Name of cookie
-	 * @return Cookie value
+	 *
+	 * @param request HTTP request
+	 * @param sName Name of cookie
+	 * @return Cookie value, or null if the cookie does not exist.
 	 */
 	private String getCookie(HttpServletRequest request, String sName) {
 		/* if we are looking at the sams 2 cookie, then use the special function that reads it from headets
@@ -1030,9 +979,7 @@ public class NavigatorServlet extends HttpServlet {
 			synchronized (us) {
 				// Set last action time (so session doesn't time out)
 				us.touch();
-			
-				debugPI(us,l,"1");
-				
+
 				// If they have an OUCU but also a temp-login then we need to
 				// chuck away
 				// their session...
@@ -1044,7 +991,6 @@ public class NavigatorServlet extends HttpServlet {
 					response.sendRedirect(request.getRequestURI());
 					return;
 				}
-				debugPI(us,l,"2");
 
 				// Get auth if needed
 				if (us.ud == null) {
@@ -1061,7 +1007,6 @@ public class NavigatorServlet extends HttpServlet {
 						} else
 							throw oe;
 					}
-					debugPI(us,l,"3");
 
 					us.ud = getAuthentication().getUserDetails(request, response, !us
 							.getTestDeployment().isWorldAccess());
@@ -1074,13 +1019,11 @@ public class NavigatorServlet extends HttpServlet {
 						us.markForDiscard();
 						return;
 					}
-					debugPI(us,l,"4");
 
 					// We only give them a cookie after passing this stage. If
 					// they were
 					// redirected to SAMS, they don't get a cookie until the
 					// next request.
-					debugPI(us,l,"5");
 
 					if (!us.cookieCreated) {
 						Cookie c = new Cookie(sessionManager.getTestCookieName(sTestID), us.sCookie);
@@ -1090,10 +1033,7 @@ public class NavigatorServlet extends HttpServlet {
 					}
 
 					// If they're not logged in, give them a not-logged-in
-					// cookie with
-					// a made-up OUCU in it
-					debugPI(us,l,"6");
-
+					// cookie with a made-up OUCU in it
 					if (us.ud.isLoggedIn()) {
 						us.sOUCU = us.ud.getUsername();
 					} else {
@@ -1117,22 +1057,19 @@ public class NavigatorServlet extends HttpServlet {
 							us.sOUCU = sFakeOUCU;
 						}
 					}
-					debugPI(us,l,"7");
 
 					// Remember auth hash so that it'll know if they change
 					// cookie now
 					us.iAuthHash = iAuthHash;
 				}
-				debugPI(us,l,"8");
 
 				us.bAllowAfterForbid =
-				// * a posted 'end session' request
-				(bPost && sCommand.equals("?end")) ||
-				// * Access options for that page;
+						// a posted 'end session' request
+						(bPost && sCommand.equals("?end")) ||
+						// Access options for that page;
 						sCommand.equals("?access") ||
-						// * Stylesheet
+						// Stylesheet
 						sCommand.matches("resources/[0-9]+/style-[0-9]+\\.css");
-				debugPI(us,l,"9");
 
 				// Check test hasn't timed out
 				if (us.getTestId() != null
@@ -1153,7 +1090,6 @@ public class NavigatorServlet extends HttpServlet {
 					response.sendRedirect(request.getRequestURI());
 					return;
 				}
-				debugPI(us,l,"10");
 
 				if (sCommand.equals("")) {
 					// Have they possibly lost an existing session? If so, go
@@ -1169,10 +1105,6 @@ public class NavigatorServlet extends HttpServlet {
 					// on this one...
 					// (the latter should not be possible since cookies are
 					// test-specific)
-					
-					debugPI(us,l,"11");
-
-					
 					if (!bPost
 							&& (us.getTestId() == null || !sTestID.equals(us
 									.getTestId()))) {
@@ -1180,6 +1112,7 @@ public class NavigatorServlet extends HttpServlet {
 						handleStart(rt, sTestID, us, -1, request, response);
 						return;
 					}
+
 					// Otherwise check they're on current test (if not, wtf?)
 					if (us.getTestId() == null
 							|| !sTestID.equals(us.getTestId())) {
@@ -1460,10 +1393,7 @@ public class NavigatorServlet extends HttpServlet {
 		initTestSession(us, rt, sTestID, request, response, false, false, us.ud
 				.isSysTest() ? 1124965882611L : System.currentTimeMillis(),
 				variant);
-		
-		debugPI(us,l,"12");
 
-		
 		// Don't store anything in database for singles version
 		if (us.isSingle())
 			return;
