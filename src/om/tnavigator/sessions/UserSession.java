@@ -42,33 +42,35 @@ public class UserSession
 	public String sCookie;
 
 	/** Question session ID for question engine */
-	public OmServiceBalancer.OmServiceSession oss=null;
+	public OmServiceBalancer.OmServiceSession oss = null;
 
 	/** Sequence used to check you don't do things out of order */
 	public String sSequence;
 
 	/** Time of session start */
-	public long lSessionStart=System.currentTimeMillis();
+	public long lSessionStart = System.currentTimeMillis();
 
 	/** Time of last action in session */
 	private long lastActionTime = System.currentTimeMillis();
 
-	// Current test deployment.
+	/** Current test deployment. */
 	protected TestDeployment tdDeployment = null;
 
 	/** Current test definition (null for single question) */
 	protected TestDefinition testDefinition = null;
 
-	// The test realisation, that is, exactly what sections
-	// and questions make up the test for this user, given
-	// the random choices.
+	/**
+	 * The test realisation, that is, exactly what sections
+	 * and questions make up the test for this user, given
+	 * the random choices.
+	 */
 	protected TestRealisation testRealisation = null;
 
 	/** Index within test items */
 	private int testPosition;
 
 	/** User login details */
-	public UserDetails ud=null;
+	public UserDetails ud = null;
 
 	/** OUCU (real or fake) */
 	public String sOUCU;
@@ -80,22 +82,22 @@ public class UserSession
 	public int iAuthHash=0;
 
 	/** Whether they have admin access */
-	public boolean bAdmin=false;
+	public boolean bAdmin = false;
 
 	/** Whether they can also view reports */
-	public boolean bAllowReports=false;
+	public boolean bAllowReports = false;
 
 	/** Whether the final PCDC code has been generated */
-	public boolean bHasGeneratedFinalPCDC=false;
-	
+	public boolean bHasGeneratedFinalPCDC = false;
+
 	/** Map of String (filename) -> Resource */
-	public Map<String,Resource> mResources=new HashMap<String,Resource>();
+	public Map<String,Resource> mResources = new HashMap<String,Resource>();
 
 	/** CSS */
-	public String sCSS="";
+	public String sCSS = "";
 
 	/** Progress info */
-	public String sProgressInfo="";
+	public String sProgressInfo = "";
 
 	/** Database ID for test, question, sequence */
 	private int dbTi;
@@ -135,13 +137,13 @@ public class UserSession
 	 */
 	public int iEmailSent=0;
 
-	// A place where any extra information can be stored in the session.
+	/** A place where any extra information can be stored in the session. */
 	private Map<String,Object> extraSessionInfo = new HashMap<String, Object>();
 
 	public NavigatorServlet getNs() {
 		return ns;
 	}
-	
+
 	public int getICSSIndex() {
 		return new Integer(iCSSIndex).intValue();
 	}
@@ -261,7 +263,7 @@ public class UserSession
 	public boolean isFinished() {
 		return bFinished;
 	}
-	
+
 	/**
 	 * @return the sOUCU
 	 */
@@ -391,6 +393,4 @@ public class UserSession
 		bFinished = finished;
 		navigatorVersion = OmVersion.getVersion();
 	}
-	
-
 }

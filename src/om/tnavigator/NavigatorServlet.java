@@ -885,7 +885,7 @@ public class NavigatorServlet extends HttpServlet {
 
 			// If they haven't got a cookie or it's unknown, assign them one and
 			// redirect.
-			boolean bNewCookie = false, bTempForbid = false;
+			boolean bTempForbid = false;
 			String sKillOtherSessions = null;
 			synchronized (sessionManager.sessions) {
 				// Remove entries from cookies-off list after 1 second
@@ -913,12 +913,10 @@ public class NavigatorServlet extends HttpServlet {
 				// New sessions!
 				if (bNewCookie) {
 					String sAddr = request.getRemoteAddr();
-					
-
 
 					// Check if we've already been redirected
 					for (NewSession ns : sessionManager.cookiesOffCheck) {
-						if(ns.sAddr.equals(sAddr)) {
+						if (ns.sAddr.equals(sAddr)) {
 								sendError(null, request, response,
 										HttpServletResponse.SC_FORBIDDEN,
 										false, false,null,
@@ -938,20 +936,17 @@ public class NavigatorServlet extends HttpServlet {
 					do {
 						// Make 7-letter random cookie
 						sCookie = Strings.randomAlNumString(7);
-					} while (sessionManager.sessions.containsKey(sCookie)); // And what are the
-					// chances of
-					// that?
+					} while (sessionManager.sessions.containsKey(sCookie));
+					// And what are the chances of that?
 
 					us = new UserSession(this, sCookie);
 					sessionManager.sessions.put(sCookie, us);
 					// We do the actual redirect later on outside this synch
 
 					// At same time as creating new session, if they're logged
-					// in supposedly,
-					// check it's for real. If their cookie doesn't
-					// authenticated, this will
-					// cause the cookie to be removed and avoid multiple
-					// redirects.
+					// in supposedly, check it's for real. If their cookie doesn't
+					// authenticated, this will cause the cookie to be removed
+					// and avoid multiple redirects.
 					if (sOUCU != null) {
 						try{
 							if (!getAuthentication().getUserDetails(request, response, false)
@@ -3915,10 +3910,8 @@ public class NavigatorServlet extends HttpServlet {
 
 			// Forbid that user for 1 minute [this is intended to prevent the
 			// possibility of timing issues allowing a user to get logged on to
-			// both
-			// servers at once; should that happen, chances are they'll instead
-			// be
-			// *dumped* from both servers at once (for 60 seconds).
+			// both servers at once; should that happen, chances are they'll
+			// instead be *dumped* from both servers at once (for 60 seconds).
 			sessionManager.tempForbid.put(sOucuTest, System.currentTimeMillis() + 60000L);
 
 			// Send response
