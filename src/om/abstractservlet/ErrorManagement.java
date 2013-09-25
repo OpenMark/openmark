@@ -239,8 +239,6 @@ public class ErrorManagement implements GracefulFinalization {
 					emp.setTitle("Question engine connection fault");
 					emp.setMessage("The system could not connect to a required component. "
 						+ TEMPPROBLEM);
-					// exception=null; Leave exception to display - we are
-					// getting inexplicable errors.
 				} else {
 					Throwable cause = emp.getThrowable().getCause();
 					if (cause != null
@@ -256,8 +254,6 @@ public class ErrorManagement implements GracefulFinalization {
 						emp.setTitle("Question engine fault");
 						emp.setMessage("An error occurred in the question or a required system "
 							+ "component.");
-						// Leave exception to display; this could be a question
-						// developer error.
 					}
 				}
 			}
@@ -321,10 +317,7 @@ public class ErrorManagement implements GracefulFinalization {
 			m.put("TITLE", emp.getTitle());
 			m.put("MESSAGE", emp.getMessage());
 			m.put("STATUSCODE", code + "");
-			//String sOUCU = visitor.getAuthentication()
-				//.getUncheckedUserDetails(request).getUsername();
 			String sOUCU=null;
-			// ctach it if us is null
 			try
 			{
 				sOUCU=us.getOUCU();
@@ -509,7 +502,7 @@ public class ErrorManagement implements GracefulFinalization {
 		if (isBug) {
 			log.logError("Displayed error", sMessageSummary, exception);
 			// Optionally send email - output is already sent to user so no need
-			// to worry if it takes a while
+			// to worry if it takes a while.
 			sendAdminAlert(sMessageSummary, exception);
 		} else
 			log.logWarning("Displayed error", sMessageSummary, exception);

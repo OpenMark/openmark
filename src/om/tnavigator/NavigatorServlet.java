@@ -796,28 +796,7 @@ public class NavigatorServlet extends HttpServlet {
 
 			// Get OUCU (null if no SAMS cookie), used to synch sessions for
 			// single user
-			String sOUCU=null;
-			//Authentication a=getAuthentication();
-			//UncheckedUserDetails u=a.getUncheckedUserDetails(request);
-			//String s=u.getUsername();
-			try
-			{
-				sOUCU = getAuthentication().getUncheckedUserDetails(request).getUsername();
-			}
-			catch (Exception e)
-			{
-				sendError(
-						us,
-						request,
-						response,
-						HttpServletResponse.SC_NOT_FOUND,
-						false,
-						false,
-						null,
-						"Unable to authenticate user session (1)",
-						"An error occurred while attempting to authenticate your request.",
-						null);
-			}
+			String sOUCU = getAuthentication().getUncheckedUserDetails(request).getUsername();
 
 			// See if they've got a cookie for this test
 			String sCookie = getCookie(request, sessionManager.getTestCookieName(sTestID));
@@ -892,28 +871,12 @@ public class NavigatorServlet extends HttpServlet {
 					// authenticated, this will cause the cookie to be removed
 					// and avoid multiple redirects.
 					if (sOUCU != null) {
-						try{
-							if (!getAuthentication().getUserDetails(request, response, false)
-									.isLoggedIn()) {
-								// And we need to set this to zero to reflect that
-								// we just wiped
-								// their cookie.
-								iAuthHash = 0;
-							}
-						}
-						catch(IOException e)
-						{
-							sendError(
-									us,
-									request,
-									response,
-									HttpServletResponse.SC_NOT_FOUND,
-									false,
-									false,
-									null,
-									"Unable to authenticate user session (2)",
-									"An error occurred while attempting to authenticate your request.",
-									null);
+						if (!getAuthentication().getUserDetails(request, response, false)
+								.isLoggedIn()) {
+							// And we need to set this to zero to reflect that
+							// we just wiped
+							// their cookie.
+							iAuthHash = 0;
 						}
 					}
 					
@@ -1012,18 +975,15 @@ public class NavigatorServlet extends HttpServlet {
 							.getTestDeployment().isWorldAccess());
 					if (us.ud == null) {
 						// They've been redirected to SAMS. Chuck their session
-						// as soon
-						// as expirer next runs, they won't be needing it as we
-						// didn't give
-						// them a cookie yet
+						// as soon as expirer next runs, they won't be needing
+						// it as we didn't give them a cookie yet.
 						us.markForDiscard();
 						return;
 					}
 
 					// We only give them a cookie after passing this stage. If
-					// they were
-					// redirected to SAMS, they don't get a cookie until the
-					// next request.
+					// they were redirected to SAMS, they don't get a cookie
+					// until the next request.
 
 					if (!us.cookieCreated) {
 						Cookie c = new Cookie(sessionManager.getTestCookieName(sTestID), us.sCookie);
@@ -1039,10 +999,8 @@ public class NavigatorServlet extends HttpServlet {
 					} else {
 						if (sFakeOUCU == null) {
 							// Make 8-letter random OUCU. We don't bother
-							// storing a list,
-							// but there are about 3,000 billion possibilities
-							// so it should
-							// be OK.
+							// storing a list, but there are about 3,000 billion
+							// possibilities so it should be OK.
 							us.sOUCU = "_" + Strings.randomAlNumString(7);
 
 							// Set it in cookie for future sessions
@@ -1133,14 +1091,11 @@ public class NavigatorServlet extends HttpServlet {
 					// OK, handle action
 					if (bPost && us.oss != null)
 						// us.oss check is to make sure there's actually a
-						// question session.
-						// In certain cases of bad timing/impatient users, the
-						// post might
-						// occur when there isn't one, which causes a crash. So
-						// in that
+						// question session. In certain cases of bad
+						// timing/impatient users, the post might occur when
+						// there isn't one, which causes a crash. So in that
 						// case let's just do handleNothing and hope it gets
-						// back onto
-						// even keel.
+						// back onto even keel.
 						handleProcess(rt, us, request, response);
 					else
 						handleNothing(rt, us, request, response);
@@ -1175,12 +1130,12 @@ public class NavigatorServlet extends HttpServlet {
 				}
 
 				// Accessibility options form, post version when submitting
-				// answers
+				// answers.
 				if (sCommand.equals("?access")) {
 					handleAccess(rt, bPost, false, us, request, response);
 					return;
 				}
-				// Toggle plain mode
+				// Toggle plain mode.
 				if (sCommand.equals("?plainmode")) {
 					handleAccess(rt, false, true, us, request, response);
 					return;
@@ -1193,7 +1148,7 @@ public class NavigatorServlet extends HttpServlet {
 								response);
 						return;
 					}
-					// Redo command is posted
+					// Redo command is posted.
 					if (sCommand.equals("?redo") && bPost) {
 						if (!us.getTestDefinition().isRedoQuestionAllowed()
 								&& !us.bAdmin)
@@ -1212,7 +1167,7 @@ public class NavigatorServlet extends HttpServlet {
 							handleRedo(rt, us, request, response);
 						return;
 					}
-					// So is restart command
+					// So is restart command.
 					if (sCommand.equals("?restart") && bPost) {
 						if (!us.getTestDefinition().isRedoTestAllowed()
 								&& !us.bAdmin)
@@ -1226,8 +1181,7 @@ public class NavigatorServlet extends HttpServlet {
 						return;
 					}
 					// Request to show 'end test, ok?' screen, post version is
-					// if you say
-					// yes
+					// if you say yes.
 					if (sCommand.equals("?end")) {
 						handleEnd(rt, bPost, false, us, request, response);
 						return;
@@ -1238,7 +1192,7 @@ public class NavigatorServlet extends HttpServlet {
 						return;
 					}
 
-					// Check it's not a post request
+					// Check it's not a post request.
 					if (bPost) {
 						sendError(us, request, response,
 								HttpServletResponse.SC_METHOD_NOT_ALLOWED,
@@ -1247,7 +1201,7 @@ public class NavigatorServlet extends HttpServlet {
 								null);
 					}
 					// Check they're on current test, otherwise redirect to
-					// start
+					// start.
 					if (us.getTestId() == null
 							|| !sTestID.equals(us.getTestId())) {
 						sendError(
@@ -1301,8 +1255,7 @@ public class NavigatorServlet extends HttpServlet {
 			}
 
 			// Resources occur un-synchronized so that they can download more
-			// than one
-			// at a time
+			// than one at a time.
 			String sResourcesPrefix = "resources/" + us.getTestPosition() + "/";
 			if (sCommand.equals(sResourcesPrefix + "style-" + us.iCSSIndex
 					+ ".css")) {
@@ -1323,10 +1276,18 @@ public class NavigatorServlet extends HttpServlet {
 			// This just means that data was already sent to user
 		} catch (Throwable t) {
 			try {
-				String mess = t.getMessage() == null ? "Unknown error" : t.getMessage();
-				sendError(null, request, response,
-						HttpServletResponse.SC_FORBIDDEN,
-						false, false,null,
+				String mess;
+				if (t.getMessage() == null)
+				{
+					mess = "Unknown error";
+				}
+				else
+				{
+					mess = t.getMessage();
+				}
+				sendError(us, request, response,
+						HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+						false, false, null,
 						"Unable to display",
 						mess,
 						t);
@@ -4453,14 +4414,12 @@ public class NavigatorServlet extends HttpServlet {
 		boolean keepSession, String backToTest, String title,
 		String message, Throwable exception) throws StopException {
 		OMVisitor visitor = new OMVisitor(da, oq, getAuthentication(), getServletContext());
-		// Note that no call though actually looks to remove the session so 
-		// Im looking to remove this kind of thing.
-//		if (!keepSession) {
-//			l.logDebug("Throwing away session.");
-//			synchronized (sessions) {
-//				sessions.values().remove(us);
-//			}
-//		}
+		if (!keepSession) {
+			l.logDebug("Throwing away session.");
+			synchronized (sessionManager.sessions) {
+				sessionManager.sessions.values().remove(us);
+			}
+		}
 		ErrorMessageParts emp = new ErrorMessageParts(title, message, false,
 			exception, ErrorManagement.ERROR_TEMPLATE);
 		errorManagement.sendErrorForUserSession(us, request, response, code,

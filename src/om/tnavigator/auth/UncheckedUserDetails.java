@@ -22,10 +22,13 @@ public interface UncheckedUserDetails
 {
 	/** @return User OUCU (not validated at this stage) or null if none */
 	public String getUsername();
+
 	/** @return Entire auth cookie or null if none */
 	public String getCookie();
+
 	/** @return Student PI or staff number or whatever */
 	public String getPersonID();
+
 	/**  @return cookie name null if none */
 	public String getsCookieName();
 }
