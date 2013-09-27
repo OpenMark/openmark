@@ -222,9 +222,8 @@ public class FlashComponent extends QComponent
 				XML.importChildren(placeholderSpan, XML.parse(
 						"<span>[To do this question, you will need to " +
 						"<a href='http://www.adobe.com/go/getflashplayer' " +
-						"title='Get Flash Player'>install the latest Flash plug-in" +
-						"<img src='http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif' " +
-						"alt='Get Flash Player' border='0' /></a>]</span>").getDocumentElement());
+						"title='Get Flash Player'>" +
+						"install the latest Flash plug-in</a>]</span>").getDocumentElement());
 			} catch (XMLException e) {
 				throw new OmUnexpectedException(e);
 			}
