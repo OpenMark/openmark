@@ -624,11 +624,9 @@ public class NavigatorServlet extends HttpServlet {
 			response.addCookie(c);
 			response.setContentType("text/plain");
 			try {
-				response
-						.getWriter()
-						.println(
-								"OK, you're in! (Close the browser entirely, "
-										+ "or clear session cookies, to lock yourself back out.)");
+				response.getWriter().println(
+						"OK, you're in! (Close the browser entirely, "
+						+ "or clear session cookies, to lock yourself back out.)");
 			} catch (IOException e) {
 			}
 			throw new StopException();
@@ -3699,12 +3697,8 @@ public class NavigatorServlet extends HttpServlet {
 	private void doSystemCheck(UserSession us, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, StopException {
 		// Initial request gets redirected to the system-check Javascript page
-		if (!us.bCheckedBrowser && !us.getTestDeployment().isSingleQuestion()) // Don't
-		// do
-		// that
-		// for
-		// single
-		// question
+		if (!us.bCheckedBrowser && !us.getTestDeployment().isSingleQuestion())
+			// Don't do that for single question
 		{
 			us.bCheckedBrowser = true;
 			response.sendRedirect(RequestHelpers.getServletURL(request)
