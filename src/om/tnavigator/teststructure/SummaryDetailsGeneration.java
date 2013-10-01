@@ -20,6 +20,7 @@ public class SummaryDetailsGeneration {
 		if (sd.isIncludeScore()) {
 			sd.setRootTestGroup(us.getRootTestGroup());
 			sd.setTestLeavesInOrder(us.getTestLeavesInOrder());
+			sd.setTestDefinition(us.getTestDefinition());
 		}
 		return sd;
 	}

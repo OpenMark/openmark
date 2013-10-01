@@ -14,6 +14,8 @@ public class SummaryDetails {
 	// from us.getTestLeavesInOrder;
 	private TestLeaf[] testLeavesInOrder;
 
+	private TestDefinition testDefinition;
+
 	private boolean numberBySection;
 	
 	private boolean includeQuestions;
@@ -44,6 +46,14 @@ public class SummaryDetails {
 
 	public void setRootTestGroup(TestGroup rtg) {
 		rootTestGroup = rtg;
+	}
+
+	public TestDefinition getTestDefinition() {
+		return testDefinition;
+	}
+
+	public void setTestDefinition(TestDefinition td) {
+		testDefinition = td;
 	}
 
 	public TestLeaf[] getTestLeavesInOrder() {

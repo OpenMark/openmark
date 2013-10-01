@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import om.OmFormatException;
+import om.tnavigator.NavigatorServlet;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.scores.CombinedScore;
@@ -110,13 +111,9 @@ public class SummaryTableBuilder {
 	}
 
 	class TableComponents {
-		
 		String[] asAxes;
-		
 		Element eTable;
-		
 		Element eTR;
-		
 		Node tableParent;
 	}
 
@@ -127,7 +124,6 @@ public class SummaryTableBuilder {
 		String sLastQuestion = null;
 		String sDisplayedSection = null; // Section heading that has already been displayed
 		String sPreviousSection = null; // Section of last row (null if none)
-		
 		String sSection;  // pulled from the db in the iteration.
 	}
 
@@ -232,7 +228,8 @@ public class SummaryTableBuilder {
 			}
 		}
 		if (sd.isIncludeAttempts()) {
-			String sAttempts = getAttemptsString(rs.getInt(6));
+			String sAttempts = NavigatorServlet.getAttemptsString(
+					rs.getInt(6), sd.getTestDefinition());
 			XML.createText(sd.getTableComponents().eTR, "td", sAttempts);
 			if (sd.isPlain()) {
 				XML.createText(ePlainRow, "Result: " + sAttempts + ". ");
@@ -328,22 +325,6 @@ public class SummaryTableBuilder {
 			XML.createText(ePlainRow,SUMMARYTABLE_NOTANSWERED+". ");
 		}
 		addSummaryTableScore(eTR,ePlainRow, dd.sLastQuestion, sd);
-	}
-
-	/**
-	 * @param iAttempts 'Attempts' value
-	 * @return String describing value, for use in summary tables
-	 */
-	public static String getAttemptsString(int iAttempts) {
-		switch(iAttempts) {
-			case ATTEMPTS_PARTIALLYCORRECT : return "Partially correct";
-			case ATTEMPTS_WRONG : return "Incorrect";
-			case ATTEMPTS_PASS : return "Passed";
-			case 1 : return "Correct at 1st attempt";
-			case 2 : return "Correct at 2nd attempt";
-			case 3 : return "Correct at 3rd attempt";
-			default : return "Correct at "+iAttempts+"th attempt";
-		}
 	}
 
 	private void addSummaryTableScore(Element eTR,Element ePlainRow,

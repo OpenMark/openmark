@@ -136,8 +136,6 @@ public class NavigatorServlet extends HttpServlet {
 
 	private static final String FAKEOUCUCOOKIENAME = "tnavigator_xid";
 
-	private static final String SUMMARYTABLE_NOTANSWERED = "Not completed";
-	
 	private static String SCRIPT_JS = "script.js";
 	
 	private static String PCDCTEXT="Pre course diagnostic code ";
@@ -153,8 +151,6 @@ public class NavigatorServlet extends HttpServlet {
 	private static String DYNAMICQUESTIONS="dynamic_questions";
 
 	public static final String SAMS2COOKIE="SAMS2session";
-
-
 
 	/**
 	 * User passed on question. Should match the definition in
@@ -176,8 +172,6 @@ public class NavigatorServlet extends HttpServlet {
 	 * om.question.Results.
 	 */
 	public final static int ATTEMPTS_UNSET = -99;
-
-	private static String USE_NEW_SUMMARY_IMPLEMENTATION = "useNewHandleSummaryTableImplementation";
 
 	/** Database access */
 	DatabaseAccess da;
@@ -1768,7 +1762,7 @@ public class NavigatorServlet extends HttpServlet {
 			us.getTestRealisation().getScore(rt, this, da, oq);
 		}
 
-		addSummaryTableDelegate(rt, us, eDiv, RequestHelpers.inPlainMode(request), us
+		addSummaryTable(rt, us, eDiv, RequestHelpers.inPlainMode(request), us
 				.getTestDefinition().doesSummaryIncludeQuestions(), us
 				.getTestDefinition().doesSummaryIncludeAttempts(), bScores);
 
@@ -1776,37 +1770,7 @@ public class NavigatorServlet extends HttpServlet {
 				.saveString(d), false, request, response, true);
 	}
 
-	/**
-	 * Here we check the configuration within the web.xml for a setting of
-	 * "useNewHandleSummaryTableImplementation". If this is set to true then we
-	 * delegate to the
-	 * 
-	 * @param rt
-	 * @param us
-	 * @param nParent
-	 * @param bPlain
-	 * @param bIncludeQuestions
-	 * @param bIncludeAttempts
-	 * @param bIncludeScore
-	 * @throws Exception
-	 * @author Trevor Hinson
-	 */
-	private void addSummaryTableDelegate(RequestTimings rt, UserSession us,
-			Node nParent, boolean bPlain, boolean bIncludeQuestions,
-			boolean bIncludeAttempts, boolean bIncludeScore) throws Exception {
-		String useNew = getServletConfig().getInitParameter(
-				USE_NEW_SUMMARY_IMPLEMENTATION);
-		if (Strings.isNotEmpty(useNew) ? "true".equalsIgnoreCase(useNew)
-				: false) {
-			addSummaryTableLatest(rt, us, nParent, bPlain, bIncludeQuestions,
-					bIncludeAttempts, bIncludeScore);
-		} else {
-			addSummaryTableDeprecate(rt, us, nParent, bPlain,
-					bIncludeQuestions, bIncludeAttempts, bIncludeScore);
-		}
-	}
-
-	private void addSummaryTableLatest(RequestTimings rt, UserSession us,
+	private void addSummaryTable(RequestTimings rt, UserSession us,
 			Node nParent, boolean bPlain, boolean bIncludeQuestions,
 			boolean bIncludeAttempts, boolean bIncludeScore) throws Exception {
 		SummaryDetails sd = SummaryDetailsGeneration.generateSummaryDetails(us,
@@ -1814,355 +1778,6 @@ public class NavigatorServlet extends HttpServlet {
 				bIncludeScore);
 		SummaryTableBuilder stb = new SummaryTableBuilder(da, oq);
 		rt.setDatabaseElapsedTime(stb.addSummaryTable(sd));
-	}
-
-	/**
-	 * Existing (26042011) implementation for the adding the summary table to
-	 * the end of the test. This implementation has been re-factored and remains
-	 * in place as default while testing of the new version continues.
-	 * 
-	 * @param rt
-	 * @param us
-	 * @param nParent
-	 * @param bPlain
-	 * @param bIncludeQuestions
-	 * @param bIncludeAttempts
-	 * @param bIncludeScore
-	 * @throws Exception
-	 * @Deprecated
-	 */
-	private void addSummaryTableDeprecate(RequestTimings rt, UserSession us,
-			Node nParent, boolean bPlain, boolean bIncludeQuestions,
-			boolean bIncludeAttempts, boolean bIncludeScore) throws Exception {
-		Node nTableParent, nPlainParent = null;
-		// check whether too renumber within section
-		boolean bisNumberBySection = us.getTestDefinition().isNumberBySection();
-
-		if (bPlain) {
-			Element eSkip = XML.createChild(nParent, "a");
-			XML.setText(eSkip, "Skip table");
-			eSkip.setAttribute("href", "#plaintable");
-
-			nTableParent = XML.createChild(nParent, "div");
-
-			Element eAnchor = XML.createChild(nParent, "a");
-			eAnchor.setAttribute("name", "plaintable");
-
-			XML.createText(nParent, "h3",
-					"Text-only version of preceding table");
-
-			eSkip = XML.createChild(nParent, "a");
-			XML.setText(eSkip, "Skip text-only version");
-			eSkip.setAttribute("href", "#endtable");
-
-			nPlainParent = XML.createChild(nParent, "div");
-
-			eAnchor = XML.createChild(nParent, "a");
-			eAnchor.setAttribute("name", "endtable");
-		} else {
-			nTableParent = nParent;
-		}
-		// Create basic table
-		Element eTable = XML.createChild(nTableParent, "table");
-		eTable.setAttribute("class", "topheaders");
-		Element eTR = XML.createChild(eTable, "tr");
-		Element eTH = XML.createChild(eTR, "th");
-		eTH.setAttribute("scope", "col");
-		Element eAbbr = XML.createChild(eTH, "abbr");
-		XML.createText(eAbbr, "#");
-		eAbbr.setAttribute("title", "Question number");
-
-		if (bIncludeQuestions) {
-			eTH = XML.createChild(eTR, "th");
-			eTH.setAttribute("scope", "col");
-			XML.createText(eTH, "Question");
-			eTH = XML.createChild(eTR, "th");
-			eTH.setAttribute("scope", "col");
-			XML.createText(eTH, "Your answer");
-		}
-		if (bIncludeAttempts) {
-			eTH = XML.createChild(eTR, "th");
-			eTH.setAttribute("scope", "col");
-			XML.createText(eTH, "Result");
-		}
-		String[] asAxes = null;
-		if (bIncludeScore) {
-			CombinedScore ps = us.getRootTestGroup().getFinalScore();
-			asAxes = ps.getAxesOrdered();
-			for (int iAxis = 0; iAxis < asAxes.length; iAxis++) {
-				String sAxis = asAxes[iAxis];
-				eTH = XML.createChild(eTR, "th");
-				eTH.setAttribute("scope", "col");
-				XML.createText(eTH, "Marks"
-						+ (sAxis == null ? "" : " (" + sAxis + ")"));
-				eTH = XML.createChild(eTR, "th");
-				eTH.setAttribute("scope", "col");
-				XML.createText(eTH, "Out of");
-			}
-		}
-
-		// Query for questions and answers
-		DatabaseAccess.Transaction dat = da.newTransaction();
-		try {
-			ResultSet rs = oq.querySummary(dat, us.getDbTi());
-
-			// Build table
-			int iCurrentQuestion = 1;
-			int iOutputCurrentQuestionNumber = 0;
-			int iMaxQuestion = 0;
-			String sLastQuestion = null;
-			String sDisplayedSection = null; // Section heading that has already
-			// been displayed
-			String sPreviousSection = null; // Section of last row (null if
-			// none)
-
-			while (rs.next()) {
-				// Keep track of max number
-				int iQuestionNumber = rs.getInt(1);
-				iMaxQuestion = Math.max(iMaxQuestion, iQuestionNumber);
-
-				// Ignore answers after we're looking for next question
-				if (iQuestionNumber < iCurrentQuestion)
-					continue;
-
-				// Get section
-				String sSection = rs.getString(7);
-				boolean checkForNumberingRestart = bisNumberBySection
-						&& !(sPreviousSection == null || sPreviousSection
-								.equals(sDisplayedSection));
-				// check if we need to restart the numbering of the questions
-				// if (bisNumberBySection && !(sPreviousSection==null ||
-				// sPreviousSection.equals(sDisplayedSection)))
-				if (checkForNumberingRestart) {
-					iOutputCurrentQuestionNumber = 0;
-				}
-				if (iQuestionNumber > iCurrentQuestion) {
-					// If we didn't put out an answer for current question,
-					// chuck one out now
-					iOutputCurrentQuestionNumber++;
-
-					sDisplayedSection = addSectionRow(bPlain,
-							bIncludeQuestions, bIncludeAttempts, bIncludeScore,
-							nPlainParent, eTable, asAxes, sPreviousSection,
-							sDisplayedSection);
-					addUnfinishedRow(us, bPlain, bIncludeQuestions,
-							bIncludeAttempts, bIncludeScore, nPlainParent,
-							eTable, iCurrentQuestion,
-							iOutputCurrentQuestionNumber, sLastQuestion);
-
-					iCurrentQuestion++;
-
-					// This only works because there always will be at least one
-					// line per
-					// question thanks to the LEFT JOIN
-				}
-
-				sLastQuestion = rs.getString(5);
-
-				// Ignore unfinished attempts, wait for a finished one
-				if (rs.getInt(2) != 0) {
-					// Woo! We have an answer
-
-					iOutputCurrentQuestionNumber++;
-
-					sDisplayedSection = addSectionRow(bPlain,
-							bIncludeQuestions, bIncludeAttempts, bIncludeScore,
-							nPlainParent, eTable, asAxes, sSection,
-							sDisplayedSection);
-
-					if (bisNumberBySection && !(sPreviousSection == null)
-							&& !(sPreviousSection.equals(sDisplayedSection))) {
-						iOutputCurrentQuestionNumber = 1;
-					}
-					eTR = XML.createChild(eTable, "tr");
-					eTR.setAttribute("class", "answered");
-					XML
-							.createText(eTR, "td", ""
-									+ iOutputCurrentQuestionNumber);
-					Element ePlainRow = null;
-					if (bPlain) {
-						ePlainRow = XML.createChild(nPlainParent, "div");
-						XML.createText(ePlainRow, "Question "
-								+ iOutputCurrentQuestionNumber + ". ");
-					}
-
-					if (bIncludeQuestions) {
-						String sQ = rs.getString(3), sA = rs.getString(4);
-						String socqn = Integer
-								.toString(iOutputCurrentQuestionNumber);
-						// XML.createText(eTR,"td",sQ);
-						XML.createText(eTR, "td", socqn);
-						XML.createText(eTR, "td", sA);
-						if (bPlain) {
-							XML.createText(ePlainRow, "Question: " + sQ
-									+ ". Your answer: " + sA + ". ");
-						}
-					}
-					if (bIncludeAttempts) {
-						String sAttempts = getAttemptsString(rs.getInt(6), us
-								.getTestDefinition());
-						XML.createText(eTR, "td", sAttempts);
-						if (bPlain) {
-							XML.createText(ePlainRow, "Result: " + sAttempts
-									+ ". ");
-						}
-					}
-					if (bIncludeScore)
-						addSummaryTableScore(eTR, ePlainRow, us, sLastQuestion);
-
-					// Start looking for next question now
-					iCurrentQuestion++;
-				}
-
-				sPreviousSection = sSection;
-			}
-
-			// If we didn't do the last one, put that out
-			if (iCurrentQuestion <= iMaxQuestion) {
-				iOutputCurrentQuestionNumber++;
-				// check if we need to restart the numbering of the questions
-				if (bisNumberBySection && !(sPreviousSection == null)
-						&& !sPreviousSection.equals(sDisplayedSection))
-
-				{
-					iOutputCurrentQuestionNumber = 1;
-				}
-				sDisplayedSection = addSectionRow(bPlain, bIncludeQuestions,
-						bIncludeAttempts, bIncludeScore, nPlainParent, eTable,
-						asAxes, sPreviousSection, sDisplayedSection);
-
-				addUnfinishedRow(us, bPlain, bIncludeQuestions,
-						bIncludeAttempts, bIncludeScore, nPlainParent, eTable,
-						iCurrentQuestion, iOutputCurrentQuestionNumber,
-						sLastQuestion);
-			}
-
-			if (bIncludeScore) {
-				CombinedScore ps = us.getRootTestGroup().getFinalScore();
-				eTR = XML.createChild(eTable, "tr");
-				eTR.setAttribute("class", "totals");
-				Element eTD = XML.createChild(eTR, "td");
-				eTD
-						.setAttribute(
-								"colspan",
-								""
-										+ (1 + (bIncludeQuestions ? 2 : 0) + (bIncludeAttempts ? 1
-												: 0)));
-				XML.createText(eTD, "Total");
-				Element ePlainRow = null;
-				if (bPlain) {
-					ePlainRow = XML.createChild(nPlainParent, "div");
-					XML.createText(ePlainRow, "Totals: ");
-				}
-
-				for (int iAxis = 0; iAxis < asAxes.length; iAxis++) {
-					String sAxis = asAxes[iAxis];
-					String sScore = displayScore(ps.getScore(sAxis)), sMax = displayScore(ps
-							.getMax(sAxis));
-					XML.createText(eTR, "td", sScore);
-					XML.createText(eTR, "td", sMax);
-					if (ePlainRow != null) {
-						XML.createText(ePlainRow, "Marks"
-								+ (sAxis == null ? "" : " (" + sAxis + ")")
-								+ ": " + sScore + ". Out of: " + sMax + ". ");
-					}
-				}
-			}
-		} finally {
-			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
-		}
-	}
-
-	private String addSectionRow(boolean bPlain, boolean bIncludeQuestions,
-			boolean bIncludeAttempts, boolean bIncludeScore, Node nPlainParent,
-			Element eTable, String[] asAxes, String sSection,
-			String sCurrentSection) {
-		// Don't output anything if there has been no change to the current
-		// section
-		if (sSection == null || sSection.equals(sCurrentSection))
-			return sCurrentSection;
-
-		Element eTR = XML.createChild(eTable, "tr");
-		eTR.setAttribute("class", "sectionname");
-		Element eTD = XML.createChild(eTR, "td");
-		eTD
-				.setAttribute(
-						"colspan",
-						""
-								+ (1 + (bIncludeQuestions ? 2 : 0)
-										+ (bIncludeAttempts ? 1 : 0) + (bIncludeScore ? asAxes.length * 2
-										: 0)));
-		XML.createText(eTD, sSection);
-
-		if (bPlain)
-			XML.createText(nPlainParent, "h4", sSection);
-
-		return sSection;
-	}
-
-	private void addUnfinishedRow(UserSession us, boolean bPlain,
-			boolean bIncludeQuestions, boolean bIncludeAttempts,
-			boolean bIncludeScore, Node nPlainParent, Element eTable,
-			int iCurrentQuestion, int iOutputCurrentQuestionNumber,
-			String sLastQuestion) throws OmFormatException {
-		Element eTR = XML.createChild(eTable, "tr");
-		Element ePlainRow = null;
-		eTR.setAttribute("class", "unanswered");
-		XML.createText(eTR, "td", "" + iOutputCurrentQuestionNumber);
-		if (bPlain) {
-			ePlainRow = XML.createChild(nPlainParent, "div");
-			XML.createText(ePlainRow, "Question "
-					+ iOutputCurrentQuestionNumber + ". ");
-		}
-
-		if (bIncludeQuestions) {
-			XML.createText(eTR, "td", SUMMARYTABLE_NOTANSWERED);
-			XML.createChild(eTR, "td");
-		}
-		if (bIncludeAttempts) {
-			if (bIncludeQuestions)
-				XML.createChild(eTR, "td");
-			else
-				XML.createText(eTR, "td", SUMMARYTABLE_NOTANSWERED);
-		}
-		if (bPlain && (bIncludeAttempts || bIncludeQuestions)) {
-			XML.createText(ePlainRow, SUMMARYTABLE_NOTANSWERED + ". ");
-		}
-
-		if (bIncludeScore)
-			addSummaryTableScore(eTR, ePlainRow, us, sLastQuestion);
-	}
-
-	private void addSummaryTableScore(Element eTR, Element ePlainRow,
-			UserSession us, String sQuestion) throws OmFormatException {
-		// Find question
-		TestQuestion tq = null;
-		for (int i = 0; i < us.getTestLeavesInOrder().length; i++) {
-			if (us.getTestLeavesInOrder()[i] instanceof TestQuestion
-					&& ((TestQuestion) us.getTestLeavesInOrder()[i]).getID()
-							.equals(sQuestion)) {
-				tq = (TestQuestion) us.getTestLeavesInOrder()[i];
-				break;
-			}
-		}
-
-		// Get score (scaled)
-		CombinedScore ps = tq.getScoreContribution(us.getRootTestGroup());
-		String[] asAxes = ps.getAxesOrdered();
-		for (int iAxis = 0; iAxis < asAxes.length; iAxis++) {
-			String sAxis = asAxes[iAxis];
-			String sScore = displayScore(ps.getScore(sAxis)), sMax = displayScore(ps
-					.getMax(sAxis));
-
-			XML.createText(eTR, "td", sScore);
-			XML.createText(eTR, "td", sMax);
-
-			if (ePlainRow != null) {
-				XML.createText(ePlainRow, "Marks"
-						+ (sAxis == null ? "" : " (" + sAxis + ")") + ": "
-						+ sScore + ". Out of: " + sMax + ". ");
-			}
-		}
 	}
 
 	private static String displayScore(double dScore) {
@@ -2882,7 +2497,7 @@ public class NavigatorServlet extends HttpServlet {
 					processFinalTags(rt, us, e, eTarget, ps, request);
 				}
 			} else if (sTag.equals("summary")) {
-				addSummaryTableDelegate(rt, us, eTarget, RequestHelpers.inPlainMode(request),
+				addSummaryTable(rt, us, eTarget, RequestHelpers.inPlainMode(request),
 						"yes".equals(e.getAttribute("questions")), "yes"
 								.equals(e.getAttribute("attempts")), "yes"
 								.equals(e.getAttribute("marks")));
@@ -3465,7 +3080,7 @@ public class NavigatorServlet extends HttpServlet {
 		boolean substitute = Strings.isNotEmpty(str);
 		switch (iAttempts) {
 		case ATTEMPTS_PARTIALLYCORRECT:
-			return "Partially correct";
+			return substitute ? str : "Partially correct";
 		case ATTEMPTS_WRONG:
 			return substitute ? str : "Incorrect";
 		case ATTEMPTS_PASS:
@@ -3691,7 +3306,7 @@ public class NavigatorServlet extends HttpServlet {
 					// Build the scores list from database
 					us.getTestRealisation().getScore(rt, this, da, oq);
 				}
-				addSummaryTableDelegate(rt, us, eDiv, RequestHelpers.inPlainMode(request), us
+				addSummaryTable(rt, us, eDiv, RequestHelpers.inPlainMode(request), us
 						.getTestDefinition().doesSummaryIncludeQuestions(), us
 						.getTestDefinition().doesSummaryIncludeAttempts(),
 						bScores);
