@@ -36,8 +36,8 @@ public class TestDefinition
 	private String sName;
 	protected Element eContent,eFinal,eOptions, eConfirm;
 	private boolean bNavigation,bRedoQuestion,bRedoQuestionAuto,
-	  bRedoTest,bFreeSummary,bFreeStop,bSummaryScores,bSummaryAttempts,bSummaryQuestions,
-	  bQuestionNames,bEndSummary,bNumberBySection;
+			bRedoTest,bFreeSummary,bFreeStop,bSummaryScores,bSummaryAttempts,
+			bSummaryQuestions,bQuestionNames,bEndSummary,bNumberBySection;
 	private int iNavLocation;
 	private String sLabelSet="",sQuestionNumberHeader="";
 
@@ -150,7 +150,7 @@ public class TestDefinition
 	}
 
 	/**
-	 * Provided addition for overriding the default confirmation provided by 
+	 * Provided addition for overriding the default confirmation provided by
 	 *  the summary table.
 	 * @author Trevor Hinson
 	 */
@@ -177,7 +177,7 @@ public class TestDefinition
 		}
 		return eOptions.getAttribute(attrbName);
 	}
-	
+
 	/**
 	 * @return true if confirm tag exists
 	 */
@@ -210,7 +210,7 @@ public class TestDefinition
 		}
 		return value;
 	}
-	
+
 	/**
 	 * @return true if <rescore marks="100"/> exists under test content.
 	 */
@@ -307,13 +307,13 @@ public class TestDefinition
 			throw new OmFormatException("Unexpected tag in <questions>: '"+sParentTag+"'");
 		return g;
 	}
-	
+
 	/**
 	 * Get all question ids from test file.
 	 * @return List of question ids
 	 * @throws OmFormatException
 	 */
-	public List<String> getAllQuestionIds() throws OmFormatException {		
+	public List<String> getAllQuestionIds() throws OmFormatException {
 		Element[] eQuestions = XML.getElementArray(dTest.getElementsByTagName("question"));
 		List<String> ids = new ArrayList<String>(eQuestions.length);
 		for (Element eQuestion : eQuestions) {
@@ -384,7 +384,7 @@ public class TestDefinition
 	{
 		return bNumberBySection;
 	}
-	
+
 	public int getNavLocation()
 	{
 		return iNavLocation;
@@ -412,7 +412,7 @@ public class TestDefinition
 	{
 		return sLabelSet;
 	}
-	
+
 	public String getQuestionNumberHeader()
 	{
 		return sQuestionNumberHeader;
