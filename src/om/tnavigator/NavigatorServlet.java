@@ -3198,15 +3198,7 @@ public class NavigatorServlet extends HttpServlet {
 						sMessage += "<p><em class='warning'>This test closed on "
 								+ us.getTestDeployment().displayCloseDate()
 								+ "</em>. You can still take "
-								+ "the test and get immediate feedback on your performance. ";
-						switch (us.getTestDeployment().getType()) {
-						case TestDeployment.TYPE_NOTASSESSED:
-							break;
-						case TestDeployment.TYPE_ASSESSED_OPTIONAL:
-							sMessage += "However, you will not receive any credit</em> unless "
-									+ "you have previously obtained special permission to submit late.";
-						}
-						sMessage += "</p>";
+								+ "the test and get immediate feedback on your performance.</p>";
 					}
 				} else if (us.getTestDeployment().hasCloseDate()) {
 					sMessage += "<p>This test will remain available until <strong>"
@@ -3217,16 +3209,10 @@ public class NavigatorServlet extends HttpServlet {
 						sMessage += "Please ensure that you complete and submit the test by "
 								+ "the end of that day.";
 						break;
-					case TestDeployment.TYPE_ASSESSED_REQUIRED:
+					case TestDeployment.TYPE_ASSESSED:
 						sMessage += "Please ensure that you complete and submit the test by "
 								+ "the end of that day. You will not receive credit for answers "
 								+ "submitted later.";
-						break;
-					case TestDeployment.TYPE_ASSESSED_OPTIONAL:
-						sMessage += "If you wish this test to count towards your course mark, "
-								+ "please ensure that you complete and submit the test by the end "
-								+ "of that day. You will not receive credit for answers submitted "
-								+ "later.";
 						break;
 					}
 					sMessage += "</p>";
@@ -3680,8 +3666,7 @@ public class NavigatorServlet extends HttpServlet {
 					.getConfirmParagraphs());
 			// only ask for a confirm if the question is assessed
 
-			if ((us.getTestDeployment().getType() == TestDeployment.TYPE_ASSESSED_REQUIRED)
-					|| (us.getTestDeployment().getType() == TestDeployment.TYPE_ASSESSED_OPTIONAL)) {
+			if (us.getTestDeployment().getType() == TestDeployment.TYPE_ASSESSED) {
 				mReplace
 						.put(
 								"CONFIRMSUBMIT",

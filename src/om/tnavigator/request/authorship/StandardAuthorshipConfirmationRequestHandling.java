@@ -22,7 +22,6 @@ import om.tnavigator.UserSession;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.teststructure.TestDefinition;
-import om.tnavigator.teststructure.TestDeployment;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -171,16 +170,10 @@ public class StandardAuthorshipConfirmationRequestHandling
 	 * @author Trevor Hinson
 	 */
 	protected boolean shouldRun(RequestAssociates associates)
-		throws RequestHandlingException {
-		boolean should = false;
+			throws RequestHandlingException {
 		UserSession us = getUserSession(associates);
-		if (null != us ? null != us.getTestDeployment() : false) {
-			if (TestDeployment.TYPE_ASSESSED_REQUIRED
-				== us.getTestDeployment().getType()) {
-				should = true;
-			}
-		}
-		return should;
+		return null != us && null != us.getTestDeployment()
+				&& us.getTestDeployment().authorshipRequired();
 	}
 
 	private boolean hasConfirmedAlready(RequestAssociates associates,

@@ -240,7 +240,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		JUnitTestCaseUserSession sess = getUserSession(2);
 		TestDeployment td = sess.getTestDeployment();
 		assertNotNull(td);
-		td.setType(TestDeployment.TYPE_ASSESSED_REQUIRED);
+		td.setType(TestDeployment.TYPE_ASSESSED);
 		ra.putPrincipleObject(RequestParameterNames.UserSession.toString(), sess);
 		assertTrue(confirmation.shouldRun(ra));
 	}

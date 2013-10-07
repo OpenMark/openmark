@@ -59,20 +59,15 @@ public class TestDeployment
 
 	/** Type of test */
 	private int iType;
+	/**
+	 * Used to record whether the <assessed> tag has attributes. In the past it
+	 * could. These days it should not, and we may want to report that.
+	 */
+	private boolean assessedTagHasLegacyAttributes = false;
 	/** Test is not assessed (default) */
-	public final static int TYPE_NOTASSESSED=1;
+	public final static int TYPE_NOTASSESSED = 1;
 	/** Test is assessed and students are in trouble if they don't submit */
-	public final static int TYPE_ASSESSED_REQUIRED=2;
-	/** Test is assessed but students have the option to defer etc. */
-	public final static int TYPE_ASSESSED_OPTIONAL=3;
-	/* authorship plagarism message   required */
-	/** plagarism message required */
-
-	public final static int AUTHORSHIP_REQUIRED=2;
-	/* authorship plagarism message   required */
-	public final static int AUTHORSHIP_NOT_REQUIRED=1;
-	
-	private int iAuthor=AUTHORSHIP_NOT_REQUIRED;	
+	public final static int TYPE_ASSESSED = 2;
 	
 	/* PCDC message   required */
 	public final static boolean PCDC_REQUIRED=true;
@@ -113,8 +108,7 @@ public class TestDeployment
 	
 
 	public void setType(int n) {
-		if (TYPE_NOTASSESSED == n || TYPE_ASSESSED_REQUIRED == n
-			|| TYPE_ASSESSED_OPTIONAL == n) {
+		if (TYPE_NOTASSESSED == n || TYPE_ASSESSED == n) {
 			iType = n;
 		}
 	}
@@ -127,10 +121,6 @@ public class TestDeployment
 		return icma;
 	}
 
-	public int getiAuthor() {
-		return iAuthor;
-	}
-	
 	public boolean getbPcdc() {
 		return bPcdc;
 	}
@@ -194,32 +184,30 @@ public class TestDeployment
 			// later if it's absent
 			Element eRoot=dDeploy.getDocumentElement();
 			if(XML.hasChild(eRoot,"question"))
+			{
 				sQuestion=XML.getText(eRoot,"question");
+			}
 			else
+			{
 				sDefinition=XML.getText(eRoot,"definition");
+			}
 			eDates=XML.getChild(eRoot,"dates");
 			eAccess=XML.getChild(eRoot,"access");
 
-			if(XML.hasChild(eRoot,"assessed"))
+			if(XML.hasChild(eRoot, "assessed"))
 			{
-				Element eAssessed=XML.getChild(eRoot,"assessed");
-				if("yes".equals(eAssessed.getAttribute("optional")))
-					iType=TYPE_ASSESSED_OPTIONAL;
-				else
-					iType=TYPE_ASSESSED_REQUIRED;
-				
-				if("yes".equals(eAssessed.getAttribute("authorship")))
-					iAuthor=AUTHORSHIP_REQUIRED;
-				else
-					iAuthor=AUTHORSHIP_NOT_REQUIRED;
+				iType = TYPE_ASSESSED;
+				if (XML.getChild(eRoot, "assessed").hasAttributes()) {
+					assessedTagHasLegacyAttributes = true;
+				}
 			}
 			else
 			{
-				iType=TYPE_NOTASSESSED;
+				iType = TYPE_NOTASSESSED;
 			}
-/* check is pre course diagnotic code required, and check the attribute display 
- * 
- */
+
+			// Check is pre-course diagnostic code required, and check the
+			// attribute display.
 			if(XML.hasChild(eRoot,"pcdc"))
 			{
 				bPcdc=PCDC_REQUIRED;
@@ -232,8 +220,7 @@ public class TestDeployment
 			{
 				bPcdc=PCDC_NOT_REQUIRED;
 			}
-			
-			
+
 			handleEmailStudentsNode(eRoot);
 
 			if(XML.hasChild(eRoot,"email"))
@@ -368,7 +355,11 @@ public class TestDeployment
 
 	public boolean authorshipRequired()
 	{
-		return (getiAuthor() == AUTHORSHIP_REQUIRED);
+		return iType == TYPE_ASSESSED;
+	}
+
+	public boolean assessedTagHasLegacyAttributes() {
+		return assessedTagHasLegacyAttributes;
 	}
 
 	/**
