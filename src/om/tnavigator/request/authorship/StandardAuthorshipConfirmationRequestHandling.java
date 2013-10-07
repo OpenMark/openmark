@@ -507,24 +507,24 @@ public class StandardAuthorshipConfirmationRequestHandling
 	}
 
 	private void buildPreProcessedPageOutput(HttpServletRequest request,
-		Document d, UserSession us) throws IOException {
-		if (us.getTestDefinition().getNavLocation()
-			== TestDefinition.NAVLOCATION_LEFT) {
+			Document d, UserSession us) throws IOException {
+		if (us.getTestDefinition().isNavOnLeft()) {
 			XML.remove(XML.find(d, ID, "progressBottom"));
 			Element eProgress = XML.find(d, ID, "progressLeft");
 			eProgress.setAttribute(ID, "progress");
-			NavigatorServlet.addAccessibilityClasses(d, request, "progressleft");
 		} else {
 			XML.remove(XML.find(d, ID, "progressLeft"));
 			Element eProgress = XML.find(d, ID, "progressBottom");
 			eProgress.setAttribute(ID, "progress");
-			if (us.getTestDefinition().getNavLocation()
-				== TestDefinition.NAVLOCATION_WIDE) {
-				NavigatorServlet.addAccessibilityClasses(d, request, "progresswide");
-			} else {
-				NavigatorServlet.addAccessibilityClasses(d, request, "progressbottom");
-			}
 		}
+		String bodyClass;
+		switch (us.getTestDefinition().getNavLocation()) {
+			case TestDefinition.NAVLOCATION_LEFT:     bodyClass = "progressleft"; break;
+			case TestDefinition.NAVLOCATION_WIDE:     bodyClass = "progresswide"; break;
+			case TestDefinition.NAVLOCATION_WIDELEFT: bodyClass = "progresswideleft"; break;
+			default:                                  bodyClass = "progressbottom";
+		}
+		NavigatorServlet.addAccessibilityClasses(d, request, bodyClass);
 	}
 
 	private Map<String, Object> setPreProcessingMapItems(RequestAssociates ra) {

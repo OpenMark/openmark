@@ -317,6 +317,8 @@
 		<move file="${build}/webapps/om-admin/WEB-INF/requestHandling.xml"
 			todir="${build}/webapps/om-admin/"/>
 
+		<copy tofile="${build}/webapps/om-admin/navigator.css" file="webinf-tnavigator/templates/navigator.css"/>
+
 		<copy todir="${build}/webapps/om-admin/WEB-INF/lib" file="${build}/jars/om-navigator.jar"/>
 
 		<copy todir="${build}/webapps/om-admin/WEB-INF/lib" file="${build}/jars/om-administration.jar"/>

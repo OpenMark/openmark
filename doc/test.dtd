@@ -31,7 +31,7 @@
 			summaryquestions=no - Do not show questions/answers in summary
 		freestop=yes - Allow user to end test at any time
 		navigation=yes - Allow user to jump between questions
-		navlocation=left/bottom/wide - Where to put the navigation - wide is like bottom, but allows
+		navlocation=left/bottom/wide/wideleft - Where to put the navigation - wide is like bottom, but allows
 			the question to take the full width of the screen.
 		redoquestion=yes - Allow user to redo questions
 		redoquestionauto=yes - Automatically redo question when user clicks back on it
@@ -48,7 +48,7 @@
 	freesummary (yes|no) #IMPLIED
 	freestop (yes|no) #IMPLIED
 	navigation (yes|no) #IMPLIED
-	navlocation (bottom|left|wide) #IMPLIED
+	navlocation (bottom|left|wide|wideleft) #IMPLIED
 	redoquestion (yes|no) #IMPLIED
 	redoquestionauto (yes|no) #IMPLIED
 	redotest (yes|no) #IMPLIED

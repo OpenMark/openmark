@@ -4351,26 +4351,34 @@ public class NavigatorServlet extends HttpServlet {
 		Element questionDiv = XML.find(d, "id", "question");
 		questionDiv.appendChild(eQuestion);
 
-		if (!us.isSingle()) {
-			// Build progress indicator
+		if (!us.isSingle())
+		{
+			// Build progress indicator.
 			Element eProgress;
 			if (plainMode) {
 				eProgress = XML.find(d, "id", "progressPlain");
-			} else if (us.getTestDefinition().getNavLocation() == TestDefinition.NAVLOCATION_LEFT) {
+			}
+			else if (us.getTestDefinition().isNavOnLeft())
+			{
 				XML.remove(XML.find(d, "id", "progressBottom"));
 				eProgress = XML.find(d, "id", "progressLeft");
 				eProgress.setAttribute("id", "progress");
-				addAccessibilityClasses(d, request, "progressleft");
-			} else {
+			}
+			else
+			{
 				XML.remove(XML.find(d, "id", "progressLeft"));
 				eProgress = XML.find(d, "id", "progressBottom");
 				eProgress.setAttribute("id", "progress");
-				if (us.getTestDefinition().getNavLocation() == TestDefinition.NAVLOCATION_WIDE) {
-					addAccessibilityClasses(d, request, "progresswide");
-				} else {
-					addAccessibilityClasses(d, request, "progressbottom");
-				}
 			}
+			String bodyClass;
+			switch (us.getTestDefinition().getNavLocation()) {
+				case TestDefinition.NAVLOCATION_LEFT:     bodyClass = "progressleft"; break;
+				case TestDefinition.NAVLOCATION_WIDE:     bodyClass = "progresswide"; break;
+				case TestDefinition.NAVLOCATION_WIDELEFT: bodyClass = "progresswideleft"; break;
+				default:                                  bodyClass = "progressbottom";
+			}
+			addAccessibilityClasses(d, request, bodyClass);
+
 
 			Element eCurrentSection = null;
 			String sCurrentSection = null;

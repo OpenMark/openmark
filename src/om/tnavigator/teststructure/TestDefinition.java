@@ -38,13 +38,19 @@ public class TestDefinition
 	private boolean bNavigation,bRedoQuestion,bRedoQuestionAuto,
 			bRedoTest,bFreeSummary,bFreeStop,bSummaryScores,bSummaryAttempts,
 			bSummaryQuestions,bQuestionNames,bEndSummary,bNumberBySection;
+
+	/** One of the NAVLOCATION_ constants. */
 	private int iNavLocation;
+
 	private String sLabelSet="",sQuestionNumberHeader="";
 
 	private Element eConfirmParagraphs;
 	private String sConfirmButton,sConfirmTitle;
 
-	public static final int NAVLOCATION_BOTTOM=0,NAVLOCATION_LEFT=1,NAVLOCATION_WIDE=2;
+	public static final int NAVLOCATION_BOTTOM   = 0;
+	public static final int NAVLOCATION_LEFT     = 1;
+	public static final int NAVLOCATION_WIDE     = 2;
+	public static final int NAVLOCATION_WIDELEFT = 3;
 
 	private static String SUMMARY_CONFIRMATION = "summaryConfirmation";
 
@@ -129,12 +135,22 @@ public class TestDefinition
 			bSummaryQuestions=!"no".equals(eOptions.getAttribute("summaryquestions"));
 			bNumberBySection="yes".equals(eOptions.getAttribute("numberbysection"));
 			String navLocation = eOptions.getAttribute("navlocation");
-			if(navLocation.equals("left"))
-				iNavLocation=NAVLOCATION_LEFT;
-			else if(navLocation.equals("wide"))
-				iNavLocation=NAVLOCATION_WIDE;
+			if (navLocation.equals("left"))
+			{
+				iNavLocation = NAVLOCATION_LEFT;
+			}
+			else if (navLocation.equals("wide"))
+			{
+				iNavLocation = NAVLOCATION_WIDE;
+			}
+			else if (navLocation.equals("wideleft"))
+			{
+				iNavLocation = NAVLOCATION_WIDELEFT;
+			}
 			else
-				iNavLocation=NAVLOCATION_BOTTOM;
+			{
+				iNavLocation = NAVLOCATION_BOTTOM;
+			}
 
 			if(eOptions.hasAttribute("labelset")) {
 				sLabelSet=eOptions.getAttribute("labelset");
@@ -385,6 +401,10 @@ public class TestDefinition
 		return bNumberBySection;
 	}
 
+	public boolean isNavOnLeft()
+	{
+		return iNavLocation == NAVLOCATION_LEFT || iNavLocation == NAVLOCATION_WIDELEFT;
+	}
 	public int getNavLocation()
 	{
 		return iNavLocation;

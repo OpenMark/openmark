@@ -8,18 +8,58 @@ html,body
 
 body
 {
-  width:770px;
+  width: 770px;
   margin: 8px;
 }
-html.zoom15 body { width:1155px; }
-html.zoom20 body { width:1540px; }
+html.zoom15 body
+{
+    width:1155px;
+}
+html.zoom20 body
+{
+    width:1540px;
+}
 
 body.progressbottom
 {
   width:600px;
 }
-html.zoom15 body.progressbottom, html.zoom15 #questionouter { width:900px; }
-html.zoom20 body.progressbottom, html.zoom20 #questionouter { width:1200px; }
+html.zoom15 body.progressbottom,
+html.zoom15 #questionouter
+{
+    width:900px;
+}
+html.zoom20 body.progressbottom,
+html.zoom20 #questionouter
+{
+    width:1200px;
+}
+
+body.progresswideleft
+{
+  width: 990px;
+  margin: 8px;
+}
+html.zoom15 body.progresswideleft
+{
+    width: 1485px;
+}
+html.zoom20 body.progresswideleft
+{
+    width: 1980px;
+}
+body.progresswideleft #questionouter
+{
+    width: 820px;
+}
+html.zoom15 body.progresswideleft #questionouter
+{
+    width: 1230px;
+}
+html.zoom20 body.progresswideleft #questionouter
+{
+    width: 1640px;
+}
 
 /* Generic styles */
 input
@@ -62,6 +102,7 @@ body.progressbottom #oulink
   margin-bottom:4px;
 }
 body.progressleft #oulink,
+body.progresswideleft #oulink,
 body.progresswide #oulink
 {
   float:left;
@@ -79,6 +120,9 @@ html.zoom15 #titles { margin-left: 73px;width: 630px; }
 html.zoom20 #titles { margin-left:148px; width: 846px; }
 html.zoom15 body.progressbottom #titles { margin-left:0; width: 618px; }
 html.zoom20 body.progressbottom #titles { margin-left:0; width: 824px; }
+body.progresswideleft #titles { width: 632px; }
+html.zoom15 body.progresswideleft #titles { width: 960px; }
+html.zoom20 body.progresswideleft #titles { width: 1286px; }
 
 #titles h1
 {
@@ -92,9 +136,9 @@ html.zoom20 #titles h1 { font-size:48px; }
 
 #titles h2
 {
-	font-weight: bold;
+  font-weight: bold;
   font-size:13px;
-	margin:4px 0 5px 0;
+  margin:4px 0 5px 0;
 }
 html.zoom15 #titles h2 { font-size: 19.5px; }
 html.zoom20 #titles h2 { font-size: 26px; }
@@ -156,8 +200,6 @@ body.progresswide #main
 {
   padding-bottom:4px;
 }
-* html body.progressbottom #main,
-* html body.progresswide #main { padding-bottom:7px; }
 
 #questionouter
 {
@@ -168,8 +210,6 @@ body.progresswide #main
 {
   margin-bottom:0;
 }
-
-
 
 /* Om logo */
 #logo
@@ -263,17 +303,27 @@ html.zoom15 #progress span.t { font-size:15px; }
 html.zoom20 #progress span.t { font-size:20px; }
 
 /* Progress on left */
-body.progressleft #progress
+body.progressleft #progress,
+body.progresswideleft #progress
 {
   float:left;
   width:163px;
   padding-right:8px;
   margin-top:1px;
 }
-html.zoom15 body.progressleft #progress { width:225px; }
-html.zoom20 body.progressleft #progress { width:300px; }
+html.zoom15 body.progressleft #progress,
+html.zoom15 body.progresswideleft #progress
+{
+    width:225px;
+}
+html.zoom20 body.progressleft #progress,
+html.zoom20 body.progresswideleft #progress
+{
+    width:300px;
+}
 
 body.progressleft #progress .sectiontag
+body.progresswideleft #progress .sectiontag
 {
   font-weight:bold;
 	margin-top:6px;
