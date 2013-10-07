@@ -3,3 +3,21 @@
   font-family: "Times New Roman", "Lucida Sans Unicode", "DejaVu Serif", serif;
   font-size:14px; /* If changing, also change component source */
 }
+/*
+ * Superscript and subscript: don't use default styling, it does weird things to
+ * line height. This fix comes from https://github.com/necolas/normalize.css
+ * This is also almost the same as is used in the VLE. (VLE uses 80%, not 85%.
+ * We use 85% to be closer to rendered equations.)
+ */
+.om .textequation sub,
+.om .textequation sup {
+    font-size: 85%;
+    position: relative;
+    vertical-align: baseline;
+}
+.om .textequation sup {
+    top: -0.4em;
+}
+.om .textequationsub {
+    bottom: -0.2em;
+}
