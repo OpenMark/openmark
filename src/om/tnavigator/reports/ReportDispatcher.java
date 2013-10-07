@@ -153,7 +153,7 @@ public class ReportDispatcher
 			if((report.isSecurityRestricted()
 				//&& !ns.checkSecureIP(request))
 				&& !IPAddressCheckUtil.checkSecureIP(request, ns.getLog(), ns.getNavigatorConfig()))
-				|| !IPAddressCheckUtil.checkLocalIP(request, ns.getLog(), ns.getNavigatorConfig()))
+				|| !IPAddressCheckUtil.checkTrustedIP(request, ns.getLog(), ns.getNavigatorConfig()))
 			{
 				ns.sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
 					false,false,null, "Forbidden", "System reports may only be accessed from particular computers.", null);
@@ -185,7 +185,7 @@ public class ReportDispatcher
 			ns.sendError(us,request,response,
 				HttpServletResponse.SC_FORBIDDEN,false,false, null, "Forbidden", "You do not have permission to view reports.", null);
 		}
-		if (!IPAddressCheckUtil.checkLocalIP(request, ns.getLog(), ns.getNavigatorConfig())) {
+		if (!IPAddressCheckUtil.checkTrustedIP(request, ns.getLog(), ns.getNavigatorConfig())) {
 			ns.sendError(us,request,response,HttpServletResponse.SC_FORBIDDEN,
 				false,false,null, "Forbidden", "Reports may only be accessed within the local network.", null);
 		}

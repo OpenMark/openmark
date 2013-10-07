@@ -54,7 +54,7 @@ class StatusPages {
 	void handle(String sSuffix,HttpServletRequest request,HttpServletResponse response)
 		throws Exception
 	{
-		if (!IPAddressCheckUtil.checkLocalIP(request, ns.getLog(), ns.getNavigatorConfig())) {
+		if (!IPAddressCheckUtil.checkTrustedIP(request, ns.getLog(), ns.getNavigatorConfig())) {
 			ns.sendError(null,request,response,HttpServletResponse.SC_FORBIDDEN,
 				false,false,null, "Forbidden", "This page may only be accessed within the internal network.", null);
 		}
