@@ -35,7 +35,7 @@
 			</t>
 		</layoutgrid>
 			
-			<advancedfield id="response" cols="12" type="superscript" label="formula"/>
+			<editadvancedfield id="response" cols="12" type="superscript" label="formula"/>
 			<gap/>
 		<button action="actionSubmit" label="%%lENTERANSWER%%"/>
   
