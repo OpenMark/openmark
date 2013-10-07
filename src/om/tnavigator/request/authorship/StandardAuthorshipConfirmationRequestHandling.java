@@ -508,7 +508,11 @@ public class StandardAuthorshipConfirmationRequestHandling
 
 	private void buildPreProcessedPageOutput(HttpServletRequest request,
 			Document d, UserSession us) throws IOException {
-		if (us.getTestDefinition().isNavOnLeft()) {
+		String sAccessibility = RequestHelpers.getAccessibilityCookie(request);
+		boolean plainMode = sAccessibility.indexOf("[plain]") != -1;
+		if (plainMode) {
+			// Do nothing.
+		} else if (us.getTestDefinition().isNavOnLeft()) {
 			XML.remove(XML.find(d, ID, "progressBottom"));
 			Element eProgress = XML.find(d, ID, "progressLeft");
 			eProgress.setAttribute(ID, "progress");
