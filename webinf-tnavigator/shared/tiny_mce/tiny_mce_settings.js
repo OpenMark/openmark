@@ -6,7 +6,7 @@
 		theme :  "advanced",	
 		document_base_url : "tiny_mce/",
 		apply_source_formatting : true,
-		content_css: "plugins/supsub/extra.css,tinymce.css",
+		content_css: "plugins/supsub/extra.css,tinymce[ZOOM].css",
 		directionality : "ltr",
 		[READ_ONLY],
 		elements : "[ELEMENTS]",

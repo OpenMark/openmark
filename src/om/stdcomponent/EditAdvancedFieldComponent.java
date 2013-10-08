@@ -322,7 +322,8 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 			+ "&t=" + outputType
 			+ "&e=" + elements
 			+ "&ro=" + isEnabled()
-			+ "&es=" + "om"+getID()+"iframe");
+			+ "&es=" + "om"+getID()+"iframe"
+			+ "&z=" + (dZoom > 1.7 ? "20" : dZoom > 1.2 ? "15" : ""));
 		s2.setAttribute("defer", "defer");
 		eDiv.appendChild(s2);
 		Element textarea = qc.createElement("textarea");

@@ -27,37 +27,13 @@ import util.misc.MimeTypes;
 import util.misc.Strings;
 
 public class TinyMCERequestHandler extends AbstractRequestHandler {
-
 	private static final long serialVersionUID = 1907168380166795247L;
+
+	/** Dummy URL parameter name. */
+	public static String FILE_PATH = "filePath";
 
 	private static String SHARED_AREA = "WEB-INF/shared/";
 
-	public static String FILE_PATH = "filePath";
-
-	private static String HEIGHT = "[HEIGHT]";
-
-	private static String WIDTH = "[WIDTH]";
-
-	private static String EDITOR_SELECTOR = "[EDITOR_SELECTOR]";
-
-	private static String BUTTONS = "[BUTTONS]";
-
-	private static String VALID_ELEMENTS = "[VALID_ELEMENTS]";
-
-	private static String ELEMENTS = "[ELEMENTS]";
-
-	private static String READ_ONLY = "[READ_ONLY]";
-
-	private static String UTF_8 = "UTF-8";
-
-	private static String SETTINGS = "settings";
-	
-	private static String CSS = "tinymce.css";
-	
-	private static String EXTRACSS = "extra.css";
-	
-	private static String VERSION = "3.5.7b";
-	
 	private static String TINYMCE = "tiny_mce";
 
 	private static List<String> imageTypes = new ArrayList<String>();
@@ -73,7 +49,7 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 		HttpServletResponse response, RequestAssociates associates)
 		throws RequestHandlingException {
 		RequestResponse rr = super.handle(request, response, associates);
-		String filePath = associates.getRequestParameters().get(FILE_PATH);
+		String filePath = associates.getRequestParameters().get("filePath");
 		return handle(response, filePath, associates, rr);
 	}
 
@@ -82,7 +58,7 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 		String fullPath = determineTinyMCEResourceFullPath(filePath,
 			ra.getServletContext());
 		byte[] bytes = {};
-		String mimeType = UTF_8;
+		String mimeType = "UTF-8";
 		String suffix = getFileNameSuffix(fullPath);
 		try {
 			boolean addExpiresHeader = true;
@@ -94,7 +70,7 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 			} else {
 				File f = new File(fullPath);
 				String s = IO.loadString(new FileInputStream(f));
-				if (null != f ? f.getName().contains(SETTINGS) : false) {
+				if (null != f ? f.getName().contains("settings") : false) {
 					s = caterForDynamicSettings(f, s, ra);
 					addExpiresHeader = false;
 				}
@@ -123,13 +99,14 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 	private String caterForDynamicSettings(File f, String fileContent,
 		RequestAssociates ra) {
 		String accommodatedFor = fileContent;
-		if (null != f ? f.getName().contains(SETTINGS) : false) {
+		if (null != f ? f.getName().contains("settings") : false) {
 			String height = ra.getRequestParameters().get("h");
 			String width = ra.getRequestParameters().get("w");
 			String buttons = ra.getRequestParameters().get("t");
 			String elements = ra.getRequestParameters().get("e");
 			String isEnabled = ra.getRequestParameters().get("ro");
 			String editor_selector = ra.getRequestParameters().get("es");
+			String zoom = ra.getRequestParameters().get("z");
 			if (!valid(height)) {
 				height = "100";
 			}
@@ -154,14 +131,18 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 					isEnabled = "readonly : true";
 				}
 			}
-			fileContent = fileContent.replace(HEIGHT, height);
-			fileContent = fileContent.replace(WIDTH, width);
-			fileContent = fileContent.replace(BUTTONS, buttons);
-			fileContent = fileContent.replace(READ_ONLY, isEnabled);
-			fileContent = fileContent.replace(VALID_ELEMENTS,
-				determineValidElements(buttons));
-			fileContent = fileContent.replace(EDITOR_SELECTOR, editor_selector);
-			fileContent = fileContent.replace(ELEMENTS, elements);
+			if (!("15".equals(zoom) || "20".equals(zoom))) {
+				zoom = "";
+			}
+			fileContent = fileContent.replace("[HEIGHT]",    height);
+			fileContent = fileContent.replace("[WIDTH]",     width);
+			fileContent = fileContent.replace("[BUTTONS]",   buttons);
+			fileContent = fileContent.replace("[READ_ONLY]", isEnabled);
+			fileContent = fileContent.replace("[VALID_ELEMENTS]",
+					determineValidElements(buttons));
+			fileContent = fileContent.replace("[EDITOR_SELECTOR]", editor_selector);
+			fileContent = fileContent.replace("[ELEMENTS]", elements);
+			fileContent = fileContent.replace("[ZOOM]", zoom);
 			accommodatedFor = fileContent;
 		}
 		return accommodatedFor;
@@ -203,22 +184,25 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 			int k = fileName.indexOf("?");
 			fileName = fileName.substring(0, k);
 		}
-		
+
 		String fullPath = null;
 		if (fileName.startsWith(SHARED_AREA)) {
 			fullPath = sc.getRealPath(fileName);
 		} else {
-			if (fileName.contains(SETTINGS) || fileName.contains(CSS)) {
+			if (fileName.contains("settings") || fileName.matches("(.*)tinymce(15|20?)\\.css")) {
 				// Remove version number from fileName.
 				n = fileName.indexOf("/");
 				int l = fileName.lastIndexOf("/");
-				fileName = fileName.substring(0, n+1)+fileName.substring(l+1, fileName.length());
-			} else if (fileName.contains(EXTRACSS)) {
+				fileName = fileName.substring(0, n + 1)
+						+ fileName.substring(l + 1, fileName.length());
+			} else if (fileName.contains("extra.css")) {
 				// Remove double TINYMCE reference from fileName.
 				n = fileName.lastIndexOf(TINYMCE);
 				int l = fileName.lastIndexOf(TINYMCE);
-				fileName = fileName.substring(0, n)+fileName.substring(l+TINYMCE.length()+1, fileName.length());
+				fileName = fileName.substring(0, n)
+						+ fileName.substring(l + TINYMCE.length() + 1, fileName.length());
 			}
+
 			fullPath = sc.getRealPath(SHARED_AREA + fileName);
 		}
 
