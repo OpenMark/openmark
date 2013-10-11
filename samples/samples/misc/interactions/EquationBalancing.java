@@ -55,10 +55,10 @@ public class EquationBalancing extends SimpleQuestion1
 		CheckBalancing();
 
 		//set the initial values etc
-		setPlaceholder("N1", "��");
-		setPlaceholder("N2", "��");
-		setPlaceholder("N3", "��");
-		setPlaceholder("N4", "��");
+		setPlaceholder("N1", "\u0010\u0010");
+		setPlaceholder("N2", "\u0010\u0010");
+		setPlaceholder("N3", "\u0010\u0010");
+		setPlaceholder("N4", "\u0010\u0010");
 		setPlaceholder("T1", Integer.toString(n1*3));
 		setPlaceholder("T2", Integer.toString(n1*8));
 		setPlaceholder("T3", Integer.toString(n2*2));
@@ -192,7 +192,7 @@ public class EquationBalancing extends SimpleQuestion1
 			setPlaceholder("T2", Integer.toString(hLeft));
 
 			if (n1 == 1) {
-				setPlaceholder("N1", "��");
+				setPlaceholder("N1", "\u0010\u0010");
 				getComponent("down1").setEnabled(false);
 			}
 			else {
@@ -215,7 +215,7 @@ public class EquationBalancing extends SimpleQuestion1
 			setPlaceholder("T3", Integer.toString(oLeft)); //Integer.toString(n2));
 
 			if (n2 == 1) {
-				setPlaceholder("N2", "��");
+				setPlaceholder("N2", "\u0010\u0010");
 				getComponent("down2").setEnabled(false);
 			}
 			else {
@@ -238,7 +238,7 @@ public class EquationBalancing extends SimpleQuestion1
 			setPlaceholder("T6",Integer.toString(oRight));
 
 			if (n3 == 1) {
-				setPlaceholder("N3", "��");
+				setPlaceholder("N3", "\u0010\u0010");
 				getComponent("down3").setEnabled(false);
 			}
 			else {
@@ -261,7 +261,7 @@ public class EquationBalancing extends SimpleQuestion1
 			setPlaceholder("T6", Integer.toString(oRight));
 
 			if (n4 == 1) {
-				setPlaceholder("N4", "��");
+				setPlaceholder("N4", "\u0010\u0010");
 				getComponent("down4").setEnabled(false);
 			}
 			else {
