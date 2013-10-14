@@ -152,10 +152,12 @@ public class TestDefinition
 				iNavLocation = NAVLOCATION_BOTTOM;
 			}
 
-			if(eOptions.hasAttribute("labelset")) {
+			if(eOptions.hasAttribute("labelset"))
+			{
 				sLabelSet=eOptions.getAttribute("labelset");
 			}
-			if(eOptions.hasAttribute("questionnumberheader")) {
+			if(eOptions.hasAttribute("questionnumberheader"))
+			{
 				sQuestionNumberHeader=eOptions.getAttribute("questionnumberheader");
 			}
 		}
@@ -405,6 +407,7 @@ public class TestDefinition
 	{
 		return iNavLocation == NAVLOCATION_LEFT || iNavLocation == NAVLOCATION_WIDELEFT;
 	}
+
 	public int getNavLocation()
 	{
 		return iNavLocation;
