@@ -9,19 +9,7 @@
 			(optional; if omitted, uses default)
 		<final> - Page users see after completing test
 	-->	
-<!ELEMENT test (title,options,content,confirm?,final)>
-
-
-<!--
-	Optional node ...
-	<emailstudents> contains ...
-		<numberofquestions>2</numberofquestions>
-		<forbidextension>4</forbidextension>
-		<module>K113-11B</module>
-		<icma>iCMA41</icma>
-	</emailstudents>
-	-->	
-<!ELEMENT emailstudents (numberofquestions?,forbidextension?,module?,icma?)>
+<!ELEMENT test (title,options,content,confirm?,final,summaryConfirmation)>
 
 <!--
 	<options> specifies test options:
@@ -41,7 +29,7 @@
 		questionnames=yes - Use titles for question (that have them) instead of 
 			number alone
 		endsummary=no - Do not show summary at 'end check' page
-			labelset=science - Use Science label set (default to use normal label set)		
+		labelset=science - Use Science label set (default to use normal label set)
 	-->
 <!ELEMENT options EMPTY>
 <!ATTLIST options
@@ -232,3 +220,10 @@
 	marks (yes|no) #IMPLIED
 >
 
+
+<!--
+	<summaryConfirmation>
+		Constant string displayed in the summary table instead of the number
+		of attempts/tries.
+	-->
+<!ELEMENT summaryConfirmation (#PCDATA)>

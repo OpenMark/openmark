@@ -7,7 +7,7 @@
 		<dates> - Dates affecting test (optional; if omitted test is always available)
 		<pcdc> - whether to generate a pre-course diagnostic code
 -->	
-<!ELEMENT deploy (definition,supportcontacts?,access,dates?,pcdc)>
+<!ELEMENT deploy (definition,supportcontacts?,access,emailstudents,dates?,pcdc)>
 
 
 <!-- <definition> is just text (test definition ID) -->
@@ -27,6 +27,18 @@
 		<admins> - Access details for admin-level privileges; optional for no admins
 -->  
 <!ELEMENT access (users,admins?)>
+
+
+<!--
+	Optional node ...
+	<emailstudents> contains ...
+		<numberofquestions>2</numberofquestions>
+		<forbidextension>4</forbidextension>
+		<module>K113-11B</module>
+		<icma>iCMA41</icma>
+	</emailstudents>
+	-->
+<!ELEMENT emailstudents (numberofquestions?,forbidextension?,module?,icma?)>
 
 
 <!-- Two ways to specify access -->
