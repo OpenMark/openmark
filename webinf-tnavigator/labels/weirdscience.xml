@@ -4,4 +4,6 @@
   <l id="lNEXTQUESTION">next</l>  
   <l id="lENTERANSWER">check</l>
   <l id="lCLEAR">redo</l>
+  <l id="lTRY">attempt</l>
+  <l id="lTRIES">attempts</l>
 </labels>

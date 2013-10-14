@@ -4,7 +4,7 @@
 	
     <title>How’s your Mathematics?</title>
 	
-    <options navigation="yes" navlocation="left" redotest="yes" freestop="yes" freesummary="yes" redoquestionauto="yes" summaryscores="no" summaryquestions="no" summaryattempts="yes" labelset="science"></options>
+    <options navigation="yes" navlocation="left" redotest="yes" freestop="yes" freesummary="yes" redoquestionauto="yes" summaryscores="no" summaryquestions="no" summaryattempts="yes" labelset="!default"></options>
 	
     <content>
 		
@@ -165,8 +165,4 @@
         </p>
 
     </final>
-	
-	<!-- These are provided as an override for the default text -->
-	<summaryConfirmation>Completed</summaryConfirmation>
-	
 </test>

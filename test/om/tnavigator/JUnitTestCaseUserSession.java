@@ -13,8 +13,8 @@ public class JUnitTestCaseUserSession extends UserSession {
 	}
 	
 	public JUnitTestCaseUserSession(NavigatorServlet owner, String cookie,
-		JUnitTestCaseTestDefinition td, TestDeployment deploy,
-		JUnitTestCaseTestRealisation realisation) {
+			JUnitTestCaseTestDefinition td, TestDeployment deploy,
+			JUnitTestCaseTestRealisation realisation) {
 		super(owner, cookie);
 		testDefinition = td;
 		tdDeployment = deploy;

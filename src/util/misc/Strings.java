@@ -20,7 +20,10 @@ package util.misc;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /** Utilities related to strings and string formatting */
@@ -113,6 +116,52 @@ public class Strings
 			sb.append(sReplace);
 			sSource=sSource.substring(iFound+sSearch.length());
 		}
+	}
+
+	/**
+	 * Replaces tokens in a string.
+	 * @param string String to process
+	 * @param sBorder Border string e.g. %%; must be made of characters that don't
+	 *   need escaping in regexps
+	 * @param mReplace Replacement map (containing strings only)
+	 * @return the modified string.
+	 */
+	public static String replaceTokens(String string, String sBorder, Map<String, Object> mReplace)
+	{
+		// Get value and look for tokens. If there aren't any, bail now.
+		if (mReplace == null || string.indexOf(sBorder) == -1)
+		{
+			return string;
+		}
+
+		Pattern pTokens=Pattern.compile(sBorder+"(.*?)"+sBorder, Pattern.DOTALL);
+
+		StringBuffer sbResult=new StringBuffer();
+		Matcher m = pTokens.matcher(string);
+		while(m.find())
+		{
+			String sKey = m.group(1);
+			if(sKey.equals(""))
+			{
+				m.appendReplacement(sbResult,sBorder);
+			}
+			else
+			{
+				String sMatch = (String) mReplace.get(sKey);
+				if (sMatch == null)
+				{
+					m.appendReplacement(sbResult,sBorder+sKey+sBorder);
+				}
+				else
+				{
+					sMatch=sMatch.replaceAll("\\\\","\\\\\\\\").replaceAll("\\$","\\\\\\$");
+					m.appendReplacement(sbResult, sMatch);
+				}
+			}
+		}
+		m.appendTail(sbResult);
+
+		return sbResult.toString();
 	}
 
 	/**

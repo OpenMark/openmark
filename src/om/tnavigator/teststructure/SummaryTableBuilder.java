@@ -1,5 +1,6 @@
 package om.tnavigator.teststructure;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -14,6 +15,7 @@ import om.tnavigator.scores.CombinedScore;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import util.misc.LabelSets;
 import util.xml.XML;
 
 public class SummaryTableBuilder {
@@ -29,13 +31,16 @@ public class SummaryTableBuilder {
 
 	private static final String SUMMARYTABLE_NOTANSWERED="Not completed";
 
+	private LabelSets labelSets;
+
 	private DatabaseAccess da;
 
 	private OmQueries oq;
 
-	public SummaryTableBuilder(DatabaseAccess dba, OmQueries queries) {
+	public SummaryTableBuilder(DatabaseAccess dba, OmQueries queries, LabelSets labelSets) {
 		da = dba;
 		oq = queries;
+		this.labelSets = labelSets;
 	}
 
 	public long addSummaryTable(SummaryDetails sd) throws Exception {
@@ -128,7 +133,7 @@ public class SummaryTableBuilder {
 	}
 
 	Long applySummary(SummaryDetails sd)
-		throws SQLException, OmFormatException {
+		throws SQLException, OmFormatException, IOException {
 		Long time = null;
 		// Query for questions and answers
 		DatabaseAccess.Transaction dat = da.newTransaction();
@@ -150,7 +155,7 @@ public class SummaryTableBuilder {
 	}
 
 	void iterateResults(SummaryDetails sd, ResultSet rs, DisplayDetails dd)
-		throws SQLException, OmFormatException {
+		throws SQLException, OmFormatException, IOException {
 		while (rs.next()) {
 			// Keep track of max number
 			int iQuestionNumber = rs.getInt(1);
@@ -196,7 +201,7 @@ public class SummaryTableBuilder {
 	}
 
 	private int applyFinishedAttempt(SummaryDetails sd, ResultSet rs,
-		DisplayDetails dd, String sDisplayedSection) throws SQLException, OmFormatException {
+		DisplayDetails dd, String sDisplayedSection) throws SQLException, OmFormatException, IOException {
 		
 		dd.sDisplayedSection = addSectionRow(sd, dd, sDisplayedSection);
 		
@@ -229,7 +234,7 @@ public class SummaryTableBuilder {
 		}
 		if (sd.isIncludeAttempts()) {
 			String sAttempts = NavigatorServlet.getAttemptsString(
-					rs.getInt(6), sd.getTestDefinition());
+					rs.getInt(6), sd.getTestDefinition(), labelSets);
 			XML.createText(sd.getTableComponents().eTR, "td", sAttempts);
 			if (sd.isPlain()) {
 				XML.createText(ePlainRow, "Result: " + sAttempts + ". ");

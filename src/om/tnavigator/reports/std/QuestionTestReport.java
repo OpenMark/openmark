@@ -97,7 +97,7 @@ public class QuestionTestReport implements OmTestReport {
 					if (answerSummary == null) answerSummary = "The question did not return this information.";
 					String actionSummary = rs.getString(7);
 					if (actionSummary == null) actionSummary = "The question did not return this information.";
-					String attemptString = NavigatorServlet.getAttemptsString(rs.getInt(8), us.getTestDefinition());
+					String attemptString = ns.getAttemptsString(rs.getInt(8), us.getTestDefinition());
 					if (rs.wasNull()) attemptString = "The question did not return this information.";
 
 					sb.append(

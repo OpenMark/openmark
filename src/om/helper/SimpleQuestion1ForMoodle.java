@@ -57,11 +57,7 @@ public abstract class SimpleQuestion1ForMoodle extends StandardQuestion
   public Rendering init(Document d,InitParams ip) throws OmException
 	{
 		Rendering r=super.init(d,ip);
-		r.setProgressInfo("Tries remaining: " + iMaxAttempts);
-//		if(iMaxAttempts==1)
-//			r.setProgressInfo("You have only one attempt.");
-//		else
-//			r.setProgressInfo("You have "+iMaxAttempts+" attempts.");
+		r.setProgressInfo("%%lTRIES%% remaining: " + iMaxAttempts);
 
 		try
 		{
@@ -119,12 +115,8 @@ public abstract class SimpleQuestion1ForMoodle extends StandardQuestion
   	if(bEndNext)
   		end();
   	else {
-		int iAttemptsLeft=(iMaxAttempts-iAttempt+1);
-		setProgressInfo("Tries remaining: " + iAttemptsLeft);
-//		if(iAttemptsLeft==1)
-//			setProgressInfo("This is your last attempt.");
-//		else
-//			setProgressInfo("You have "+iAttemptsLeft+" attempts left.");
+		int iAttemptsLeft = iMaxAttempts - iAttempt + 1;
+		setProgressInfo("%%lTRIES%% remaining: " + iAttemptsLeft);
 
   		getComponent("answerbox").setDisplay(false);
   		getComponent("inputbox").setBoolean(BoxComponent.PROPERTY_PLAINHIDE,false);

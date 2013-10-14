@@ -17,11 +17,9 @@ public class SummaryDetailsGeneration {
 		sd.setParent(nParent);
 		sd.setDbTi(us.getDbTi());
 		sd.setNumberBySection(us.getTestDefinition().isNumberBySection());
-		if (sd.isIncludeScore()) {
-			sd.setRootTestGroup(us.getRootTestGroup());
-			sd.setTestLeavesInOrder(us.getTestLeavesInOrder());
-			sd.setTestDefinition(us.getTestDefinition());
-		}
+		sd.setRootTestGroup(us.getRootTestGroup());
+		sd.setTestLeavesInOrder(us.getTestLeavesInOrder());
+		sd.setTestDefinition(us.getTestDefinition());
 		return sd;
 	}
 

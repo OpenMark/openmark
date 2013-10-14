@@ -16,6 +16,7 @@ import java.util.Map;
 
 import om.tnavigator.AbstractNavigatorTestCase;
 import om.tnavigator.JUnitTestCaseUserSession;
+import om.tnavigator.TestLabelSet;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.JUnitTestCaseDatabaseAccess;
 import om.tnavigator.db.JUnitTestCaseOmQueries;
@@ -73,18 +74,6 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 
 	@After
 	public void tearDown() {
-//		log.close();
-//		File f = new File(getLogPath());
-//		assertTrue(f.isDirectory());
-//		File[] files = f.listFiles();
-//		for (int i = 0; i < files.length; i++) {
-//			File fil = files[i];
-//			if (null != fil) {
-//				if (fil.getName().contains(".log")) {
-//					assertTrue(fil.delete());
-//				}
-//			}
-//		}
 	}
 
 	@Before
@@ -120,8 +109,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	}
 
 	private JUnitTestCaseUserSession createSession(String testID, boolean finished,
-		long randomSeed, int fixedVariant, CombinedScore cs,
-		JUnitTestCaseTestDefinitionOptions options) throws Exception {
+			long randomSeed, int fixedVariant, CombinedScore cs,
+			JUnitTestCaseTestDefinitionOptions options) throws Exception {
 		TestCaseNavigationServlet ns = new TestCaseNavigationServlet(log);
 		JUnitTestCaseTestDefinition td = pickUpTestDefinition(BASIC_TEST_DEFINITION);
 		td.optionsOverride(options);
@@ -129,11 +118,7 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 		JUnitTestCaseTestRealisation rel = JUnitTestCaseTestRealisation
 			.getTestRealisationInstance(new Integer(testID), td, cs);
 		JUnitTestCaseUserSession usession = new JUnitTestCaseUserSession(ns, "123", td, deploy, rel);
-		//usession.realiseTest(testID, finished, randomSeed, fixedVariant);
-		//FIX THIS !
-		if (true) { // test only if we are dealing with scores !
-			usession.getTestRealisation().getScore(null, ns, null, null);
-		}
+		usession.getTestRealisation().getScore(null, ns, null, null);
 		return usession;
 	}
 
@@ -147,8 +132,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	@Test public void testSummaryTableBuildingNormalDataWithoutScores() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
-		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-			queries);
+		SummaryTableBuilder stb = new SummaryTableBuilder(
+				testDatabaseAccess, queries, new TestLabelSet());
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseUserSession usession = createSession("2", false, System.currentTimeMillis(), 1, cs, null);
@@ -167,8 +152,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	@Test public void testSummaryTableBuildingNormalDataNoScore() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
-		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-			queries);
+		SummaryTableBuilder stb = new SummaryTableBuilder(
+				testDatabaseAccess, queries, new TestLabelSet());
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseUserSession usession = createSession("2", false, System.currentTimeMillis(), 1, cs, null);
@@ -187,8 +172,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	@Test public void testSummaryTableBuildingNormalDataPlainWithAttempts() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
-		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-			queries);
+		SummaryTableBuilder stb = new SummaryTableBuilder(
+				testDatabaseAccess, queries, new TestLabelSet());
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseUserSession usession = createSession("2", false, System.currentTimeMillis(), 1, cs, null);
@@ -207,8 +192,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	@Test public void testSummaryTableBuildingNormalDataAllChecked() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
-		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-			queries);
+		SummaryTableBuilder stb = new SummaryTableBuilder(
+				testDatabaseAccess, queries, new TestLabelSet());
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseUserSession usession = createSession("2", false, System.currentTimeMillis(), 1, cs, null);
@@ -236,8 +221,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	@Test public void testSummaryTableBuildingNormalDataPlainWithoutScores() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
-		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-			queries);
+		SummaryTableBuilder stb = new SummaryTableBuilder(
+				testDatabaseAccess, queries, new TestLabelSet());
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseUserSession usession = createSession("2", false, System.currentTimeMillis(), 1, cs, null);
@@ -256,8 +241,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	@Test public void testSummaryTableBuildingNormalDataIncludeQuestionsWithoutScores() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
-		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-			queries);
+		SummaryTableBuilder stb = new SummaryTableBuilder(
+				testDatabaseAccess, queries, new TestLabelSet());
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseUserSession usession = createSession("2", false, System.currentTimeMillis(), 1, cs, null);
@@ -276,8 +261,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	@Test public void testSummaryTableBuildingNormalDataIncludeAttemptsWithoutScores() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
-		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-			queries);
+		SummaryTableBuilder stb = new SummaryTableBuilder(
+				testDatabaseAccess, queries, new TestLabelSet());
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseUserSession usession = createSession("2", false, System.currentTimeMillis(), 1, cs, null);
@@ -296,8 +281,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	@Test public void testSummaryTableBuildingNormalDataWithScores() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
-		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-			queries);
+		SummaryTableBuilder stb = new SummaryTableBuilder(
+				testDatabaseAccess, queries, new TestLabelSet());
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseUserSession usession = createSession("2", false, System.currentTimeMillis(), 1, cs, null);
@@ -395,10 +380,6 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 		recurseOptions(true, "Tester", null, true, true, true, false);
 	}
 
-	@Test public void testWithPlainNoteNoScoreWithLabel() throws Exception {
-		recurseOptions(true, "Tester", "label here", true, true, true, false);
-	}
-
 	@Test public void testWithFalse() throws Exception {
 		recurseOptions(false, null, null, false, false, false, false);
 	}
@@ -426,8 +407,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 			invoke(options, m, new Boolean(true));
 			SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 			queries = new SummaryTableTestCaseOmQueries(res);
-			SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-				queries);
+			SummaryTableBuilder stb = new SummaryTableBuilder(
+					testDatabaseAccess, queries, new TestLabelSet());
 			assertNotNull(log);
 			CombinedScore cs = dummyScore();
 			JUnitTestCaseUserSession usession = createSession("2", false,
@@ -449,8 +430,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	@Test public void testSummaryTableBuildingNormalDataEverythingNotPlain() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
-		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-			queries);
+		SummaryTableBuilder stb = new SummaryTableBuilder(
+				testDatabaseAccess, queries, new TestLabelSet());
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseTestDefinitionOptions options = new JUnitTestCaseTestDefinitionOptions();
@@ -483,8 +464,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	@Test public void testSummaryTableBuildingNormalDataEverythingFalseNotPlain() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
-		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-			queries);
+		SummaryTableBuilder stb = new SummaryTableBuilder(
+				testDatabaseAccess, queries, new TestLabelSet());
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseTestDefinitionOptions options = new JUnitTestCaseTestDefinitionOptions();
@@ -507,8 +488,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	@Test public void testNumberbysectionANDquestionnumberheaderBlank() throws Exception {
 		SummaryTableTestCaseResultSet res = new SummaryTableTestCaseResultSet(getNormalData());
 		queries = new SummaryTableTestCaseOmQueries(res);
-		SummaryTableBuilder stb = new SummaryTableBuilder(testDatabaseAccess,
-			queries);
+		SummaryTableBuilder stb = new SummaryTableBuilder(
+				testDatabaseAccess, queries, new TestLabelSet());
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseTestDefinitionOptions options = new JUnitTestCaseTestDefinitionOptions();
@@ -524,15 +505,6 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("<tr class=\"answered\"><td>" + i + "</td>"));
 		}
-	}
-
-	@Test public void testRetrieveSummaryConfirmation() throws Exception {
-		JUnitTestCaseTestDefinition def = pickUpTestDefinition(BASIC_TEST_DEFINITION);
-		assertNotNull(def);
-		String s = def.retrieveSummaryConfirmation();
-		
-		assertNotNull(s);
-		assertEquals(s, "Completed");
 	}
 
 	@Test public void testRetrieveSummaryConfirmationWithDeletedDocument() throws Exception {

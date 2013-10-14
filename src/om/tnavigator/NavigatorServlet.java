@@ -105,6 +105,7 @@ import util.misc.ErrorMessageParts;
 import util.misc.GeneralUtils;
 import util.misc.HTTPS;
 import util.misc.IO;
+import util.misc.LabelSets;
 import util.misc.MimeTypes;
 import util.misc.NameValuePairs;
 import util.misc.PeriodicThread;
@@ -243,8 +244,7 @@ public class NavigatorServlet extends HttpServlet {
 
 	private static String navigatorCSS = null;
 
-	/** Cache label replacement (Map of String (labelset id) -> Map ) */
-	private Map<String, Map<String, String>> labelReplace = new HashMap<String, Map<String, String>>();
+	private LabelSets labelSets = null;
 
 	// *************************************************************************
 	// TMH - END OF ............................................................
@@ -403,6 +403,8 @@ public class NavigatorServlet extends HttpServlet {
 		}
 
 		questionBankFolder = new File(sc.getRealPath("questionbank"));
+
+		labelSets = new LabelSets(new File(sc.getRealPath("WEB-INF/labels/")));
 
 		lastSessionKillerError = new long[nc.getOtherNavigators().length];
 
@@ -1776,7 +1778,7 @@ public class NavigatorServlet extends HttpServlet {
 		SummaryDetails sd = SummaryDetailsGeneration.generateSummaryDetails(us,
 				nParent, bPlain, bIncludeQuestions, bIncludeAttempts,
 				bIncludeScore);
-		SummaryTableBuilder stb = new SummaryTableBuilder(da, oq);
+		SummaryTableBuilder stb = new SummaryTableBuilder(da, oq, labelSets);
 		rt.setDatabaseElapsedTime(stb.addSummaryTable(sd));
 	}
 
@@ -3070,12 +3072,27 @@ public class NavigatorServlet extends HttpServlet {
 	}
 
 	/**
-	 * @param iAttempts
-	 *            'Attempts' value
-	 * @param td
-	 * @return String describing value, for use in summary tables
+	 * @param iAttempts 'Attempts' value
+	 * @param td the test definition.
+	 * @return String describing value, for use in summary tables.
+	 * @throws IOException 
 	 */
-	public static String getAttemptsString(int iAttempts, TestDefinition td) {
+	public String getAttemptsString(int iAttempts, TestDefinition td) throws IOException
+	{
+		return getAttemptsString(iAttempts, td, labelSets);
+	}
+
+	/**
+	 * @param iAttempts 'Attempts' value
+	 * @param td the test definition.
+	 * @param labelSets for loading the labels to use.
+	 * @return String describing value, for use in summary tables.
+	 * @throws IOException
+	 */
+	public static String getAttemptsString(int iAttempts, TestDefinition td, LabelSets labelSets) throws IOException
+	{
+		Map<String, String> labels = labelSets.getLabelSet(td.getLabelSet());
+		String wordForTry = labels.get("lTRY");
 		String str = retrieveSummaryConfirmation(td);
 		boolean substitute = Strings.isNotEmpty(str);
 		switch (iAttempts) {
@@ -3086,13 +3103,13 @@ public class NavigatorServlet extends HttpServlet {
 		case ATTEMPTS_PASS:
 			return "Passed";
 		case 1:
-			return substitute ? str : "Correct at 1st attempt";
+			return substitute ? str : "Correct at 1st " + wordForTry;
 		case 2:
-			return substitute ? str : "Correct at 2nd attempt";
+			return substitute ? str : "Correct at 2nd " + wordForTry;
 		case 3:
-			return substitute ? str : "Correct at 3rd attempt";
+			return substitute ? str : "Correct at 3rd " + wordForTry;
 		default:
-			return substitute ? str : "Correct at " + iAttempts + "th attempt";
+			return substitute ? str : "Correct at " + iAttempts + "th " + wordForTry;
 		}
 	}
 
@@ -4323,6 +4340,7 @@ public class NavigatorServlet extends HttpServlet {
 			if ((sProgressInfo == null || sProgressInfo.equals(""))) {
 				XML.remove(XML.find(d, "id", "progressinfo"));
 			} else {
+				Strings.replaceTokens(sProgressInfo, "%%", mReplace);
 				mReplace.put("PROGRESSINFO", sProgressInfo);
 			}
 		}
@@ -4597,44 +4615,27 @@ public class NavigatorServlet extends HttpServlet {
 	 * Returns the map of label replacements appropriate for the current
 	 * session.
 	 * 
-	 * @param us
-	 *            Session
+	 * @param us Session
 	 * @return Map of replacements (don't change this)
-	 * @throws IOException
-	 *             Any problems loading it
+	 * @throws IOException Any problems loading it
 	 */
 	private Map<String, String> getLabelReplaceMap(UserSession us)
-			throws IOException {
+			throws IOException
+	{
 		// Check labelset ID
-		String sKey;
+		String labelSet;
 		if (us.getTestDefinition() == null
 				|| us.getTestDefinition().getLabelSet() == null
 				|| us.getTestDefinition().getLabelSet().equals(""))
-			sKey = "!default";
+		{
+			labelSet = "!default";
+		}
 		else
-			sKey = us.getTestDefinition().getLabelSet();
-
-		// Get from cache
-		Map<String, String> mLabels = labelReplace.get(sKey);
-		if (mLabels != null)
-			return mLabels;
-
-		// Load from file
-		Map<String, String> m = new HashMap<String, String>();
-		File f = new File(getServletContext().getRealPath(
-				"WEB-INF/labels/" + sKey + ".xml"));
-		if (!f.exists())
-			throw new IOException("Unable to find requested label set: " + sKey);
-		Document d = XML.parse(f);
-		Element[] aeLabels = XML.getChildren(d.getDocumentElement());
-		for (int i = 0; i < aeLabels.length; i++) {
-			m.put(XML.getRequiredAttribute(aeLabels[i], "id"), XML
-					.getText(aeLabels[i]));
+		{
+			labelSet = us.getTestDefinition().getLabelSet();
 		}
 
-		// Cache and return
-		labelReplace.put(sKey, m);
-		return m;
+		return labelSets.getLabelSet(labelSet);
 	}
 
 	/**

@@ -110,9 +110,9 @@ public abstract class PartialQuestion1 extends StandardQuestion
 		else {
 			int iAttemptsLeft = (iMaxAttempts-iAttempt+1);
 			if (iAttemptsLeft == 1)
-				setProgressInfo("This is your last attempt.");
+				setProgressInfo("This is your last %%lTRY%%.");
 			else
-				setProgressInfo("You have "+iAttemptsLeft+" attempts left.");
+				setProgressInfo("You have "+iAttemptsLeft+" %%lTRIES%% left.");
   		
 			getComponent("answerbox").setDisplay(false);
 			getComponent("inputbox").setBoolean(BoxComponent.PROPERTY_PLAINHIDE,false);

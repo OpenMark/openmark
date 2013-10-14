@@ -72,9 +72,9 @@ public abstract class SimpleQuestion1 extends StandardQuestion
 	{
 		Rendering r=super.init(d,ip);
 		if(iMaxAttempts==1)
-			r.setProgressInfo("You have only one attempt.");
+			r.setProgressInfo("You have only one %%lTRY%%.");
 		else
-			r.setProgressInfo("You have "+iMaxAttempts+" attempts.");
+			r.setProgressInfo("You have "+iMaxAttempts+" %%lTRIES%%.");
 
 		try
 		{
@@ -135,9 +135,9 @@ public abstract class SimpleQuestion1 extends StandardQuestion
   	{
 			int iAttemptsLeft=(iMaxAttempts-iAttempt+1);
 			if(iAttemptsLeft==1)
-				setProgressInfo("This is your last attempt.");
+				setProgressInfo("This is your last %%lTRY%%.");
 			else
-				setProgressInfo("You have "+iAttemptsLeft+" attempts left.");
+				setProgressInfo("You have "+iAttemptsLeft+" %%lTRIES%% left.");
 
   		getComponent("answerbox").setDisplay(false);
   		getComponent("inputbox").setBoolean(BoxComponent.PROPERTY_PLAINHIDE,false);

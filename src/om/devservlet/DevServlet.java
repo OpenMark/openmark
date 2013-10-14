@@ -71,6 +71,7 @@ import util.misc.ClosableClassLoader;
 import util.misc.Exceptions;
 import util.misc.GeneralUtils;
 import util.misc.IO;
+import util.misc.LabelSets;
 import util.misc.Strings;
 import util.misc.UserAgent;
 import util.misc.UtilityException;
@@ -188,6 +189,9 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				new ServiceException("Failed to load and parse configuration file.");
 			}
 		}
+
+		labelSets = new LabelSets(new File(getServletContext().getRealPath("WEB-INF/labels/")));
+
 		setUpHandleDeployLogging();
 		try
 		{
@@ -939,6 +943,22 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 		HttpServletRequest request,HttpServletResponse response,Question q)
 		throws IOException
 	{
+		// Fix up the replacement variables
+		Map<String, Object> mReplace = new HashMap<String, Object>(labelSets.getLabelSet("!default"));
+		mReplace.put("RESOURCES","resources");
+		mReplace.put("IDPREFIX","");
+		mReplace.put("TINYMCE",TINYMCE);
+
+		String progressInfo = r.getProgressInfo();
+		if (progressInfo == null)
+		{
+			progressInfo = "";
+		}
+		else
+		{
+			progressInfo = Strings.replaceTokens(progressInfo, "%%", mReplace);
+		}
+
 		// Create basic template
 		Document d=XML.parse(
 			"<xhtml>" +
@@ -965,7 +985,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				"[<a href='../../build/"+sQuestion+"/'>Rebuild</a>] " +
 				"[<a href='../../'>List</a>] <small>[<a href='./?save'>Save</a>]</small>" +
 			"</h1>"+
-			"<h2 style='font: normal 12px Verdana'>"+r.getProgressInfo()+"</h2>"+
+			"<h2 style='font: normal 12px Verdana'>"+progressInfo+"</h2>"+
 			"<form method='post' action='./' id='question' autocomplete='off' class='om'/>"+
 			"<h1 style='font: bold 14px Verdana'>" +
 				"For testing deferred feedback questions [" +
@@ -977,7 +997,6 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			((new File("c:/hack.js")).exists()
 				? "<script type='text/javascript' src='file:///c:/hack.js'/>"
 				: "")+
-			//applyJavascriptFooter() + 				
 			"</body>"+
 			"</xhtml>");
 
@@ -1028,12 +1047,6 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			XML.createText(XML.find(d,"id","log"),message + sq.eatLog());
 		}
 
-		// Fix up the replacement variables
-		Map<String,String> mReplace=new HashMap<String,String>(getLabelReplaceMap());
-		mReplace.put("RESOURCES","resources");
-		mReplace.put("IDPREFIX","");
-		mReplace.put("TINYMCE",TINYMCE);
-
 		XML.replaceTokens(eQuestion,mReplace);
 
 		// Update document root
@@ -1069,40 +1082,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 	}
 
 	/** Cache label replacement (Map of String (labelset id) -> Map ) */
-	private Map<String,Map<String,String> > mLabelReplace=new HashMap<String,Map<String, String> >();
-
-	/**
-	 * Returns the map of label replacements appropriate for the current session.
-	 * @param us Session
-	 * @return Map of replacements (don't change this)
-	 * @throws IOException Any problems loading it
-	 */
-	private Map<String, String> getLabelReplaceMap() throws IOException
-	{
-		String sKey="!default";
-
-		// Get from cache
-		Map<String, String> mLabels=mLabelReplace.get(sKey);
-		if(mLabels!=null) return mLabels;
-
-		// Load from file
-		Map<String, String> m=new HashMap<String, String>();
-		File f=new File(getServletContext().getRealPath("WEB-INF/labels/"+sKey+".xml"));
-		if(!f.exists())
-			throw new IOException("Unable to find requested label set: "+sKey);
-		Document d=XML.parse(f);
-		Element[] aeLabels=XML.getChildren(d.getDocumentElement());
-		for(int i=0;i<aeLabels.length;i++)
-		{
-			m.put(
-					XML.getRequiredAttribute(aeLabels[i],"id"),
-					XML.getText(aeLabels[i]));
-		}
-
-		// Cache and return
-		mLabelReplace.put(sKey,m);
-		return m;
-	}
+	private LabelSets labelSets = null;
 
 	/**
 	 * @param key key to identify the bit of information requested.
