@@ -2121,10 +2121,8 @@ public class NavigatorServlet extends HttpServlet {
 		response.setHeader("Pragma", "No-cache");
 		response.setHeader("Cache-Control", "no-store");
 		response.setHeader("Expires", "Thu, 01 Jan 1970 00:00:00 GMT");
-		if (XHTML.isIE9(request)) {
-			response.addHeader("X-UA-Compatible", "IE=8");
-		}
 	}
+
 	public String updatePCDC(DatabaseAccess da, UserSession us,TrafficLights trafficlights )
 	throws Exception
 	{
@@ -3776,9 +3774,6 @@ public class NavigatorServlet extends HttpServlet {
 		response.addHeader("Cache-Control", "no-cache");
 		response.addHeader("Cache-Control", "no-store");
 		response.setDateHeader("Expires", 0);
-		if (XHTML.isIE9(request)) {
-			response.addHeader("X-UA-Compatible", "IE=8");
-		}
 	}
 
 	// Method is NOT synchronized on UserSession
