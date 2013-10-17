@@ -10,6 +10,11 @@
   padding:0;
   margin:0;
 }
+.om .dropbox.dropactiveover {
+  border: 1px solid #888 !important;
+  box-shadow: 0 0 5px 5px rgba(255, 255, 150, 1);
+}
+
 .om .dropboxsidelabel
 {
   font-size:10px;

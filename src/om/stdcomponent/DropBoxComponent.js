@@ -312,9 +312,10 @@ function dragboxMouseMove(e)
 	// Handle IE thing where it gets stuck on if you go out of
 	// the window and let go there
 	if(isIE8OrBelow && e.button==0)
-			return dragboxMouseUp(e);
+	{
+		return dragboxMouseUp(e);
+	}
 	if(!dbMoving) return;
-
 
 	var deltaX=e.mPageX-dbMoving.pageX, deltaY=e.mPageY-dbMoving.pageY;
 
@@ -323,6 +324,16 @@ function dragboxMouseMove(e)
 
 	dbMoving.pageX=e.mPageX;
 	dbMoving.pageY=e.mPageY;
+
+	resolvePageXY(dbMoving);
+	if (dbMoving.currentlyover) {
+		dbMoving.currentlyover.className = dbMoving.currentlyover.className.replace(
+				" dropactiveover", "");
+	}
+	dbMoving.currentlyover = dragboxGetCurrentTarget(dbMoving);
+	if (dbMoving.currentlyover) {
+		dbMoving.currentlyover.className += " dropactiveover";
+	}
 
 	clearSelection();
 	return true;
@@ -363,19 +374,14 @@ function dragboxMouseUp(e)
 
 	// See if it hit something
 	resolvePageXY(dbMoving);
-	var found=null,bestIntersect=0,thisIntersect;
-	for(var i=0;i<dropboxArray.length;i++)
-	{
-		var dropbox=dropboxArray[i];
-		if(dropbox.inGroup!=dbMoving.inGroup) continue;
-		var thisIntersect=intersects(dbMoving,dropbox);
-		if(thisIntersect > bestIntersect)
-		{
-			bestIntersect=thisIntersect;
-			found=dropbox;
-			break;
-		}
+
+	if (dbMoving.currentlyover) {
+		dbMoving.currentlyover.className = dbMoving.currentlyover.className.replace(
+				" dropactiveover", "");
 	}
+
+	var found = dragboxGetCurrentTarget(dbMoving);
+
 	if(found)
 	{
 		// Does found dropbox already have something? Get rid of it
@@ -392,6 +398,24 @@ function dragboxMouseUp(e)
 	}
 
 	dragboxReleaseCapture();
+}
+
+function dragboxGetCurrentTarget(dbMoving) {
+	var found = null,
+		bestIntersect = 0,
+		thisIntersect;
+	for (var i = 0; i < dropboxArray.length; i++)
+	{
+		var dropbox = dropboxArray[i];
+		if (dropbox.inGroup != dbMoving.inGroup) continue;
+		var thisIntersect = intersects(dbMoving, dropbox);
+		if(thisIntersect > bestIntersect)
+		{
+			bestIntersect = thisIntersect;
+			found = dropbox;
+		}
+	}
+	return found;
 }
 
 function dragboxLeavingHome(db)
