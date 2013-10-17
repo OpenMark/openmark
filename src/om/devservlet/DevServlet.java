@@ -963,6 +963,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 		Document d=XML.parse(
 			"<xhtml>" +
 			"<head>" +
+			"<meta http-equiv='X-UA-Compatible' content='IE=edge' />" +
 			"<title>Question: "+sQuestion+"</title>"+
 			"<link rel='stylesheet' href='style.css' type='text/css'/>"+
 			((new File("c:/hack.css")).exists()
