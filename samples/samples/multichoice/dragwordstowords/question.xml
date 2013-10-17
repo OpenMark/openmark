@@ -2,20 +2,20 @@
 
 	<scoring><marks>3</marks></scoring>
 
- 	<layout>
-  		<row height="400"/>
-  		<column width="340"/>
-  		<column width="252"/>  
- 	</layout>
- 
- 	<!-- Defines the left-hand question box -->
- 	<box gridx="0" gridy="0" id="inputbox" background="input">
+	<layout>
+		<row height="400"/>
+		<column width="340"/>
+		<column width="252"/>
+	</layout>
+
+	<!-- Defines the left-hand question box -->
+	<box gridx="0" gridy="0" id="inputbox" background="input">
 
 		Drag and drop the words from the list below to fill the blank spaces
-		and correctly complete the sentence. 
+		and correctly complete the sentence.
 		<gap/>
-		<gap/> 
-		
+		<gap/>
+
 		<indent>
 			<dragbox id="a1" group="group1"><t>hydrogen</t></dragbox>
 			<dragbox id="a2" group="group1"><t>positive</t></dragbox>
@@ -31,41 +31,41 @@
 			<dragbox id="a10" group="group3"><t>less</t></dragbox>
 		</indent>
 		<gap/>
-		<gap/> 
-	
+		<gap/>
+
 		At <eq>25 \mbox{ °C}</eq> all aqueous __ACIDORBASE__ solutions have
 		<dropbox id="mw1" group="group1"/>
 		ion concentrations __GREATERORLESS__ than
 		<break/>
 		<dropbox id="mw2" group="group2"/>
 		<eq>\mbox{mol litre^{–1}}</eq>
-	 	and pH values
-	 	<dropbox id="mw3" group="group3"/>
-	 	than
-	 	<dropbox id="mw4" group="group2"/>.
-		<gap/> 
-		<gap/> 
-
-	   	<button action="actionSubmit" label="%%lENTERANSWER%%"/>
- 	</box>
-
- 	<!-- Defines the right-hand answer box, which is initially hidden  -->
- 	<box gridx="1" gridy="0" id="answerbox" display="no" background="answer">
-   
-		<t id="wrong">Your answer is <t id="still">still</t> incorrect.</t>
-	
-		<t id="right">Your answer is correct.</t>
-		<t id="pass">You passed on this question.</t>	
+		and pHH values
+		<dropbox id="mw3" group="group3"/>
+		than
+		<dropbox id="mw4" group="group2"/>.
 		<gap/>
-		
+		<gap/>
+
+		<button action="actionSubmit" label="%%lENTERANSWER%%"/>
+	</box>
+
+	<!-- Defines the right-hand answer box, which is initially hidden  -->
+	<box gridx="1" gridy="0" id="answerbox" display="no" background="answer">
+
+		<t id="wrong">Your answer is <t id="still">still</t> incorrect.</t>
+
+		<t id="right">Your answer is correct.</t>
+		<t id="pass">You passed on this question.</t>
+		<gap/>
+
 		<t id="feedback">
 			<t id="manyWrong">You have wrongly completed __N__ spaces.</t>
 			<t id="oneWrong">You have wrongly completed 1 space.</t>
 			<t id="showanswer">The correct paragraph is shown below.</t>
 			<gap/>
-		</t>	 
-   
- 	 	<t id="answer">
+		</t>
+
+		<t id="answer">
 			<t id="answer0">
 				At 25 °C all aqueous acid solutions have hydrogen ion concentrations
 				greater than <eq>10^{-7}</eq> mol <eq>\mbox{litre}^{-1}</eq>
@@ -77,13 +77,13 @@
 				greater than 7.
 			</t>
 			<gap/>
-			See Section 9 of S103 <emphasis type="italic">Discovering Science</emphasis> Block 8. 		
+			See Section 9 of S103 <emphasis type="italic">Discovering Science</emphasis> Block 8.
 			<gap/>
-  		</t>
-		
-	 	<button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
+		</t>
+
+		<button id="ok" action="actionOK" label="%%lTRYAGAIN%%"/>
 		<button id="next" action="actionOK" label="%%lNEXTQUESTION%%" display="no"/>
 
- 	</box>
- 
+	</box>
+
 </question>
