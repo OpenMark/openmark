@@ -966,7 +966,8 @@ public class NavigatorServlet extends HttpServlet {
 			}
 			if (sCommand.startsWith("_"))
 				sCommand = ""; // Used to allow random different URLs in plain
-			// mode
+
+			// Append query string if not blank.
 			if (request.getQueryString() != null)
 				sCommand += "?" + request.getQueryString();
 
@@ -2912,11 +2913,23 @@ public class NavigatorServlet extends HttpServlet {
 			throws IOException, OmException {
 		// get the section number if we are numbering by section
 
+		String lastScroll = request.getParameter("lastscrollpos");
+		if (Strings.isEmpty(lastScroll))
+		{
+			lastScroll = "";
+		}
+		else
+		{
+			lastScroll = "" + Integer.parseInt(lastScroll);
+		}
+
 		us.sSequence = Math.random() + "";
 		if (!notReallyQuestion) {
 			sXHTML = "<form method='post' action='./' autocomplete='off'>"
 					+ "<input type='hidden' name='" + SEQUENCEFIELD
-					+ "' value = '" + us.sSequence + "' />" + sXHTML
+					+ "' value = '" + us.sSequence + "' />"
+					+ "<input type='hidden' id='lastscrollpos' name='lastscrollpos' value = '" + lastScroll + "' />"
+					+ sXHTML
 					+ "</form>";
 		}
 		String qnh = "Question";

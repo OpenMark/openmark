@@ -959,6 +959,16 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			progressInfo = Strings.replaceTokens(progressInfo, "%%", mReplace);
 		}
 
+		String lastScroll = request.getParameter("lastscrollpos");
+		if (Strings.isEmpty(lastScroll))
+		{
+			lastScroll = "";
+		}
+		else
+		{
+			lastScroll = "" + Integer.parseInt(lastScroll);
+		}
+
 		// Create basic template
 		Document d=XML.parse(
 			"<xhtml>" +
@@ -986,8 +996,10 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				"[<a href='../../build/"+sQuestion+"/'>Rebuild</a>] " +
 				"[<a href='../../'>List</a>] <small>[<a href='./?save'>Save</a>]</small>" +
 			"</h1>"+
-			"<h2 style='font: normal 12px Verdana'>"+progressInfo+"</h2>"+
-			"<form method='post' action='./' id='question' autocomplete='off' class='om'/>"+
+			"<h2 style='font: normal 12px Verdana'>"+progressInfo+"</h2>" +
+			"<form method='post' action='./' id='question' autocomplete='off' class='om'>" +
+			"<input type='hidden' id='lastscrollpos' name='lastscrollpos' value = '" + lastScroll + "' />" +
+			"</form>" +
 			"<h1 style='font: bold 14px Verdana'>" +
 				"For testing deferred feedback questions [" +
 					"<a href='#' onclick='submitForm(\"question\")'>Next (save)</a> " +
@@ -1064,22 +1076,6 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 
 	protected String lineBreak() {
 		return System.getProperty(LINE_SEPARATOR);
-	}
-
-	protected String applyJavascriptFooter() {
-		return new StringBuilder().append(lineBreak())
-			.append(lineBreak()).append("<script type=\"text/javascript\">")
-			.append(lineBreak()).append("setTimeout(")
-		    .append(lineBreak()).append("'var f=document.getElementById(\"focusthis\");'+")
-		    .append(lineBreak()).append("'if(f) { f.focus(); setTimeout(\"window.scroll(0,0);\",0); }',100);")
-		    .append(lineBreak()).append("if (typeof myOnLoad != 'undefined') { // Any scope")
-		    .append(lineBreak()).append("if (window['myOnLoad'] != undefined) { // Global scope")
-		    .append(lineBreak()).append("if (window['myOnLoad'] != void 0) { // Old browsers")
-			.append(lineBreak()).append("window.onload=myOnLoad;")
-			.append(lineBreak()).append("	}")
-			.append(lineBreak()).append("	}")
-			.append(lineBreak()).append("}")
-			.append(lineBreak()).append("</script>").toString();
 	}
 
 	/** Cache label replacement (Map of String (labelset id) -> Map ) */

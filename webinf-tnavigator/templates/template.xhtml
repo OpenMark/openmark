@@ -39,9 +39,18 @@
 <div id='logo'><a href="../!shared/om.html" target="om" onclick="window.open('../!shared/om.html','om','width=350,height=180,resizable=yes,scrollbars=yes,dependent=yes'); return false;"><img src="../!shared/omlogo.gif" alt="OpenMark"/></a></div>
 
 <script type="text/javascript">
-setTimeout(
-    'var f=document.getElementById("focusthis");'+
-    'if(f) { f.focus(); setTimeout("window.scroll(0,0);",0); }',100);
+setTimeout(function () {
+    var f = document.getElementById('focusthis');
+    if (f) {
+        f.focus();
+        setTimeout( function() {
+            if (typeof(scrollHandlerInit) === 'function')
+                scrollHandlerInit();
+            else
+                window.scroll(0,0);
+        }, 0);
+    }
+}, 100);
 </script>
 
 </body>

@@ -256,8 +256,7 @@ function isAutoFocusOn()
 
 // Keep track of focusable objects
 var focusList=new Array();
-
-function addFocusable(id,expr)
+function addFocusable(id, expr)
 {
     var o=new Object();
     o.id=id;
@@ -265,8 +264,17 @@ function addFocusable(id,expr)
 
     if(focusList.length==0 && isAutoFocusOn())
     {
-        addOnLoad(function() {
-            setTimeout('try{'+o.expr+'.focus()}catch(e){};setTimeout("window.scroll(0,0);",0)',100);
+        addOnLoad(function()
+        {
+            setTimeout(function()
+            {
+                try
+                {
+                    eval(o.expr).focus()
+                }
+                catch(e) {}
+                setTimeout(scrollHandlerScrollToPosition, 0);
+            }, 100);
         });
     }
 
@@ -441,3 +449,120 @@ function khtmlForceRepaint(element)
 	element.offsetHeight;
 	element.style.display = oldDisplay;
 }
+
+// Scroll handling
+// This code is inspired by similar code in Moodle.
+
+// Event handler to save the scroll position when the form is submitted.
+function scrollHandlerOnSubmit(form)
+{
+    var lastScrollInput = document.getElementById('lastscrollpos');
+    if (!lastScrollInput)
+    {
+        return;
+    }
+
+    // Reliable scrollpos code thanks to https://developer.mozilla.org/en-US/docs/Web/API/window.scrollY#Notes.
+    var scrollpos;
+    if (window.pageYOffset)
+    {
+        lastScrollInput.value = window.pageYOffset;
+    }
+    else
+    {
+        lastScrollInput.value = (document.documentElement || document.body.parentNode || document.body).scrollTop;
+    }
+}
+
+// Scroll the page to the correct position. We have to scroll to 0 if we are not
+// scrolling anywhere else, because of the focus handling we do.
+function scrollHandlerScrollToPosition()
+{
+    if (getUrlParameter('scrollpos')) {
+        // This will only happen if we are inside Moodle, and Moodle is doing
+        // something with the scroll position. In that case, we do nothing.
+        return;
+    }
+
+    var lastScrollInput = document.getElementById('lastscrollpos');
+    var targetScrollInput = document.getElementById('scrollto');
+    var targetScroll;
+    if (!lastScrollInput || lastScrollInput.value === '')
+    {
+        // We should only manipulate the scroll if the user just clicked a
+        // button in the question, which will cause this hidden input to be set
+        // to a value.
+        targetScroll = 0;
+    }
+
+    else if (!targetScrollInput)
+    {
+        // We should not scroll.
+        targetScroll = 0;
+    }
+
+    else if (targetScrollInput.value === '_same')
+    {
+        // Keep the same scroll position as before.
+        targetScroll = lastScrollInput.value;
+    }
+
+    else
+    {
+        // Scroll a particular element into view.
+        var targetElement = document.getElementById(targetScrollInput.value);
+        if (!targetElement)
+        {
+            return;
+        }
+
+        // We scroll the lesser of the two distances, Top of element at the top
+        // of the browser window, or bottom of the element at the bottom of the
+        // browser window.
+        // The extra 8 pixels is the typical padding between boxes.
+        resolvePageXY(targetElement);
+        targetScroll = Math.min(targetElement.pageY - 8,
+                Math.max(0, targetElement.pageY2 + 8 - getWindowHeight()));
+    }
+
+    window.scrollTo(0, targetScroll);
+    addOnLoad(function() { window.scrollTo(0, targetScroll); });
+
+    // And the following horror is necessary to make it work in IE 8.
+    if (isIE8OrBelow) {
+        scrollHandlerForceIeToScroll(targetScroll);
+    }
+}
+
+// Beat IE into submission.
+function scrollHandlerForceIeToScroll(targetpos) {
+    var hackcount = 25;
+    function do_scroll() {
+        window.scrollTo(0, targetpos);
+        hackcount -= 1;
+        if (hackcount > 0) {
+            setTimeout(do_scroll, 10);
+        }
+    }
+    addOnLoad(do_scroll);
+}
+
+function getWindowHeight() {
+    if (window.innerHeight) return window.innerHeight;
+    // For older IE.
+    if (document.documentElement.offsetHeight) return document.documentElement.offsetHeight;
+}
+
+// Initialise the scroll handling system.
+function scrollHandlerInit()
+{
+    scrollHandlerScrollToPosition();
+
+    var omDiv = document.getElementById('om');
+    if (!omDiv) return;
+
+    var form = omDiv.parentNode;
+    if (!form || !form.getAttribute('action')) return;
+    addPreSubmit(form, function(e) { scrollHandlerOnSubmit(form); });
+}
+setTimeout(scrollHandlerInit, 10);

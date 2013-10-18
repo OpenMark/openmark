@@ -400,6 +400,32 @@ public abstract class StandardQuestion implements Question
 		return XML.replaceTokens(sValue,"__",mPlaceholders);
 	}
 
+	/**
+	 * If you call this method then when the question is re-displayed, the page
+	 * will be scrolled to exactly the same place it was when the student clicked
+	 * the check button. This can be useful in long questions with action buttons
+	 * that manipulate the state of something.
+	 *
+	 * @throws OmDeveloperException
+	 */
+	public void preserveScroll() throws OmDeveloperException
+	{
+		qd.setScrollTo("_same");
+	}
+
+	/**
+	 * If you call this method then when the question is re-displayed, the page
+	 * will be scrolled to make the box with the given id visible. This can be
+	 * used in questions with a north/south layout of question and feedback, to
+	 * make sure the student sees the feedback.
+	 *
+	 * @throws OmDeveloperException
+	 */
+	public void scrollTo(String target) throws OmDeveloperException
+	{
+		qd.setScrollTo(QDocument.ID_PREFIX + target);
+	}
+
 	// Utility and helper methods
 	/////////////////////////////
 

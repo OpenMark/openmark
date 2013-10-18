@@ -370,6 +370,7 @@ public class QDocument
 	 */
 	public void action(ActionParams ap) throws OmException
 	{
+		qcRoot.setString("scrollto", "");
 		String[] asParams=ap.getParameterList();
 
 		if (!Arrays.asList(asParams).contains("-finish")) {
@@ -400,6 +401,16 @@ public class QDocument
 		} else {
 			getQuestion().save();
 		}
+	}
+
+	/**
+	 * Set the scroll target for where the page should be scrolled to when the
+	 * qusetion is redisplayed.
+	 * @param target
+	 * @throws OmDeveloperException
+	 */
+	public void setScrollTo(String target) throws OmDeveloperException {
+		qcRoot.setString("scrollto", target);
 	}
 
 	/**

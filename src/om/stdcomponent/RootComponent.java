@@ -19,14 +19,17 @@ package om.stdcomponent;
 
 import java.util.*;
 
+import om.OmDeveloperException;
 import om.OmException;
 import om.OmFormatException;
 import om.stdquestion.QComponent;
 import om.stdquestion.QContent;
+import om.stdquestion.QDocument;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import util.misc.Strings;
 import util.xml.XML;
 import util.xml.XMLException;
 
@@ -40,6 +43,14 @@ public class RootComponent extends QComponent
 {
 	/** Layout grid size */
 	int[] aiRows,aiColumns;
+
+	@Override
+	protected void defineProperties() throws OmDeveloperException
+	{
+		super.defineProperties();
+		defineProperty("scrollto", String.class, false, null);
+		setString("scrollto", "");
+	}
 
 	@Override
 	protected void initChildren(Element eThis) throws OmException
@@ -109,6 +120,15 @@ public class RootComponent extends QComponent
 			Element script=XML.createChild(rootDiv,"script");
 			script.setAttribute("type","text/javascript");
 			script.setAttribute("src","%%RESOURCES%%/script.js?h=" + getQDocument().getJSHash());
+		}
+
+		if (!bPlain && Strings.isNotEmpty(getString("scrollto")))
+		{
+			Element scrollToInput = XML.createChild(rootDiv, "input");
+			scrollToInput.setAttribute("type", "hidden");
+			scrollToInput.setAttribute("name", "scrollto");
+			scrollToInput.setAttribute("id", "scrollto");
+			scrollToInput.setAttribute("value", getString("scrollto"));
 		}
 
 		// See if there's a component that wants to go there
@@ -356,6 +376,10 @@ public class RootComponent extends QComponent
 		{
 			eFloat.setAttribute("class","gridcontainer");
 			eFloat.setAttribute("style","width:"+iWidth+"px; height:"+iHeight+"px;");
+		}
+		if (bt.bcIn != null && Strings.isNotEmpty(bt.bcIn.getString("id")))
+		{
+			eFloat.setAttribute("id", QDocument.ID_PREFIX + bt.bcIn.getString("id"));
 		}
 		qc.addInlineXHTML(eFloat);
 
