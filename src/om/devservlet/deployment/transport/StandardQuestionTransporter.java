@@ -313,6 +313,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	LatestNameAndVersion determineCurrentVersion(List<String> locations,
 		Map<String, String> metaData, QuestionHolder qh, RenderedOutput or) {
 		LatestNameAndVersion version = null;
+		StringBuffer verStr = new StringBuffer(" - LatestNameAndVersion ");
 		if (null != locations ? locations.size() > 0 : false) {
 			Map<String, LatestNameAndVersion> versions = retrieveLatestVersions(
 				metaData, qh, or);
@@ -326,8 +327,16 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 				version.fileNamePrefix = qh.getNamePrefix() + FIRST_VERSION;
 			}
 		}
-		or.append(" - LatestNameAndVersion found within the locations : ")
-			.append(version);
+		if (!version.versionExists())
+		{
+			verStr.append("New question found");
+		}
+		else
+		{
+			verStr.append(" found within the locations: ");
+			verStr.append(version);
+		}
+		or.append(verStr.toString());
 		return version;
 	}
 
@@ -403,18 +412,18 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 		
 		// The file name without .jar
 		String fileNamePrefix;
-		
+
 		boolean valid() {
 			return null != fileNamePrefix ? (
 				fileNamePrefix.length() > 0
 					&& null != version ? version.valid() : false)
 					: false;
 		}
-		
+
 		public String toString() {
 			return "Name : " + fileNamePrefix + " - version : " + version; 
 		}
-		
+
 		/**
 		 * Checks to see if the argument matches this instance in terms of 
 		 *  composite variable values.
@@ -433,6 +442,11 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 				}
 			}
 			return is;
+		}
+
+		public boolean versionExists()
+		{
+			return version.testVersionFileExist();
 		}
 	}
 
@@ -466,6 +480,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 				if (f.getName().contains(qh.getNamePrefix())) {
 					Versioner ver = retrieveVersionerFromFileName(f.getName());
 					if (null != ver) {
+						ver.setVersionExists();
 						versions.add(ver);
 					}
 				}
@@ -609,6 +624,9 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 
 		int secondary = 0;
 
+		/** Does a file with this version actually exist? */
+		boolean versionExists=false;
+
 		boolean isLessThan(Versioner v) {
 			boolean is = false;
 			if (null != v) {
@@ -626,11 +644,11 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 		boolean valid() {
 			return primary > -1 && secondary > -1;
 		}
-		
+
 		public String toString() {
 			return primary + "." + secondary;
 		}
-		
+
 		public boolean validMatch(Versioner v) {
 			boolean is = false;
 			if (null != v ? v.primary == primary
@@ -638,6 +656,16 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 				is = true;
 			}
 			return is;
+		}
+
+		public boolean testVersionFileExist()
+		{
+			return versionExists;
+		}
+
+		public void setVersionExists()
+		{
+			versionExists=true;
 		}
 	}
 

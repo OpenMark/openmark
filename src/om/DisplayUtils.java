@@ -38,7 +38,7 @@ public class DisplayUtils {
 	}
 
 	public static String applyListingLinkDisplay() {
-		return "<a href='/om'>Back to Listing</a>";
+		return "<a href='../..'>Back to Listing</a>";
 	}
 
 	public static String footer() {
