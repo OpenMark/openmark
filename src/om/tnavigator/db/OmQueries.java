@@ -101,7 +101,26 @@ public abstract class OmQueries
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(testID)+" " +
 			"ORDER BY attempt DESC LIMIT 1");
 	}
-	
+
+	/**
+	 * do a simple one table select in an openmark way
+	 * @param dat the transaction within which the query should be executed.
+	 * @param select what we are selecting
+	 * @param from the table wer are selecting from
+	 * @param where the where clause
+	 * @param order the order wanted as used in order by
+	 * @return the requestedt data.
+	 * @throws SQLException
+	 */
+	public ResultSet querySimpleSelect(DatabaseAccess.Transaction dat,String select,String from, String where, String order) throws SQLException
+	{
+		return dat.query(
+			"SELECT " + select +
+			"FROM " + getPrefix() + from +
+			"WHERE " + where +
+			"ORDER BY " + order);
+	}
+
 	/**
 	 * Get a user's pi from the test
 	 * @param dat the transaction within which the query should be executed.

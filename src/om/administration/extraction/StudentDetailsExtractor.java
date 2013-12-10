@@ -55,9 +55,9 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 
 	private static String CSV_SUFFIX = ".csv";
 
-	private static Integer SIZE = new Integer(999999);
+	private static Integer SIZE = new Integer(9999999);
 
-	private static String QI_TABLE = "[oms-dev].[dbo].[nav_questions]";
+	private static String QI_TABLE = "nav_questions";
 
 	private static String TEST_INSTANCE_SQL = "select * from {0} where ti={1}";
 
@@ -87,16 +87,16 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	 *  of tables.  Those that contain a ti and those that contain a "qi".
 	 */
 	static {
-		tableNamesByTestInstance.add("[oms-dev].[dbo].[nav_tests]");
-		tableNamesByTestInstance.add("[oms-dev].[dbo].[nav_testquestions]");
-		tableNamesByTestInstance.add("[oms-dev].[dbo].[nav_infopages]");
-		tableNamesByTestInstance.add("[oms-dev].[dbo].[nav_questions]");
-		tableNamesByTestInstance.add("[oms-dev].[dbo].[nav_sessioninfo]");
-		tableNamesByQuestionInstance.add("[oms-dev].[dbo].[nav_actions]");
-		tableNamesByQuestionInstance.add("[oms-dev].[dbo].[nav_params]");
-		tableNamesByQuestionInstance.add("[oms-dev].[dbo].[nav_results]");
-		tableNamesByQuestionInstance.add("[oms-dev].[dbo].[nav_scores]");
-		tableNamesByQuestionInstance.add("[oms-dev].[dbo].[nav_customresults]");
+		tableNamesByTestInstance.add("nav_tests");
+		tableNamesByTestInstance.add("nav_testquestions");
+		tableNamesByTestInstance.add("nav_infopages");
+		tableNamesByTestInstance.add("nav_questions");
+		tableNamesByTestInstance.add("nav_sessioninfo");
+		tableNamesByQuestionInstance.add("nav_actions");
+		tableNamesByQuestionInstance.add("nav_params");
+		tableNamesByQuestionInstance.add("nav_results");
+		tableNamesByQuestionInstance.add("nav_scores");
+		tableNamesByQuestionInstance.add("nav_customresults");
 	}
 
 	/**
@@ -273,10 +273,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 		boolean valid = false;
 		if (Strings.isNotEmpty(ti)) {
 			try {
-				Integer inte = new Integer(ti);
-				if (inte < SIZE) {
-					valid = true;
-				}
+				valid = true;
 			} catch (NumberFormatException x) {
 				try {
 					getLog().logDebug("Input is not a valid Integer value.", x);
@@ -349,12 +346,15 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 		InMemoryRepresentation imr, String ti, StringBuilder output,
 		ExtractionResponse er) throws ExtractorException {
 		QuestionInstanceIdentification qii = null;
+
 		for (String name : tableNamesByTestInstance) {
 			if (Strings.isNotEmpty(name) && Strings.isNotEmpty(ti)) {
-				Object[] arguments = {name, ti};
-				String sql = MessageFormat.format(TEST_INSTANCE_SQL, arguments);
 				DatabaseAccess.Transaction dat = null;
 				try {
+					String DBprefix=getNavigatorConfig().getDBPrefix();
+					name=DBprefix.concat(name);
+					Object[] arguments = {name, ti};
+					String sql = MessageFormat.format(TEST_INSTANCE_SQL, arguments);
 					getLog().logDebug("Running : " + sql);
 					dat = getDatabaseAccess().newTransaction();
 					ResultSet rs = dat.query(sql);
@@ -395,10 +395,12 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 			&& null != output && null != er) {
 			for (String tableName : tableNamesByQuestionInstance) {
 				if (null != tableName ? Strings.isNotEmpty(tableName) : false) {
-					Object[] arguments = {tableName, qii.toString()};
-					String sql = MessageFormat.format(QUESTION_INSTANCE_SQL, arguments);
 					DatabaseAccess.Transaction dat = null;
 					try {
+						String DBprefix=getNavigatorConfig().getDBPrefix();
+						tableName=DBprefix.concat(tableName);
+						Object[] arguments = {tableName, qii.toString()};
+						String sql = MessageFormat.format(QUESTION_INSTANCE_SQL, arguments);
 						dat = getDatabaseAccess().newTransaction();
 						ResultSet rs = dat.query(sql);
 						applyToOutputRendering(output, imr, rs, tableName, qii, er);

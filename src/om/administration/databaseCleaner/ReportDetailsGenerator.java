@@ -57,7 +57,7 @@ public class ReportDetailsGenerator extends AbstractPersistenceDelegator
 
 	private static Integer SIZE = new Integer(999999);
 
-	private static String QI_TABLE = "[oms-dev].[dbo].[nav_questions]";
+	private static String QI_TABLE = "nav_questions";
 
 	private static String TEST_INSTANCE_SQL = "select * from {0} where ti={1}";
 
@@ -87,16 +87,16 @@ public class ReportDetailsGenerator extends AbstractPersistenceDelegator
 	 *  of tables.  Those that contain a ti and those that contain a "qi".
 	 */
 	static {
-		tableNamesByTestInstance.add("[oms-dev].[dbo].[nav_tests]");
-		tableNamesByTestInstance.add("[oms-dev].[dbo].[nav_testquestions]");
-		tableNamesByTestInstance.add("[oms-dev].[dbo].[nav_infopages]");
-		tableNamesByTestInstance.add("[oms-dev].[dbo].[nav_questions]");
-		tableNamesByTestInstance.add("[oms-dev].[dbo].[nav_sessioninfo]");
-		tableNamesByQuestionInstance.add("[oms-dev].[dbo].[nav_actions]");
-		tableNamesByQuestionInstance.add("[oms-dev].[dbo].[nav_params]");
-		tableNamesByQuestionInstance.add("[oms-dev].[dbo].[nav_results]");
-		tableNamesByQuestionInstance.add("[oms-dev].[dbo].[nav_scores]");
-		tableNamesByQuestionInstance.add("[oms-dev].[dbo].[nav_customresults]");
+		tableNamesByTestInstance.add("nav_tests");
+		tableNamesByTestInstance.add("nav_testquestions");
+		tableNamesByTestInstance.add("nav_infopages");
+		tableNamesByTestInstance.add("nav_questions");
+		tableNamesByTestInstance.add("nav_sessioninfo");
+		tableNamesByQuestionInstance.add("nav_actions");
+		tableNamesByQuestionInstance.add("nav_params");
+		tableNamesByQuestionInstance.add("nav_results");
+		tableNamesByQuestionInstance.add("nav_scores");
+		tableNamesByQuestionInstance.add("nav_customresults");
 	}
 
 	/**
