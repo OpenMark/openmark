@@ -82,6 +82,7 @@ import om.tnavigator.db.OmQueries;
 import om.tnavigator.reports.ReportDispatcher;
 import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 import om.tnavigator.scores.CombinedScore;
+import om.tnavigator.sessions.ClaimedUserDetails;
 import om.tnavigator.sessions.NewSession;
 import om.tnavigator.sessions.SessionManager;
 import om.tnavigator.sessions.UserSession;
@@ -654,8 +655,8 @@ public class NavigatorServlet extends HttpServlet {
 	private void handle(boolean bPost, HttpServletRequest request,
 			HttpServletResponse response) {
 		RequestTimings rt = new RequestTimings();
+		ClaimedUserDetails claimedDetails = new ClaimedUserDetails();
 		rt.lStart = System.currentTimeMillis();
-		UserSession us = null;
 		String sPath = null;
 		try {
 			// Vitally important, otherwise any input with unicode gets screwed
@@ -768,7 +769,7 @@ public class NavigatorServlet extends HttpServlet {
 			Matcher m = pURL.matcher(sPath);
 			if (!m.matches()) {
 				sendError(
-						us,
+						null,
 						request,
 						response,
 						HttpServletResponse.SC_NOT_FOUND,
@@ -794,17 +795,14 @@ public class NavigatorServlet extends HttpServlet {
 
 			// Get OUCU (null if no SAMS cookie), used to synch sessions for
 			// single user
-			String sOUCU = getAuthentication().getUncheckedUserDetails(request).getUsername();
-
-			// See if they've got a cookie for this test
-			String sCookie = getCookie(request, sessionManager.getTestCookieName(sTestID));
+			claimedDetails.sOUCU = getAuthentication().getUncheckedUserDetails(request).getUsername();
 
 			// See if they've got a fake OUCU (null if none)
-			String sFakeOUCU = getCookie(request, FAKEOUCUCOOKIENAME);
+			claimedDetails.sFakeOUCU = getCookie(request, FAKEOUCUCOOKIENAME);
 
 			// Auth hash
-			int iAuthHash = (getAuthentication().getUncheckedUserDetails(request).getCookie()
-					+ "/" + sFakeOUCU).hashCode();
+			claimedDetails.iAuthHash = (getAuthentication().getUncheckedUserDetails(request).getCookie()
+					+ "/" + claimedDetails.sFakeOUCU).hashCode();
 
 			// If they haven't got a cookie or it's unknown, assign them one and
 			// redirect.
@@ -817,22 +815,25 @@ public class NavigatorServlet extends HttpServlet {
 					sessionManager.cookiesOffCheck.removeFirst();
 				}
 
+				// See if they've got a cookie for this test
+				String sCookie = getCookie(request, sessionManager.getTestCookieName(sTestID));
+
 				// Check whether they already have a session or not
 				if (sCookie != null) {
-					us = sessionManager.sessions.get(sCookie);
+					claimedDetails.us = sessionManager.sessions.get(sCookie);
 				}
 
-				if (us != null) {
+				if (claimedDetails.us != null) {
 					// Check cookies in case they changed
-					if (us.iAuthHash != 0 && us.iAuthHash != iAuthHash) {
+					if (claimedDetails.us.iAuthHash != 0 && claimedDetails.us.iAuthHash != claimedDetails.iAuthHash) {
 						// If credentials change, they need a new session
-						sessionManager.sessions.remove(us.sCookie);
-						us = null;
+						sessionManager.sessions.remove(claimedDetails.us.sCookie);
+						claimedDetails.us = null;
 					}
 				}
 
 				// New sessions!
-				if (us == null) {
+				if (claimedDetails.us == null) {
 					String sAddr = request.getRemoteAddr();
 
 					// Check if we've already been redirected
@@ -860,21 +861,21 @@ public class NavigatorServlet extends HttpServlet {
 					} while (sessionManager.sessions.containsKey(sCookie));
 					// And what are the chances of that?
 
-					us = new UserSession(this, sCookie);
-					sessionManager.sessions.put(us.sCookie, us);
+					claimedDetails.us = new UserSession(this, sCookie);
+					sessionManager.sessions.put(claimedDetails.us.sCookie, claimedDetails.us);
 					// We do the actual redirect later on outside this synch.
 
 					// At same time as creating new session, if they're logged
 					// in supposedly, check it's for real. If their cookie doesn't
 					// authenticated, this will cause the cookie to be removed
 					// and avoid multiple redirects.
-					if (sOUCU != null) {
+					if (claimedDetails.sOUCU != null) {
 						if (!getAuthentication().getUserDetails(request, response, false)
 								.isLoggedIn()) {
 							// And we need to set this to zero to reflect that
 							// we just wiped
 							// their cookie.
-							iAuthHash = 0;
+							claimedDetails.iAuthHash = 0;
 						}
 					}
 					
@@ -883,31 +884,31 @@ public class NavigatorServlet extends HttpServlet {
 				// If this is the first time we've had an OUCU for this session,
 				// check
 				// it to make sure we don't need to ditch any other sessions
-				if (us.sCheckedOUCUKey == null && sOUCU != null) {
-					us.sCheckedOUCUKey = sOUCU + "-" + sTestID;
+				if (claimedDetails.us.sCheckedOUCUKey == null && claimedDetails.sOUCU != null) {
+					claimedDetails.us.sCheckedOUCUKey = claimedDetails.sOUCU + "-" + sTestID;
 
 					// Check the temp-forbid list
-					Long lTimeout = sessionManager.tempForbid.get(us.sCheckedOUCUKey);
+					Long lTimeout = sessionManager.tempForbid.get(claimedDetails.us.sCheckedOUCUKey);
 					if (lTimeout != null
 							&& lTimeout.longValue() > System
 									.currentTimeMillis()) {
 						// Kill session from main list & mark it to send error
 						// message later
-						sessionManager.sessions.remove(us.sCookie);
+						sessionManager.sessions.remove(claimedDetails.us.sCookie);
 						bTempForbid = true;
 					} else {
 						// If it was a timed-out forbid, get rid of it
 						if (lTimeout != null)
-							sessionManager.tempForbid.remove(us.sCheckedOUCUKey);
+							sessionManager.tempForbid.remove(claimedDetails.us.sCheckedOUCUKey);
 
 						// Put this in the OUCU->session map
-						UserSession usOld = sessionManager.usernames.put(us.sCheckedOUCUKey,
-								us);
+						UserSession usOld = sessionManager.usernames.put(claimedDetails.us.sCheckedOUCUKey,
+								claimedDetails.us);
 						// If there was one already there, get rid of it
 						if (usOld != null) {
 							sessionManager.sessions.remove(usOld.sCookie);
 						}
-						sKillOtherSessions = us.sCheckedOUCUKey;
+						sKillOtherSessions = claimedDetails.us.sCheckedOUCUKey;
 					}
 				}
 			}
@@ -934,6 +935,7 @@ public class NavigatorServlet extends HttpServlet {
 						null);
 			}
 
+			UserSession us = claimedDetails.us;
 			// Synchronize on the session - if we get multiple requests for same
 			// session at same time the others will just have to wait.
 			// (Except see below for resources.)
@@ -944,7 +946,7 @@ public class NavigatorServlet extends HttpServlet {
 				// If they have an OUCU but also a temp-login then we need to
 				// chuck away
 				// their session...
-				if (us.ud != null && sOUCU != null && !us.ud.isLoggedIn()) {
+				if (us.ud != null && claimedDetails.sOUCU != null && !us.ud.isLoggedIn()) {
 					Cookie c = new Cookie(sessionManager.getTestCookieName(sTestID), "");
 					c.setMaxAge(0);
 					c.setPath("/");
@@ -995,7 +997,7 @@ public class NavigatorServlet extends HttpServlet {
 					if (us.ud.isLoggedIn()) {
 						us.sOUCU = us.ud.getUsername();
 					} else {
-						if (sFakeOUCU == null) {
+						if (claimedDetails.sFakeOUCU == null) {
 							// Make 8-letter random OUCU. We don't bother
 							// storing a list, but there are about 3,000 billion
 							// possibilities so it should be OK.
@@ -1010,13 +1012,13 @@ public class NavigatorServlet extends HttpServlet {
 							response.sendRedirect(request.getRequestURI());
 							return;
 						} else {
-							us.sOUCU = sFakeOUCU;
+							us.sOUCU = claimedDetails.sFakeOUCU;
 						}
 					}
 
 					// Remember auth hash so that it'll know if they change
 					// cookie now
-					us.iAuthHash = iAuthHash;
+					us.iAuthHash = claimedDetails.iAuthHash;
 				}
 
 				us.bAllowAfterForbid =
@@ -1283,7 +1285,7 @@ public class NavigatorServlet extends HttpServlet {
 				{
 					mess = t.getMessage();
 				}
-				sendError(us, request, response,
+				sendError(claimedDetails.us, request, response,
 						HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 						false, false, null,
 						"Unable to display",
@@ -1295,16 +1297,16 @@ public class NavigatorServlet extends HttpServlet {
 			}
 		} finally {
 			String sOUCU, sPlace;
-			if (us == null) {
+			if (claimedDetails == null || claimedDetails.us == null) {
 				sOUCU = "?";
 				sPlace = "?";
 			} else {
-				if (us.sOUCU == null) {
+				if (claimedDetails.us.sOUCU == null) {
 					sOUCU = "??";
 				} else {
-					sOUCU = us.sOUCU;
+					sOUCU = claimedDetails.us.sOUCU;
 				}
-				sPlace = "ind=" + us.getTestPosition() + ",seq=" + us.iDBseq;
+				sPlace = "ind=" + claimedDetails.us.getTestPosition() + ",seq=" + claimedDetails.us.iDBseq;
 			}
 
 			long lTotal = System.currentTimeMillis() - rt.lStart;
