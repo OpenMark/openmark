@@ -9,14 +9,14 @@ import om.tnavigator.teststructure.TestDeployment;
 
 public class JUnitTestCaseUserSession extends UserSession {
 
-	public JUnitTestCaseUserSession(NavigatorServlet owner, String cookie) {
-		super(owner, cookie);
+	public JUnitTestCaseUserSession(String cookie) {
+		super(cookie);
 	}
 	
-	public JUnitTestCaseUserSession(NavigatorServlet owner, String cookie,
+	public JUnitTestCaseUserSession(String cookie,
 			JUnitTestCaseTestDefinition td, TestDeployment deploy,
 			JUnitTestCaseTestRealisation realisation) {
-		super(owner, cookie);
+		super(cookie);
 		testDefinition = td;
 		tdDeployment = deploy;
 		testRealisation = realisation;

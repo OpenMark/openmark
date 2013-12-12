@@ -83,7 +83,6 @@ import om.tnavigator.reports.ReportDispatcher;
 import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 import om.tnavigator.scores.CombinedScore;
 import om.tnavigator.sessions.ClaimedUserDetails;
-import om.tnavigator.sessions.NewSession;
 import om.tnavigator.sessions.SessionManager;
 import om.tnavigator.sessions.UserSession;
 import om.tnavigator.teststructure.PreCourseDiagCode;
@@ -132,7 +131,7 @@ public class NavigatorServlet extends HttpServlet {
 
 	private static final String SEQUENCEFIELD = "sequence";
 
-	private static final String FAKEOUCUCOOKIENAME = "tnavigator_xid";
+	public static final String FAKEOUCUCOOKIENAME = "tnavigator_xid";
 
 	private static String SCRIPT_JS = "script.js";
 	
@@ -147,8 +146,6 @@ public class NavigatorServlet extends HttpServlet {
 	private static String TINYMCE="tiny_mce/3.5.7b";
 	
 	private static String DYNAMICQUESTIONS="dynamic_questions";
-
-	public static final String SAMS2COOKIE="SAMS2session";
 
 	/**
 	 * User passed on question. Should match the definition in
@@ -185,7 +182,7 @@ public class NavigatorServlet extends HttpServlet {
 	/** Config file contents */
 	private NavigatorConfig nc;
 
-	protected Authentication getAuthentication() {
+	public Authentication getAuthentication() {
 		return authentication;
 	}
 
@@ -544,7 +541,7 @@ public class NavigatorServlet extends HttpServlet {
 	 * Class for accumulating performance information.
 	 */
 	public static class RequestTimings {
-		long lStart;
+		private long lStart;
 		private long lDatabaseElapsed;
 		long lQEngineElapsed;
 
@@ -571,34 +568,6 @@ public class NavigatorServlet extends HttpServlet {
 		{
 			this.lDatabaseElapsed = lDatabaseElapsed;
 		}
-	}
-
-	/**
-	 * Obtains cookie based on its name.
-	 *
-	 * @param request HTTP request
-	 * @param sName Name of cookie
-	 * @return Cookie value, or null if the cookie does not exist.
-	 */
-	private String getCookie(HttpServletRequest request, String sName) {
-		/* if we are looking at the sams 2 cookie, then use the special function that reads it from headets
-		 * 
-		 */
-		if(sName.equals(SAMS2COOKIE))
-		{
-			return GeneralUtils.getBrokenSamsCookie(request);		
-		}
-		else
-		{
-			Cookie[] ac = request.getCookies();
-			if (ac == null)
-				ac = new Cookie[0];
-			for (int iCookie = 0; iCookie < ac.length; iCookie++) {
-				if (ac[iCookie].getName().equals(sName))
-					return ac[iCookie].getValue();
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -631,7 +600,7 @@ public class NavigatorServlet extends HttpServlet {
 			} catch (IOException e) {
 			}
 			throw new StopException();
-		} else if (getCookie(request, "openmark-letmein") != null) {
+		} else if (GeneralUtils.getCookie(request, "openmark-letmein") != null) {
 			return;
 		}
 
@@ -655,7 +624,7 @@ public class NavigatorServlet extends HttpServlet {
 	private void handle(boolean bPost, HttpServletRequest request,
 			HttpServletResponse response) {
 		RequestTimings rt = new RequestTimings();
-		ClaimedUserDetails claimedDetails = new ClaimedUserDetails();
+		ClaimedUserDetails claimedDetails = null;
 		rt.lStart = System.currentTimeMillis();
 		String sPath = null;
 		try {
@@ -793,133 +762,21 @@ public class NavigatorServlet extends HttpServlet {
 			if (request.getQueryString() != null)
 				sCommand += "?" + request.getQueryString();
 
-			// Get OUCU (null if no SAMS cookie), used to synch sessions for
-			// single user
-			claimedDetails.sOUCU = getAuthentication().getUncheckedUserDetails(request).getUsername();
+			claimedDetails = sessionManager.tryToFindUserSession(
+					getAuthentication(), request, response, rt.lStart, sTestID);
 
-			// See if they've got a fake OUCU (null if none)
-			claimedDetails.sFakeOUCU = getCookie(request, FAKEOUCUCOOKIENAME);
+			switch(claimedDetails.status)
+			{
+			case CANNOT_CREATE_COOKIE:
+				sendError(null, request, response,
+						HttpServletResponse.SC_FORBIDDEN,
+						false, false,null,
+						"Unable to create session cookie",
+						"In order to use this website you must enable cookies in your browser settings.",
+						null);
+				break;
 
-			// Auth hash
-			claimedDetails.iAuthHash = (getAuthentication().getUncheckedUserDetails(request).getCookie()
-					+ "/" + claimedDetails.sFakeOUCU).hashCode();
-
-			// If they haven't got a cookie or it's unknown, assign them one and
-			// redirect.
-			boolean bTempForbid = false;
-			String sKillOtherSessions = null;
-			synchronized (sessionManager.sessions) {
-				// Remove entries from cookies-off list after 1 second
-				while (!sessionManager.cookiesOffCheck.isEmpty()
-						&& rt.lStart - (sessionManager.cookiesOffCheck.getFirst()).lTime > 1000) {
-					sessionManager.cookiesOffCheck.removeFirst();
-				}
-
-				// See if they've got a cookie for this test
-				String sCookie = getCookie(request, sessionManager.getTestCookieName(sTestID));
-
-				// Check whether they already have a session or not
-				if (sCookie != null) {
-					claimedDetails.us = sessionManager.sessions.get(sCookie);
-				}
-
-				if (claimedDetails.us != null) {
-					// Check cookies in case they changed
-					if (claimedDetails.us.iAuthHash != 0 && claimedDetails.us.iAuthHash != claimedDetails.iAuthHash) {
-						// If credentials change, they need a new session
-						sessionManager.sessions.remove(claimedDetails.us.sCookie);
-						claimedDetails.us = null;
-					}
-				}
-
-				// New sessions!
-				if (claimedDetails.us == null) {
-					String sAddr = request.getRemoteAddr();
-
-					// Check if we've already been redirected
-					for (NewSession ns : sessionManager.cookiesOffCheck) {
-						if (ns.sAddr.equals(sAddr)) {
-								sendError(null, request, response,
-										HttpServletResponse.SC_FORBIDDEN,
-										false, false,null,
-										"Unable to create session cookie",
-										"In order to use this website you must enable cookies in your browser settings.",
-										null);
-						}
-					}
-
-					// Record this redirect so that we notice if it happens
-					// twice
-					NewSession ns = new NewSession();
-					ns.lTime = rt.lStart;
-					ns.sAddr = sAddr;
-					sessionManager.cookiesOffCheck.addLast(ns);
-
-					do {
-						// Make 7-letter random cookie
-						sCookie = Strings.randomAlNumString(7);
-					} while (sessionManager.sessions.containsKey(sCookie));
-					// And what are the chances of that?
-
-					claimedDetails.us = new UserSession(this, sCookie);
-					sessionManager.sessions.put(claimedDetails.us.sCookie, claimedDetails.us);
-					// We do the actual redirect later on outside this synch.
-
-					// At same time as creating new session, if they're logged
-					// in supposedly, check it's for real. If their cookie doesn't
-					// authenticated, this will cause the cookie to be removed
-					// and avoid multiple redirects.
-					if (claimedDetails.sOUCU != null) {
-						if (!getAuthentication().getUserDetails(request, response, false)
-								.isLoggedIn()) {
-							// And we need to set this to zero to reflect that
-							// we just wiped
-							// their cookie.
-							claimedDetails.iAuthHash = 0;
-						}
-					}
-					
-				}
-
-				// If this is the first time we've had an OUCU for this session,
-				// check
-				// it to make sure we don't need to ditch any other sessions
-				if (claimedDetails.us.sCheckedOUCUKey == null && claimedDetails.sOUCU != null) {
-					claimedDetails.us.sCheckedOUCUKey = claimedDetails.sOUCU + "-" + sTestID;
-
-					// Check the temp-forbid list
-					Long lTimeout = sessionManager.tempForbid.get(claimedDetails.us.sCheckedOUCUKey);
-					if (lTimeout != null
-							&& lTimeout.longValue() > System
-									.currentTimeMillis()) {
-						// Kill session from main list & mark it to send error
-						// message later
-						sessionManager.sessions.remove(claimedDetails.us.sCookie);
-						bTempForbid = true;
-					} else {
-						// If it was a timed-out forbid, get rid of it
-						if (lTimeout != null)
-							sessionManager.tempForbid.remove(claimedDetails.us.sCheckedOUCUKey);
-
-						// Put this in the OUCU->session map
-						UserSession usOld = sessionManager.usernames.put(claimedDetails.us.sCheckedOUCUKey,
-								claimedDetails.us);
-						// If there was one already there, get rid of it
-						if (usOld != null) {
-							sessionManager.sessions.remove(usOld.sCookie);
-						}
-						sKillOtherSessions = claimedDetails.us.sCheckedOUCUKey;
-					}
-				}
-			}
-			// If they started a session, tell other servers to kill that
-			// session (in thread)
-			if (sKillOtherSessions != null) {
-				sessionManager.killOtherSessions(sKillOtherSessions);
-			}
-
-			// Error if forbidden
-			if (bTempForbid) {
+			case TEMP_FORBID:
 				sendError(
 						null,
 						request,
@@ -933,9 +790,11 @@ public class NavigatorServlet extends HttpServlet {
 								+ "browsers at the same time, which isn't permitted. If this message "
 								+ "has appeared in error, please wait 60 seconds then try again.",
 						null);
+				break;
 			}
 
 			UserSession us = claimedDetails.us;
+
 			// Synchronize on the session - if we get multiple requests for same
 			// session at same time the others will just have to wait.
 			// (Except see below for resources.)
@@ -958,7 +817,7 @@ public class NavigatorServlet extends HttpServlet {
 				// Get auth if needed
 				if (us.ud == null) {
 					try {
-						us.loadTestDeployment(sTestID);
+						us.loadTestDeployment(pathForTestDeployment(sTestID));
 					} catch (OmException oe) {
 						if (oe.getCause() != null
 								&& oe.getCause() instanceof FileNotFoundException) {
@@ -1285,7 +1144,7 @@ public class NavigatorServlet extends HttpServlet {
 				{
 					mess = t.getMessage();
 				}
-				sendError(claimedDetails.us, request, response,
+				sendError(claimedDetails == null ? null : claimedDetails.us, request, response,
 						HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 						false, false, null,
 						"Unable to display",
@@ -1898,7 +1757,7 @@ public class NavigatorServlet extends HttpServlet {
 				{
 					// read the value from the databsae for this TI
 					try {
-						PreCourseDiagCode pcdc=new PreCourseDiagCode(dat,us.getNs(),us.getDbTi());
+						PreCourseDiagCode pcdc=new PreCourseDiagCode(dat,this,us.getDbTi());
 						/*generate a new one from the traffic lights if wee need to*/
 						if (PreCourseDiagCode.shouldGenerateCode(us))
 						{								

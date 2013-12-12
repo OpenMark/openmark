@@ -18,6 +18,8 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import om.Log;
@@ -257,6 +259,35 @@ public class GeneralUtils implements Serializable {
 	 * @return Cookie value or null if not included
 	 */
 	private final static Pattern REGEX_BROKEN_SAMS_COOKIE =	Pattern.compile("(?:^|; )SAMS2session=([^;]+)(?:$|; )");
+
+	private final static String SAMS2COOKIE = "SAMS2session";
+
+	/**
+	 * Obtains cookie based on its name.
+	 *
+	 * @param request HTTP request
+	 * @param sName Name of cookie
+	 * @return Cookie value, or null if the cookie does not exist.
+	 */
+	public static String getCookie(HttpServletRequest request, String sName) {
+		// If we are looking at the sams 2 cookie, then use the special function
+		// that reads it from headers.
+		if(sName.equals(SAMS2COOKIE))
+		{
+			return GeneralUtils.getBrokenSamsCookie(request);
+		}
+		else
+		{
+			Cookie[] ac = request.getCookies();
+			if (ac == null)
+				ac = new Cookie[0];
+			for (int iCookie = 0; iCookie < ac.length; iCookie++) {
+				if (ac[iCookie].getName().equals(sName))
+					return ac[iCookie].getValue();
+			}
+		}
+		return null;
+	}
 
 	public static String getBrokenSamsCookie(HttpServletRequest request)
 	{

@@ -24,7 +24,6 @@ import java.util.Map;
 import om.OmException;
 import om.OmVersion;
 import om.axis.qengine.Resource;
-import om.tnavigator.NavigatorServlet;
 import om.tnavigator.OmServiceBalancer;
 import om.tnavigator.auth.UserDetails;
 import om.tnavigator.teststructure.TestDefinition;
@@ -36,8 +35,6 @@ import om.tnavigator.teststructure.TestRealisation;
 /** Data stored about particular user */
 public class UserSession
 {
-	private NavigatorServlet ns;
-
 	/** Cookie (key of map too, but duplicated here) */
 	public String sCookie;
 
@@ -142,10 +139,6 @@ public class UserSession
 	/** A place where any extra information can be stored in the session. */
 	private Map<String,Object> extraSessionInfo = new HashMap<String, Object>();
 
-	public NavigatorServlet getNs() {
-		return ns;
-	}
-
 	public int getICSSIndex() {
 		return new Integer(iCSSIndex).intValue();
 	}
@@ -153,11 +146,9 @@ public class UserSession
 	/**
 	 * @param owner
 	 */
-	public UserSession(NavigatorServlet owner, String cookie) {
-		this.ns = owner;
+	public UserSession(String cookie) {
 		this.lSessionStart = System.currentTimeMillis();
 		this.sCookie = cookie;
-		ns.getLog().logDebug("Created new UserSession.");
 	}
 
 	/**
@@ -183,11 +174,10 @@ public class UserSession
 	 * @param testId thid id of the test deployment to load.
 	 * @throws OmException
 	 */
-	public void loadTestDeployment(String testId) throws OmException {
+	public void loadTestDeployment(File deployFile) throws OmException {
 		// Load test deploy, if necessary.
 		if(tdDeployment==null)
 		{
-			File deployFile = ns.pathForTestDeployment(testId);
 			tdDeployment = new TestDeployment(deployFile);
 		}
 	}

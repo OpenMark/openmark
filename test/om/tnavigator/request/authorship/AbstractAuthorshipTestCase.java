@@ -69,7 +69,7 @@ public abstract class AbstractAuthorshipTestCase extends AbstractNavigatorTestCa
 	}
 
 	protected JUnitTestCaseUserSession getDummyUserSession() throws Exception {
-		return new JUnitTestCaseUserSession(newTestCaseNavigationServlet(), "123");
+		return new JUnitTestCaseUserSession("123");
 	}
 
 	protected AuthorshipQueryBean getAuthorshipQueryBean() throws Exception {
@@ -77,12 +77,11 @@ public abstract class AbstractAuthorshipTestCase extends AbstractNavigatorTestCa
 	}
 
 	protected JUnitTestCaseUserSession getUserSession(int testID) throws Exception {
-		TestCaseNavigationServlet ns = new TestCaseNavigationServlet(log);
 		JUnitTestCaseTestDefinition td = pickUpTestDefinition(BASIC_TEST_DEFINITION);
 		TestDeployment deploy = pickUpTestDeployment(BASIC_TEST_DEPLOYMENT);
 		JUnitTestCaseTestRealisation rel = JUnitTestCaseTestRealisation
 			.getTestRealisationInstance(new Integer(testID), td, dummyScore());
-		JUnitTestCaseUserSession sess = new JUnitTestCaseUserSession(ns, "123", td, deploy, rel);
+		JUnitTestCaseUserSession sess = new JUnitTestCaseUserSession("123", td, deploy, rel);
 		sess.setTestCaseDbTi(testID);
 		return sess;
 	}

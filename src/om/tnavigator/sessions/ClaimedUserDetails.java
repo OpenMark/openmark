@@ -8,6 +8,14 @@ package om.tnavigator.sessions;
  */
 public class ClaimedUserDetails
 {
+	public enum Status {
+		OK,
+		CANNOT_CREATE_COOKIE,
+		TEMP_FORBID,
+	}
+
+	public Status status = Status.OK;
+
 	/**
 	 * The username from the authentication cookie. We have not yet validated that
 	 * they are actually logged in as this user.

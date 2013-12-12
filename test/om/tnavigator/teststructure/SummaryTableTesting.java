@@ -117,7 +117,7 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 		TestDeployment deploy = pickUpTestDeployment(BASIC_TEST_DEPLOYMENT);
 		JUnitTestCaseTestRealisation rel = JUnitTestCaseTestRealisation
 			.getTestRealisationInstance(new Integer(testID), td, cs);
-		JUnitTestCaseUserSession usession = new JUnitTestCaseUserSession(ns, "123", td, deploy, rel);
+		JUnitTestCaseUserSession usession = new JUnitTestCaseUserSession("123", td, deploy, rel);
 		usession.getTestRealisation().getScore(null, ns, null, null);
 		return usession;
 	}
