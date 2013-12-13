@@ -19,7 +19,6 @@ package om.tnavigator;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -799,85 +798,19 @@ public class NavigatorServlet extends HttpServlet {
 			// session at same time the others will just have to wait.
 			// (Except see below for resources.)
 			synchronized (us) {
-				// Set last action time (so session doesn't time out)
-				us.touch();
-
-				// If they have an OUCU but also a temp-login then we need to
-				// chuck away
-				// their session...
-				if (us.ud != null && claimedDetails.sOUCU != null && !us.ud.isLoggedIn()) {
-					Cookie c = new Cookie(sessionManager.getTestCookieName(sTestID), "");
-					c.setMaxAge(0);
-					c.setPath("/");
-					response.addCookie(c);
-					response.sendRedirect(request.getRequestURI());
-					return;
+				File deployFile = pathForTestDeployment(sTestID);
+				if (!deployFile.isFile()) {
+					sendError(us, request, response,
+							HttpServletResponse.SC_NOT_FOUND, false,
+							false, null, "No such test",
+							"There is currently no test with the ID "
+									+ sTestID + ".", null);
 				}
 
-				// Get auth if needed
-				if (us.ud == null) {
-					try {
-						us.loadTestDeployment(pathForTestDeployment(sTestID));
-					} catch (OmException oe) {
-						if (oe.getCause() != null
-								&& oe.getCause() instanceof FileNotFoundException) {
-							sendError(us, request, response,
-									HttpServletResponse.SC_NOT_FOUND, false,
-									false, null, "No such test",
-									"There is currently no test with the ID "
-											+ sTestID + ".", null);
-						} else
-							throw oe;
-					}
-
-					us.ud = getAuthentication().getUserDetails(request, response, !us
-							.getTestDeployment().isWorldAccess());
-					if (us.ud == null) {
-						// They've been redirected to SAMS. Chuck their session
-						// as soon as expirer next runs, they won't be needing
-						// it as we didn't give them a cookie yet.
-						us.markForDiscard();
-						return;
-					}
-
-					// We only give them a cookie after passing this stage. If
-					// they were redirected to SAMS, they don't get a cookie
-					// until the next request.
-
-					if (!us.cookieCreated) {
-						Cookie c = new Cookie(sessionManager.getTestCookieName(sTestID), us.sCookie);
-						c.setPath("/");
-						response.addCookie(c);
-						us.cookieCreated = true;
-					}
-
-					// If they're not logged in, give them a not-logged-in
-					// cookie with a made-up OUCU in it
-					if (us.ud.isLoggedIn()) {
-						us.sOUCU = us.ud.getUsername();
-					} else {
-						if (claimedDetails.sFakeOUCU == null) {
-							// Make 8-letter random OUCU. We don't bother
-							// storing a list, but there are about 3,000 billion
-							// possibilities so it should be OK.
-							us.sOUCU = "_" + Strings.randomAlNumString(7);
-
-							// Set it in cookie for future sessions
-							Cookie c = new Cookie(FAKEOUCUCOOKIENAME, us.sOUCU);
-							c.setPath("/");
-							// Expiry is 4 years
-							c.setMaxAge((3 * 365 + 366) * 24 * 60 * 60);
-							response.addCookie(c);
-							response.sendRedirect(request.getRequestURI());
-							return;
-						} else {
-							us.sOUCU = claimedDetails.sFakeOUCU;
-						}
-					}
-
-					// Remember auth hash so that it'll know if they change
-					// cookie now
-					us.iAuthHash = claimedDetails.iAuthHash;
+				if (!sessionManager.verifyUserSession(getAuthentication(),
+						request, response, claimedDetails, sTestID, deployFile))
+				{
+					return;
 				}
 
 				us.bAllowAfterForbid =
@@ -4261,8 +4194,8 @@ public class NavigatorServlet extends HttpServlet {
 
 	/**
 	 * Wraps the call through to the ErrorManagement.sendErrorForUserSession(...
-	 *  method and then throws away the session also if told to. (though this is
-	 *  under question at the time of refactoring this).
+	 * method and then throws away the session also if told to. (though this is
+	 * under question at the time of refactoring this).
 	 */
 	public void sendError(UserSession us, HttpServletRequest request,
 		HttpServletResponse response, int code, boolean isBug,

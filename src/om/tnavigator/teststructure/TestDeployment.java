@@ -161,9 +161,9 @@ public class TestDeployment
 		{
 			return XML.parse(f);
 		}
-		catch(IOException ioe)
+		catch (IOException ioe)
 		{
-			throw new OmException("Error loading/parsing " + f.getName(),ioe);
+			throw new OmException("Error loading/parsing " + f.getName(), ioe);
 		}
 	}
 

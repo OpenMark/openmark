@@ -1,15 +1,18 @@
 package om.tnavigator.sessions;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import om.Log;
 import om.OmException;
+import om.OmFormatException;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.auth.Authentication;
@@ -20,6 +23,10 @@ import util.misc.StopException;
 import util.misc.Strings;
 
 
+/**
+ * Tracks the user sessions, and is responsible for finding the right session for
+ * the current request.
+ */
 public class SessionManager
 {
 	/** Map of cookie value (String) -> UserSession */
@@ -230,5 +237,102 @@ public class SessionManager
 		}
 
 		return claimedDetails;
+	}
+
+	/**
+	 * @param authentication the authentication plugin.
+	 * @param request the reuqest being handled.
+	 * @param response the response we will send.
+	 * @param claimedDetails the result of tryToFindUserSession.
+	 * @param sTestID the name of the test being requested.
+	 * @param deployFile the path to the deploy file, which we know exists.
+	 * @return whether the login is valid.
+	 * @throws IOException
+	 * @throws StopException
+	 * @throws OmException
+	 * @throws OmFormatException
+	 */
+	public boolean verifyUserSession(Authentication authentication,
+			HttpServletRequest request, HttpServletResponse response,
+			ClaimedUserDetails claimedDetails, String sTestID, File deployFile) throws IOException,
+			StopException, OmException, OmFormatException
+	{
+		UserSession us = claimedDetails.us;
+
+		// Set last action time (so session doesn't time out)
+		us.touch();
+
+		// If they have an OUCU but also a temp-login then we need to
+		// chuck away
+		// their session...
+		if (us.ud != null && claimedDetails.sOUCU != null && !us.ud.isLoggedIn()) {
+			Cookie c = new Cookie(getTestCookieName(sTestID), "");
+			c.setMaxAge(0);
+			c.setPath("/");
+			response.addCookie(c);
+			response.sendRedirect(request.getRequestURI());
+			return false;
+		}
+
+		// Get auth if needed
+		if (us.ud != null) {
+			return true;
+		}
+
+		us.loadTestDeployment(deployFile);
+
+		us.ud = authentication.getUserDetails(request, response, !us
+				.getTestDeployment().isWorldAccess());
+		if (us.ud == null) {
+			// They've been redirected to SAMS. Chuck their session
+			// as soon as expirer next runs, they won't be needing
+			// it as we didn't give them a cookie yet.
+			us.markForDiscard();
+			return false;
+		}
+
+		// We only give them a cookie after passing this stage. If
+		// they were redirected to SAMS, they don't get a cookie
+		// until the next request.
+
+		if (!us.cookieCreated) {
+			Cookie c = new Cookie(getTestCookieName(sTestID), us.sCookie);
+			c.setPath("/");
+			response.addCookie(c);
+			us.cookieCreated = true;
+		}
+
+		if (us.ud.isLoggedIn())
+		{
+			us.sOUCU = us.ud.getUsername();
+		}
+		else if (claimedDetails.sFakeOUCU != null)
+		{
+			// Not logged in, but they already have a fake OUCU.
+			us.sOUCU = claimedDetails.sFakeOUCU;
+		}
+		else
+		{
+			// If they're not logged in, and we need to create a new fake OUCU
+			// for them, and then redirect.
+			// Make 8-letter random OUCU. We don't bother
+			// storing a list, but there are about 3,000 billion
+			// possibilities so it should be OK.
+			us.sOUCU = "_" + Strings.randomAlNumString(7);
+
+			// Set it in cookie for future sessions
+			Cookie c = new Cookie(NavigatorServlet.FAKEOUCUCOOKIENAME, us.sOUCU);
+			c.setPath("/");
+			// Expiry is 4 years
+			c.setMaxAge((3 * 365 + 366) * 24 * 60 * 60);
+			response.addCookie(c);
+			response.sendRedirect(request.getRequestURI());
+			return false;
+		}
+
+		// Remember auth hash so that we will know if they change cookie now.
+		us.iAuthHash = claimedDetails.iAuthHash;
+
+		return true;
 	}
 }
