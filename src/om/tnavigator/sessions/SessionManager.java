@@ -114,17 +114,16 @@ public class SessionManager
 	 */
 	public void close()
 	{
-		// Kill expiry thread
 		sessionExpirer.close();
 	}
 
 	/**
 	 * Kill sessions with a particular ID on other servers.
-	 * @param sKillOtherSessions the session id to kill.
+	 * @param username the session id to kill.
 	 */
-	public void killOtherSessions(String sKillOtherSessions)
+	public void killOtherSessions(String username)
 	{
-		new RemoteSessionKiller(this, sKillOtherSessions, nc.getOtherNavigators());
+		new RemoteSessionKiller(this, username, nc.getOtherNavigators());
 	}
 
 	/**
@@ -168,8 +167,6 @@ public class SessionManager
 
 		// If they haven't got a cookie or it's unknown, assign them one and
 		// redirect.
-		boolean bTempForbid = false;
-		String sKillOtherSessions = null;
 		synchronized (sessions)
 		{
 			// Remove entries from cookies-off list after 1 second
@@ -190,11 +187,11 @@ public class SessionManager
 
 			if (claimedDetails.us != null)
 			{
-				// Check cookies in case they changed
+				// Check cookies in case they changed.
 				if (claimedDetails.us.iAuthHash != 0 && claimedDetails.us.iAuthHash != claimedDetails.iAuthHash)
 				{
-					// If credentials change, they need a new session
-					sessions.remove(claimedDetails.us.sCookie);
+					// If credentials change, they need a new session.
+					killSession(claimedDetails.us);
 					claimedDetails.us = null;
 				}
 			}
@@ -250,8 +247,7 @@ public class SessionManager
 			}
 
 			// If this is the first time we've had an OUCU for this session,
-			// check
-			// it to make sure we don't need to ditch any other sessions
+			// check it to make sure we don't need to ditch any other sessions
 			if (claimedDetails.us.sCheckedOUCUKey == null && claimedDetails.sOUCU != null)
 			{
 				claimedDetails.us.sCheckedOUCUKey = claimedDetails.sOUCU + "-" + sTestID;
@@ -261,9 +257,10 @@ public class SessionManager
 				if (lTimeout != null && lTimeout.longValue() > System.currentTimeMillis())
 				{
 					// Kill session from main list & mark it to send error
-					// message later
+					// message later.
+					killSession(claimedDetails.us);
 					sessions.remove(claimedDetails.us.sCookie);
-					bTempForbid = true;
+					claimedDetails.status = Status.TEMP_FORBID;
 				}
 				else
 				{
@@ -277,24 +274,11 @@ public class SessionManager
 					// If there was one already there, get rid of it
 					if (usOld != null)
 					{
-						sessions.remove(usOld.sCookie);
+						killSession(usOld);
 					}
-					sKillOtherSessions = claimedDetails.us.sCheckedOUCUKey;
+					killOtherSessions(claimedDetails.us.sCheckedOUCUKey);
 				}
 			}
-		}
-		// If they started a session, tell other servers to kill that
-		// session (in thread)
-		if (sKillOtherSessions != null)
-		{
-			killOtherSessions(sKillOtherSessions);
-		}
-
-		// Error if forbidden
-		if (bTempForbid)
-		{
-			claimedDetails.status = Status.TEMP_FORBID;
-			return claimedDetails;
 		}
 
 		return claimedDetails;
