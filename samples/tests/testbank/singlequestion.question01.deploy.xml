@@ -1,0 +1,6 @@
+<!-- Sample single-question mode deploy file. -->
+<deploy>
+	<question>samples.mu120.module5.question01</question>
+	<access><users world="yes"/></access>
+	<dates><open>yes</open></dates>
+</deploy>
