@@ -11,9 +11,7 @@ import util.misc.IO;
 
 /** Thread used to 'kill' a session on other servers by sending forbid calls */
 class RemoteSessionKiller extends Thread {
-	/**
-	 * 
-	 */
+	/** The session manager we were launched by. */
 	private final SessionManager sessionManager;
 	private String sOUCUTest;
 	String[] asURL;

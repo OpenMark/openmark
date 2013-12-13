@@ -125,7 +125,7 @@ public class NavigatorServlet extends HttpServlet {
 	private static final long serialVersionUID = 7256101326461641553L;
 
 	private static int VALUE_LENGTH=4000;
-	
+
 	private static final String INPUTTOOLONG = "Input too long";
 
 	private static final String SEQUENCEFIELD = "sequence";
@@ -133,17 +133,17 @@ public class NavigatorServlet extends HttpServlet {
 	public static final String FAKEOUCUCOOKIENAME = "tnavigator_xid";
 
 	private static String SCRIPT_JS = "script.js";
-	
+
 	private static String PCDCTEXT="Pre course diagnostic code ";
-	
+
 	private static String PCDCSEPARATOR="/";
-	
+
 	private static String PCDCCATAGORY="pcdcGeneration";
-	
+
 	private static String NOFLAG="X";
-	
+
 	private static String TINYMCE="tiny_mce/3.5.7b";
-	
+
 	private static String DYNAMICQUESTIONS="dynamic_questions";
 
 	/**
@@ -202,7 +202,7 @@ public class NavigatorServlet extends HttpServlet {
 	 * Manages the user/test sessions.
 	 */
 	private SessionManager sessionManager;
-	
+
 	/**
 	 * Cache of question metadata: String (ID\nversion) -> Document.
 	 * <p>
@@ -338,7 +338,7 @@ public class NavigatorServlet extends HttpServlet {
 			if (dat != null)
 				dat.finish();
 		}
-		initialiseAuthentication();	
+		initialiseAuthentication();
 		try {
 			plainTemplate = XML.parse(new File(sc
 					.getRealPath("WEB-INF/templates/plaintemplate.xhtml")));
@@ -368,7 +368,7 @@ public class NavigatorServlet extends HttpServlet {
 		// Start expiry thread
 		sessionManager = new SessionManager(nc, l);
 		setUpPreProcessingRequestHandler();
-		
+
 		// log that we are procfessing dynamic questions
 		if(nc.isOptionalFeatureOn(DYNAMICQUESTIONS))
 		{
@@ -378,8 +378,6 @@ public class NavigatorServlet extends HttpServlet {
 		{
 			l.logNormal("Dynamic questions not enabled");
 		}
-		
-
 	}
 
 	/**
@@ -388,7 +386,7 @@ public class NavigatorServlet extends HttpServlet {
 	 * later on. It is expected that this is invoked within the init() method of
 	 * this class so that things are setup and in place for the actual user
 	 * requests.
-	 * 
+	 *
 	 * @author Trevor Hinson
 	 */
 	private void setUpPreProcessingRequestHandler() {
@@ -409,7 +407,7 @@ public class NavigatorServlet extends HttpServlet {
 	/**
 	 * Here we dynamically class load the configured PreProcessingRequestHandler
 	 * implementation (if configured) so that it may be used.
-	 * 
+	 *
 	 * @return
 	 * @author Trevor Hinson
 	 */
@@ -474,7 +472,7 @@ public class NavigatorServlet extends HttpServlet {
 	 * Initialises the basic information in a UserSession that relates to a
 	 * particular test. Before calling this, you must initialise the random
 	 * seed.
-	 * 
+	 *
 	 * @param us
 	 *            User session
 	 * @param rt
@@ -572,7 +570,7 @@ public class NavigatorServlet extends HttpServlet {
 	/**
 	 * Checks whether the maintenance-mode file exists. If it does then it is
 	 * loaded and displayed.
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 */
@@ -708,7 +706,7 @@ public class NavigatorServlet extends HttpServlet {
 				handleTinyMCEResponse(sPath, bPost, request, response);
 				return;
 			}
-			
+
 			// Handle requests that go via the authentication system
 			if (sPath.startsWith("/!auth/")) {
 				if (!getAuthentication().handleRequest(sPath.substring("/!auth/".length()),
@@ -1177,7 +1175,7 @@ public class NavigatorServlet extends HttpServlet {
 			{
 				l.logDebug("navigatorservlet us.ud.getPersonID() errors");
 			}
-				
+
 			if(us.ud.isLoggedIn())
 			{
 				l.logDebug("Logged in determining sPI="+sPi);
@@ -1191,7 +1189,7 @@ public class NavigatorServlet extends HttpServlet {
 			 *  */
 			if (GeneralUtils.isOUCUPIequalButNotTemp(us.sOUCU,sPi) )
 			{
-				 SAMSOucuPi op=new SAMSOucuPi(us.sOUCU,sPi,this.getNavigatorConfig(),l);			
+				 SAMSOucuPi op=new SAMSOucuPi(us.sOUCU,sPi,this.getNavigatorConfig(),l);
 				 oq.insertTest(dat, us.sOUCU, sTestID, us.getRandomSeed(),
 					iMaxAttempt + 1, us.bAdmin,
 					op.getPi(), us.getFixedVariant(), us.navigatorVersion);
@@ -1201,24 +1199,24 @@ public class NavigatorServlet extends HttpServlet {
 				oq.insertTest(dat, us.sOUCU, sTestID, us.getRandomSeed(),
 						iMaxAttempt + 1, us.bAdmin,
 						sPi, us.getFixedVariant(), us.navigatorVersion);
-			
+
 			}
-			
-			
+
+
 			int dbTi = oq.getInsertedSequenceID(dat, "tests", "ti");
-			
+
 			l.logDebug("TI = " + dbTi);
-			
-			us.setDbTi(dbTi);			
-			
+
+			us.setDbTi(dbTi);
+
 			// generate an pre course diagnostic code code if appropriate and add to database table
 			if (PreCourseDiagCode.shouldGenerateNewCode(us))
-			{			
+			{
 				PreCourseDiagCode pcdc=new PreCourseDiagCode(dbTi,us.sOUCU);
 				pcdc.insertTestPCDC(dat,oq);
 
 		     }
-			
+
 			for (int i = 0; i < us.getTestLeavesInOrder().length; i++) {
 				if (us.getTestLeavesInOrder()[i] instanceof TestQuestion) {
 					TestQuestion tq = (TestQuestion) us.getTestLeavesInOrder()[i];
@@ -1235,7 +1233,7 @@ public class NavigatorServlet extends HttpServlet {
 
 	/**
 	 * Should be called when a new session is started. Records the IP address.
-	 * 
+	 *
 	 * @param dat
 	 *            Transaction
 	 * @param iTI
@@ -1249,7 +1247,7 @@ public class NavigatorServlet extends HttpServlet {
 		// allows these IPs to be spoofed. But we don't rely on them for
 		// anything
 		// security-ish anyhow).
-		
+
 		String sIP = IPAddressCheckUtil.getIPAddress(request);
 		if (sIP == null)
 			sIP = request.getRemoteAddr();
@@ -1533,7 +1531,7 @@ public class NavigatorServlet extends HttpServlet {
 	 * Serves the final page - either information about their results, or
 	 * telling them that they aren't allowed to see it yet! Also includes option
 	 * to re-take test if permitted.
-	 * 
+	 *
 	 * @param rt
 	 *            Timings
 	 * @param us
@@ -1599,7 +1597,7 @@ public class NavigatorServlet extends HttpServlet {
 			processFinalTags(rt, us, us.getTestDefinition().getFinalPage(),
 					eMain, ps, request);
 			//generate a trafficlights string for the pre course diagnotic code
-			trafficlights=			
+			trafficlights=
 				processTrafficLights(rt, us, us.getTestDefinition().getFinalPage(),
 		  				  eMain, ps, request,l);
 
@@ -1628,9 +1626,9 @@ public class NavigatorServlet extends HttpServlet {
 		}
 		catch (Exception e) {
 			throw new ServletException("Error creating pcdc code: "
-					+ e.getMessage(), e);	
+					+ e.getMessage(), e);
 		}
-		
+
 		// Show restart button, if enabled
 		if ((us.getTestDefinition().isRedoTestAllowed() && !us
 				.getTestDeployment().isAfterForbid())
@@ -1664,7 +1662,7 @@ public class NavigatorServlet extends HttpServlet {
 	/**
 	 * Do everything possible to the response to stop the browser's back button
 	 * from working.
-	 * 
+	 *
 	 * @request
 	 * @param response
 	 *            the response to add headers too.
@@ -1693,7 +1691,7 @@ public class NavigatorServlet extends HttpServlet {
 						PreCourseDiagCode pcdc=new PreCourseDiagCode(dat,this,us.getDbTi());
 						/*generate a new one from the traffic lights if wee need to*/
 						if (PreCourseDiagCode.shouldGenerateCode(us))
-						{								
+						{
 							/* only set the code if the PCDC doies notalready have a trafficlights set, actually check the DB, as if they
 							 * go away and revisit the page it starts a new session */
 							if (pcdc.TrafficlightsIsEmpty())
@@ -1709,23 +1707,23 @@ public class NavigatorServlet extends HttpServlet {
 						code=code+pcdc.getPreCourseDiagCode();
 					} catch (Exception e) {
 						throw new ServletException("Error creating pcdc code (1) : "
-								+ e.getMessage(), e);	
+								+ e.getMessage(), e);
 					}finally {
 						dat.finish();
 					}
 				}
-				
+
 			} catch (Exception e) {
 			throw new OmException("Error creating pcdc code (2): "
-					+ e.getMessage(), e);	
+					+ e.getMessage(), e);
 			}
 		}catch (Exception e) {
 				throw new OmException("Error creating pcdc code (3): "
 						+ e.getMessage(), e);
 		}
-		return code;		
+		return code;
 	}
-		
+
 	/* this function reads the oucu and pi for the test, check whether they are the same, and if the pi has changed.
 	 * If it has there may have been a problem so we update it
 	 */
@@ -1740,7 +1738,7 @@ public class NavigatorServlet extends HttpServlet {
 			try
 			{
 				ResultSet rs = oq.queryPI(d, sOUCU, sTestID,iTI);
-				if (rs.next()) 
+				if (rs.next())
 				{
 					String dOUCU = rs.getString(1);
 					String dPI = rs.getString(2);
@@ -1748,7 +1746,7 @@ public class NavigatorServlet extends HttpServlet {
 					in the datbase and the pi passed are different we may have one of the problem users so update */
 					if (GeneralUtils.isOUCUPIequalButNotTemp(dOUCU,dPI) )
 					{
-						SAMSOucuPi op=new SAMSOucuPi(dOUCU,dPI,this.getNavigatorConfig(),l);			
+						SAMSOucuPi op=new SAMSOucuPi(dOUCU,dPI,this.getNavigatorConfig(),l);
 						oq.updatePI(d,iTI,op.getPi());
 						l.logDebug("Updating PI for oucu,ti="+iTI+","+sOUCU+" from dPI "+dPI+" to pi "+op.getPi());
 					}
@@ -1756,34 +1754,34 @@ public class NavigatorServlet extends HttpServlet {
 			}
 			catch (Exception e)
 			{
-				throw new Exception("Unable to query/update PI");			
+				throw new Exception("Unable to query/update PI");
 			}
-			
+
 
 		}
 
 	}
-	
-	
-		
+
+
+
 	private TrafficLights processTrafficLights(RequestTimings rt, UserSession us,
 			Element eParent, Element eTarget, CombinedScore ps ,
-			HttpServletRequest request,Log l) throws Exception 
-			
+			HttpServletRequest request,Log l) throws Exception
+
 	{
 
 			TrafficLights tls=new TrafficLights();
-			
+
 			if (PreCourseDiagCode.shouldDoCode(us))
-			{	
+			{
 				Element[] ae = XML.getChildren(eParent);
 				String flag="";
-				for (int i = 0; i < ae.length; i++) 
+				for (int i = 0; i < ae.length; i++)
 				{
 					Element e = ae[i];
 					String sTag = e.getTagName();
 					String ltext="START "+Integer.toString(us.getDbTi())+" i: "+Integer.toString(i)+" ";
-					if (sTag.equals("conditional")) 
+					if (sTag.equals("conditional"))
 					{
 						// Find marks on the specified axis
 						String sAxis = e.hasAttribute("axis") ? e.getAttribute("axis")
@@ -1793,10 +1791,10 @@ public class NavigatorServlet extends HttpServlet {
 								: null;
 						/* if we dont have a conditional, then dont calculate the traffic lights
 						 * for that one,leave it set to X
-						 */			
+						 */
 						if (sFlag==null)l.logDebug(PCDCCATAGORY,"flag not set for conditional on test " + us.getTestId()
 								+ " ti " + us.getDbTi());
-						
+
 						int iCompare;
 						if (sOn.equals("marks")) {
 							iCompare = (int) Math.round(ps.getScore(sAxis));
@@ -1808,10 +1806,10 @@ public class NavigatorServlet extends HttpServlet {
 									"Unexpected on= for conditional: " + sOn);
 						//String flag=NOFLAG;
 						ltext="axis: "+sAxis+" score: "+Integer.toString(iCompare);
-						
+
 						boolean bOK = true;
 						try {
-							if (e.hasAttribute("gt")) 
+							if (e.hasAttribute("gt"))
 							{
 								int itest=Integer.parseInt(e.getAttribute("gt"));
 								if (!(iCompare > itest))
@@ -1819,16 +1817,16 @@ public class NavigatorServlet extends HttpServlet {
 									bOK = false;
 								}
 								else
-								{ 
+								{
 									 flag=sFlag!=null?sFlag:NOFLAG;
-		
+
 								}
 							    String s = new Boolean(bOK).toString();
 							    ltext=ltext+" bOk: "+s;
 								ltext=ltext+" flag:"+flag+" GT"+" itest: "+Integer.toString(itest);
-		
+
 							}
-							if (e.hasAttribute("gte")) 
+							if (e.hasAttribute("gte"))
 							{
 									int itest=Integer.parseInt(e.getAttribute("gte"));
 									if (!(iCompare >= itest))
@@ -1836,15 +1834,15 @@ public class NavigatorServlet extends HttpServlet {
 										bOK = false;
 									}
 									else
-									{ 
+									{
 										flag=sFlag!=null?sFlag:NOFLAG;
 									}
 								    String s = new Boolean(bOK).toString();
 								    ltext=ltext+" bOk: "+s;
 								    ltext=ltext+" flag:"+flag+" GTE"+" itest: "+Integer.toString(itest) ;
-		
+
 							}
-							if (e.hasAttribute("e")) 
+							if (e.hasAttribute("e"))
 							{
 								int itest=Integer.parseInt(e.getAttribute("e"));
 								if (!(iCompare == itest))
@@ -1852,15 +1850,15 @@ public class NavigatorServlet extends HttpServlet {
 									bOK = false;
 								}
 								else
-								{ 
+								{
 									 flag=sFlag!=null?sFlag:NOFLAG;
 								}
 							    String s = new Boolean(bOK).toString();
 							    ltext=ltext+" bOk: "+s;
 								ltext=ltext+" flag:"+flag+" E"+" itest: "+Integer.toString(itest);
-		
+
 							}
-							if (e.hasAttribute("lte")) 
+							if (e.hasAttribute("lte"))
 							{
 								int itest=Integer.parseInt(e.getAttribute("lte"));
 								if (!(iCompare <= itest))
@@ -1868,15 +1866,15 @@ public class NavigatorServlet extends HttpServlet {
 									bOK = false;
 								}
 								else
-								{ 
+								{
 									 flag=sFlag!=null?sFlag:NOFLAG;
 								}
 							    String s = new Boolean(bOK).toString();
 							    ltext=ltext+" bOk: "+s;
 								ltext=ltext+" flag:"+flag+" LTE"+" itest: "+Integer.toString(itest);
-		
+
 							}
-							if (e.hasAttribute("lt")) 
+							if (e.hasAttribute("lt"))
 							{
 								int itest=Integer.parseInt(e.getAttribute("lt"));
 								if (!(iCompare < itest ))
@@ -1884,14 +1882,14 @@ public class NavigatorServlet extends HttpServlet {
 									bOK = false;
 								}
 								else
-								{ 
+								{
 									 flag=sFlag!=null?sFlag:NOFLAG;
 								}
 							    String s = new Boolean(bOK).toString();
 							    ltext=ltext+" bOk: "+s;
 								ltext=ltext+" flag:"+flag+" LT"+" itest: "+Integer.toString(itest);
 							}
-							if (e.hasAttribute("ne")) 
+							if (e.hasAttribute("ne"))
 							{
 								int itest=Integer.parseInt(e.getAttribute("ne"));
 								if (!(iCompare != itest))
@@ -1899,7 +1897,7 @@ public class NavigatorServlet extends HttpServlet {
 									bOK = false;
 								}
 								else
-								{ 
+								{
 									 flag=sFlag!=null?sFlag:NOFLAG;
 								}
 							    String s = new Boolean(bOK).toString();
@@ -1915,14 +1913,14 @@ public class NavigatorServlet extends HttpServlet {
 							tls.addTrafficLights(sAxis,flag);
 						//	fullflag=fullflag+flag;
 						}
-					} 
+					}
 				l.logDebug(PCDCCATAGORY,ltext);
-					
+
 				}
 		}
 		return tls;
 	}
-	
+
 
 
 	private void processFinalTags(RequestTimings rt, UserSession us,
@@ -2098,7 +2096,7 @@ public class NavigatorServlet extends HttpServlet {
 	/**
 	 * Obtains metadata for a question, from the cache or by requesting it from
 	 * the question engine.
-	 * 
+	 *
 	 * @param rt
 	 *            Timings
 	 * @param sID
@@ -2144,7 +2142,7 @@ public class NavigatorServlet extends HttpServlet {
 	 * Here we delegate a request to the configured PreProcessorRequestHandler
 	 * to determine what to do with a UserSession prior to carrying out the
 	 * normal processing.
-	 * 
+	 *
 	 * @param session
 	 * @param request
 	 * @param response
@@ -2583,8 +2581,8 @@ public class NavigatorServlet extends HttpServlet {
 				sCurrentSection = tl.getSection();
 			}
 			if (tl instanceof TestQuestion) {
-				
-				iNumInSection++;			
+
+				iNumInSection++;
 
 				// getNumber is wrong, need to get the numb
 				if (((TestQuestion) tl).getNumber() == tq.getNumber()) {
@@ -2599,7 +2597,7 @@ public class NavigatorServlet extends HttpServlet {
 	/**
 	 * Performs database initialisation for current question so that a new
 	 * attempt may start. Does not actually start a question session.
-	 * 
+	 *
 	 * @param us
 	 *            Session (uses current index to determine the question)
 	 * @return Number of this attempt
@@ -2638,7 +2636,7 @@ public class NavigatorServlet extends HttpServlet {
 	 * @param iAttempts 'Attempts' value
 	 * @param td the test definition.
 	 * @return String describing value, for use in summary tables.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public String getAttemptsString(int iAttempts, TestDefinition td) throws IOException
 	{
@@ -3197,7 +3195,7 @@ public class NavigatorServlet extends HttpServlet {
 	/**
 	 * Moves to the next question, skipping those that are unavailable or that
 	 * have been done already.
-	 * 
+	 *
 	 * @param us
 	 *            Current session
 	 * @param bFromBeginning
@@ -3273,7 +3271,7 @@ public class NavigatorServlet extends HttpServlet {
 
 	/**
 	 * Update position within text.
-	 * 
+	 *
 	 * @param rt
 	 *            Request timings
 	 * @param us
@@ -3301,12 +3299,12 @@ public class NavigatorServlet extends HttpServlet {
 			{
 				throw new SQLException(e);
 			}
-		} 
-		finally 
+		}
+		finally
 		{
 			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
-		
+
 	}
 
 	// Method is NOT synchronized on UserSession
@@ -3329,7 +3327,7 @@ public class NavigatorServlet extends HttpServlet {
 	 * the random questions problems which occur on the second run; Problems
 	 * were due to cached javascript files, now new javascript files will be
 	 * reloaded for new set of questions.
-	 * 
+	 *
 	 * @param response
 	 *            the response to add headers
 	 */
@@ -3477,7 +3475,7 @@ public class NavigatorServlet extends HttpServlet {
 	 * between sending this and returning to the main test page.
 	 * <p>
 	 * Does not continue (throws StopException) if the redirect is sent.
-	 * 
+	 *
 	 * @param us
 	 *            Session
 	 * @param request
@@ -3529,7 +3527,7 @@ public class NavigatorServlet extends HttpServlet {
 			/* only do this if enabled */
 			if(nc.isOptionalFeatureOn(DYNAMICQUESTIONS))
 			{
-				if (file.getName().endsWith(".omxml")) 
+				if (file.getName().endsWith(".omxml"))
 				{
 					response.setContentType("application/x-openmark-dynamics");
 				}
@@ -3568,7 +3566,7 @@ public class NavigatorServlet extends HttpServlet {
 		handleTestOrQuestion(file, "deploy file", request, response);
 	}
 
-	private void handleForbid(String sOucuTest, HttpServletRequest request,
+	private void handleForbid(String username, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		if (!nc.isTrustedTN(InetAddress.getByName(request.getRemoteAddr()))) {
 			sendError(null, request, response,
@@ -3577,25 +3575,14 @@ public class NavigatorServlet extends HttpServlet {
 					null);
 		}
 
-		synchronized (sessionManager.sessions) {
-			// Ditch existing session
-			UserSession us = sessionManager.usernames.remove(sOucuTest);
-			if (us != null)
-				sessionManager.sessions.remove(us.sCookie);
+		sessionManager.blockUserTemporarily(username);
 
-			// Forbid that user for 1 minute [this is intended to prevent the
-			// possibility of timing issues allowing a user to get logged on to
-			// both servers at once; should that happen, chances are they'll
-			// instead be *dumped* from both servers at once (for 60 seconds).
-			sessionManager.tempForbid.put(sOucuTest, System.currentTimeMillis() + 60000L);
-
-			// Send response
-			response.setContentType("text/plain");
-			response.setCharacterEncoding("UTF-8");
-			Writer w = response.getWriter();
-			w.write("OK");
-			w.close();
-		}
+		// Send response.
+		response.setContentType("text/plain");
+		response.setCharacterEncoding("UTF-8");
+		Writer w = response.getWriter();
+		w.write("OK");
+		w.close();
 	}
 
 	private void handleTestCookie(String suffix, HttpServletRequest request,
@@ -3651,7 +3638,7 @@ public class NavigatorServlet extends HttpServlet {
 	/**
 	 * Annoyingly the String replaceAll method doesn't support multi-line
 	 * replace. This does.
-	 * 
+	 *
 	 * @param p
 	 *            Pattern (must have MULTILINE flag)
 	 * @param sSource
@@ -3672,9 +3659,9 @@ public class NavigatorServlet extends HttpServlet {
 	}
 
 	/**
-	 * Caters for the request for the TinyMCE associated files in the typical 
+	 * Caters for the request for the TinyMCE associated files in the typical
 	 *  OpenMark pattern.
-	 * 
+	 *
 	 * @param path
 	 * @param post
 	 * @param request
@@ -3810,10 +3797,7 @@ public class NavigatorServlet extends HttpServlet {
 				- Runtime.getRuntime().freeMemory());
 		m.put("MEMORY", sMemoryUsed);
 
-		synchronized (sessionManager.sessions) {
-			m.put("SESSIONS", sessionManager.sessions.size() + "");
-			m.put("TEMPFORBIDS", sessionManager.tempForbid.size() + "");
-		}
+		sessionManager.obtainPerformanceInfo(m);
 
 		m.put("VERSION", OmVersion.getVersion());
 		m.put("BUILDDATE", OmVersion.getBuildDate());
@@ -3831,7 +3815,7 @@ public class NavigatorServlet extends HttpServlet {
 
 	/**
 	 * Serves a test content page to the user, including navigation.
-	 * 
+	 *
 	 * @param us
 	 *            Session
 	 * @param sTitle
@@ -4119,7 +4103,7 @@ public class NavigatorServlet extends HttpServlet {
 		mReplace.put("RESOURCES", "resources/" + us.getTestPosition());
 		mReplace.put("TINYMCE", TINYMCE);
 		mReplace.put("IDPREFIX", "");
-		
+
 		XML.replaceTokens(eQuestion, mReplace);
 
 		// Whew! Now send to user
@@ -4168,7 +4152,7 @@ public class NavigatorServlet extends HttpServlet {
 	/**
 	 * Returns the map of label replacements appropriate for the current
 	 * session.
-	 * 
+	 *
 	 * @param us Session
 	 * @return Map of replacements (don't change this)
 	 * @throws IOException Any problems loading it
@@ -4204,9 +4188,7 @@ public class NavigatorServlet extends HttpServlet {
 		OMVisitor visitor = new OMVisitor(da, oq, getAuthentication(), getServletContext());
 		if (!keepSession) {
 			l.logDebug("Throwing away session.");
-			synchronized (sessionManager.sessions) {
-				sessionManager.sessions.values().remove(us);
-			}
+			sessionManager.killSession(us);
 		}
 		ErrorMessageParts emp = new ErrorMessageParts(title, message, false,
 			exception, ErrorManagement.ERROR_TEMPLATE);

@@ -32,7 +32,7 @@ public abstract class PeriodicThread extends Thread
 	 * Starts thread.
 	 * @param iDelay Delay between runs
 	 */
-	protected PeriodicThread(int iDelay)
+	public PeriodicThread(int iDelay)
 	{
 		this.iDelay=iDelay;
 		start();
