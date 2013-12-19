@@ -25,7 +25,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.*;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import util.misc.CausedIOException;
 import util.xml.XML;
 
 /**
@@ -62,7 +61,7 @@ public class LogProcessor implements ContentHandler
 		}
 		catch(SAXException se)
 		{
-			throw new CausedIOException("Error processing log file: "+se.getMessage(),se);
+			throw new IOException("Error processing log file: "+se.getMessage(),se);
 		}
 	}
 

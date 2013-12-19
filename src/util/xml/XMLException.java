@@ -17,14 +17,14 @@
  */
 package util.xml;
 
-import util.misc.CausedIOException;
+import java.io.IOException;
 
 
 /**
  * Exception thrown by the XML utilities. Extends IOException since this is
  * likely to be cause by data format errors, which are to do with I/O.
  */
-public class XMLException extends CausedIOException
+public class XMLException extends IOException
 {
 	/** Required by the Serializable interface. */
 	private static final long serialVersionUID = 5953044501477270376L;
@@ -50,6 +50,6 @@ public class XMLException extends CausedIOException
 	 */
 	public XMLException(Exception e)
 	{
-		super(e);
+		super("XML error", e);
 	}
 }
