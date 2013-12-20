@@ -1217,10 +1217,9 @@ public class NavigatorServlet extends HttpServlet {
 			// generate an pre course diagnostic code code if appropriate and add to database table
 			if (PreCourseDiagCode.shouldGenerateNewCode(us))
 			{
-				PreCourseDiagCode pcdc=new PreCourseDiagCode(dbTi,us.sOUCU);
-				pcdc.insertTestPCDC(dat,oq);
-
-		     }
+				PreCourseDiagCode pcdc=new PreCourseDiagCode(dbTi, us.sOUCU);
+				pcdc.insertTestPCDC(dat, oq);
+			}
 
 			for (int i = 0; i < us.getTestLeavesInOrder().length; i++) {
 				if (us.getTestLeavesInOrder()[i] instanceof TestQuestion) {

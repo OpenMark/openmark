@@ -758,9 +758,7 @@ public abstract class OmQueries
 	}
 	
 	public void insertTestPreCourseDiagCode(DatabaseAccess.Transaction dat,PreCourseDiagCode pcdc)
-	throws SQLException
-{
-	try
+			throws SQLException
 	{
 		String sqlstr="INSERT INTO " + getPrefix() + 
 				"precoursediag (ti,precoursediagcode,timecodeupdated,trafficlights) " +
@@ -768,11 +766,6 @@ public abstract class OmQueries
 				","+currentDateFunction()+","+Strings.sqlQuote(pcdc.getTrafficlights())+");";
 		dat.update(sqlstr);
 	}
-	catch (SQLException e)
-	{
-		throw new SQLException(e);
-	}
-}
 
 	/**
 	 * Update the test variant (used for testing).
