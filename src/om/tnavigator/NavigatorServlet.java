@@ -759,6 +759,10 @@ public class NavigatorServlet extends HttpServlet {
 			if (request.getQueryString() != null)
 				sCommand += "?" + request.getQueryString();
 
+			// The temporary settingcookie parameter is not significant to
+			// sCommand so strip it.
+			sCommand.replaceAll("[?&]setcookie=?[0-9]*", "");
+l.logDebug("sCommand: " + sCommand);
 			claimedDetails = sessionManager.tryToFindUserSession(
 					getAuthentication(), request, response, rt.lStart, sTestID);
 
@@ -811,6 +815,14 @@ public class NavigatorServlet extends HttpServlet {
 					return;
 				}
 
+				if (!us.isSingle() && request.getParameter("setcookie") != null)
+				{
+					// If we are not in single question mode, do an extra
+					// redirect to remove the ugly setcookie=... from the URL.
+					response.sendRedirect(request.getRequestURI());
+					return;
+				}
+
 				us.bAllowAfterForbid =
 						// a posted 'end session' request
 						(bPost && sCommand.equals("?end")) ||
@@ -839,31 +851,28 @@ public class NavigatorServlet extends HttpServlet {
 					return;
 				}
 
-				if (sCommand.equals("")) {
+				if (sCommand.equals(""))
+				{
 					// Have they possibly lost an existing session? If so, go
 					// find it
-					if (us.getTestId() == null) {
-						if (!us.isSingle()
-								&& checkRestartSession(rt, sTestID, us,
-										request, response))
-							return;
+					if (us.getTestId() == null && !us.isSingle()
+							&& checkRestartSession(rt, sTestID, us, request, response))
+					{
+						return;
 					}
 
 					// If it's a GET and either they have no test or they aren't
 					// on this one...
 					// (the latter should not be possible since cookies are
 					// test-specific)
-					if (!bPost
-							&& (us.getTestId() == null || !sTestID.equals(us
-									.getTestId()))) {
+					if (!bPost && (us.getTestId() == null || !sTestID.equals(us.getTestId()))) {
 						// Start this test
 						handleStart(rt, sTestID, us, -1, request, response);
 						return;
 					}
 
 					// Otherwise check they're on current test (if not, wtf?)
-					if (us.getTestId() == null
-							|| !sTestID.equals(us.getTestId())) {
+					if (us.getTestId() == null || !sTestID.equals(us.getTestId())) {
 						sendError(
 								us,
 								request,
@@ -1249,8 +1258,6 @@ public class NavigatorServlet extends HttpServlet {
 		// security-ish anyhow).
 
 		String sIP = IPAddressCheckUtil.getIPAddress(request);
-		if (sIP == null)
-			sIP = request.getRemoteAddr();
 
 		// Browser
 		String sAgent = request.getHeader("User-Agent");
@@ -3476,26 +3483,23 @@ public class NavigatorServlet extends HttpServlet {
 	 * <p>
 	 * Does not continue (throws StopException) if the redirect is sent.
 	 *
-	 * @param us
-	 *            Session
-	 * @param request
-	 *            HTTP request
-	 * @param response
-	 *            HTTP response
-	 * @throws IOException
-	 *             Any error
+	 * @param us Session
+	 * @param request HTTP request
+	 * @param response HTTP response
+	 * @throws IOException Any error
 	 * @throws StopException
 	 */
 	private void doSystemCheck(UserSession us, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, StopException {
 		// Initial request gets redirected to the system-check Javascript page
 		if (!us.bCheckedBrowser && !us.getTestDeployment().isSingleQuestion())
-			// Don't do that for single question
 		{
+			// Don't do that for single question
 			us.bCheckedBrowser = true;
 			response.sendRedirect(RequestHelpers.getServletURL(request)
 					+ "!shared/systemcheck.html?"
-					+ URLEncoder.encode(request.getRequestURI(), "UTF-8"));
+					+ URLEncoder.encode(request.getRequestURI()
+					+ "?setcookie=" + System.currentTimeMillis(), "UTF-8"));
 			throw new StopException();
 		}
 	}
@@ -4186,7 +4190,7 @@ public class NavigatorServlet extends HttpServlet {
 		boolean keepSession, String backToTest, String title,
 		String message, Throwable exception) throws StopException {
 		OMVisitor visitor = new OMVisitor(da, oq, getAuthentication(), getServletContext());
-		if (!keepSession) {
+		if (!keepSession && us != null) {
 			l.logDebug("Throwing away session.");
 			sessionManager.killSession(us);
 		}

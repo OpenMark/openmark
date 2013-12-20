@@ -1,0 +1,74 @@
+<html>
+<head>
+<title>How to build OpenMark</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>How to test OpenMark</h1>
+
+<p>This page summarises the different parts of OpenMark that need to be tested.</p>
+
+
+<h2>Developer servlet</h2>
+
+<ol>
+<li>Go to nav servlet.</li>
+<li>Add a new question def.</li>
+<li>Build it.</li>
+<li>Run it ...</li>
+<li></li>
+</ol>
+
+
+<h2>Question engine</h2>
+
+<p>To do ...</p>
+
+
+<h2>Test navigator</h2>
+
+<h3>Different types of test</h3>
+
+<p>There are many permuatations of how tests can be set up. Here is a reasonably
+complete list of combinations to test</p>
+
+<p>Single question mode</p>
+
+<ul>
+<li>Single question mode question not requiring login.</li>
+<li>Singel question mode question requiring login.</li>
+</ul>
+
+<p>Test login requirements</p>
+
+<ul>
+<li>Test requiring login for specific users</li>
+<li>Test requiring login for various auth ids</li>
+<li>Test world accessible</li>
+</ul>
+
+<p>Test time requirements</p>
+
+<ul>
+<li>Test that does not open until in the future.</li>
+<li>Test with open date in the past, no close date.</li>
+<li>Test with open date in the past, close date in the future.</li>
+<li>Test with close date in the past, no forbid date.</li>
+<li>Test with close date in the past, forbid date in the future.</li>
+<li>Test with forbid date in the past.</li>
+</ul>
+
+
+<h3>Testing login / session management</h3>
+
+<ol>
+<li>Disable cookies in your web browser.</li>
+<li>Try to start each type of test, and verify that you get a clear error about Cookies being off.</li>
+<li>...</li>
+<li></li>
+</ol>
+
+
+</body>
+</html>

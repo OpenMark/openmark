@@ -3,7 +3,6 @@ package om.tnavigator.sessions;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -55,12 +54,6 @@ public class SessionManager
 	long[] lastSessionKillerError;
 
 	Object sessionKillerErrorSynch = new Object();
-
-	/**
-	 * List of NewSession objects that are stored to check we don't start a new
-	 * session twice in a row to same address (= cookies off)
-	 */
-	public LinkedList<NewSession> cookiesOffCheck = new LinkedList<NewSession>();
 
 	/** Config file contents */
 	protected NavigatorConfig nc;
@@ -169,13 +162,6 @@ public class SessionManager
 		// redirect.
 		synchronized (sessions)
 		{
-			// Remove entries from cookies-off list after 1 second
-			while (!cookiesOffCheck.isEmpty()
-					&& requestStartTime - (cookiesOffCheck.getFirst()).lTime > 1000)
-			{
-				cookiesOffCheck.removeFirst();
-			}
-
 			// See if they've got a cookie for this test
 			String sCookie = GeneralUtils.getCookie(request, getTestCookieName(sTestID));
 
@@ -199,28 +185,24 @@ public class SessionManager
 			// New sessions!
 			if (claimedDetails.us == null)
 			{
-				String sAddr = request.getRemoteAddr();
-
-				// Check if we've already been redirected
-				for (NewSession ns : cookiesOffCheck)
+				// Check if we've already been redirected.
+				String cookieSetParam = request.getParameter("setcookie");
+				if (cookieSetParam != null)
 				{
-					if (ns.sAddr.equals(sAddr))
-					{
-						claimedDetails.status = Status.CANNOT_CREATE_COOKIE;
-						return claimedDetails;
+					try {
+						long cookieSetTime = Long.parseLong(cookieSetParam);
+						if (System.currentTimeMillis() < cookieSetTime + 1000L) {
+							claimedDetails.status = Status.CANNOT_CREATE_COOKIE;
+							return claimedDetails;
+						}
+					} catch (NumberFormatException e) {
+						// Not a valid param. Same as if param not given.
 					}
 				}
 
-				// Record this redirect so that we notice if it happens
-				// twice
-				NewSession ns = new NewSession();
-				ns.lTime = requestStartTime;
-				ns.sAddr = sAddr;
-				cookiesOffCheck.addLast(ns);
-
 				do
 				{
-					// Make 7-letter random cookie
+					// Make 7-letter random cookie.
 					sCookie = Strings.randomAlNumString(7);
 				} while (sessions.containsKey(sCookie));
 				// And what are the chances of that?
@@ -230,10 +212,10 @@ public class SessionManager
 				sessions.put(claimedDetails.us.sCookie, claimedDetails.us);
 				// We do the actual redirect later on outside this synch.
 
-				// At same time as creating new session, if they're logged
-				// in supposedly, check it's for real. If their cookie doesn't
-				// authenticated, this will cause the cookie to be removed
-				// and avoid multiple redirects.
+				// At same time as creating new session, if they're logged in
+				// supposedly, check it's for real. If their cookie doesn't
+				// authenticated, this will cause the cookie to be removed and
+				// avoid multiple redirects.
 				if (claimedDetails.sOUCU != null)
 				{
 					if (!authentication.getUserDetails(request, response, false).isLoggedIn())
@@ -247,12 +229,12 @@ public class SessionManager
 			}
 
 			// If this is the first time we've had an OUCU for this session,
-			// check it to make sure we don't need to ditch any other sessions
+			// check it to make sure we don't need to ditch any other sessions.
 			if (claimedDetails.us.sCheckedOUCUKey == null && claimedDetails.sOUCU != null)
 			{
 				claimedDetails.us.sCheckedOUCUKey = claimedDetails.sOUCU + "-" + sTestID;
 
-				// Check the temp-forbid list
+				// Check the temp-forbid list.
 				Long lTimeout = tempForbid.get(claimedDetails.us.sCheckedOUCUKey);
 				if (lTimeout != null && lTimeout.longValue() > System.currentTimeMillis())
 				{
@@ -264,14 +246,14 @@ public class SessionManager
 				}
 				else
 				{
-					// If it was a timed-out forbid, get rid of it
+					// If it was a timed-out forbid, get rid of it.
 					if (lTimeout != null)
 						tempForbid.remove(claimedDetails.us.sCheckedOUCUKey);
 
 					// Put this in the OUCU->session map
 					UserSession usOld = usernames.put(claimedDetails.us.sCheckedOUCUKey,
 							claimedDetails.us);
-					// If there was one already there, get rid of it
+					// If there was one already there, get rid of it.
 					if (usOld != null)
 					{
 						killSession(usOld);
@@ -374,7 +356,7 @@ public class SessionManager
 			// Expiry is 4 years
 			c.setMaxAge((3 * 365 + 366) * 24 * 60 * 60);
 			response.addCookie(c);
-			response.sendRedirect(request.getRequestURI());
+			response.sendRedirect(request.getRequestURI() + "?setcookie=" + System.currentTimeMillis());
 			return false;
 		}
 

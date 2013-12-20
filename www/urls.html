@@ -136,6 +136,11 @@ Prevents problems if the sticky load-balancing goes wrong.</dd>
 <dd>Serve question resource.</dd>
 </dl>
 
+<p>Any URL above can have settingcookie set to true, if this is the first request
+after we have tried to set a session cookie. In this case, we generate an error
+if the cookie is not there, because we deduce that the user's browser does not
+support cookies.</p>
+
 <p>Cookies</p>
 
 <dl>
