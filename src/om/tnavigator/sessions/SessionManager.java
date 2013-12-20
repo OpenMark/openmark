@@ -191,7 +191,7 @@ public class SessionManager
 				{
 					try {
 						long cookieSetTime = Long.parseLong(cookieSetParam);
-						if (System.currentTimeMillis() < cookieSetTime + 1000L) {
+						if (System.currentTimeMillis() < cookieSetTime + 5000L) {
 							claimedDetails.status = Status.CANNOT_CREATE_COOKIE;
 							return claimedDetails;
 						}
@@ -285,6 +285,7 @@ public class SessionManager
 			StopException, OmException, OmFormatException
 	{
 		UserSession us = claimedDetails.us;
+		boolean createdCookie = false;
 
 		// Set last action time (so session doesn't time out)
 		us.touch();
@@ -330,6 +331,7 @@ public class SessionManager
 			c.setPath("/");
 			response.addCookie(c);
 			us.cookieCreated = true;
+			createdCookie = true;
 		}
 
 		if (us.ud.isLoggedIn())
@@ -350,18 +352,25 @@ public class SessionManager
 			// possibilities so it should be OK.
 			us.sOUCU = "_" + Strings.randomAlNumString(7);
 
+			claimedDetails.iAuthHash = (authentication.getUncheckedUserDetails(request).getCookie() +
+					"/" + us.sOUCU).hashCode();
+
 			// Set it in cookie for future sessions
 			Cookie c = new Cookie(NavigatorServlet.FAKEOUCUCOOKIENAME, us.sOUCU);
 			c.setPath("/");
 			// Expiry is 4 years
 			c.setMaxAge((3 * 365 + 366) * 24 * 60 * 60);
 			response.addCookie(c);
-			response.sendRedirect(request.getRequestURI() + "?setcookie=" + System.currentTimeMillis());
-			return false;
+			createdCookie = true;
 		}
 
 		// Remember auth hash so that we will know if they change cookie now.
 		us.iAuthHash = claimedDetails.iAuthHash;
+
+		if (createdCookie) {
+			response.sendRedirect(request.getRequestURI() + "?setcookie=" + System.currentTimeMillis());
+			return false;
+		}
 
 		return true;
 	}

@@ -25,7 +25,6 @@ import java.io.Writer;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -762,7 +761,7 @@ public class NavigatorServlet extends HttpServlet {
 			// The temporary settingcookie parameter is not significant to
 			// sCommand so strip it.
 			sCommand.replaceAll("[?&]setcookie=?[0-9]*", "");
-l.logDebug("sCommand: " + sCommand);
+
 			claimedDetails = sessionManager.tryToFindUserSession(
 					getAuthentication(), request, response, rt.lStart, sTestID);
 
@@ -1132,9 +1131,6 @@ l.logDebug("sCommand: " + sCommand);
 			int variant, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		initTestAttempt(rt, sTestID, us, variant, request, response);
-
-		// Redirect to system-check page if needed
-		doSystemCheck(us, request, response);
 
 		// Start first page
 		servePage(rt, us, false, request, response);
@@ -2364,9 +2360,8 @@ l.logDebug("sCommand: " + sCommand);
 				String sMessage = ti.getXHTMLString();
 				if (us.getTestDeployment().isAfterClose()) {
 					// Show message only if it's not after forbid - if it's
-					// after forbid
-					// students can't see it anyway and the message confuses
-					// admin.
+					// after forbid students can't see it anyway and the message
+					// confuses admin.
 					if (!us.getTestDeployment().isAfterForbid()) {
 						sMessage += "<p><em class='warning'>This test closed on "
 								+ us.getTestDeployment().displayCloseDate()
@@ -2429,6 +2424,13 @@ l.logDebug("sCommand: " + sCommand);
 
 					sMessage += "</div>";
 				}
+
+				sMessage += "<script type='text/javascript'></script><noscript>" +
+						"<p><em class='warning'>Javascript is not enabled.</em> " +
+						"In order to take this test you must enable Javascript " +
+						"in your browser. Once you have enabled Javascript, " +
+						"please click the Reload or Refresh button in your browser " +
+						"to reload this page.</p></noscript>";
 
 				serveTestContent(
 						us,
@@ -3466,42 +3468,10 @@ l.logDebug("sCommand: " + sCommand);
 			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
 
-		// Redirect to system-check page if needed
-		doSystemCheck(us, request, response);
-
 		// Serve that question, or end page if bFinished
 		servePage(rt, us, true, request, response);
 
 		return true;
-	}
-
-	/**
-	 * If necessary, redirects user to the system check page. This is done only
-	 * once the system is actually ready to serve test content, in order to
-	 * avoid potential issues if the user requests something else unexpectedly
-	 * between sending this and returning to the main test page.
-	 * <p>
-	 * Does not continue (throws StopException) if the redirect is sent.
-	 *
-	 * @param us Session
-	 * @param request HTTP request
-	 * @param response HTTP response
-	 * @throws IOException Any error
-	 * @throws StopException
-	 */
-	private void doSystemCheck(UserSession us, HttpServletRequest request,
-			HttpServletResponse response) throws IOException, StopException {
-		// Initial request gets redirected to the system-check Javascript page
-		if (!us.bCheckedBrowser && !us.getTestDeployment().isSingleQuestion())
-		{
-			// Don't do that for single question
-			us.bCheckedBrowser = true;
-			response.sendRedirect(RequestHelpers.getServletURL(request)
-					+ "!shared/systemcheck.html?"
-					+ URLEncoder.encode(request.getRequestURI()
-					+ "?setcookie=" + System.currentTimeMillis(), "UTF-8"));
-			throw new StopException();
-		}
 	}
 
 	private void handleTestOrQuestion(File file, String what,

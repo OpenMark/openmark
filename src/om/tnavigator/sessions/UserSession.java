@@ -116,12 +116,6 @@ public class UserSession
 	public boolean bAllowAfterForbid;
 
 	/**
-	 * True if their browser has been checked and found OK, or they have
-	 * decided to ignore the warning.
-	 */
-	public boolean bCheckedBrowser;
-
-	/**
 	 * Once we've seen their OUCU and checked that we only hold one session
 	 * for them, this is set to OUCU-testID.
 	 */
