@@ -814,7 +814,7 @@ public class NavigatorServlet extends HttpServlet {
 					return;
 				}
 
-				if (!us.isSingle() && request.getParameter("setcookie") != null)
+				if (request.getParameter("setcookie") != null)
 				{
 					// If we are not in single question mode, do an extra
 					// redirect to remove the ugly setcookie=... from the URL.
