@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import om.OmException;
 import om.OmUnexpectedException;
-import om.administration.dataDeletion.DataDeletionTestBank;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.reports.HtmlReportWriter;
 import om.tnavigator.reports.OmReport;
@@ -123,7 +122,7 @@ public class DeployedTestsReport implements OmReport {
 			try {
 				def = new TestDeployment(deployFile);
 				initialise( def,deployFile,testBank);
-				isArchiveable=isArchiveable(getYearsAsCal(DataDeletionTestBank.ISASSESSEDYEARS),getYearsAsCal(DataDeletionTestBank.NOTASSESSEDYEARS), def);
+				isArchiveable=isArchiveable(getYearsAsCal(-6),getYearsAsCal(-2), def);
 
 			} catch (OmException e) {
 				test = "";
