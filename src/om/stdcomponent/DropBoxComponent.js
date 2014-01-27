@@ -285,45 +285,46 @@ var dbMoving;
 
 function dragboxMouseDown(e)
 {
-	e=fixEvent(e);
-	dbMoving=resolveDragbox(e);
+	e = fixEvent(e);
+	dbMoving = resolveDragbox(e);
 
 	dragboxLeavingHome(dbMoving);
 
-	dbMoving.pageX=e.mPageX;
-	dbMoving.pageY=e.mPageY;
-	dbMoving.style.zIndex=100;
+	dbMoving.prevMouseX = e.mPageX;
+	dbMoving.prevMouseY = e.mPageY;
+	dbMoving.style.zIndex = 100;
 
-	dragboxUnplace(dbMoving,false);
+	dragboxUnplace(dbMoving, false);
 
 	// Get current dropbox locations
-	for(var i=0;i<dropboxArray.length;i++)
+	for (var i = 0; i < dropboxArray.length; i++)
 	{
 		resolvePageXY(dropboxArray[i]);
 	}
 
-	document.onmouseup=dragboxMouseUp;
-	document.onmousemove=dragboxMouseMove;
+	document.onmouseup   = dragboxMouseUp;
+	document.onmousemove = dragboxMouseMove;
 }
 
 function dragboxMouseMove(e)
 {
-	e=fixEvent(e);
-	// Handle IE thing where it gets stuck on if you go out of
-	// the window and let go there
-	if(isIE8OrBelow && e.button==0)
+	e = fixEvent(e);
+
+	// Handle thing where it gets stuck on if you go out of the window and let go there.
+	if (isIE8OrBelow && e.button == 0)
 	{
 		return dragboxMouseUp(e);
 	}
-	if(!dbMoving) return;
+	if (!dbMoving) return;
 
-	var deltaX=e.mPageX-dbMoving.pageX, deltaY=e.mPageY-dbMoving.pageY;
+	var deltaX = e.mPageX - dbMoving.prevMouseX,
+	    deltaY = e.mPageY - dbMoving.prevMouseY;
 
-	dbMoving.style.left=(Number(dbMoving.style.left.replace("px","")) + deltaX) + "px";
-	dbMoving.style.top=(Number(dbMoving.style.top.replace("px","")) + deltaY) + "px";
+	dbMoving.style.left = (Number(dbMoving.style.left.replace("px", "")) + deltaX) + "px";
+	dbMoving.style.top  = (Number(dbMoving.style.top.replace("px",  "")) + deltaY) + "px";
 
-	dbMoving.pageX=e.mPageX;
-	dbMoving.pageY=e.mPageY;
+	dbMoving.prevMouseX = e.mPageX;
+	dbMoving.prevMouseY = e.mPageY;
 
 	resolvePageXY(dbMoving);
 	if (dbMoving.currentlyover) {
