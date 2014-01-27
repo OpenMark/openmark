@@ -3851,8 +3851,7 @@ public class NavigatorServlet extends HttpServlet {
 			if ((sProgressInfo == null || sProgressInfo.equals(""))) {
 				XML.remove(XML.find(d, "id", "progressinfo"));
 			} else {
-				Strings.replaceTokens(sProgressInfo, "%%", mReplace);
-				mReplace.put("PROGRESSINFO", sProgressInfo);
+				mReplace.put("PROGRESSINFO", Strings.replaceTokens(sProgressInfo, "%%", getLabelReplaceMap(us)));
 			}
 		}
 		XML.replaceTokens(d, mReplace);

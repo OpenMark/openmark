@@ -126,7 +126,7 @@ public class Strings
 	 * @param mReplace Replacement map (containing strings only)
 	 * @return the modified string.
 	 */
-	public static String replaceTokens(String string, String sBorder, Map<String, Object> mReplace)
+	public static String replaceTokens(String string, String sBorder, Map<String, ? extends Object> mReplace)
 	{
 		// Get value and look for tokens. If there aren't any, bail now.
 		if (mReplace == null || string.indexOf(sBorder) == -1)
