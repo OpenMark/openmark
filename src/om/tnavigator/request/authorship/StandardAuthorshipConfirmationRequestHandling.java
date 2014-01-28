@@ -112,8 +112,6 @@ public class StandardAuthorshipConfirmationRequestHandling
 				ra.getPrincipleObjects().put(RequestParameterNames.UserSession.toString(), userSession);
 				ra.getPrincipleObjects().put(RequestParameterNames.UserAuthorshipConfirmationResponse.toString(),
 					request.getParameter(RequestParameterNames.UserAuthorshipConfirmationResponse.toString()));
-				ra.getPrincipleObjects().put(RequestParameterNames.AuthorshipXMLDocument.toString(),
-					ns.getAuthorshipConfirmation());
 				ra.getPrincipleObjects().put(RequestParameterNames.AccessCSSAppend.toString(),
 						RequestHelpers.getAccessCSSAppend(request));
 				String contextPath = servlet.getServletContext().getContextPath();
@@ -122,10 +120,12 @@ public class StandardAuthorshipConfirmationRequestHandling
 				ra.getPrincipleObjects().put(RequestParameterNames.AccessibilityCookie.toString(),
 					RequestHelpers.getAccessibilityCookie(request));
 				try {
-					Document parentTemplate = ns.getTemplate(RequestHelpers.inPlainMode(request),
-						userSession.isSingle(), false);
+					ra.getPrincipleObjects().put(RequestParameterNames.AuthorshipXMLDocument.toString(),
+							userSession.loadTemplate("authorship-confirmation.xml"));
+					Document parentTemplate = userSession.loadTemplate(ns.templateName(
+							RequestHelpers.inPlainMode(request), userSession.isSingle()), false);
 					ra.getPrincipleObjects().put(RequestParameterNames.ParentTemplate.toString(), parentTemplate);
-				} catch (XMLException x) {
+				} catch (Exception x) {
 					throw new RequestHandlingException(x);
 				}
 			}

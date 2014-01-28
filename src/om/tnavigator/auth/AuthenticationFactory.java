@@ -1,12 +1,12 @@
 package om.tnavigator.auth;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import om.Log;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
+import om.tnavigator.sessions.TemplateLoader;
 
 public class AuthenticationFactory {
 
@@ -25,7 +25,7 @@ public class AuthenticationFactory {
 	 * @author Trevor Hinson
 	 */
 	public static Authentication initialiseAuthentication(NavigatorConfig nc,
-		DatabaseAccess da, File templateFolder, Log log)
+		DatabaseAccess da, TemplateLoader templateLoader, Log log)
 		throws AuthenticationInstantiationException {
 		Authentication authentication = null;
 		String authClass = nc.getAuthClass();
@@ -34,7 +34,7 @@ public class AuthenticationFactory {
 			// new Class[] { NavigatorServlet.class }).newInstance(
 			// new Object[] { this });
 			AuthenticationInitialisation ai = new AuthenticationInitialisation(
-					da, nc, templateFolder, log);
+					da, nc, templateLoader, log);
 			Class<?> cla = Class.forName(authClass);
 			Constructor<?> c = cla
 				.getConstructor(new Class[] { AuthenticationInitialisation.class });

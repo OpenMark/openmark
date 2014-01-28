@@ -1,10 +1,9 @@
 package om.tnavigator.auth;
 
-import java.io.File;
-
 import om.Log;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
+import om.tnavigator.sessions.TemplateLoader;
 
 public class AuthenticationInitialisation {
 
@@ -12,7 +11,7 @@ public class AuthenticationInitialisation {
 
 	private NavigatorConfig navigatorConfig;
 
-	private File templatesFolder;
+	private TemplateLoader templatesLoader;
 
 	private Log log;
 
@@ -24,8 +23,8 @@ public class AuthenticationInitialisation {
 		return navigatorConfig;
 	}
 
-	public File getTemplatesFolder() {
-		return templatesFolder;
+	public TemplateLoader getTemplateLoader() {
+		return templatesLoader;
 	}
 
 	public Log getLog() {
@@ -33,10 +32,10 @@ public class AuthenticationInitialisation {
 	}
 
 	public AuthenticationInitialisation(DatabaseAccess da, NavigatorConfig nc,
-		File folder, Log globalLog) {
+			TemplateLoader tl, Log globalLog) {
 		databaseAccess = da;
 		navigatorConfig = nc;
-		templatesFolder = folder;
+		templatesLoader = tl;
 		log = globalLog;
 	}
 

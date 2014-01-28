@@ -100,7 +100,7 @@ public abstract class AbstractDatabaseSpecificOpenMarkServlet
 	protected void initialiseAuthentication() throws ServletException {
 		try {
 			authentication = AuthenticationFactory.initialiseAuthentication(
-				getNavigatorConfig(), getDatabaseAccess(), getTemplatesFolder(),
+				getNavigatorConfig(), getDatabaseAccess(), getTemplateLoader(),
 				getLog());
 		} catch (AuthenticationInstantiationException x) {
 			throw new ServletException(x);

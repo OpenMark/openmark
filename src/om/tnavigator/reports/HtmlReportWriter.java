@@ -63,7 +63,7 @@ public class HtmlReportWriter extends TabularReportWriter
 	{
 		Element mainElement;
 		try {
-			template = ns.getTemplate(false, false, true);
+			template = ns.getTemplate();
 			Map<String,Object> replacements = new HashMap<String,Object>();
 			replacements.put("TITLEBAR", title);
 			replacements.put("ACCESS", "");

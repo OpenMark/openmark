@@ -95,6 +95,9 @@ public class NavigatorConfig
 	/** Extra report plugins */
 	private String[] extraReports;	
 
+	/** Template location. */
+	private String templateLocation = "WEB-INF/templates";
+
 	/** Parameters for auth */
 	private Map<String,String> authParams=null;
 	
@@ -290,6 +293,11 @@ public class NavigatorConfig
 		{
 			extraReports = new String[0];
 		}		
+
+		if (XML.hasChild(eRoot, "templatelocation"))
+		{
+			templateLocation = XML.getText(eRoot, "templatelocation");
+		}
 
 		if(XML.hasChild(eRoot,"debugflags"))
 		{
@@ -569,5 +577,10 @@ public class NavigatorConfig
 	public boolean isOptionalFeatureOn(String what)
 	{	
 		return optionalFeatures.contains(what);		
+	}
+
+	public String getTemplateLocation()
+	{
+		return templateLocation;
 	}
 }

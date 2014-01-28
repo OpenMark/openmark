@@ -17,7 +17,8 @@
  */
 package om.tnavigator.auth.simple;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -26,17 +27,22 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import javax.mail.MessagingException;
-import javax.servlet.http.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import om.tnavigator.Mail;
 import om.tnavigator.NavigatorServlet;
-import om.tnavigator.auth.*;
+import om.tnavigator.auth.Authentication;
+import om.tnavigator.auth.AuthenticationInitialisation;
+import om.tnavigator.auth.UncheckedUserDetails;
+import om.tnavigator.auth.UserDetails;
 import om.tnavigator.db.DatabaseAccess;
+import om.tnavigator.sessions.TemplateLoader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import util.misc.IO;
 import util.misc.Strings;
 import util.xml.XHTML;
 import util.xml.XML;
@@ -67,7 +73,7 @@ public class SimpleAuth implements Authentication {
 	private String magicNumber;
 
 	/** Template folder */
-	private File templatesFolder;
+	private TemplateLoader templateLoader;
 
 	/** From address for email */
 	private String mailFrom;
@@ -88,7 +94,7 @@ public class SimpleAuth implements Authentication {
 		applyMagicNumber();
 		// Remember settings from servlet
 		da = ns.getDatabaseAccess();
-		templatesFolder = ns.getTemplatesFolder();
+		templateLoader = ns.getDefaultTemplateLoader();
 		mailFrom = ns.getNavigatorConfig().getAlertMailFrom();
 		setUpDatabase();
 	}
@@ -102,7 +108,7 @@ public class SimpleAuth implements Authentication {
 	public SimpleAuth(AuthenticationInitialisation ai) throws SQLException {
 		applyMagicNumber();
 		da = ai.getDatabaseAccess();
-		templatesFolder = ai.getTemplatesFolder();
+		templateLoader = ai.getTemplateLoader();
 		mailFrom = ai.getNavigatorConfig().getAlertMailFrom();
 		setUpDatabase();
 	}
@@ -146,8 +152,7 @@ public class SimpleAuth implements Authentication {
 
 	public String getLoginOfferXHTML(HttpServletRequest request)
 			throws IOException {
-		String offer = IO.loadString(new FileInputStream(new File(
-				templatesFolder, OFFERLOGIN)));
+		String offer = templateLoader.loadStringTemplate(OFFERLOGIN);
 		return XML.replaceToken(offer, "%%", "LOGINURL", XHTML.escape(
 				getLoginPageURL(request), XHTML.ESCAPE_ATTRSQ));
 	}
@@ -260,7 +265,7 @@ public class SimpleAuth implements Authentication {
 			return false;
 
 		// Load form and fill in URL
-		Document d = XML.parse(new File(templatesFolder, LOGINFORM));
+		Document d = templateLoader.loadTemplate(LOGINFORM);
 		Element urlField = XML.find(d, "name", "url");
 		String url = request.getParameter("url");
 		if (url == null)

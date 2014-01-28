@@ -105,7 +105,8 @@ public class TestDeployment
 	private String icma;
 
 	private boolean bhasEmailStudents=false;
-	
+
+	private String templateSet = null;
 
 	public void setType(int n) {
 		if (TYPE_NOTASSESSED == n || TYPE_ASSESSED == n) {
@@ -143,6 +144,14 @@ public class TestDeployment
 	 */
 	public boolean isUsingEmailStudents() {
 		return bhasEmailStudents;
+	}
+
+	/**
+	 * Get which Template set to use, otherwise null.
+	 */
+	public String getTemplateSet()
+	{
+		return templateSet;
 	}
 
 	/**
@@ -264,6 +273,11 @@ public class TestDeployment
 					aiAssignmentCount[i]=iTo-iFrom+1;
 					iExpectedNext+=aiAssignmentCount[i];
 				}
+			}
+
+			if (XML.hasChild(eRoot, "templateset"))
+			{
+				templateSet = XML.getText(eRoot, "templateset");
 			}
 		}
 		catch(NumberFormatException nfe)

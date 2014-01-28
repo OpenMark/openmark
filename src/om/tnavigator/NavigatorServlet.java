@@ -82,6 +82,7 @@ import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 import om.tnavigator.scores.CombinedScore;
 import om.tnavigator.sessions.ClaimedUserDetails;
 import om.tnavigator.sessions.SessionManager;
+import om.tnavigator.sessions.TemplateLoader;
 import om.tnavigator.sessions.UserSession;
 import om.tnavigator.teststructure.PreCourseDiagCode;
 import om.tnavigator.teststructure.SummaryDetails;
@@ -237,6 +238,12 @@ public class NavigatorServlet extends HttpServlet {
 	/** SQL queries */
 	private OmQueries oq;
 
+	/**
+	 * Standard template loader. Used for system pages, and when a test does
+	 * not specify a different template set.
+	 */
+	private TemplateLoader templateLoader;
+
 	private static String PRE_PROCESSING_REQUEST_HANDLER = "PreProcessingRequestHandler";
 
 	private Class<?> preProcessingRequestHandler;
@@ -261,15 +268,10 @@ public class NavigatorServlet extends HttpServlet {
 	private final static Pattern FIXEDCOLOURCSSLINE = Pattern.compile(
 			"^/\\*FIXED\\*/.*?$", Pattern.MULTILINE);
 
-	/** @return Folder used for template files */
-	public File getTemplatesFolder() {
-		return new File(getServletContext().getRealPath("WEB-INF/templates"));
-	}
-
 	protected void initialiseAuthentication() throws ServletException {
 		try {
 			authentication = AuthenticationFactory.initialiseAuthentication(nc,
-				da, getTemplatesFolder(), l);
+				da, getDefaultTemplateLoader(), l);
 		} catch (AuthenticationInstantiationException x) {
 			throw new ServletException(
 				"Error creating authentication class.", x);
@@ -287,6 +289,13 @@ public class NavigatorServlet extends HttpServlet {
 					e);
 		} catch (IOException e) {
 			throw new ServletException("Error loading config file", e);
+		}
+
+		try {
+			templateLoader = new TemplateLoader(new File(
+					getServletContext().getRealPath(nc.getTemplateLocation())));
+		} catch (OmException e) {
+			throw new ServletException("Error creating template loader.", e);
 		}
 
 		try {
@@ -338,24 +347,6 @@ public class NavigatorServlet extends HttpServlet {
 				dat.finish();
 		}
 		initialiseAuthentication();
-		try {
-			plainTemplate = XML.parse(new File(sc
-					.getRealPath("WEB-INF/templates/plaintemplate.xhtml")));
-			template = XML.parse(new File(sc
-					.getRealPath("WEB-INF/templates/template.xhtml")));
-			singlesPlainTemplate = XML
-					.parse(new File(
-							sc
-									.getRealPath("WEB-INF/templates/singlesplaintemplate.xhtml")));
-			singlesTemplate = XML.parse(new File(sc
-					.getRealPath("WEB-INF/templates/singlestemplate.xhtml")));
-			authorshipConfirmation = XML.parse(new File(getServletContext()
-					.getRealPath(
-							"WEB-INF/templates/authorship-confirmation.xml")));
-		} catch (IOException ioe) {
-			throw new ServletException("Failed to initialise XML templates",
-					ioe);
-		}
 
 		try {
 			reports = new ReportDispatcher(this, Arrays.asList(nc
@@ -813,6 +804,7 @@ public class NavigatorServlet extends HttpServlet {
 				{
 					return;
 				}
+				us.initialiseTemplateLoader(nc, getServletContext());
 
 				if (request.getParameter("setcookie") != null)
 				{
@@ -1305,8 +1297,7 @@ public class NavigatorServlet extends HttpServlet {
 		if (returnPreProcessingResponse(us, request, response)) {
 			return;
 		}
-		Document d = XML.parse(new File(getServletContext().getRealPath(
-				"WEB-INF/templates/progresssummary.xhtml")));
+		Document d = us.loadTemplate("progresssummary.xhtml");
 		Map<String, String> mReplace = new HashMap<String, String>();
 		mReplace.put("EXTRA", RequestHelpers.endOfURL(request));
 		XML.replaceTokens(d, mReplace);
@@ -2825,9 +2816,7 @@ public class NavigatorServlet extends HttpServlet {
 			// like students
 			if (us.getTestDeployment().requiresSubmitEmail() && !us.bAdmin
 					&& us.ud.shouldReceiveTestMail()) {
-				String sEmail = IO.loadString(new FileInputStream(
-						getServletContext().getRealPath(
-								"WEB-INF/templates/submit.email.txt")));
+				String sEmail = us.loadStringTemplate("submit.email.txt");
 				Map<String, String> mReplace = new HashMap<String, String>();
 				mReplace.put("NAME", us.getTestDefinition().getName());
 				mReplace.put("TIME",
@@ -2857,8 +2846,7 @@ public class NavigatorServlet extends HttpServlet {
 					+ RequestHelpers.endOfURL(request));
 		} else {
 			// The 'end, are you sure?' page
-			Document d = XML.parse(new File(getServletContext().getRealPath(
-					"WEB-INF/templates/endcheck.xhtml")));
+			Document d = us.loadTemplate("endcheck.xhtml");
 			Map<String, Object> mReplace = new HashMap<String, Object>();
 			mReplace.put("EXTRA", RequestHelpers.endOfURL(request));
 			mReplace.put("BUTTON", us.getTestDefinition()
@@ -2903,6 +2891,8 @@ public class NavigatorServlet extends HttpServlet {
 					true);
 		}
 	}
+
+
 
 	private void handleVariant(RequestTimings rt, String sVariant,
 			UserSession us, HttpServletRequest request,
@@ -3005,8 +2995,7 @@ public class NavigatorServlet extends HttpServlet {
 			redirectToTest(request, response);
 		} else {
 			// The form
-			Document d = XML.parse(new File(getServletContext().getRealPath(
-					"WEB-INF/templates/accessform.xhtml")));
+			Document d = us.loadTemplate("accessform.xhtml");
 			Map<String, String> mReplace = new HashMap<String, String>();
 			mReplace.put("EXTRA", RequestHelpers.endOfURL(request));
 			XML.replaceTokens(d, mReplace);
@@ -3668,7 +3657,7 @@ public class NavigatorServlet extends HttpServlet {
 		if (navigatorCSS == null) {
 			navigatorCSS = IO.loadString(new FileInputStream(new File(
 					getServletContext().getRealPath(
-							"WEB-INF/templates/navigator.css"))));
+							nc.getTemplateLocation()+"/navigator.css"))));
 		}
 
 		// Do replace
@@ -3745,16 +3734,19 @@ public class NavigatorServlet extends HttpServlet {
 			d.getDocumentElement().setAttribute("class", sRootClass.trim());
 	}
 
-	/** Cached template documents */
-	private Document plainTemplate, template, singlesPlainTemplate,
-			singlesTemplate, authorshipConfirmation;
-
-	public Document getAuthorshipConfirmation() {
-		return authorshipConfirmation;
+	public TemplateLoader getDefaultTemplateLoader() {
+		return templateLoader;
 	}
 
-	public Document getTemplate() {
-		return template;
+	public Document getTemplate() throws XMLException {
+		try
+		{
+			return templateLoader.loadTemplate(templateName(false, false), false);
+		}
+		catch (IOException e)
+		{
+			throw new XMLException("Failed to load standard template.", e);
+		}
 	}
 
 	/**
@@ -3823,7 +3815,7 @@ public class NavigatorServlet extends HttpServlet {
 			sAuxTitle += " [variant " + us.getFixedVariant() + "]";
 
 		// Create basic template
-		Document d = getTemplate(plainMode, us.isSingle(), bClearCSS);
+		Document d = us.loadTemplate(templateName(plainMode, us.isSingle()), bClearCSS);
 		Map<String, Object> mReplace = new HashMap<String, Object>();
 		if (us.isSingle() || sTitle.equals(us.getTestDefinition().getName()))
 			mReplace.put("TITLEBAR", sTitle);
@@ -4084,41 +4076,21 @@ public class NavigatorServlet extends HttpServlet {
 		XHTML.output(d, request, response, "en");
 	}
 
-	/**
-	 * @param plainMode
-	 *            whether we are in plain mode.
-	 * @param singleQuestionMode
-	 *            whether we are in single question mode.
-	 * @param removeQuestionCss
-	 *            whether to remove the question stylesheet link.
-	 * @return the appropriate template for a page, based on the parameters.
-	 * @throws XMLException
-	 */
-	public Document getTemplate(boolean plainMode, boolean singleQuestionMode,
-			boolean removeQuestionCss) throws XMLException {
-		Document d;
+	public String templateName(boolean plainMode, boolean singleQuestionMode)
+	{
 		if (singleQuestionMode) {
 			if (plainMode) {
-				d = singlesPlainTemplate;
+				return "singlesplaintemplate.xhtml";
 			} else {
-				d = singlesTemplate;
+				return "singlestemplate.xhtml";
 			}
 		} else {
 			if (plainMode) {
-				d = plainTemplate;
+				return "plaintemplate.xhtml";
 			} else {
-				d = template;
+				return "template.xhtml";
 			}
 		}
-		d = XML.clone(d);
-		if (!plainMode) {
-			if (removeQuestionCss) {
-				XML.remove(XML.find(d, "ss", "here"));
-			} else {
-				XML.find(d, "ss", "here").removeAttribute("ss");
-			}
-		}
-		return d;
 	}
 
 	/**

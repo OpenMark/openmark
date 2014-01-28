@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import om.Log;
 import om.OmException;
 import om.tnavigator.NavigatorConfig;
+import om.tnavigator.sessions.TemplateLoader;
 import om.tnavigator.util.OMVisitor;
 import util.misc.ErrorMessageParts;
 import util.misc.Strings;
@@ -41,20 +42,13 @@ import util.misc.UtilityException;
  *  place the following node into the navigator.xml
  *  <br /><br />
  *  <RequestManagement>requestbased</RequestManagement>
- * TODO:
- * Currently the NavigatorConfig is placed within this class.  This is for
- *  the handling of IP restrictions which currently reside within this object.
- *  Ideally these should be extracted from the NavigatorConfig and placed into
- *  a seperate concern which this class is composed of instead.
- * 
+ *
  * @author Trevor Hinson
  */
 
 public abstract class AbstractOpenMarkServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -6026057637254633705L;
-
-	private static String PATH = "WEB-INF/templates";
 
 	private static String NAVIGATOR_XML = "navigator.xml";
 
@@ -70,9 +64,11 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 
 	private ErrorManagement errorManagement;
 
-	public File getTemplatesFolder() {
-		return new File(getServletContext().getRealPath(PATH));
-	}
+	/**
+	 * Standard template loader. Used for system pages, and when a test does
+	 * not specify a different template set.
+	 */
+	private TemplateLoader templateLoader;
 
 	protected String getErrorMessageFor(String s) {
 		return "Unable to continue as the " + s + " implementation was null.";
@@ -97,6 +93,17 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 			throw new ServletException(getErrorMessageFor("ErrorManagement"));
 		}
 		return errorManagement;
+	}
+
+	/**
+	 * @return the template loader for this servlet.
+	 * @throws ServletException
+	 */
+	protected TemplateLoader getTemplateLoader() throws ServletException {
+		if (null == templateLoader) {
+			throw new ServletException("Template loader not configured.");
+		}
+		return templateLoader;
 	}
 
 	/**
@@ -403,6 +410,16 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 				x);
 		} catch (IOException x) {
 			throw new ServletException("Error loading NavigatorConfig file", x);
+		}
+
+		try
+		{
+			templateLoader = new TemplateLoader(new File(
+					getServletContext().getRealPath(navigatorConfig.getTemplateLocation())));
+		}
+		catch(OmException e)
+		{
+			throw new ServletException("Error creating TemplateLoader", e);
 		}
 	}
 

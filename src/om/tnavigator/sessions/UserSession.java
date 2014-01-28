@@ -18,12 +18,16 @@
 package om.tnavigator.sessions;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.ServletContext;
 
 import om.OmException;
 import om.OmVersion;
 import om.axis.qengine.Resource;
+import om.tnavigator.NavigatorConfig;
 import om.tnavigator.OmServiceBalancer;
 import om.tnavigator.auth.UserDetails;
 import om.tnavigator.teststructure.TestDefinition;
@@ -31,6 +35,8 @@ import om.tnavigator.teststructure.TestDeployment;
 import om.tnavigator.teststructure.TestGroup;
 import om.tnavigator.teststructure.TestLeaf;
 import om.tnavigator.teststructure.TestRealisation;
+
+import org.w3c.dom.Document;
 
 /** Data stored about particular user */
 public class UserSession
@@ -55,6 +61,8 @@ public class UserSession
 
 	/** Current test definition (null for single question) */
 	protected TestDefinition testDefinition = null;
+
+	protected TemplateLoader templateLoader;
 
 	/**
 	 * The test realisation, that is, exactly what sections
@@ -174,6 +182,11 @@ public class UserSession
 		{
 			tdDeployment = new TestDeployment(deployFile);
 		}
+	}
+
+	public void initialiseTemplateLoader(NavigatorConfig nc, ServletContext sc) throws OmException {
+		templateLoader = TemplateLoader.make(tdDeployment.getTemplateSet(), nc, sc);
+
 	}
 
 	/**
@@ -378,5 +391,40 @@ public class UserSession
 		testPosition = 0;
 		bFinished = finished;
 		navigatorVersion = OmVersion.getVersion();
+	}
+
+	/**
+	 * Load and parse an XHTML template from the set that should be used for this test.
+	 * @param name the template name. E.g. "templates.xhtml".
+	 * @return the parsed template.
+	 * @throws IOException
+	 */
+	public Document loadTemplate(String name) throws IOException
+	{
+		return templateLoader.loadTemplate(name);
+	}
+
+	/**
+	 * Load and parse an XHTML template from the set that should be used for this test,
+	 * and deal with the per-question stylesheet tag.
+	 * @param name the template name. E.g. "templates.xhtml".
+	 * @param removeQuestionCss whether to strip out the link to the per-question stylesheet, if present.
+	 * @return the parsed template.
+	 * @throws IOException
+	 */
+	public Document loadTemplate(String name, boolean removeQuestionCss) throws IOException
+	{
+		return templateLoader.loadTemplate(name, removeQuestionCss);
+	}
+
+	/**
+	 * Load a string template from the set that should be used for this test.
+	 * @param name the template name.
+	 * @return the contents of that template. E.g. "submit.email.txt".
+	 * @throws IOException
+	 */
+	public String loadStringTemplate(String name) throws IOException
+	{
+		return templateLoader.loadStringTemplate(name);
 	}
 }
