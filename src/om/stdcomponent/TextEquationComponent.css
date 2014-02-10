@@ -7,11 +7,11 @@
  * Superscript and subscript: don't use default styling, it does weird things to
  * line height. This fix comes from https://github.com/necolas/normalize.css
  * This is also almost the same as is used in the VLE. (VLE uses 80%, not 85%.
- * We use 85% to be closer to rendered equations.)
+ * We use 0.85em to be closer to rendered equations.)
  */
 .om .textequation sub,
 .om .textequation sup {
-    font-size: 85%;
+    font-size: 0.85em;
     position: relative;
     vertical-align: baseline;
 }

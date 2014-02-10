@@ -37,15 +37,3 @@
   /* This choice of font is at the request of the OU Arts faculty. */
   font-family: Palatino Linotype, Verdana, sans-serif;
 }
-/* If you don't do code like the below, sub/sup take loads of room plus IE
-   doesn't leave enough space for them */
-.winie-6 sub,.winie-7 sub
-{
-  vertical-align: -%%SIZE:4px%%;
-  line-height:%%SIZE:20px%%;
-}
-.winie-6 sup,.winie-7 sup
-{
-  vertical-align: %%SIZE:5px%%;
-  line-height:%%SIZE:21px%%;
-}

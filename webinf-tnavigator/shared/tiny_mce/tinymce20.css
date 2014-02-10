@@ -6,7 +6,7 @@ body#tinymce {
 }
 body#tinymce sub,
 body#tinymce sup {
-    font-size: 85%;
+    font-size: 0.85em;
     position: relative;
     vertical-align: baseline;
 }
