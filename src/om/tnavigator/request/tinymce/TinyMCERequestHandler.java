@@ -58,12 +58,11 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 		String fullPath = determineTinyMCEResourceFullPath(filePath,
 			ra.getServletContext());
 		byte[] bytes = {};
-		String mimeType = "UTF-8";
 		String suffix = getFileNameSuffix(fullPath);
 		try {
 			boolean addExpiresHeader = true;
 			if (imageTypes.contains(suffix)) {
-				mimeType = MimeTypes.getMimeType(fullPath);
+				response.setContentType(MimeTypes.getMimeType(fullPath));
 				ImageIO.setUseCache(false);
 				BufferedImage bi = ImageIO.read(new File(fullPath));
 				bytes = convert(bi, suffix);
@@ -74,9 +73,13 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 					s = caterForDynamicSettings(f, s, ra);
 					addExpiresHeader = false;
 				}
-				bytes = s.getBytes(mimeType);
+				if (f.getName().contains(".css")) {
+					response.setContentType(MimeTypes.getMimeType(".css"));
+				} else {
+				}
+				response.setCharacterEncoding("UTF-8");
+				bytes = s.getBytes("UTF-8");
 			}
-			response.setCharacterEncoding(mimeType);
 			response.setContentLength(bytes.length);
 			if (addExpiresHeader) {
 				// Set expiry for 4 hours ...
@@ -189,7 +192,7 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 		if (fileName.startsWith(SHARED_AREA)) {
 			fullPath = sc.getRealPath(fileName);
 		} else {
-			if (fileName.contains("settings") || fileName.matches("(.*)tinymce(15|20?)\\.css")) {
+			if (fileName.contains("settings") || fileName.matches("(.*)tinymce(15|20)?\\.css")) {
 				// Remove version number from fileName.
 				n = fileName.indexOf("/");
 				int l = fileName.lastIndexOf("/");

@@ -1,2 +1,18 @@
-/* This is needed in addition to lib/editor/supsub/extra.css. */
-body {font:26px/1.231 arial,helvetica,clean,sans-serif;}
+body#tinymce {
+    margin: 0;
+    padding: 1px 0 0 3px;
+    font: 26px Verdana, sans-serif;
+    line-height: 2;
+}
+body#tinymce sub,
+body#tinymce sup {
+    font-size: 85%;
+    position: relative;
+    vertical-align: baseline;
+}
+body#tinymce sup {
+    top: -0.4em;
+}
+body#tinymce sub {
+    bottom: -0.2em;
+}
