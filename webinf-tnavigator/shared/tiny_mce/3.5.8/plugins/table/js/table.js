@@ -58,8 +58,8 @@ function insertTable() {
 
 	// Update table
 	if (action == "update") {
-		dom.setAttrib(elm, 'cellPadding', cellpadding, true);
-		dom.setAttrib(elm, 'cellSpacing', cellspacing, true);
+		dom.setAttrib(elm, 'cellpadding', cellpadding, true);
+		dom.setAttrib(elm, 'cellspacing', cellspacing, true);
 
 		if (!isCssSize(border)) {
 			dom.setAttrib(elm, 'border', border);

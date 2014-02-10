@@ -632,7 +632,7 @@
 			if (!DOM.boxModel)
 				n = DOM.add(n, 'div', {'class' : 'mceOldBoxModel'});
 
-			n = sc = DOM.add(n, 'table', {role : "presentation", id : ed.id + '_tbl', 'class' : 'mceLayout', cellSpacing : 0, cellPadding : 0});
+			n = sc = DOM.add(n, 'table', {role : "presentation", id : ed.id + '_tbl', 'class' : 'mceLayout', cellspacing : 0, cellpadding : 0});
 			n = tb = DOM.add(n, 'tbody');
 
 			switch ((s.theme_advanced_layout_manager || '').toLowerCase()) {
@@ -812,7 +812,7 @@
 				n = c = DOM.create('div', {style : 'position:relative'});
 				n = DOM.add(n, 'div', {id : ed.id + '_external', 'class' : 'mceExternalToolbar'});
 				DOM.add(n, 'a', {id : ed.id + '_external_close', href : 'javascript:;', 'class' : 'mceExternalClose'});
-				n = DOM.add(n, 'table', {id : ed.id + '_tblext', cellSpacing : 0, cellPadding : 0});
+				n = DOM.add(n, 'table', {id : ed.id + '_tblext', cellspacing : 0, cellpadding : 0});
 				etb = DOM.add(n, 'tbody');
 
 				if (p.firstChild.className == 'mceOldBoxModel')
@@ -956,7 +956,7 @@
 			a = s.theme_advanced_toolbar_align.toLowerCase();
 			a = 'mce' + t._ufirst(a);
 
-			n = DOM.add(DOM.add(c, 'tr', {role: 'toolbar'}), 'td', {'class' : 'mceToolbar ' + a, "role":"toolbar"});
+			n = DOM.add(DOM.add(c, 'tr', {role: 'presentation'}), 'td', {'class' : 'mceToolbar ' + a, "role":"toolbar"});
 
 			// Create toolbar and add the controls
 			for (i=1; (v = s['theme_advanced_buttons' + i]); i++) {

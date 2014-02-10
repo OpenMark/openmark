@@ -1,0 +1,17 @@
+body#tinymce {
+    margin: 0;
+    padding: 1px 0 0 3px;
+    line-height: 2;
+}
+body#tinymce sub,
+body#tinymce sup {
+    font-size: 85%;
+    position: relative;
+    vertical-align: baseline;
+}
+body#tinymce sup {
+    top: -0.4em;
+}
+body#tinymce sub {
+    bottom: -0.2em;
+}

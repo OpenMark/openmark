@@ -130,7 +130,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 
 	private Log deployLog;
 	
-	private static String TINYMCE="tiny_mce/3.5.7b/";
+	private static String TINYMCE="tiny_mce/3.5.8/";
 
 	/** Clear/reset question data */
 	private void resetQuestion()
