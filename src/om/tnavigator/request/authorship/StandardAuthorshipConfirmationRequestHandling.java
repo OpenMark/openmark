@@ -123,7 +123,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 					ra.getPrincipleObjects().put(RequestParameterNames.AuthorshipXMLDocument.toString(),
 							userSession.loadTemplate("authorship-confirmation.xml"));
 					Document parentTemplate = userSession.loadTemplate(ns.templateName(
-							RequestHelpers.inPlainMode(request), userSession.isSingle()), false);
+							RequestHelpers.inPlainMode(request), userSession.isSingle()), true);
 					ra.getPrincipleObjects().put(RequestParameterNames.ParentTemplate.toString(), parentTemplate);
 				} catch (Exception x) {
 					throw new RequestHandlingException(x);

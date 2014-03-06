@@ -10,6 +10,7 @@ import om.OmException;
 import om.tnavigator.NavigatorConfig;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import util.misc.IO;
 import util.xml.XML;
@@ -75,13 +76,16 @@ public class TemplateLoader
 	{
 		Document d = loadTemplate(name);
 
-		if (removeQuestionCss)
-		{
-			XML.remove(XML.find(d, "ss", "here"));
-		}
-		else
-		{
-			XML.find(d, "ss", "here").removeAttribute("ss");
+		Element e = XML.find(d.getDocumentElement(), "ss", "here");
+		if (e != null) {
+			if (removeQuestionCss)
+			{
+				XML.remove(e);
+			}
+			else
+			{
+				e.removeAttribute("ss");
+			}
 		}
 
 		return d;
