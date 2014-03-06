@@ -151,7 +151,6 @@ public class ReportDispatcher
 		if (report != null)
 		{
 			if((report.isSecurityRestricted()
-				//&& !ns.checkSecureIP(request))
 				&& !IPAddressCheckUtil.checkSecureIP(request, ns.getLog(), ns.getNavigatorConfig()))
 				|| !IPAddressCheckUtil.checkTrustedIP(request, ns.getLog(), ns.getNavigatorConfig()))
 			{
@@ -178,16 +177,12 @@ public class ReportDispatcher
 	{
 		ns.getLog().logDebug("ReportDispatcher", "Handling report request for report " + suffix);
 
-		// Require admin privileges AND within university (just for paranoia's sake)
-		// AND view report thing
+		// Require admin privileges AND view report thing.
 		if(!us.bAdmin || !us.bAllowReports)
 		{
-			ns.sendError(us,request,response,
-				HttpServletResponse.SC_FORBIDDEN,false,false, null, "Forbidden", "You do not have permission to view reports.", null);
-		}
-		if (!IPAddressCheckUtil.checkTrustedIP(request, ns.getLog(), ns.getNavigatorConfig())) {
-			ns.sendError(us,request,response,HttpServletResponse.SC_FORBIDDEN,
-				false,false,null, "Forbidden", "Reports may only be accessed within the local network.", null);
+			ns.sendError(us,request, response,
+					HttpServletResponse.SC_FORBIDDEN, false, false, null,
+					"Forbidden", "You do not have permission to view reports.", null);
 		}
 
 		String[] bits = suffix.split("[!?]", 2);
