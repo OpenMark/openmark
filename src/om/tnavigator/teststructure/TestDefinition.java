@@ -42,7 +42,8 @@ public class TestDefinition
 	/** One of the NAVLOCATION_ constants. */
 	private int iNavLocation;
 
-	private String sLabelSet="",sQuestionNumberHeader="";
+	private String sLabelSet = "!default";
+	private String sQuestionNumberHeader = "";
 
 	private Element eConfirmParagraphs;
 	private String sConfirmButton,sConfirmTitle;
