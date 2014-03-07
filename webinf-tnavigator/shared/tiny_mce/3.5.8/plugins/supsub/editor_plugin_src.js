@@ -70,6 +70,10 @@
                     break;
                 }
             });
+            // This tool-tip contains spurious information, and shows up in IE11. Just blank it.
+            setTimeout(function() {
+                tinymce.DOM.setAttrib(tinymce.DOM.select('td.mceToolbar a[accesskey=z]'), 'title', '');
+            }, 500);
         },
 
         /**
