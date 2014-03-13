@@ -73,7 +73,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 	private final static boolean 	HTML_IT=true;
 
 	private final static String TESTBANK="C:\\Program Files\\apache-tomcat-6.0.33\\webapps\\om-tn\\testbank";
-	private static String WHERESTRING1="t.deploy=\'%s\' and t.finishedclock < '%s'";
+	private static String WHERESTRING1="t.deploy=\'%s\' and t.clock < '%s'";
 	private static String WHERESTRING2="ti=\'%s\'";
 	private static String WHERESTRING3="qi=\'%s\'";
 
