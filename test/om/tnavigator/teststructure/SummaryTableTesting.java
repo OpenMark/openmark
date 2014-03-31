@@ -63,7 +63,7 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 		res.add(number);
 		res.add("sQ [" + number + "]");
 		res.add("sA [" + number + "]");
-		
+
 //		change this ... to be the same as the sID !!!
 		//res.add("last question : [" + number + "]" );
 		res.add("samples.mu120.module5.question0" + number);
@@ -104,8 +104,7 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	private SummaryDetails createSummaryDetails(JUnitTestCaseUserSession usession,
 		boolean bPlain, boolean bIncludeQuestions, boolean bIncludeAttempts,
 		boolean bIncludeScore) throws Exception {
-		return SummaryDetailsGeneration.generateSummaryDetails(usession,
-			nParent, bPlain, bIncludeQuestions, bIncludeAttempts, bIncludeScore);
+		return new SummaryDetails(usession, nParent, bPlain, bIncludeQuestions, bIncludeAttempts, bIncludeScore);
 	}
 
 	private JUnitTestCaseUserSession createSession(String testID, boolean finished,
@@ -302,7 +301,7 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	 *  assumption if wrong then it is ok to fail (as that is part of the test).
 	 * @param methods
 	 * @param valueState
-	 * @exception 
+	 * @exception
 	 * @author Trevor Hinson
 	 */
 	private void invoke(Object obj, Method method, Object valueState)
@@ -437,16 +436,16 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 		JUnitTestCaseTestDefinitionOptions options = new JUnitTestCaseTestDefinitionOptions();
 		// if this is true then we fail with the numbering !!!
 		options.allBooleans(true);
-		
+
 		options.setbNumberBySection(true);
-		
+
 		JUnitTestCaseUserSession usession = createSession("2", false,
 			System.currentTimeMillis(), 1, cs, null);
-		
+
 		JUnitTestCaseTestDefinition tds = usession.getJUnitTestDefinition();
 
 		String section = "";
-		
+
 		tds.setField("sQuestionNumberHeader", section);
 
 		String header2 = tds.getsQuestionNumberHeader();
@@ -469,9 +468,9 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 		assertNotNull(log);
 		CombinedScore cs = dummyScore();
 		JUnitTestCaseTestDefinitionOptions options = new JUnitTestCaseTestDefinitionOptions();
-		
+
 		options.allBooleans(false);
-		
+
 		JUnitTestCaseUserSession usession = createSession("2", false,
 			System.currentTimeMillis(), 1, cs, options);
 		assertNotNull(usession);
@@ -515,15 +514,15 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	}
 
 	private class SummaryTableTestCaseResultSet extends JUnitTestCaseResultSet {
-		
+
 		private List<List<Object>> results;
-		
+
 		private int currentPosition = -1;
-		
+
 		public SummaryTableTestCaseResultSet(List<List<Object>> play) {
 			results = play;
 		}
-		
+
 		@Override
 		// Here we move through the composite results ...
 		public boolean next() throws SQLException {
@@ -534,7 +533,7 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 			}
 			return b;
 		}
-		
+
 		@Override
 		public String getString(int columnIndex) throws SQLException {
 			String s = null;
@@ -544,7 +543,7 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 			}
 			return s;
 		}
-		
+
 		@Override
 		public int getInt(int columnIndex) throws SQLException {
 			int n = -1;
@@ -554,7 +553,7 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 			}
 			return n;
 		}
-		
+
 		private Object retrieve(int columnIndex) {
 			Object obj = null;
 			if (null != results) {
@@ -565,7 +564,7 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 			}
 			return obj;
 		}
-		
+
 	}
 
 	private class SummaryTableTestCaseOmQueries extends JUnitTestCaseOmQueries {
@@ -578,7 +577,7 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 			throws SQLException {
 			return dummyResults;
 		}
-		
+
 	}
 
 }

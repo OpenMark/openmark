@@ -77,9 +77,9 @@ public class SummaryTableBuilder {
 		throws OmFormatException {
 		TableComponents tableComponents = new TableComponents();
 		tableComponents.tableParent = nTableParent;
-		tableComponents.eTable = XML.createChild(nTableParent, "table"); 
+		tableComponents.eTable = XML.createChild(nTableParent, "table");
 		tableComponents.eTable.setAttribute("class", "topheaders");
-		tableComponents.eTR = XML.createChild(tableComponents.eTable, "tr"); 
+		tableComponents.eTR = XML.createChild(tableComponents.eTable, "tr");
 		Element eTH = XML.createChild(tableComponents.eTR, "th");
 		eTH.setAttribute("scope", "col");
 		Element eAbbr = XML.createChild(eTH, "abbr");
@@ -155,7 +155,7 @@ public class SummaryTableBuilder {
 	}
 
 	void iterateResults(SummaryDetails sd, ResultSet rs, DisplayDetails dd)
-		throws SQLException, OmFormatException, IOException {
+			throws SQLException, OmFormatException, IOException {
 		while (rs.next()) {
 			// Keep track of max number
 			int iQuestionNumber = rs.getInt(1);
@@ -202,10 +202,10 @@ public class SummaryTableBuilder {
 
 	private int applyFinishedAttempt(SummaryDetails sd, ResultSet rs,
 		DisplayDetails dd, String sDisplayedSection) throws SQLException, OmFormatException, IOException {
-		
+
 		dd.sDisplayedSection = addSectionRow(sd, dd, sDisplayedSection);
-		
-		
+
+
 		if (sd.isNumberBySection() && !(dd.sPreviousSection == null)
 				&& !(dd.sPreviousSection.equals(dd.sDisplayedSection))) {
 			dd.iOutputCurrentQuestionNumber = 1;
@@ -340,11 +340,11 @@ public class SummaryTableBuilder {
 			for(int i=0; i < sd.getTestLeavesInOrder().length; i++) {
 				if(sd.getTestLeavesInOrder()[i] instanceof TestQuestion) {
 					TestQuestion tempTQ = (TestQuestion) sd.getTestLeavesInOrder()[i];
-					//((TestQuestion)sd.getTestLeavesInOrder()[i]).getID().equals(sQuestion) 
+					//((TestQuestion)sd.getTestLeavesInOrder()[i]).getID().equals(sQuestion)
 					if (tempTQ.getID().equals(sQuestion)) {
 						tq=(TestQuestion)sd.getTestLeavesInOrder()[i];
 						break;
-						
+
 					}
 				}
 			}
@@ -356,10 +356,10 @@ public class SummaryTableBuilder {
 				String
 					sScore=displayScore(ps.getScore(sAxis)),
 					sMax=displayScore(ps.getMax(sAxis));
-		
+
 				XML.createText(eTR,"td",sScore);
 				XML.createText(eTR,"td",sMax);
-		
+
 				if(ePlainRow!=null) {
 					XML.createText(ePlainRow,"Marks" +
 						(sAxis==null ? "" : " ("+sAxis+")")+

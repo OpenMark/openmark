@@ -1,5 +1,6 @@
 package om.tnavigator.teststructure;
 
+import om.tnavigator.sessions.UserSession;
 import om.tnavigator.teststructure.SummaryTableBuilder.TableComponents;
 
 import org.w3c.dom.Node;
@@ -17,91 +18,73 @@ public class SummaryDetails {
 	private TestDefinition testDefinition;
 
 	private boolean numberBySection;
-	
+
 	private boolean includeQuestions;
-	
+
 	private boolean includeAttempts;
-	
+
 	private boolean includeScore;
-	
+
 	private boolean plain;
 
 	private Node parent;
-	
+
 	private Node plainParent;
 
 	private TableComponents tableComponents;
 
-	public int getDbTi() {
-		return dbTi;
+	public SummaryDetails() {
 	}
 
-	public void setDbTi(int n) {
-		dbTi = n;
+	public SummaryDetails(UserSession us,
+			Node nParent,boolean bPlain, boolean bIncludeQuestions,
+			boolean bIncludeAttempts,boolean bIncludeScore) {
+		includeAttempts = bIncludeAttempts;
+		includeQuestions = bIncludeQuestions;
+		includeScore = bIncludeScore;
+		plain = bPlain;
+		parent = nParent;
+		dbTi = us.getDbTi();
+		numberBySection = us.getTestDefinition().isNumberBySection();
+		rootTestGroup = us.getRootTestGroup();
+		testLeavesInOrder = us.getTestLeavesInOrder();
+		testDefinition = us.getTestDefinition();
+	}
+
+	public int getDbTi() {
+		return dbTi;
 	}
 
 	public TestGroup getRootTestGroup() {
 		return rootTestGroup;
 	}
 
-	public void setRootTestGroup(TestGroup rtg) {
-		rootTestGroup = rtg;
-	}
-
 	public TestDefinition getTestDefinition() {
 		return testDefinition;
-	}
-
-	public void setTestDefinition(TestDefinition td) {
-		testDefinition = td;
 	}
 
 	public TestLeaf[] getTestLeavesInOrder() {
 		return testLeavesInOrder;
 	}
 
-	public void setTestLeavesInOrder(TestLeaf[] tl) {
-		testLeavesInOrder = tl;
-	}
-
 	public boolean isNumberBySection() {
 		return numberBySection;
-	}
-
-	public void setNumberBySection(boolean b) {
-		numberBySection = b;
 	}
 
 	public boolean isIncludeQuestions() {
 		return includeQuestions;
 	}
 
-	public void setIncludeQuestions(boolean b) {
-		includeQuestions = b;
-	}
-
 	public boolean isIncludeAttempts() {
 		return includeAttempts;
-	}
-
-	public void setIncludeAttempts(boolean b) {
-		includeAttempts = b;
 	}
 
 	public boolean isIncludeScore() {
 		return includeScore;
 	}
 
-	public void setIncludeScore(boolean b) {
-		includeScore = b;
-	}
-
 	public boolean isPlain() {
 		return plain;
-	}
-
-	public void setPlain(boolean b) {
-		plain = b;
 	}
 
 	public Node getPlainParent() {
@@ -122,9 +105,5 @@ public class SummaryDetails {
 
 	public Node getParent() {
 		return parent;
-	}
-
-	public void setParent(Node n) {
-		parent = n;
 	}
 }

@@ -86,7 +86,6 @@ import om.tnavigator.sessions.TemplateLoader;
 import om.tnavigator.sessions.UserSession;
 import om.tnavigator.teststructure.PreCourseDiagCode;
 import om.tnavigator.teststructure.SummaryDetails;
-import om.tnavigator.teststructure.SummaryDetailsGeneration;
 import om.tnavigator.teststructure.SummaryTableBuilder;
 import om.tnavigator.teststructure.TestDefinition;
 import om.tnavigator.teststructure.TestDeployment;
@@ -1319,9 +1318,8 @@ public class NavigatorServlet extends HttpServlet {
 	private void addSummaryTable(RequestTimings rt, UserSession us,
 			Node nParent, boolean bPlain, boolean bIncludeQuestions,
 			boolean bIncludeAttempts, boolean bIncludeScore) throws Exception {
-		SummaryDetails sd = SummaryDetailsGeneration.generateSummaryDetails(us,
-				nParent, bPlain, bIncludeQuestions, bIncludeAttempts,
-				bIncludeScore);
+		SummaryDetails sd = new SummaryDetails(us, nParent, bPlain,
+				bIncludeQuestions, bIncludeAttempts, bIncludeScore);
 		SummaryTableBuilder stb = new SummaryTableBuilder(da, oq, labelSets);
 		rt.setDatabaseElapsedTime(stb.addSummaryTable(sd));
 	}
