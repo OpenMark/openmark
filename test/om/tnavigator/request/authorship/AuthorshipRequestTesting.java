@@ -15,7 +15,7 @@ import om.abstractservlet.RenderedOutput;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
-import om.tnavigator.JUnitTestCaseHttpServletRequest;
+import om.tnavigator.MockHttpServletRequest;
 import om.tnavigator.JUnitTestCaseUserSession;
 import om.tnavigator.db.JUnitTestCaseOmQueries;
 import om.tnavigator.db.OmQueries;
@@ -302,7 +302,7 @@ public class AuthorshipRequestTesting extends AbstractAuthorshipTestCase {
 		}
 	}
 
-	private class AuthorshipConfirmationHttpServletRequest extends JUnitTestCaseHttpServletRequest {
+	private class AuthorshipConfirmationHttpServletRequest extends MockHttpServletRequest {
 		
 		private Map<String, String> parameters = new HashMap<String, String>();
 		

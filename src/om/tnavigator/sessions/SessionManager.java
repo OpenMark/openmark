@@ -1,3 +1,20 @@
+/* OpenMark online assessment system
+ * Copyright (C) 2007 The Open University
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package om.tnavigator.sessions;
 
 import java.io.File;
@@ -114,7 +131,7 @@ public class SessionManager
 	 * Kill sessions with a particular ID on other servers.
 	 * @param username the session id to kill.
 	 */
-	public void killOtherSessions(String username)
+	public void killSessionsOnOtherNavigators(String username)
 	{
 		new RemoteSessionKiller(this, username, nc.getOtherNavigators());
 	}
@@ -131,7 +148,7 @@ public class SessionManager
 
 	/**
 	 * @param authentication the authentication plugin.
-	 * @param request the reuqest being handled.
+	 * @param request the request being handled.
 	 * @param response the response we will send.
 	 * @param requestStartTime the time when we started handling this request.
 	 * @param sTestID the name of the test being requested.
@@ -183,7 +200,8 @@ public class SessionManager
 			}
 
 			// New sessions!
-			if (claimedDetails.us == null)
+			boolean newSession = claimedDetails.us == null;
+			if (newSession)
 			{
 				// Check if we've already been redirected.
 				String cookieSetParam = request.getParameter("setcookie");
@@ -200,17 +218,8 @@ public class SessionManager
 					}
 				}
 
-				do
-				{
-					// Make 7-letter random cookie.
-					sCookie = Strings.randomAlNumString(7);
-				} while (sessions.containsKey(sCookie));
-				// And what are the chances of that?
-
-				claimedDetails.us = new UserSession(sCookie);
-				l.logDebug("Created new UserSession.");
-				sessions.put(claimedDetails.us.sCookie, claimedDetails.us);
-				// We do the actual redirect later on outside this synch.
+				claimedDetails.us = new UserSession(getUnusedCookieValue());
+				l.logDebug("Created a new UserSession.");
 
 				// At same time as creating new session, if they're logged in
 				// supposedly, check it's for real. If their cookie doesn't
@@ -221,8 +230,7 @@ public class SessionManager
 					if (!authentication.getUserDetails(request, response, false).isLoggedIn())
 					{
 						// And we need to set this to zero to reflect that
-						// we just wiped
-						// their cookie.
+						// we just wiped their cookie.
 						claimedDetails.iAuthHash = 0;
 					}
 				}
@@ -233,37 +241,73 @@ public class SessionManager
 			if (claimedDetails.us.sCheckedOUCUKey == null && claimedDetails.sOUCU != null)
 			{
 				claimedDetails.us.sCheckedOUCUKey = claimedDetails.sOUCU + "-" + sTestID;
-
-				// Check the temp-forbid list.
-				Long lTimeout = tempForbid.get(claimedDetails.us.sCheckedOUCUKey);
-				if (lTimeout != null && lTimeout.longValue() > System.currentTimeMillis())
+				if (isTemporarilyForbidden(claimedDetails.us.sCheckedOUCUKey))
 				{
-					// Kill session from main list & mark it to send error
-					// message later.
+					// Kill session from main list & mark it to send error message later.
 					killSession(claimedDetails.us);
-					sessions.remove(claimedDetails.us.sCookie);
 					claimedDetails.status = Status.TEMP_FORBID;
 				}
 				else
 				{
-					// If it was a timed-out forbid, get rid of it.
-					if (lTimeout != null)
-						tempForbid.remove(claimedDetails.us.sCheckedOUCUKey);
-
-					// Put this in the OUCU->session map
-					UserSession usOld = usernames.put(claimedDetails.us.sCheckedOUCUKey,
-							claimedDetails.us);
-					// If there was one already there, get rid of it.
-					if (usOld != null)
-					{
-						killSession(usOld);
-					}
-					killOtherSessions(claimedDetails.us.sCheckedOUCUKey);
+					// This session is good. So ensure there are not sessions on
+					// the other servers in the cluster.
+					killSessionsOnOtherNavigators(claimedDetails.us.sCheckedOUCUKey);
 				}
+			}
+
+			if (newSession) {
+				addSession(claimedDetails.us);
 			}
 		}
 
 		return claimedDetails;
+	}
+
+	/**
+	 * Get an unused session cookie value.
+	 * @return
+	 */
+	private String getUnusedCookieValue()
+	{
+		String cookieValue;
+		do
+		{
+			// Make 7-letter random cookie value.
+			cookieValue = Strings.randomAlNumString(7);
+		} while (sessions.containsKey(cookieValue));
+		// And what are the chances of that?
+		return cookieValue;
+	}
+
+	/**
+	 * Add a new session.
+	 * @param newSession the session to add.
+	 */
+	void addSession(UserSession newSession)
+	{
+		sessions.put(newSession.sCookie, newSession);
+		UserSession oldSession = usernames.put(newSession.sCheckedOUCUKey, newSession);
+		// If there was one already there, get rid of it.
+		if (oldSession != null)
+		{
+			killSession(oldSession);
+		}
+	}
+
+	/**
+	 * @param oucuAndTestId
+	 * @return is this combination of OUCU and test id currently forbidden?
+	 */
+	boolean isTemporarilyForbidden(String oucuAndTestId) {
+		// Check the temp-forbid list.
+		Long forbiddenUntil = tempForbid.get(oucuAndTestId);
+		boolean forbidden = forbiddenUntil != null && forbiddenUntil.longValue() > System.currentTimeMillis();
+		// If it was a timed-out forbid, get rid of it.
+		if (forbiddenUntil != null && !forbidden)
+		{
+			tempForbid.remove(oucuAndTestId);
+		}
+		return forbidden;
 	}
 
 	/**
@@ -386,7 +430,7 @@ public class SessionManager
 				killSession(us);
 			}
 
-			// Forbid that user for 1 minute .This is intended to prevent the
+			// Forbid that user for 1 minute. This is intended to prevent the
 			// possibility of timing issues allowing a user to get logged on to
 			// both servers at once; should that happen, chances are they'll
 			// instead be *dumped* from both servers at once (for 60 seconds).

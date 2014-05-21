@@ -212,6 +212,15 @@ public class NavigatorConfig
 	private String[] secureAddresses;
 
 	/**
+	 * Make a blank config. Intended for unit tests only.
+	 * @throws IOException
+	 */
+	public NavigatorConfig() throws IOException {
+		extraReports = new String[] {};
+		otherNavigators = new String[] {};
+	}
+
+	/**
 	 * Initialises config.
 	 * @param fConfig Config file
 	 * @throws IOException If there's any problem parsing the file etc.

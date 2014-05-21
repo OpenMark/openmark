@@ -781,6 +781,10 @@ public class NavigatorServlet extends HttpServlet {
 								+ "has appeared in error, please wait 60 seconds then try again.",
 						null);
 				break;
+
+			case OK:
+				// Otherwise, we are OK, so continue.
+				break;
 			}
 
 			UserSession us = claimedDetails.us;
