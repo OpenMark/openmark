@@ -748,7 +748,7 @@ public class NavigatorServlet extends HttpServlet {
 			if (request.getQueryString() != null)
 				sCommand += "?" + request.getQueryString();
 
-			// The temporary settingcookie parameter is not significant to
+			// The temporary setcookie parameter is not significant to
 			// sCommand so strip it.
 			sCommand.replaceAll("[?&]setcookie=?[0-9]*", "");
 
@@ -787,6 +787,21 @@ public class NavigatorServlet extends HttpServlet {
 				break;
 			}
 
+			if (bPost && claimedDetails.us.ud == null)
+			{
+				// If we are trying to createa a new session, and this was a
+				// POST request, then something has gone badly wrong. Therefore,
+				// display an error, rather than silently doing a redirect that
+				// is mysterious and confusing.
+				sendError(claimedDetails.us, request, response,
+						HttpServletResponse.SC_FORBIDDEN, false,
+						false, sTestID, ACCESSOUTOFSEQUENCE,
+						"You have entered data outside the normal sequence. This can occur "
+							+ "if you are switching back and forth between different web "
+							+ "browsers or devices in the middle of a test. "
+							+ "Please don't do that.", null);
+			}
+
 			UserSession us = claimedDetails.us;
 
 			// Synchronize on the session - if we get multiple requests for same
@@ -807,6 +822,7 @@ public class NavigatorServlet extends HttpServlet {
 				{
 					return;
 				}
+
 				us.initialiseTemplateLoader(nc, getServletContext());
 
 				if (request.getParameter("setcookie") != null)
@@ -3052,7 +3068,7 @@ public class NavigatorServlet extends HttpServlet {
 							HttpServletResponse.SC_FORBIDDEN,
 							false,
 							false,
-							null,
+							us.getTestId(),
 							ACCESSOUTOFSEQUENCE,
 							"You have entered data outside the normal sequence. This can occur "
 									+ "if you use your browser's Back or Forward buttons; please don't use "
@@ -4127,9 +4143,9 @@ public class NavigatorServlet extends HttpServlet {
 	 * under question at the time of refactoring this).
 	 */
 	public void sendError(UserSession us, HttpServletRequest request,
-		HttpServletResponse response, int code, boolean isBug,
-		boolean keepSession, String backToTest, String title,
-		String message, Throwable exception) throws StopException {
+			HttpServletResponse response, int code, boolean isBug,
+			boolean keepSession, String backToTest, String title,
+			String message, Throwable exception) throws StopException {
 		OMVisitor visitor = new OMVisitor(da, oq, getAuthentication(), getServletContext());
 		if (!keepSession && us != null) {
 			l.logDebug("Throwing away session.");

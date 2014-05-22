@@ -56,10 +56,10 @@ public class SessionManager
 	private final static long FORBID_PERIOD = 60 * 1000;
 
 	/** Map of cookie value (String) -> UserSession */
-	private Map<String, UserSession> sessions = new HashMap<String, UserSession>();
+	private Map<String, UserSession> sessionsByCookieValue = new HashMap<String, UserSession>();
 
 	/** Map of OUCU-testID (String) -> UserSession */
-	private Map<String, UserSession> usernames = new HashMap<String, UserSession>();
+	private Map<String, UserSession> sessionsByUsernameAndTestId = new HashMap<String, UserSession>();
 
 	/** Map of OUCU-testID (String) -> Long (date that prohibition expires) */
 	private Map<String, Long> tempForbid = new HashMap<String, Long>();
@@ -93,13 +93,13 @@ public class SessionManager
 			@Override
 			protected void tick()
 			{
-				synchronized (sessions)
+				synchronized (sessionsByCookieValue)
 				{
 					// See if any sessions need expiring
 					long now = System.currentTimeMillis();
 					long expiryTime = now - SESSIONEXPIRY;
 
-					for (UserSession us : sessions.values())
+					for (UserSession us : sessionsByCookieValue.values())
 					{
 						if (us.getLastActionTime() < expiryTime)
 						{
@@ -129,11 +129,11 @@ public class SessionManager
 
 	/**
 	 * Kill sessions with a particular ID on other servers.
-	 * @param username the session id to kill.
+	 * @param usernameAndTestId the user/test combination to kill on other servers.
 	 */
-	public void killSessionsOnOtherNavigators(String username)
+	public void killSessionsOnOtherNavigators(String usernameAndTestId)
 	{
-		new RemoteSessionKiller(this, username, nc.getOtherNavigators());
+		new RemoteSessionKiller(this, usernameAndTestId, nc.getOtherNavigators());
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class SessionManager
 
 		// If they haven't got a cookie or it's unknown, assign them one and
 		// redirect.
-		synchronized (sessions)
+		synchronized (sessionsByCookieValue)
 		{
 			// See if they've got a cookie for this test
 			String sCookie = GeneralUtils.getCookie(request, getTestCookieName(sTestID));
@@ -185,7 +185,7 @@ public class SessionManager
 			// Check whether they already have a session or not
 			if (sCookie != null)
 			{
-				claimedDetails.us = sessions.get(sCookie);
+				claimedDetails.us = sessionsByCookieValue.get(sCookie);
 			}
 
 			if (claimedDetails.us != null)
@@ -274,24 +274,9 @@ public class SessionManager
 		{
 			// Make 7-letter random cookie value.
 			cookieValue = Strings.randomAlNumString(7);
-		} while (sessions.containsKey(cookieValue));
+		} while (sessionsByCookieValue.containsKey(cookieValue));
 		// And what are the chances of that?
 		return cookieValue;
-	}
-
-	/**
-	 * Add a new session.
-	 * @param newSession the session to add.
-	 */
-	void addSession(UserSession newSession)
-	{
-		sessions.put(newSession.sCookie, newSession);
-		UserSession oldSession = usernames.put(newSession.sCheckedOUCUKey, newSession);
-		// If there was one already there, get rid of it.
-		if (oldSession != null)
-		{
-			killSession(oldSession);
-		}
 	}
 
 	/**
@@ -346,7 +331,8 @@ public class SessionManager
 			return false;
 		}
 
-		// Get auth if needed
+		// If they have already been authenticated previously in this session,
+		// we don't need to do it again.
 		if (us.ud != null)
 		{
 			return true;
@@ -390,16 +376,15 @@ public class SessionManager
 		else
 		{
 			// If they're not logged in, and we need to create a new fake OUCU
-			// for them, and then redirect.
-			// Make 8-letter random OUCU. We don't bother
-			// storing a list, but there are about 3,000 billion
+			// for them, and then redirect. Make 8-letter random OUCU. We don't
+			// bother storing a list, but there are about 3,000 billion
 			// possibilities so it should be OK.
 			us.sOUCU = "_" + Strings.randomAlNumString(7);
 
 			claimedDetails.iAuthHash = (authentication.getUncheckedUserDetails(request).getCookie() +
 					"/" + us.sOUCU).hashCode();
 
-			// Set it in cookie for future sessions
+			// Set it in cookie for future sessions.
 			Cookie c = new Cookie(NavigatorServlet.FAKEOUCUCOOKIENAME, us.sOUCU);
 			c.setPath("/");
 			// Expiry is 4 years
@@ -421,10 +406,10 @@ public class SessionManager
 
 	public void blockUserTemporarily(String blockedUsername)
 	{
-		synchronized (sessions)
+		synchronized (sessionsByCookieValue)
 		{
 			// Ditch existing session.
-			UserSession us = usernames.remove(blockedUsername);
+			UserSession us = sessionsByUsernameAndTestId.remove(blockedUsername);
 			if (us != null)
 			{
 				killSession(us);
@@ -439,15 +424,33 @@ public class SessionManager
 	}
 
 	/**
+	 * Add a new session.
+	 * @param newSession the session to add.
+	 */
+	void addSession(UserSession newSession)
+	{
+		synchronized (sessionsByCookieValue)
+		{
+			sessionsByCookieValue.put(newSession.sCookie, newSession);
+			UserSession oldSession = sessionsByUsernameAndTestId.put(newSession.sCheckedOUCUKey, newSession);
+			// If there was one already there, get rid of it.
+			if (oldSession != null)
+			{
+				sessionsByCookieValue.remove(oldSession.sCookie);
+			}
+		}
+	}
+
+	/**
 	 * Remove as session from the list of active sessions.
 	 * @param us the session to kill.
 	 */
 	public void killSession(UserSession us)
 	{
-		synchronized (sessions)
+		synchronized (sessionsByCookieValue)
 		{
-			sessions.remove(us.sCookie);
-			usernames.remove(us.sCheckedOUCUKey);
+			sessionsByCookieValue.remove(us.sCookie);
+			sessionsByUsernameAndTestId.remove(us.sCheckedOUCUKey);
 		}
 	}
 
@@ -457,9 +460,9 @@ public class SessionManager
 	 */
 	public void obtainPerformanceInfo(Map<String, Object> performanceInfo)
 	{
-		synchronized (sessions)
+		synchronized (sessionsByCookieValue)
 		{
-			performanceInfo.put("SESSIONS", sessions.size() + "");
+			performanceInfo.put("SESSIONS", sessionsByCookieValue.size() + "");
 			performanceInfo.put("TEMPFORBIDS", tempForbid.size() + "");
 		}
 	}

@@ -31,7 +31,6 @@ import om.tnavigator.NavigatorConfig;
 import om.tnavigator.auth.Authentication;
 import om.tnavigator.auth.simple.MockAuthentication;
 
-import org.hamcrest.core.StringStartsWith;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -107,8 +106,6 @@ public class SessionManagerTest
 					request, response, claimedDetails, "valid-test-mu120.module5",
 					loadFileFromClassPath("valid-test-mu120.module5.deploy.xml"));
 			Assert.assertFalse(sessionOK);
-			Assert.assertThat(response.getRedirectUrl(),
-					new StringStartsWith("http://example.com/valid-test-mu120.module5/?setcookie="));
 			Assert.assertEquals(1, response.getNumCookies());
 			Assert.assertEquals(us.sCookie,
 					response.getCookieValue("tnavigator_session_valid-test-mu120.module5"));

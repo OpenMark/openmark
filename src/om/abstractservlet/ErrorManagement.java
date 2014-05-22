@@ -331,8 +331,8 @@ public class ErrorManagement implements GracefulFinalization {
 			m.put("ACCESSCSS", RequestHelpers.getAccessCSSAppend(request));
 			if (emp.getTitle() != ACCESSOUTOFSEQUENCE) {
 				XML.remove(XML.find(d, "id", "accessoutofsequence"));
-			} else {
-				upu.sTestID = null != us ? us.getTestId() : backToTest;
+			} else if (null != us && null != us.getTestId()) {
+				upu.sTestID = us.getTestId();
 			}
 			if (null != us ? null != us.oss : false) {
 				m.put("QENGINE", RequestHelpers.displayServletURL(us.oss.getEngineURL())
