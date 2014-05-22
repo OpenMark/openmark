@@ -2239,10 +2239,9 @@ public class NavigatorServlet extends HttpServlet {
 					DatabaseAccess.Transaction dat = da.newTransaction();
 					try {
 						// Find actions from the latest attempt on this question
-						// in this test.
-						// This returns qi and the maximum sequence number. If
-						// the latest
-						// attempt wasn't unfinished then it returns 0.
+						// in this test. This returns qi and the maximum
+						// sequence number. If the latest attempt wasn't
+						// unfinished then it returns 0.
 						ResultSet rs = oq.queryQuestionActions(dat, us
 								.getDbTi(), tq.getID());
 
@@ -2250,10 +2249,8 @@ public class NavigatorServlet extends HttpServlet {
 						// then it's time to resurrect the question!
 						if (rs.next()) {
 							// Immediately on a test restart, we show the 'final
-							// screen' of a
-							// question if you restart it, even though we don't
-							// do that
-							// normally.
+							// screen' of a question if you restart it, even
+							// though we don't do that normally.
 							boolean bFinished = (bOnRestart ? rs.getInt(3) >= 2
 									: rs.getInt(3) >= 1);
 
