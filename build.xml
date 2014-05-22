@@ -8,7 +8,7 @@
 	</description>
 
 	<!-- Overridden build properties. We must load these first since <propery>
-	     task only sets things that have not already been set. -->
+		 task only sets things that have not already been set. -->
 	<property file="build.local.properties"/>
 
 	<!-- Build properties -->
@@ -177,6 +177,12 @@
 			</fileset>
 		</copy>
 
+		<copy todir="${build}/webapps/om/WEB-INF/lib">
+			<fileset dir="${jeuclidhome}">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+
 		<!-- TINY MCE from tnavigator -->
 		<copy todir="${build}/webapps/om/WEB-INF/shared">
 			<fileset dir="webinf-tnavigator/shared">
@@ -219,6 +225,7 @@
 		<copy todir="${build}/webapps/om-qe/WEB-INF/lib">
 			<fileset dir="${axishome}/lib">
 				<include name="*.jar"/>
+				<exclude name="saaj.jar"/>
 			</fileset>
 			<fileset dir="${jeuclidhome}">
 				<include name="*.jar"/>
@@ -268,6 +275,7 @@
 		<copy todir="${build}/webapps/om-tn/WEB-INF/lib">
 			<fileset dir="${axishome}/lib">
 				<include name="*.jar"/>
+				<exclude name="saaj.jar"/>
 			</fileset>
 			<fileset dir="${jeuclidhome}">
 				<include name="*.jar"/>
@@ -369,15 +377,19 @@
 
 	<target name="update-localhost"
 		description="Copy the compiled files code into a localhost tomcat install.">
+		<delete dir="${localhostwebapps}/om-tn/WEB-INF"/>
 		<copy todir="${localhostwebapps}/om-tn/WEB-INF">
 			<fileset dir="${build}/webapps/om-tn/WEB-INF/"/>
 		</copy>
+		<delete dir="${localhostwebapps}/om-qe/WEB-INF"/>
 		<copy todir="${localhostwebapps}/om-qe/WEB-INF">
 			<fileset dir="${build}/webapps/om-qe/WEB-INF/"/>
 		</copy>
+		<delete dir="${localhostwebapps}/om/WEB-INF"/>
 		<copy todir="${localhostwebapps}/om/WEB-INF">
 			<fileset dir="${build}/webapps/om/WEB-INF/"/>
 		</copy>
+		<delete dir="${localhostwebapps}/om-admin/WEB-INF"/>
 		<copy todir="${localhostwebapps}/om-admin/WEB-INF">
 			<fileset dir="${build}/webapps/om-admin/WEB-INF/"/>
 		</copy>
