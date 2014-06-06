@@ -86,11 +86,6 @@ public class SummaryTableBuilder {
 
 			iterateThroughResults(sd, rs, dd);
 
-			// If we didn't do the last one, put that out.
-			if (dd.iCurrentQuestion <= dd.iMaxQuestion) {
-				dd.iOutputCurrentQuestionNumber++;
-				addLastRow(sd, dd, dd.sDisplayedSection);
-			}
 
 			addTotals(sd);
 
@@ -191,19 +186,55 @@ public class SummaryTableBuilder {
 	void iterateThroughResults(SummaryDetails sd, ResultSet rs, DisplayDetails dd)
 			throws SQLException, OmFormatException, IOException {
 
+		boolean firstrow=true;
+		int  iLastQuestion=1;
+		boolean bFoundFinished=false;
+		
 		while (rs.next()) {
 
-			// Keep track of max number
 			int iQuestionNumber = rs.getInt(1);
+			int iFinished=rs.getInt(2);			
+			// Get section
+			// is it the first row ? if so , we set up the header and the last question vars 
+			// and output the first header row
+			if (firstrow)
+			{
+				firstrow=false;
+				iLastQuestion=iQuestionNumber;
+				dd.sDisplayedSection = addSectionRow(sd, dd, dd.sSection);
+			}
+
+			// have we changed question, but not put out the last one? if so put it out
+			if (iLastQuestion !=iQuestionNumber )
+			{
+				if (!bFoundFinished)
+				{
+					iLastQuestion=iQuestionNumber;
+					dd.iOutputCurrentQuestionNumber++;
+
+					/* check for a header and put that out if necessary */
+					dd.sDisplayedSection = addSectionRow(sd, dd, dd.sSection);			
+					addRowForCurrentQuestion(sd, dd, dd.sDisplayedSection);
+					dd.iCurrentQuestion++;
+
+				}
+				else
+				{
+					// reset the variable if we had already found one, and just changed question
+					bFoundFinished=false;
+				}
+			}
+			
+			dd.sSection = rs.getString(7);			
 			dd.iMaxQuestion = Math.max(dd.iMaxQuestion, iQuestionNumber);
+			dd.sLastQuestion = rs.getString(5);
 
 			// Ignore answers after we're looking for next question
 			if (iQuestionNumber < dd.iCurrentQuestion) {
 				continue;
 			}
 
-			// Get section
-			dd.sSection = rs.getString(7);
+
 			boolean restartNumbering =
 					sd.isNumberBySection() && !(
 							dd.sPreviousSection == null || dd.sPreviousSection.equals(dd.sDisplayedSection));
@@ -211,23 +242,21 @@ public class SummaryTableBuilder {
 				dd.iOutputCurrentQuestionNumber = 0;
 			}
 
-			if (iQuestionNumber > dd.iCurrentQuestion) {
-				// If we didn't put out an answer for current question, do it now.
-				dd.iOutputCurrentQuestionNumber++;
-				addRowForCurrentQuestion(sd, dd, dd.sDisplayedSection);
-			}
-
-			dd.sLastQuestion = rs.getString(5);
 			// Ignore unfinished attempts, wait for a finished one
-			if (rs.getInt(2) != 0) {
-				// Woo! We have an answer
+			if (iFinished != 0) {
 				dd.iOutputCurrentQuestionNumber++;
+				// Woo! We have an answer
+				dd.sDisplayedSection = addSectionRow(sd, dd, dd.sSection);			
 				dd.iOutputCurrentQuestionNumber = applyFinishedAttempt(sd, rs, dd, dd.sDisplayedSection);
 
 				// Start looking for next question now
 				dd.iCurrentQuestion++;
+				iLastQuestion=iQuestionNumber;
+				bFoundFinished=true;
+
 			}
 			dd.sPreviousSection = dd.sSection;
+
 		}
 	}
 
@@ -240,9 +269,9 @@ public class SummaryTableBuilder {
 	 */
 	private void addRowForCurrentQuestion(SummaryDetails sd,
 		DisplayDetails dd, String currentSection) throws OmFormatException {
-		dd.sDisplayedSection = addSectionRow(sd, dd, currentSection);
-		addQuestionRow(sd, dd);
-		dd.iCurrentQuestion++;
+
+
+ 		addQuestionRow(sd, dd);
 		// This works because there always will be at least one
 		// line per question thanks to the LEFT JOIN
 	}
@@ -295,9 +324,14 @@ public class SummaryTableBuilder {
 	 * @return
 	 */
 	private String addSectionRow(SummaryDetails sd, DisplayDetails dd, String sCurrentSection) {
-		// Don't output anything if there has been no change to the current section
-		if (dd.sSection == null || dd.sSection.equals(sCurrentSection)) {
-			return sCurrentSection;
+
+		//if its the first row or we have a change in section we want to put out a header
+		// if displayed section is null, then we havent put anything put yet
+		if (dd.sDisplayedSection != null)
+		{
+			if ((dd.sSection == null &&  dd.iCurrentQuestion != 1)  ||  dd.sDisplayedSection.equals(sCurrentSection)) {
+				return sCurrentSection;
+			}
 		}
 
 		Element eTR = XML.createChild(sd.getTableComponents().eTable, "tr");
