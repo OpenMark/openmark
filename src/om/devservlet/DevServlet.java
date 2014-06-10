@@ -431,7 +431,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 
 	private String renderDeploymentLink() {
 		StringBuilder sb = new StringBuilder("<div id='questionbox'>")
-			.append("<a href=\"deploy?clear=true\">Publish multiple questions to acceptance test.</a>")
+			.append("<a href=\"deploy/!bulk/?clear=true\">Publish multiple questions to acceptance test</a>")
 			.append("</div>");
 		return sb.toString();
 	}

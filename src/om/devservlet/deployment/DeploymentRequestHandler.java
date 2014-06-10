@@ -209,7 +209,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 	String determineQuestionFromPath() {
 		String questionFromPath = null;
 		String sPath = requestAssociates.getPath();
-		if (Strings.isNotEmpty(sPath)) {
+		if (!"/deploy/!bulk/".equals(sPath)) {
 			String s = sPath;
 			if (s.endsWith("/")) {
 				s = s.substring(0, s.length() -1);
