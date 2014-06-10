@@ -165,8 +165,6 @@ public class QuestionDeploymentRenderer {
 		} else {
 			or.append(renderNoQuestionsSelected());
 		}
-		//or.append(DEPLOY_TO_HEADING).append(QuestionDeploymentRenderer.BRS);
-		// lose the extra breaks
 		or.append(DEPLOY_TO_HEADING);
 		List<String> locations = DisplayUtils.getLocations(metaData);
 		if (null != locations ? locations.size() > 0 : false) {
@@ -186,7 +184,7 @@ public class QuestionDeploymentRenderer {
 	private String renderConfirmationRequest() {
 		return new StringBuffer().append(QuestionDeploymentRenderer.BRS)
 			.append("Please confirm that you")
-			.append(" wish to deploy the following to the specified locations : ")
+			.append(" wish to deploy the following to the specified locations: ")
 			.append(QuestionDeploymentRenderer.BRS).toString();
 	}
 
@@ -205,7 +203,6 @@ public class QuestionDeploymentRenderer {
 
 	private String renderConfirmationSubmission() {
 		return new StringBuffer()
-			//.append("<div class=\"alert\">Click copy to server below to confirm.</div>")
 			.append(COPY_TO_SERVER)
 			.append(QuestionDeploymentRenderer.START_SELECTION_FORM)
 			.append("<input type=\"hidden\" name=\"")

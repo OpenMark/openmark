@@ -885,7 +885,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 	}
 
 	private void handleDeploy(boolean post, HttpServletRequest request,
-		HttpServletResponse response, String sPath) throws Exception {
+			HttpServletResponse response, String sPath) throws Exception {
 		String output = null;
 		RequestHandler rh = new DeploymentRequestHandler();
 		RequestAssociates ra = getRequestAssociates(sPath, post);
@@ -900,10 +900,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 	}
 
 	private RequestAssociates getRequestAssociates(String sPath, boolean post) {
-		Map<String, Object> config = new HashMap<String, Object>();
-		config.putAll(configuration);
-		return new RequestAssociates(getServletContext(),
-			sPath, post, configuration);
+		return new RequestAssociates(getServletContext(), sPath, post, configuration);
 	}
 
 	private byte[] handleEmptyDeploymentRendering() {

@@ -28,7 +28,7 @@ import util.xml.XML;
 
 /**
  * Used to handle the actions requested by the Question Developer for the
- *  actual deployment of the question(s) to the configured location(s). 
+ *  actual deployment of the question(s) to the configured location(s).
  * @author Trevor Hinson
  */
 
@@ -64,7 +64,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 	 * Caters for the deploy option within the Question Developer.  Based on
 	 *  what the Question Developer has actually done we either display the
 	 *  question selection OR actually carry out the deploy of the selected
-	 *  Questions to the configured location. 
+	 *  Questions to the configured location.
 	 * @param context
 	 * @param request
 	 * @param response
@@ -92,7 +92,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 		} else {
 			throw new RequestHandlingException("The arguments did not match"
 				+ " what is required by this method.  No object can be null"
-				+ " and the RequestAssociate must be valid : "
+				+ " and the RequestAssociate must be valid: "
 				+ "\n HttpServletRequest = " + req
 				+ "\n HttpServletResponse = " + res
 				+ "\n RequestAssociates = " + associates);
@@ -105,8 +105,8 @@ public class DeploymentRequestHandler implements RequestHandler {
 			deployableQuestionLocation = associates.getServletContext()
 				.getRealPath(QUESTIONS_PATH);
 		} else {
-			throw new RequestHandlingException("Unable to continue :"
-				+ " RequestAssociates : " + associates);
+			throw new RequestHandlingException("Unable to continue:"
+				+ " RequestAssociates: " + associates);
 		}
 	}
 
@@ -128,7 +128,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 
 	/**
 	 * Wraps the logging in order to first check that the Log object has been
-	 *  setup properly.
+	 * setup properly.
 	 * @param message
 	 * @param t
 	 * @param debug
@@ -155,10 +155,16 @@ public class DeploymentRequestHandler implements RequestHandler {
 	 * @author Trevor Hinson
 	 */
 	private RenderedOutput renderPage(List<String> names)
-		throws QuestionDeploymentException {
-		return hasSelectionRequiringConfirmation()
-			? questionDeploymentRenderer.requestConfirmation(names,retrieveDeployMetaData())
-				: questionDeploymentRenderer.renderSelection();
+			throws QuestionDeploymentException
+	{
+		if (hasSelectionRequiringConfirmation())
+		{
+			return questionDeploymentRenderer.requestConfirmation(names, retrieveDeployMetaData());
+		}
+		else
+		{
+			return questionDeploymentRenderer.renderSelection();
+		}
 	}
 
 	/**
@@ -166,7 +172,8 @@ public class DeploymentRequestHandler implements RequestHandler {
 	 * @return true if there are.
 	 * @author Trevor Hinson
 	 */
-	private boolean hasSelectionRequiringConfirmation() {
+	private boolean hasSelectionRequiringConfirmation()
+	{
 		boolean hasSelection = false;
 		List<String> choices = pickUpDeploymentChoicesFromSession();
 		if (null != choices ? choices.size() > 0 : false) {
@@ -212,7 +219,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 		if (!"/deploy/!bulk/".equals(sPath)) {
 			String s = sPath;
 			if (s.endsWith("/")) {
-				s = s.substring(0, s.length() -1);
+				s = s.substring(0, s.length() - 1);
 			}
 			int n = s.lastIndexOf("/");
 			if (n > -1 ? s.length() > n + 1 : false) {
@@ -281,7 +288,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 	}
 
 	/**
-	 * Handles delegating to the actual deployment handler.  Before doing so 
+	 * Handles delegating to the actual deployment handler.  Before doing so
 	 *  we tidy up the Session.
 	 * @param names
 	 * @return
@@ -289,7 +296,8 @@ public class DeploymentRequestHandler implements RequestHandler {
 	 * @author Trevor Hinson
 	 */
 	private RenderedOutput doDeployment(List<String> names)
-		throws QuestionDeploymentException {
+			throws QuestionDeploymentException
+	{
 		clearDeploymentChoices();
 		return doDeployment(names, retrieveDeployMetaData());
 	}
@@ -304,7 +312,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 	 * @author Trevor Hinson
 	 */
 	RenderedOutput doDeployment(List<String> names,
-		Map<String, String> metaData) throws QuestionDeploymentException {
+			Map<String, String> metaData) throws QuestionDeploymentException {
 		RenderedOutput ro = new RenderedOutput();
 		log("Carrying out the deployment of " + names, null, true);
 		ro.append(DisplayUtils.header())
@@ -312,7 +320,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 		if (null != names ? names.size() > 0 && null != metaData : false) {
 			for (String name : names) {
 				if (Strings.isNotEmpty(name)) {
-					log("Handling : " + name, null, true);
+					log("Handling: " + name, null, true);
 					QuestionHolder qh = generateQuestionHolder(name, metaData);
 					if (null != qh) {
 						RenderedOutput output = deploy(qh, metaData);
@@ -374,7 +382,7 @@ public class DeploymentRequestHandler implements RequestHandler {
 			qh = new QuestionHolder(x, j, metaData, name,
 				new File(deployableQuestionLocation + "/"));
 		} else {
-			throw new QuestionDeploymentException("Unable to deploy the question : " 
+			throw new QuestionDeploymentException("Unable to deploy the question: "
 				+ name + " as either the associated Jar or the Xml file was missing.");
 		}
 		return qh;
@@ -450,27 +458,29 @@ public class DeploymentRequestHandler implements RequestHandler {
 	 */
 	private Map<String, String> retrieveDeployMetaData()
 		throws QuestionDeploymentException {
+
 		Map<String, String> metaData = new HashMap<String, String>();
+
 		for (String key : requestAssociates.getConfiguration().keySet()) {
+			if (Strings.isEmpty(key)) {
+				continue;
+			}
+
 			Object obj = requestAssociates.getConfiguration().get(key);
-			if (Strings.isNotEmpty(key)) {
-				if (null != obj ? obj instanceof Element : false) {
-					if (XML.hasChild((Element) obj, LOCATION)) {
-						Element[] e = XML.getChildren((Element) obj, LOCATION);
-						if (null != e? e.length > 0 : false) {
-							for (int i = 0; i < e.length; i++) {
-								Element ele = e[i];
-								if (null != ele) {
-									String txt = XML.getText(ele);
-									metaData.put(LOCATION + i, txt);
-								}
-							}
-						}
-					} else {
-						String txt = XML.getText((Element) obj);
-						metaData.put(key, txt);
-					}
+			if (null == obj || !(obj instanceof Element)) {
+				continue;
+			}
+
+			if (XML.hasChild((Element) obj, LOCATION)) {
+				Element[] e = XML.getChildren((Element) obj, LOCATION);
+				for (int i = 0; i < e.length; i++) {
+					Element ele = e[i];
+					String txt = XML.getText(ele);
+					metaData.put(LOCATION + i, txt);
 				}
+			} else {
+				String txt = XML.getText((Element) obj);
+				metaData.put(key, txt);
 			}
 		}
 		return metaData;

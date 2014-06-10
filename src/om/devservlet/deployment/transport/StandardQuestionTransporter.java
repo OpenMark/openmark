@@ -42,12 +42,13 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 
 	@Override
 	public void deploy(QuestionHolder qh, Map<String, String> metaData,
-		RenderedOutput or) throws QuestionTransporterException {
+			RenderedOutput or) throws QuestionTransporterException
+	{
 		if (null != qh && null != metaData && null != or) {
 			setUpLogging(metaData);
 			startReport(or, qh);
 			List<String> locations = DisplayUtils.getLocations(metaData);
-			or.append(" - Setup to copy to these locations : ")
+			or.append(" - Setup to copy to these locations: ")
 				.append(locations).append(QuestionDeploymentRenderer.BRS);
 			LatestNameAndVersion ver = determineCurrentVersion(locations,
 				metaData, qh, or);
@@ -57,11 +58,11 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 				boolean success = deployCopy(copy, or, metaData);
 				tidyUp(copy, or);
 				or.append(QuestionDeploymentRenderer.BRS)
-					.append(" - <b>The transfer of the Question was : ")
+					.append(" - <b>The transfer of the Question was: ")
 					.append(success ? "successful" : "unsuccessful.")
 					.append("</b>").append(QuestionDeploymentRenderer.BRS);;
 			} else {
-				log("deploy - unable to determine the versioning : " + ver);
+				log("deploy - unable to determine the versioning: " + ver);
 				handleInvalidVersioning(or, metaData);
 			}
 		}
@@ -119,7 +120,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	 */
 	void tidyUp(File copy, RenderedOutput or) {
 		or.append(QuestionDeploymentRenderer.BRS)
-			.append(" - The tidy up of the local copy : ")
+			.append(" - The tidy up of the local copy: ")
 			.append((null != copy ? copy.getName() : "null"))
 			.append(" was ").append(
 				(null != copy ? copy.delete() : false) ? "successful" : "unsuccessful")
@@ -127,7 +128,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	}
 
 	void startReport(RenderedOutput or, QuestionHolder qh) {
-		or.append("<h2>Deployment of : ")
+		or.append("<h2>Deployment of: ")
 		.append(qh).append(QuestionDeploymentRenderer.BRS).append("</h2>");
 	}
 
@@ -160,7 +161,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	/**
 	 * Tries to copy the source Question to the configured locations.  If there
 	 *  is a failure then it will call the rollBack and report this through
-	 *  the OutputRendering object which is presented back to the user. 
+	 *  the OutputRendering object which is presented back to the user.
 	 * @param source The Question file itself.
 	 * @param or For messages back to the user.
 	 * @param metaData Containing the configuration from the qengine.xml
@@ -173,25 +174,25 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 		boolean copySucceeded = true;
 		x : for (String location : locations) {
 			File dir = new File(location);
-			log("deploy Copy - Dealing with : " + dir.getAbsolutePath(), null);
+			log("deploy Copy - Dealing with: " + dir.getAbsolutePath(), null);
 			if (dir.exists() && dir.canWrite()) {
 				File target = new File(location + File.separator + source.getName());
 				log("Target = " + target, null);
 				try {
 					if (target.createNewFile()) {
-						log("created the target for copying to : "
+						log("created the target for copying to: "
 							+ target.getAbsolutePath(), null);
 						GeneralUtils.copyFile(source, target);
 						locationsCopiedTo.add(location);
 					} else {
-						throw new IOException("Unable to create the file : "
+						throw new IOException("Unable to create the file: "
 							+ target.getAbsolutePath());
 					}
 				} catch (IOException x) {
 					log("There was a problem creating the copy to " + target, x);
 					or.append(QuestionDeploymentRenderer.BRS)
-						.append(" - Unable to copy the Question to : ")
-						.append(location).append(" - The Exception was : ")
+						.append(" - Unable to copy the Question to: ")
+						.append(location).append(" - The Exception was: ")
 						.append(x.getMessage());
 					copySucceeded = false;
 					break x;
@@ -202,7 +203,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 			log("The copying did not succeed so rolling back", null);
 			rollBack(locationsCopiedTo, source, or, metaData);
 		}
-		log("The copying of the Question was : "
+		log("The copying of the Question was: "
 			+ (copySucceeded ? "successful" : "unsuccessful"));
 		return copySucceeded;
 	}
@@ -239,7 +240,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 		or.append(QuestionDeploymentRenderer.BRS)
 			.append(" - There was a problem removing the file from the server in order")
 			.append(" to make things synchronised.  This is a big issue. ")
-			.append("The file that was not removed was : ");
+			.append("The file that was not removed was: ");
 		if (null != f) {
 			or.append(f.getAbsolutePath());
 		}
@@ -272,7 +273,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 				+ " the file and copy the Jar locally.", x);
 			or.append(QuestionDeploymentRenderer.BRS)
 				.append(" -There was a problem creating a copy of the ")
-				.append("original Question : ").append(x.getMessage());
+				.append("original Question: ").append(x.getMessage());
 			newCopy = null;
 		}
 		return newCopy;
@@ -293,7 +294,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 				.append(ver.version.primary).append(".")
 				.append(ver.version.secondary + 1);
 		} else {
-			log("The LatestNameAndVersion was not valid : " + ver, null);
+			log("The LatestNameAndVersion was not valid: " + ver, null);
 		}
 		return null != newPrefix ? newPrefix.toString() : null;
 	}
@@ -314,9 +315,9 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 		Map<String, String> metaData, QuestionHolder qh, RenderedOutput or) {
 		LatestNameAndVersion version = null;
 		StringBuffer verStr = new StringBuffer(" - LatestNameAndVersion ");
-		if (null != locations ? locations.size() > 0 : false) {
+		if (null != locations && locations.size() > 0) {
 			Map<String, LatestNameAndVersion> versions = retrieveLatestVersions(
-				metaData, qh, or);
+					metaData, qh, or);
 			if (null != versions ? versions.size() > 0 : false) {
 				log("We have the versions and will now check which is the"
 					+ " agreed latest version", null);
@@ -380,24 +381,24 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	 * @author Trevor Hinson
 	 */
 	Map<String, LatestNameAndVersion> retrieveLatestVersions(
-		Map<String, String> metaData, QuestionHolder qh,
-		RenderedOutput or) {
+			Map<String, String> metaData, QuestionHolder qh, RenderedOutput or) {
+
 		Map<String, LatestNameAndVersion> latest = new HashMap<String, LatestNameAndVersion>();
 		List<String> locs = DisplayUtils.getLocations(metaData);
-		x: for (String location : locs) {
+		for (String location : locs) {
 			File directory = new File(location);
-			log("Retrieving the latest version from : "
-				+ directory.getAbsolutePath(), null);
-			if (directory.exists() && directory.canRead() && directory.canWrite()) {
-				LatestNameAndVersion nandv = identifyLatestVersion(qh, directory, or);
-				if (null != nandv) {
-					latest.put(location, nandv);
-				}
-			} else {
+			log("Retrieving the latest version from: " + directory.getAbsolutePath(), null);
+			if (!(directory.exists() && directory.canRead() && directory.canWrite())) {
 				problemWithQuestionBankDirectory(location, or);
-				break x;
+				continue;
+			}
+
+			LatestNameAndVersion nandv = identifyLatestVersion(qh, directory, or);
+			if (null != nandv) {
+				latest.put(location, nandv);
 			}
 		}
+
 		return latest;
 	}
 
@@ -421,11 +422,11 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 		}
 
 		public String toString() {
-			return "Name : " + fileNamePrefix + " - version : " + version; 
+			return "Name: " + fileNamePrefix + " - version: " + version;
 		}
 
 		/**
-		 * Checks to see if the argument matches this instance in terms of 
+		 * Checks to see if the argument matches this instance in terms of
 		 *  composite variable values.
 		 * @param ver
 		 * @return
@@ -451,16 +452,17 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	}
 
 	void problemWithQuestionBankDirectory(String location,
-		RenderedOutput or) {
+			RenderedOutput or)
+	{
 		or.append(QuestionDeploymentRenderer.BRS)
 			.append(" - There was a problem with the questionbank directory. ")
-			.append(" Either it does not exist or it can not be read : ")
+			.append(" Either it does not exist or it can not be read: ")
 			.append(location);
 	}
 
 	/**
 	 * Will look within the given questionbank directory for the latest version
-	 *  of the given Question. 
+	 *  of the given Question.
 	 * The method will always return a LatestNameAndVersion object even when
 	 *  nothing is found so that we can test against the results to ensure that
 	 *  everything is in sync.
@@ -474,7 +476,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 		List<Versioner> versions = new ArrayList<Versioner>();
 		for (int i = 0; i < questions.length; i++) {
 			File f = questions[i];
-			log("identifyLatestVersion from : " + f.getAbsolutePath(), null);
+			log("identifyLatestVersion from: " + f.getAbsolutePath(), null);
 			if (null != f ? f.getName().endsWith(
 				QuestionDeploymentRenderer.DEPLOY_FILE_SUFFIX) : false) {
 				if (f.getName().contains(qh.getNamePrefix())) {
@@ -523,30 +525,30 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 
 	/**
 	 * Derives a Versioner object from the name of that passed in.
-	 *  The name is assumed to be in this format :
+	 *  The name is assumed to be in this format:
 	 *  samples.mu120.module5.question02.4.5.jar
-	 * @author Trevor Hinson 
+	 * @author Trevor Hinson
 	 */
 	Versioner retrieveVersionerFromFileName(String name) {
 		Versioner v = null;
 		if (Strings.isNotEmpty(name) ? name.length() > 7 : false) {
-			log("retrieving the version from : " + name, null);
+			log("retrieving the version from: " + name, null);
 			String workWith = name;
 			if (workWith.endsWith(QuestionDeploymentRenderer.DEPLOY_FILE_SUFFIX)) {
 				workWith = name.substring(0, name.length() - 4);
 			}
-			log("removed the suffix to : " + workWith, null);
+			log("removed the suffix to: " + workWith, null);
 			int sec = workWith.lastIndexOf(".");
 			if (sec > -1 ? workWith.length() > sec + 1 : false) {
 				String second = workWith.substring(sec + 1, workWith.length());
-				log("The second version number part : " + second, null);
+				log("The second version number part: " + second, null);
 				String remainder = workWith.substring(0, sec);
 				log("remainder = " + remainder, null);
 				int fir = remainder.lastIndexOf(".");
 				log("the index of the last . = " + fir, null);
 				if (fir > -1 ? remainder.length() > fir + 1 : false) {
 					String first = remainder.substring(fir + 1, remainder.length());
-					log("The first version number was extracted to be : " + first);
+					log("The first version number was extracted to be: " + first);
 					v = createVersioner(first + "." + second);
 				}
 			}
@@ -562,7 +564,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	 */
 	Versioner createVersioner(String s) {
 		Versioner v = null;
-		log("Trying to create a Versioner with : " + s);
+		log("Trying to create a Versioner with: " + s);
 		if (Strings.isNotEmpty(s)) {
 			int n = s.indexOf(".");
 			if (n > -1 ? s.length() > n + 1 : false) {
@@ -575,12 +577,12 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 					v.primary = primary;
 					v.secondary = secondary;
 				} catch (NumberFormatException x) {
-					log("There was a problem converting the version numbers : "
+					log("There was a problem converting the version numbers: "
 						+ "first = " + first + " and second = " + second, x);
 				}
 			}
 		}
-		log("Created a Versioner : " + v);
+		log("Created a Versioner: " + v);
 		return v;
 	}
 
@@ -595,7 +597,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	 */
 	Versioner getMostRecentVersion(List<Versioner> vers) {
 		Versioner ver = null;
-		log("Determining the most recent version from : " + vers);
+		log("Determining the most recent version from: " + vers);
 		if (null != vers) {
 			for (Versioner v : vers) {
 				if (null == ver) {
@@ -607,7 +609,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 				}
 			}
 		}
-		log("The latest version was determined to be : " + ver);
+		log("The latest version was determined to be: " + ver);
 		return ver;
 	}
 
@@ -615,7 +617,7 @@ public class StandardQuestionTransporter implements QuestionTransporter {
 	 * A simple class that holds the details of the particular version of a
 	 *  given Question.  This is then used to test against other Versioner
 	 *  objects so to do things like see if they match or if one is less than
-	 *  the other. 
+	 *  the other.
 	 * @author Trevor Hinson
 	 */
 	class Versioner {

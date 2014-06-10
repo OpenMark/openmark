@@ -90,7 +90,7 @@ public class RequestAssociates {
 	}
 
 	public RequestAssociates(ServletContext context,
-		String sPath, boolean fromAPost, Map<String, Object> config) {
+			String sPath, boolean fromAPost, Map<String, Object> config) {
 		post = fromAPost;
 		path = sPath;
 		configuration = config;
