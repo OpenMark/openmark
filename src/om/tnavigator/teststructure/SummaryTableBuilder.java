@@ -442,25 +442,6 @@ public class SummaryTableBuilder {
 	}
 
 	/**
-	 * Add a row for the last question.
-	 * @param sd the SummaryDetails.
-	 * @param dd the DisplayDetails.
-	 * @param displayedSection the section this question belongs to.
-	 * @throws OmFormatException
-	 */
-	private void addLastRow(SummaryDetails sd, DisplayDetails dd,
-			String displayedSection) throws OmFormatException {
-
-		// Check if we need to restart the numbering of the questions.
-		if (sd.isNumberBySection() && !(dd.sPreviousSection == null)
-			&& !dd.sPreviousSection.equals(dd.sDisplayedSection)) {
-			dd.iOutputCurrentQuestionNumber = 1;
-		}
-		dd.sDisplayedSection = addSectionRow(sd, dd, displayedSection);
-		addQuestionRow(sd, dd);
-	}
-
-	/**
 	 * Add a row with the total scores, if it should be there.
 	 * @param sd the SummaryDetails
 	 * @throws OmFormatException
