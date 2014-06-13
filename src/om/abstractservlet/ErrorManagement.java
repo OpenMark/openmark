@@ -309,7 +309,7 @@ public class ErrorManagement implements GracefulFinalization {
 		handleUsersDatabasePosition(us, emp, resetTestPosition, visitor, isBug, upu);
 		boolean bRemovedBackto = false;
 		Map<String, String> m = new HashMap<String, String>();
-		
+
 		try {
 			response.setStatus(code);
 			Document d = XML.parse(new File(visitor.getServletContext().getRealPath(
@@ -317,13 +317,8 @@ public class ErrorManagement implements GracefulFinalization {
 			m.put("TITLE", emp.getTitle());
 			m.put("MESSAGE", emp.getMessage());
 			m.put("STATUSCODE", code + "");
-			String sOUCU=null;
-			try
-			{
-				sOUCU=us.getOUCU();
-			}
-			catch (Exception e){}
-			 m.put("OUCU", (sOUCU == null || sOUCU.isEmpty()) ? "[not logged in]" : sOUCU);
+			String sOUCU = (us == null ? null : us.getOUCU());
+			m.put("OUCU", (sOUCU == null || sOUCU.isEmpty()) ? "[not logged in]" : sOUCU);
 			m.put("REQUEST", request.getPathInfo()
 					+ (request.getQueryString() == null ? "" : "?"
 							+ request.getQueryString()));
@@ -363,8 +358,7 @@ public class ErrorManagement implements GracefulFinalization {
 			}
 			m.put("TESTURL", RequestHelpers.getServletURL(request) + upu.sTestID + "/"
 					+ RequestHelpers.endOfURL(request));
-			if (backToTest == null
-					&& (upu.sTestID == null || emp.getTitle() == ACCESSOUTOFSEQUENCE)) {
+			if (upu.sTestID == null || emp.getTitle() == ACCESSOUTOFSEQUENCE) {
 				XML.remove(XML.find(d, "id", "backtotest"));
 				bRemovedBackto = true;
 			} else {
