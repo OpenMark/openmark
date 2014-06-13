@@ -127,7 +127,7 @@ public class NavigatorServlet extends HttpServlet {
 
 	private static final String INPUTTOOLONG = "Input too long";
 
-	private static final String SEQUENCEFIELD = "sequence";
+	private static final String SEQUENCEFIELD = "!sequence";
 
 	public static final String FAKEOUCUCOOKIENAME = "tnavigator_xid";
 
@@ -2460,7 +2460,7 @@ public class NavigatorServlet extends HttpServlet {
 			throws IOException, OmException {
 		// get the section number if we are numbering by section
 
-		String lastScroll = request.getParameter("lastscrollpos");
+		String lastScroll = request.getParameter("!lastscrollpos");
 		if (Strings.isEmpty(lastScroll))
 		{
 			lastScroll = "";
@@ -2475,7 +2475,7 @@ public class NavigatorServlet extends HttpServlet {
 			sXHTML = "<form method='post' action='./' autocomplete='off'>"
 					+ "<input type='hidden' name='" + SEQUENCEFIELD
 					+ "' value = '" + us.sSequence + "' />"
-					+ "<input type='hidden' id='lastscrollpos' name='lastscrollpos' value = '" + lastScroll + "' />"
+					+ "<input type='hidden' id='lastscrollpos' name='!lastscrollpos' value = '" + lastScroll + "' />"
 					+ sXHTML
 					+ "</form>";
 		}
@@ -3058,6 +3058,8 @@ public class NavigatorServlet extends HttpServlet {
 									+ "these during the test. It can also happen if you click on something "
 									+ "while a page is loading.", null);
 				}
+			} else if (sName.equals("!lastscrollpos")) {
+				// Not a real parameter. Ignore it.
 			} else if (sValue.length() > VALUE_LENGTH) {
 				sendError(us, request, response,
 						HttpServletResponse.SC_FORBIDDEN, false, false, null,

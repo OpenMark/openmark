@@ -956,7 +956,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			progressInfo = Strings.replaceTokens(progressInfo, "%%", mReplace);
 		}
 
-		String lastScroll = request.getParameter("lastscrollpos");
+		String lastScroll = request.getParameter("!lastscrollpos");
 		if (Strings.isEmpty(lastScroll))
 		{
 			lastScroll = "";
@@ -995,7 +995,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			"</h1>"+
 			"<h2 style='font: normal 12px Verdana'>"+progressInfo+"</h2>" +
 			"<form method='post' action='./' id='question' autocomplete='off' class='om'>" +
-			"<input type='hidden' id='lastscrollpos' name='lastscrollpos' value = '" + lastScroll + "' />" +
+			"<input type='hidden' id='lastscrollpos' name='!lastscrollpos' value = '" + lastScroll + "' />" +
 			"</form>" +
 			"<h1 style='font: bold 14px Verdana'>" +
 				"For testing deferred feedback questions [" +

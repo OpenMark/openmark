@@ -273,7 +273,6 @@ function addFocusable(id, expr)
                     eval(o.expr).focus()
                 }
                 catch(e) {}
-                setTimeout(scrollHandlerScrollToPosition, 0);
             }, 100);
         });
     }
