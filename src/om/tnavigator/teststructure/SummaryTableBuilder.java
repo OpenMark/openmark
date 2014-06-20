@@ -189,11 +189,16 @@ public class SummaryTableBuilder {
 		boolean firstrow = true;
 		int iLastQuestion=1;
 		boolean bFoundFinished = false;
-
+		boolean bOutputRow = false;
+		int iQuestionNumber = 0;
+		int iLastQuestionOutput = 0;
+		int iQuestionCnt=0;
+		
 		while (rs.next()) {
 
-			int iQuestionNumber = rs.getInt(1);
+			iQuestionNumber = rs.getInt(1);
 			int iFinished=rs.getInt(2);
+			iQuestionCnt++;
 			// Get the section.
 			// Is it the first row? If so, we set up the header and the last
 			// question vars and output the first header row.
@@ -203,6 +208,8 @@ public class SummaryTableBuilder {
 				iLastQuestion = iQuestionNumber;
 				dd.sDisplayedSection = addSectionRow(sd, dd, dd.sSection);
 			}
+			boolean restartNumbering = false;
+			bOutputRow = false;
 
 			// Have we changed question, but not put out the last one? if so put it out.
 			if (iLastQuestion != iQuestionNumber)
@@ -211,11 +218,20 @@ public class SummaryTableBuilder {
 				{
 					iLastQuestion = iQuestionNumber;
 					dd.iOutputCurrentQuestionNumber++;
-
+					restartNumbering =
+							sd.isNumberBySection() && !(
+									dd.sPreviousSection == null || dd.sPreviousSection.equals(dd.sDisplayedSection));
+					if (restartNumbering) 
+					{
+						dd.iOutputCurrentQuestionNumber = 1;
+					}
 					// Check for a header and put that out if necessary.
 					dd.sDisplayedSection = addSectionRow(sd, dd, dd.sSection);
 					addRowForCurrentQuestion(sd, dd, dd.sDisplayedSection);
 					dd.iCurrentQuestion++;
+					bOutputRow = true;
+					iLastQuestionOutput++;
+
 				}
 				else
 				{
@@ -233,14 +249,6 @@ public class SummaryTableBuilder {
 				continue;
 			}
 
-
-			boolean restartNumbering =
-					sd.isNumberBySection() && !(
-							dd.sPreviousSection == null || dd.sPreviousSection.equals(dd.sDisplayedSection));
-			if (restartNumbering) {
-				dd.iOutputCurrentQuestionNumber = 0;
-			}
-
 			// Ignore unfinished attempts, wait for a finished one
 			if (iFinished != 0) {
 				dd.iOutputCurrentQuestionNumber++;
@@ -252,10 +260,32 @@ public class SummaryTableBuilder {
 				dd.iCurrentQuestion++;
 				iLastQuestion=iQuestionNumber;
 				bFoundFinished=true;
+				bOutputRow = true;
+				iLastQuestionOutput++;
+
 			}
 
 			dd.sPreviousSection = dd.sSection;
 		}
+
+		// Did we put out the last question? if not do it now.
+		// Have we changed question, but not put out the last one? if so put it out.
+
+			if (!bOutputRow || iQuestionCnt > iLastQuestionOutput )
+			{
+				if (sd.isNumberBySection() && !(dd.sPreviousSection == null || dd.sPreviousSection.equals(dd.sDisplayedSection))) 
+				{
+					dd.iOutputCurrentQuestionNumber = 1;
+				}
+				else
+				{
+					dd.iOutputCurrentQuestionNumber++;
+				}
+				// Check for a header and put that out if necessary.
+				dd.sDisplayedSection = addSectionRow(sd, dd, dd.sSection);
+				addRowForCurrentQuestion(sd, dd, dd.sDisplayedSection);
+			}
+
 	}
 
 	/**
