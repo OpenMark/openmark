@@ -306,7 +306,7 @@ public class WordSelectComponent extends QComponent
 				if (w.selected) {
 					input.setAttribute("checked", "checked");
 					if (!bPlain) {
-						labelclass = "selectedhilight ";
+						labelclass = "selectword selectedhilight";
 					}
 				}
 				else if (!bPlain) {
@@ -341,7 +341,7 @@ public class WordSelectComponent extends QComponent
 				
 				if (wb.isSecondHighlighted) {
 					if (!bPlain) {
-						labelclass = "secondhilight";
+						labelclass = "selectword secondhilight";
 					}
 					else{
 						input.setAttribute("checked", "checked");
@@ -350,7 +350,7 @@ public class WordSelectComponent extends QComponent
 				
 				if (w.isThirdHilight) {
 					if (!bPlain) {
-						labelclass = "thirdhilight";
+						labelclass = "selectword thirdhilight";
 					}
 					else{
 						input.setAttribute("checked", "checked");
