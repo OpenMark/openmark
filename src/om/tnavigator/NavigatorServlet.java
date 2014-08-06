@@ -610,7 +610,7 @@ public class NavigatorServlet extends HttpServlet {
 	private void handle(boolean bPost, HttpServletRequest request,
 			HttpServletResponse response) {
 		RequestTimings rt = new RequestTimings();
-		ClaimedUserDetails claimedDetails = null;
+		UserSession us = null;
 		rt.lStart = System.currentTimeMillis();
 		String sPath = null;
 		try {
@@ -736,6 +736,14 @@ public class NavigatorServlet extends HttpServlet {
 						null);
 			}
 			String sTestID = m.group(1), sCommand = m.group(2);
+			File deployFile = pathForTestDeployment(sTestID);
+			if (!deployFile.isFile()) {
+				sendError(null, request, response,
+						HttpServletResponse.SC_NOT_FOUND, false,
+						false, null, "No such test",
+						"There is currently no test with the ID "
+								+ sTestID + ".", null);
+			}
 
 			if ("".equals(sCommand) && !request.getRequestURI().endsWith("/")) {
 				response.sendRedirect(request.getRequestURI() + "/");
@@ -752,15 +760,15 @@ public class NavigatorServlet extends HttpServlet {
 			// sCommand so strip it.
 			sCommand.replaceAll("[?&]setcookie=?[0-9]*", "");
 
-			claimedDetails = sessionManager.tryToFindUserSession(
-					getAuthentication(), request, response, rt.lStart, sTestID);
+			ClaimedUserDetails claimedDetails = sessionManager.tryToFindUserSession(
+					getAuthentication(), request, response, bPost, sTestID, deployFile);
 
 			switch(claimedDetails.status)
 			{
 			case CANNOT_CREATE_COOKIE:
 				sendError(null, request, response,
 						HttpServletResponse.SC_FORBIDDEN,
-						false, false,null,
+						false, false, null,
 						"Unable to create session cookie",
 						"In order to use this website you must enable cookies in your browser settings.",
 						null);
@@ -782,17 +790,7 @@ public class NavigatorServlet extends HttpServlet {
 						null);
 				break;
 
-			case OK:
-				// Otherwise, we are OK, so continue.
-				break;
-			}
-
-			if (bPost && claimedDetails.us.ud == null)
-			{
-				// If we are trying to createa a new session, and this was a
-				// POST request, then something has gone badly wrong. Therefore,
-				// display an error, rather than silently doing a redirect that
-				// is mysterious and confusing.
+			case POST_NO_SESSION:
 				sendError(claimedDetails.us, request, response,
 						HttpServletResponse.SC_FORBIDDEN, false,
 						false, sTestID, ACCESSOUTOFSEQUENCE,
@@ -800,29 +798,22 @@ public class NavigatorServlet extends HttpServlet {
 							+ "if you are switching back and forth between different web "
 							+ "browsers or devices in the middle of a test. "
 							+ "Please don't do that.", null);
+				break;
+
+			case REDIRECTING:
+				// Redirect already set up.
+				return;
+
+			case OK:
+				// Otherwise, we are OK, so continue.
+				break;
 			}
 
-			UserSession us = claimedDetails.us;
-
-			// Synchronize on the session - if we get multiple requests for same
-			// session at same time the others will just have to wait.
-			// (Except see below for resources.)
-			synchronized (us) {
-				File deployFile = pathForTestDeployment(sTestID);
-				if (!deployFile.isFile()) {
-					sendError(us, request, response,
-							HttpServletResponse.SC_NOT_FOUND, false,
-							false, null, "No such test",
-							"There is currently no test with the ID "
-									+ sTestID + ".", null);
-				}
-
-				if (!sessionManager.verifyUserSession(getAuthentication(),
-						request, response, claimedDetails, sTestID, deployFile))
-				{
-					return;
-				}
-
+			// If we get to this point, we have a valid session, and we already
+			// hold the exclusive lock on it, so here is a try finally block to
+			// Make sure we release it.
+			us = claimedDetails.us;
+			try {
 				us.initialiseTemplateLoader(nc, getServletContext());
 
 				if (request.getParameter("setcookie") != null)
@@ -1062,6 +1053,10 @@ public class NavigatorServlet extends HttpServlet {
 					}
 				}
 			}
+			finally
+			{
+				us.releaseExclusiveLock();
+			}
 
 			// Resources occur un-synchronized so that they can download more
 			// than one at a time.
@@ -1094,7 +1089,7 @@ public class NavigatorServlet extends HttpServlet {
 				{
 					mess = t.getMessage();
 				}
-				sendError(claimedDetails == null ? null : claimedDetails.us, request, response,
+				sendError(us, request, response,
 						HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 						false, false, null,
 						"Unable to display",
@@ -1106,16 +1101,16 @@ public class NavigatorServlet extends HttpServlet {
 			}
 		} finally {
 			String sOUCU, sPlace;
-			if (claimedDetails == null || claimedDetails.us == null) {
+			if (us == null) {
 				sOUCU = "?";
 				sPlace = "?";
 			} else {
-				if (claimedDetails.us.sOUCU == null) {
+				if (us.sOUCU == null) {
 					sOUCU = "??";
 				} else {
-					sOUCU = claimedDetails.us.sOUCU;
+					sOUCU = us.sOUCU;
 				}
-				sPlace = "ind=" + claimedDetails.us.getTestPosition() + ",seq=" + claimedDetails.us.iDBseq;
+				sPlace = "ind=" + us.getTestPosition() + ",seq=" + us.iDBseq;
 			}
 
 			long lTotal = System.currentTimeMillis() - rt.lStart;

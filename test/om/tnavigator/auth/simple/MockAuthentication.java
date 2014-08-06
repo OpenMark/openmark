@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import om.OmException;
 import om.tnavigator.auth.Authentication;
+import om.tnavigator.auth.NullUserDetails;
 import om.tnavigator.auth.UncheckedUserDetails;
 import om.tnavigator.auth.UserDetails;
 import om.tnavigator.auth.simple.SimpleUser;
@@ -32,19 +33,34 @@ import om.tnavigator.auth.simple.SimpleUncheckedUser;
 
 public class MockAuthentication implements Authentication
 {
+	UncheckedUserDetails uncheckedUserDetails = new SimpleUncheckedUser(null,  null);
+	UserDetails userDetails = null;
+
+	public void setTestUser(String cookie, String username, String email, String cookiename)
+	{
+		uncheckedUserDetails = new SimpleUncheckedUser(cookie,  username, cookiename);
+		userDetails = new SimpleUser(cookie, username, email);
+	}
 
 	@Override
 	public UserDetails getUserDetails(HttpServletRequest request, HttpServletResponse response,
 			boolean bRequireLogin) throws IOException
 	{
-		return new SimpleUser("1234567", "name", "name@example.com");
+		if (userDetails != null || bRequireLogin)
+		{
+			return userDetails;
+		}
+		else
+		{
+			return new NullUserDetails();
+		}
 	}
 
 	@Override
 	public UncheckedUserDetails getUncheckedUserDetails(HttpServletRequest request)
 			throws OmException
 	{
-		return new SimpleUncheckedUser("1234567", "name", "tnavigator_session_valid-test-mu120.module5");
+		return uncheckedUserDetails;
 	}
 
 	@Override

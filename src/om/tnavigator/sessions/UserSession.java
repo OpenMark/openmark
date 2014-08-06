@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 import javax.servlet.ServletContext;
 
@@ -41,6 +42,8 @@ import org.w3c.dom.Document;
 /** Data stored about particular user */
 public class UserSession
 {
+	private Semaphore inUse = new Semaphore(1, true);
+
 	/** Cookie (key of map too, but duplicated here) */
 	public String sCookie;
 
@@ -127,7 +130,7 @@ public class UserSession
 	 * Once we've seen their OUCU and checked that we only hold one session
 	 * for them, this is set to OUCU-testID.
 	 */
-	public String sCheckedOUCUKey;
+	public String usernameTestIdKey;
 
 	/** Index increments whenever there is a new CSS version */
 	public int iCSSIndex=0;
@@ -151,6 +154,17 @@ public class UserSession
 	public UserSession(String cookie) {
 		this.lSessionStart = System.currentTimeMillis();
 		this.sCookie = cookie;
+	}
+
+	public void claimExclusiveLock() {
+		inUse.acquireUninterruptibly();
+	}
+
+	public void releaseExclusiveLock() {
+		if (inUse.availablePermits() != 0) {
+			throw new IllegalStateException("");
+		}
+		inUse.release();
 	}
 
 	/**

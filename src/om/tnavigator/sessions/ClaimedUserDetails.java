@@ -12,26 +12,11 @@ public class ClaimedUserDetails
 		OK,
 		CANNOT_CREATE_COOKIE,
 		TEMP_FORBID,
+		POST_NO_SESSION,
+		REDIRECTING,
 	}
 
 	public Status status = Status.OK;
-
-	/**
-	 * The username from the authentication cookie. We have not yet validated that
-	 * they are actually logged in as this user.
-	 */
-	public String sOUCU;
-
-	/**
-	 * Fake OUCU. This is a random string used when the test can be attempted by
-	 * people who are not logged in.
-	 */
-	public String sFakeOUCU;
-
-	/**
-	 * Hash used to validate the fake OUCU.
-	 */
-	public int iAuthHash;
 
 	/**
 	 * Holds the user session, if we find one.

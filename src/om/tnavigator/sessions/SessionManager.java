@@ -147,19 +147,56 @@ public class SessionManager
 	}
 
 	/**
+	 * @param sTestID the test the user is trying to access.
+	 * @param sCookie the value of their cookie, if any.
+	 * @param sOUCU the unchecked OUCU, if any.
+	 * @param sFakeOUCU the fake OUCU from the cookie, if any.
+	 */
+	protected void debugLogState(String sTestID, String sCookie, String sOUCU, String sFakeOUCU) {
+		StringBuffer debugOutput = new StringBuffer(1024);
+		debugOutput.append("Session manager state:\n");
+		debugOutput.append("sTestID = ").append(sTestID).append("\n");
+		debugOutput.append("sCookie = ").append(sCookie).append("\n");
+		debugOutput.append("claimedDetails.sOUCU = ").append(sOUCU).append("\n");
+		debugOutput.append("claimedDetails.sFakeOUCU = ").append(sFakeOUCU).append("\n");
+		debugOutput.append("sessionsByCookieValue:\n");
+		for (Map.Entry<String, UserSession> e: sessionsByCookieValue.entrySet()) {
+			debugOutput.append("    ").append(e.getKey()).append(" => ")
+					.append(debugDisplayUserSession(e.getValue())).append("\n");
+		}
+		debugOutput.append("sessionsByUsernameAndTestId:\n");
+		for (Map.Entry<String, UserSession> e: sessionsByUsernameAndTestId.entrySet()) {
+			debugOutput.append("    ").append(e.getKey()).append(" => ")
+					.append(debugDisplayUserSession(e.getValue())).append("\n");
+		}
+		l.logDebug("SessionManager", debugOutput.toString());
+	}
+
+	protected String debugDisplayUserSession(UserSession us) {
+		StringBuffer sb = new StringBuffer(100);
+		sb.append(us.sCookie).append(", ").append(us.sOUCU).append(", ").append(us.iAuthHash);
+		if (us.tdDeployment != null) {
+			sb.append(", ").append(us.tdDeployment.getDefinition());
+		}
+		return sb.toString();
+	}
+
+	/**
 	 * @param authentication the authentication plugin.
 	 * @param request the request being handled.
 	 * @param response the response we will send.
-	 * @param requestStartTime the time when we started handling this request.
+	 * @param bPost if this was a POST request.
 	 * @param sTestID the name of the test being requested.
+	 * @param deployFile the path to the deploy file, which we know exists.
 	 * @return information about whether the user is logged in.
 	 * @throws OmException
 	 * @throws StopException
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unused")
 	public ClaimedUserDetails tryToFindUserSession(Authentication authentication,
 			HttpServletRequest request, HttpServletResponse response,
-			long requestStartTime, String sTestID) throws OmException,
+			boolean bPost, String sTestID, File deployFile) throws OmException,
 			StopException, IOException
 	{
 		UncheckedUserDetails uud = authentication.getUncheckedUserDetails(request);
@@ -167,13 +204,13 @@ public class SessionManager
 
 		// Get OUCU (null if no SAMS cookie), used to synch sessions for
 		// single user
-		claimedDetails.sOUCU = uud.getUsername();
+		String sOUCU = uud.getUsername();
 
 		// See if they've got a fake OUCU (null if none)
-		claimedDetails.sFakeOUCU = GeneralUtils.getCookie(request, NavigatorServlet.FAKEOUCUCOOKIENAME);
+		String sFakeOUCU = GeneralUtils.getCookie(request, NavigatorServlet.FAKEOUCUCOOKIENAME);
 
 		// Auth hash
-		claimedDetails.iAuthHash = (uud.getCookie() + "/" + claimedDetails.sFakeOUCU).hashCode();
+		int iAuthHash = (uud.getCookie() + "/" + sFakeOUCU).hashCode();
 
 		// If they haven't got a cookie or it's unknown, assign them one and
 		// redirect.
@@ -181,6 +218,10 @@ public class SessionManager
 		{
 			// See if they've got a cookie for this test
 			String sCookie = GeneralUtils.getCookie(request, getTestCookieName(sTestID));
+
+			if (false) {
+				debugLogState(sTestID, sCookie, sOUCU, sFakeOUCU);
+			}
 
 			// Check whether they already have a session or not
 			if (sCookie != null)
@@ -191,8 +232,13 @@ public class SessionManager
 			if (claimedDetails.us != null)
 			{
 				// Check cookies in case they changed.
-				if (claimedDetails.us.iAuthHash != 0 && claimedDetails.us.iAuthHash != claimedDetails.iAuthHash)
+				if (claimedDetails.us.iAuthHash != 0 && claimedDetails.us.iAuthHash != iAuthHash)
 				{
+					l.logDebug("SessionManager", "Discarding session because iAuthHash does not match. " +
+							"Auth hash in session: " + claimedDetails.us.iAuthHash + ". " +
+							"Unchecked cookie: " + uud.getCookie() + ". " +
+							"Fake OUCU: " + sFakeOUCU + ". " +
+							"Current Auth hash: " + iAuthHash + ".");
 					// If credentials change, they need a new session.
 					killSession(claimedDetails.us);
 					claimedDetails.us = null;
@@ -219,48 +265,170 @@ public class SessionManager
 				}
 
 				claimedDetails.us = new UserSession(getUnusedCookieValue());
-				l.logDebug("Created a new UserSession.");
+				l.logDebug("SessionManager", "Created a new UserSession.");
 
-				// At same time as creating new session, if they're logged in
-				// supposedly, check it's for real. If their cookie doesn't
-				// authenticated, this will cause the cookie to be removed and
-				// avoid multiple redirects.
-				if (claimedDetails.sOUCU != null)
+				// Store the appropriate username in the session.
+				if (sOUCU != null)
 				{
-					if (!authentication.getUserDetails(request, response, false).isLoggedIn())
-					{
-						// And we need to set this to zero to reflect that
-						// we just wiped their cookie.
-						claimedDetails.iAuthHash = 0;
-					}
+					// Claimed to be logged in. verifyUserSession will check that.
+					claimedDetails.us.sOUCU = sOUCU;
 				}
-			}
+				else if (sFakeOUCU != null)
+				{
+					// Not logged in, but they already have a fake OUCU.
+					claimedDetails.us.sOUCU = sFakeOUCU;
+				}
+				else
+				{
+					// If they're not logged in, and we need to create a new fake OUCU
+					// for them. In this case, verifyUserSession will create the cookie.
+					claimedDetails.us.sOUCU = "_" + Strings.randomAlNumString(7);
+					iAuthHash = (uud.getCookie() + "/" + claimedDetails.us.sOUCU).hashCode();
+				}
 
-			// If this is the first time we've had an OUCU for this session,
-			// check it to make sure we don't need to ditch any other sessions.
-			if (claimedDetails.us.sCheckedOUCUKey == null && claimedDetails.sOUCU != null)
-			{
-				claimedDetails.us.sCheckedOUCUKey = claimedDetails.sOUCU + "-" + sTestID;
-				if (isTemporarilyForbidden(claimedDetails.us.sCheckedOUCUKey))
+				claimedDetails.us.usernameTestIdKey = claimedDetails.us.sOUCU + "-" + sTestID;
+
+				if (isTemporarilyForbidden(claimedDetails.us.usernameTestIdKey))
 				{
 					// Kill session from main list & mark it to send error message later.
+					l.logDebug("SessionManager", "New session was temporarily forbidden. Killing it.");
+
 					killSession(claimedDetails.us);
 					claimedDetails.status = Status.TEMP_FORBID;
+					return claimedDetails;
 				}
 				else
 				{
 					// This session is good. So ensure there are not sessions on
 					// the other servers in the cluster.
-					killSessionsOnOtherNavigators(claimedDetails.us.sCheckedOUCUKey);
+					killSessionsOnOtherNavigators(claimedDetails.us.usernameTestIdKey);
 				}
 			}
 
 			if (newSession) {
-				addSession(claimedDetails.us);
+				// Partially add the session now. We will also add it to
+				// sessionsByUsernameAndTestId once we have checked the OUCU.
+				sessionsByCookieValue.put(claimedDetails.us.sCookie, claimedDetails.us);
 			}
 		}
 
+		if (bPost && claimedDetails.us.ud == null) {
+			claimedDetails.status = Status.POST_NO_SESSION;
+			return claimedDetails;
+		}
+
+		claimedDetails.us.claimExclusiveLock();
+		if (!verifyUserSession(authentication,
+				request, response, claimedDetails.us, sOUCU, sFakeOUCU, iAuthHash, sTestID, deployFile))
+		{
+			claimedDetails.status = Status.REDIRECTING;
+			claimedDetails.us.releaseExclusiveLock();
+		}
+
 		return claimedDetails;
+	}
+
+	/**
+	 * @param authentication the authentication plugin.
+	 * @param request the request being handled.
+	 * @param response the response we will send.
+	 * @param us the user session to verify
+	 * @param sOUCU the OUCU the user claimed, if any.
+	 * @param sFakeOUCU the users fake OUCU if they have one
+	 * @param iAuthHash the auth hash
+	 * @param sTestID the name of the test being requested.
+	 * @param deployFile the path to the deploy file, which we know exists.
+	 * @return whether the login is valid.
+	 * @throws IOException
+	 * @throws StopException
+	 * @throws OmException
+	 * @throws OmFormatException
+	 */
+	protected boolean verifyUserSession(Authentication authentication,
+			HttpServletRequest request, HttpServletResponse response,
+			UserSession us, String sOUCU, String sFakeOUCU, int iAuthHash,
+			String sTestID, File deployFile)
+			throws IOException, StopException, OmException, OmFormatException
+	{
+		boolean createdCookie = false;
+
+		// Set last action time (so session doesn't time out)
+		us.touch();
+
+		// If they now have a claimed real OUCU, but were previously using a fake
+		// OUCU, kill their session cookie so they start a new session with thier OUCU.
+		if (us.ud != null && sOUCU != null && !us.ud.isLoggedIn())
+		{
+			Cookie c = new Cookie(getTestCookieName(sTestID), "");
+			c.setMaxAge(0);
+			c.setPath("/");
+			response.addCookie(c);
+			response.sendRedirect(request.getRequestURI());
+			return false;
+		}
+
+		// If they have already been authenticated previously in this session,
+		// we don't need to do it again.
+		if (us.ud != null)
+		{
+			return true;
+		}
+
+		us.loadTestDeployment(deployFile);
+
+		us.ud = authentication.getUserDetails(request, response,
+				!us.getTestDeployment().isWorldAccess());
+
+		if (us.ud == null)
+		{
+			// They've been redirected to SAMS. Chuck their session
+			// as soon as expirer next runs, they won't be needing
+			// it as we didn't give them a cookie yet.
+			us.markForDiscard();
+			return false;
+		}
+
+		if (sOUCU != null && !us.ud.isLoggedIn()) {
+			// If they claimed a real OUCU, and that is not right, and they have
+			// not been redirected, this is a dodgy request, so throw an Exception.
+			throw new OmException("There was a problem with your login. Please close your browser then try again.");
+		}
+
+		// We only give them a cookie after passing this stage. If
+		// they were redirected to SAMS, they don't get a cookie
+		// until the next request.
+		if (!us.cookieCreated)
+		{
+			// Now we are sure we are using this session, we add it to the list properly.
+			addSession(us);
+
+			Cookie c = new Cookie(getTestCookieName(sTestID), us.sCookie);
+			c.setPath("/");
+			response.addCookie(c);
+			us.cookieCreated = true;
+			createdCookie = true;
+		}
+
+		if (sFakeOUCU == null && !us.ud.isLoggedIn())
+		{
+			// They also need a cookie to store their fake OUCU.
+			Cookie c = new Cookie(NavigatorServlet.FAKEOUCUCOOKIENAME, us.sOUCU);
+			c.setPath("/");
+			// Expiry is 4 years
+			c.setMaxAge((3 * 365 + 366) * 24 * 60 * 60);
+			response.addCookie(c);
+			createdCookie = true;
+		}
+
+		// Remember the auth hash so that we will know if they change cookie now.
+		us.iAuthHash = iAuthHash;
+
+		if (createdCookie) {
+			response.sendRedirect(request.getRequestURI() + "?setcookie=" + System.currentTimeMillis());
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -295,115 +463,6 @@ public class SessionManager
 		return forbidden;
 	}
 
-	/**
-	 * @param authentication the authentication plugin.
-	 * @param request the reuqest being handled.
-	 * @param response the response we will send.
-	 * @param claimedDetails the result of tryToFindUserSession.
-	 * @param sTestID the name of the test being requested.
-	 * @param deployFile the path to the deploy file, which we know exists.
-	 * @return whether the login is valid.
-	 * @throws IOException
-	 * @throws StopException
-	 * @throws OmException
-	 * @throws OmFormatException
-	 */
-	public boolean verifyUserSession(Authentication authentication,
-			HttpServletRequest request, HttpServletResponse response,
-			ClaimedUserDetails claimedDetails, String sTestID, File deployFile) throws IOException,
-			StopException, OmException, OmFormatException
-	{
-		UserSession us = claimedDetails.us;
-		boolean createdCookie = false;
-
-		// Set last action time (so session doesn't time out)
-		us.touch();
-
-		// If they have an OUCU but also a temp-login then we need to
-		// chuck away their session...
-		if (us.ud != null && claimedDetails.sOUCU != null && !us.ud.isLoggedIn())
-		{
-			Cookie c = new Cookie(getTestCookieName(sTestID), "");
-			c.setMaxAge(0);
-			c.setPath("/");
-			response.addCookie(c);
-			response.sendRedirect(request.getRequestURI());
-			return false;
-		}
-
-		// If they have already been authenticated previously in this session,
-		// we don't need to do it again.
-		if (us.ud != null)
-		{
-			return true;
-		}
-
-		us.loadTestDeployment(deployFile);
-
-		us.ud = authentication.getUserDetails(request, response, !us
-				.getTestDeployment().isWorldAccess());
-		if (us.ud == null)
-		{
-			// They've been redirected to SAMS. Chuck their session
-			// as soon as expirer next runs, they won't be needing
-			// it as we didn't give them a cookie yet.
-			us.markForDiscard();
-			return false;
-		}
-
-		// We only give them a cookie after passing this stage. If
-		// they were redirected to SAMS, they don't get a cookie
-		// until the next request.
-
-		if (!us.cookieCreated)
-		{
-			Cookie c = new Cookie(getTestCookieName(sTestID), us.sCookie);
-			c.setPath("/");
-			response.addCookie(c);
-			us.cookieCreated = true;
-			createdCookie = true;
-		}
-
-		if (us.ud.isLoggedIn())
-		{
-			us.sOUCU = us.ud.getUsername();
-		}
-		else if (claimedDetails.sFakeOUCU != null)
-		{
-			// Not logged in, but they already have a fake OUCU.
-			us.sOUCU = claimedDetails.sFakeOUCU;
-		}
-		else
-		{
-			// If they're not logged in, and we need to create a new fake OUCU
-			// for them, and then redirect. Make 8-letter random OUCU. We don't
-			// bother storing a list, but there are about 3,000 billion
-			// possibilities so it should be OK.
-			us.sOUCU = "_" + Strings.randomAlNumString(7);
-
-			claimedDetails.iAuthHash = (authentication.getUncheckedUserDetails(request).getCookie() +
-					"/" + us.sOUCU).hashCode();
-
-			// Set it in cookie for future sessions.
-			Cookie c = new Cookie(NavigatorServlet.FAKEOUCUCOOKIENAME, us.sOUCU);
-			c.setPath("/");
-			// Expiry is 4 years
-			c.setMaxAge((3 * 365 + 366) * 24 * 60 * 60);
-			response.addCookie(c);
-			createdCookie = true;
-		}
-
-		// Remember auth hash so that we will know if they change cookie now.
-		us.iAuthHash = claimedDetails.iAuthHash;
-
-		if (createdCookie) {
-			response.sendRedirect(request.getRequestURI() + "?setcookie=" + System.currentTimeMillis());
-			return false;
-		}
-
-		return true;
-	}
-
 	public void blockUserTemporarily(String blockedUsername)
 	{
 		synchronized (sessionsByCookieValue)
@@ -432,7 +491,7 @@ public class SessionManager
 		synchronized (sessionsByCookieValue)
 		{
 			sessionsByCookieValue.put(newSession.sCookie, newSession);
-			UserSession oldSession = sessionsByUsernameAndTestId.put(newSession.sCheckedOUCUKey, newSession);
+			UserSession oldSession = sessionsByUsernameAndTestId.put(newSession.usernameTestIdKey, newSession);
 			// If there was one already there, get rid of it.
 			if (oldSession != null)
 			{
@@ -450,7 +509,7 @@ public class SessionManager
 		synchronized (sessionsByCookieValue)
 		{
 			sessionsByCookieValue.remove(us.sCookie);
-			sessionsByUsernameAndTestId.remove(us.sCheckedOUCUKey);
+			sessionsByUsernameAndTestId.remove(us.usernameTestIdKey);
 		}
 	}
 
