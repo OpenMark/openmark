@@ -393,23 +393,6 @@ public class TestDeployment
 	}
 
 	/**
-	 * Checks whether test is accessible by 'systest' users.
-	 * @return True if it is, false otherwise
-	 * @throws OmFormatException If there's something wrong with the file
-	 */
-	boolean isSysTestAccess() throws OmFormatException
-	{
-		try
-		{
-			return ("yes".equals(XML.getChild(eAccess,"users").getAttribute("systest")));
-		}
-		catch(XMLException e)
-		{
-			throw new OmFormatException("Missing <users> in deployment file");
-		}
-	}
-
-	/**
 	 * Checks access to test. (Does not check dates! And don't call this if
 	 * isWorldAccess() returns true.)
 	 * @param ud User details from SAMS
@@ -418,8 +401,6 @@ public class TestDeployment
 	 */
 	public boolean hasAccess(UserDetails ud) throws OmFormatException
 	{
-		if(ud.isSysTest()) return isSysTestAccess();
-
 		try
 		{
 			Element eParent=XML.getChild(eAccess,"users");

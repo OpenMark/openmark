@@ -40,9 +40,4 @@ public class NullUserDetails implements UserDetails
 	{
 		return false;
 	}
-
-	public boolean isSysTest()
-	{
-		return false;
-	}
 }

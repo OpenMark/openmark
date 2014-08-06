@@ -64,11 +64,6 @@ public class MockAuthentication implements Authentication
 	}
 
 	@Override
-	public void becomeTestUser(HttpServletResponse response, String suffix)
-	{
-	}
-
-	@Override
 	public void close()
 	{
 	}

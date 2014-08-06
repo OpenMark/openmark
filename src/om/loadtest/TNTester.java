@@ -106,7 +106,8 @@ public class TNTester
 
 	private synchronized String getNextOUCU()
 	{
-		return "!tst"+(iSequence++);
+		throw new UnsupportedOperationException(
+				"This sort of test login is no longer supported by OpenMark.");
 	}
 
 	/** Test script */

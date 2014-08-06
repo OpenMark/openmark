@@ -58,14 +58,6 @@ public interface Authentication {
   public UncheckedUserDetails getUncheckedUserDetails(
   		HttpServletRequest request) throws OmException;
 
-  /**
-   * Set up this user's browser with a cookie that will mark them out as
-   * one of the test users.
-   * @param response HTTP response for setting cookies
-   * @param suffix Test user ID
-   */
-  public void becomeTestUser(HttpServletResponse response,String suffix);
-
   /** Close the authentication system when it will not be used again */
   public void close();
 

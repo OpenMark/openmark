@@ -141,12 +141,6 @@ public class SimpleAuth implements Authentication {
 		}
 	}
 
-	public void becomeTestUser(HttpServletResponse response, String suffix) {
-		Cookie c = new Cookie(COOKIE, "!tst" + suffix + ":");
-		c.setPath("/");
-		response.addCookie(c);
-	}
-
 	public void close() {
 	}
 

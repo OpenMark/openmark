@@ -83,10 +83,4 @@ public class SimpleUser implements UserDetails
 	{
 		return email!=null;
 	}
-
-	public boolean isSysTest()
-	{
-		return username!=null && username.startsWith("!tst");
-	}
-
 }

@@ -705,13 +705,6 @@ public class NavigatorServlet extends HttpServlet {
 				return;
 			}
 
-			// Handle special test user requests
-			if (!bPost && sPath.startsWith("/!test/")) {
-				handleTestCookie(sPath.substring("/!test/".length()), request,
-						response);
-				return;
-			}
-
 			// Handle system report requests
 			if (!bPost && sPath.startsWith("/!report/")) {
 				reports.handleReport(sPath.substring("/!report/".length()),
@@ -1152,9 +1145,8 @@ public class NavigatorServlet extends HttpServlet {
 		// Random seed is normally time in milliseconds. For system testing we
 		// fix
 		// it to always be the same value.
-		initTestSession(us, rt, sTestID, request, response, false, false, us.ud
-				.isSysTest() ? 1124965882611L : System.currentTimeMillis(),
-				variant);
+		initTestSession(us, rt, sTestID, request, response, false, false,
+				System.currentTimeMillis(), variant);
 
 		// Don't store anything in database for singles version
 		if (us.isSingle())
@@ -3557,16 +3549,6 @@ public class NavigatorServlet extends HttpServlet {
 		Writer w = response.getWriter();
 		w.write("OK");
 		w.close();
-	}
-
-	private void handleTestCookie(String suffix, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		getAuthentication().becomeTestUser(response, suffix);
-
-		response.setContentType("text/plain");
-		response.getWriter().write(
-				"Cookie set - you are now (on this server) !tst" + suffix);
-		response.getWriter().close();
 	}
 
 	private void handleShared(String sFile, HttpServletRequest request,

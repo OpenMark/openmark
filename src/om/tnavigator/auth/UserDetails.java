@@ -20,8 +20,6 @@ package om.tnavigator.auth;
 /** Information about a user */
 public interface UserDetails
 {
-	/** Prefix used for test OUCUs */
-	final static String SYSTESTPREFIX="!tst";
 	/** Default user details for user who isn't logged in */
 	public static UserDetails NULLDETAILS = new NullUserDetails();
 
@@ -42,9 +40,6 @@ public interface UserDetails
 	 *  an actual student, if you like. Anyone marked admin automatically doesn't
 	 *  get the emails. */
 	public boolean shouldReceiveTestMail();
-
-	/** @return True if this is a test user */
-	public boolean isSysTest();
 
 	/**
 	 * @param sAuthId the authid to check.
