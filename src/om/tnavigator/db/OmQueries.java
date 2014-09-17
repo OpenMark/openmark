@@ -80,7 +80,7 @@ public abstract class OmQueries
 			"LEFT JOIN " + getPrefix() + "questions q ON tq.question=q.question AND tq.ti=q.ti " +
 			"LEFT JOIN " + getPrefix() + "results r ON q.qi=r.qi " +
 			"WHERE tq.ti="+ti+" " +
-			"ORDER BY tq.questionnumber, q.attempt DESC";
+			"ORDER BY tq.questionnumber, q.finished DESC, q.attempt DESC";
 			return dat.query(sqlstr);
 
 	}

@@ -209,7 +209,6 @@ public class SummaryTableBuilder {
 				dd.sDisplayedSection = addSectionRow(sd, dd, dd.sSection);
 			}
 			boolean restartNumbering = false;
-			bOutputRow = false;
 
 			// Have we changed question, but not put out the last one? if so put it out.
 			if (iLastQuestion != iQuestionNumber)
@@ -248,9 +247,10 @@ public class SummaryTableBuilder {
 			if (iQuestionNumber < dd.iCurrentQuestion) {
 				continue;
 			}
+			bOutputRow = false;
 
-			// Ignore unfinished attempts, wait for a finished one
-			if (iFinished != 0) {
+			// Ignore unfinished attempts, unless there were no finished attempts
+			if (iFinished != 0 && !bOutputRow) {
 				dd.iOutputCurrentQuestionNumber++;
 				// Woo! We have an answer.
 				dd.sDisplayedSection = addSectionRow(sd, dd, dd.sSection);
@@ -271,7 +271,7 @@ public class SummaryTableBuilder {
 		// Did we put out the last question? if not do it now.
 		// Have we changed question, but not put out the last one? if so put it out.
 
-			if (!bOutputRow || iQuestionCnt > iLastQuestionOutput )
+			if (!bOutputRow)
 			{
 				if (sd.isNumberBySection() && !(dd.sPreviousSection == null || dd.sPreviousSection.equals(dd.sDisplayedSection))) 
 				{
@@ -287,7 +287,6 @@ public class SummaryTableBuilder {
 			}
 
 	}
-
 	/**
 	 * Add a table row for the current question while iterating through the results.
 	 * @param sd the SummaryDetails
