@@ -2465,13 +2465,9 @@ public class NavigatorServlet extends HttpServlet {
 		// get the section number if we are numbering by section
 
 		String lastScroll = request.getParameter("!lastscrollpos");
-		if (Strings.isEmpty(lastScroll))
+		if (Strings.isEmpty(lastScroll) || !Pattern.matches("\\d+(\\.\\d*)?", lastScroll))
 		{
 			lastScroll = "";
-		}
-		else
-		{
-			lastScroll = "" + Integer.parseInt(lastScroll);
 		}
 
 		us.sSequence = Math.random() + "";
