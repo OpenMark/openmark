@@ -3347,7 +3347,7 @@ public class NavigatorServlet extends HttpServlet {
 		}
 		if (r == null) {
 			sendError(null, request, response,
-					HttpServletResponse.SC_NOT_FOUND, true, false, null,
+					HttpServletResponse.SC_NOT_FOUND, false, false, null,
 					"Not found", "Requested resource '" + sResource
 							+ "' not found.", null);
 		}
@@ -3560,7 +3560,7 @@ public class NavigatorServlet extends HttpServlet {
 				: (fInternal.exists() ? fInternal : null));
 		if (fActual == null) {
 			sendError(null, request, response,
-					HttpServletResponse.SC_NOT_FOUND, true, false, null,
+					HttpServletResponse.SC_NOT_FOUND, false, false, null,
 					"Not found", "The requested resource is not present.", null);
 		}
 
