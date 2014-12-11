@@ -343,24 +343,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	 * Iterate over each of the option cases until we identify where the issue
 	 *  is make a number of combinations also.
 	 */
-	@Test public void testStandardOptionVariations() throws Exception {
-		recurseOptions(true, null, null, false, true, true, true);
-	}
-
-	@Test public void testStandardOptionVariationsBuildingUp() throws Exception {
-		recurseOptions(false, null, null, false, true, true, true);
-	}
-
-	@Test public void testWithQuestionNumberHeader() throws Exception {
-		recurseOptions(true, "questionNumberHeader", null, false, true, true, true);
-	}
-
 	@Test public void testWithQuestionNumberHeaderBuildUp() throws Exception {
 		recurseOptions(false, "questionNumberHeader", null, false, true, true, true);
-	}
-
-	@Test public void testWithQuestionNumberHeaderEmpty() throws Exception {
-		recurseOptions(true, "", null, false, true, true, true);
 	}
 
 	@Test public void testWithQuestionNumberHeaderEmptyBuildUp() throws Exception {
@@ -369,22 +353,6 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 
 	@Test public void testBuildUpWithPlainNote() throws Exception {
 		recurseOptions(false, "Tester", null, true, true, true, true);
-	}
-
-	@Test public void testWithPlainNote() throws Exception {
-		recurseOptions(true, "Tester", null, true, true, true, true);
-	}
-
-	@Test public void testWithPlainNoteNoScore() throws Exception {
-		recurseOptions(true, "Tester", null, true, true, true, false);
-	}
-
-	@Test public void testWithFalse() throws Exception {
-		recurseOptions(false, null, null, false, false, false, false);
-	}
-
-	@Test public void testWithTrue() throws Exception {
-		recurseOptions(true, null, null, true, true, true, true);
 	}
 
 	private void recurseOptions(boolean reset, String questionNumberHeader, String labelBit,
