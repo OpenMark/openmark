@@ -181,6 +181,9 @@
 			<fileset dir="${jeuclidhome}">
 				<include name="*.jar"/>
 			</fileset>
+			<fileset dir="${jazzyhome}">
+				<include name="*.jar"/>
+			</fileset>
 		</copy>
 
 		<!-- TINY MCE from tnavigator -->
