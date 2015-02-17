@@ -3448,7 +3448,14 @@ public class NavigatorServlet extends HttpServlet {
 				rs = oq.queryDoneInfoPages(dat, us.getDbTi());
 				while (rs.next()) {
 					int iIndex = rs.getInt(1);
-					TestInfo ti = (TestInfo) us.getTestLeavesInOrder()[iIndex];
+					if (iIndex >= us.getTestLeavesInOrder().length) {
+						continue;
+					}
+					TestLeaf tl = us.getTestLeavesInOrder()[iIndex];
+					if (!(tl instanceof TestInfo)) {
+						continue;
+					}
+					TestInfo ti = (TestInfo) tl;
 					ti.setDone(true);
 				}
 			}
