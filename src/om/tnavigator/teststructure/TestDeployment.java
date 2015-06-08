@@ -403,21 +403,18 @@ public class TestDeployment
 	{
 		try
 		{
-			Element eParent=XML.getChild(eAccess,"users");
-			boolean bAdmins=false;
-			while(true)
-			{
-				if(getAccessTag(ud,eParent) != null) return true;
+			// Check ordinary user access.
+			Element eParent=XML.getChild(eAccess, "users");
+			if (getAccessTag(ud, eParent, false) != null) return true;
 
-				// Don't loop if we've done admins or there aren't any
-				if(bAdmins || !XML.hasChild(eAccess,"admins"))
-					break;
-				bAdmins=true;
+			// Now check admin access, if there are any.
+			if (XML.hasChild(eAccess,"admins"))
+			{
 				eParent=XML.getChild(eAccess,"admins");
+				if (getAccessTag(ud, eParent, false) != null) return true;
 			}
 
-			// If none of the authids matched then their name ain't down and they
-			// ain't coming in
+			// Neither user nor admin.
 			return false;
 		}
 		catch(XMLException xe)
@@ -433,10 +430,10 @@ public class TestDeployment
 	 */
 	public boolean isAdmin(UserDetails ud) throws OmFormatException
 	{
-		if(!XML.hasChild(eAccess,"admins")) return false;
+		if (!XML.hasChild(eAccess,"admins")) return false;
 		try
 		{
-			return getAccessTag(ud,XML.getChild(eAccess,"admins")) != null;
+			return getAccessTag(ud, XML.getChild(eAccess, "admins"), false) != null;
 		}
 		catch(XMLException e)
 		{
@@ -452,13 +449,10 @@ public class TestDeployment
 	 */
 	public boolean allowReports(UserDetails ud) throws OmFormatException
 	{
-		if(!XML.hasChild(eAccess,"admins")) return false;
+		if (!XML.hasChild(eAccess, "admins")) return false;
 		try
 		{
-			Element eTag=getAccessTag(ud,XML.getChild(eAccess,"admins"));
-			if(eTag==null) return false;
-
-			return "yes".equals(eTag.getAttribute("reports"));
+			return getAccessTag(ud, XML.getChild(eAccess, "admins"), true) != null;
 		}
 		catch(XMLException e)
 		{
@@ -471,32 +465,40 @@ public class TestDeployment
 	 * Checks access statements under the specified tag to see if they match the
 	 * user.
 	 * @param ud Details of user
-	 * @param eParent Tag
+	 * @param eParent which list of users to check. This is normally either the
+	 *      users or the admin tag from the deploy file.
+	 * @param withReports should only be used when eParent is the admin tag. If
+	 *      true, only return element with the report="yes" attribute.
 	 * @return True if user has access via this tag, false otherwise
 	 * @throws OmFormatException If there's something wrong with the file
 	 */
-	private Element getAccessTag(UserDetails ud,Element eParent) throws OmFormatException
+	private Element getAccessTag(UserDetails ud, Element eParent, boolean withReports) throws OmFormatException
 	{
 		// Look for all access options within parent
-		Element[] aeOptions=XML.getChildren(eParent);
-		for(int iOption=0;iOption<aeOptions.length;iOption++)
+		Element[] aeOptions = XML.getChildren(eParent);
+		for (int iOption = 0; iOption < aeOptions.length; iOption++)
 		{
-			Element eOption=aeOptions[iOption];
-			String sTag=eOption.getTagName();
-			if(sTag.equals("oucu") || sTag.equals("username"))
-				// OUCU is what the OU calls usernames, left in for backwards compatibility
+			Element eOption = aeOptions[iOption];
+
+			if (withReports && !"yes".equals(eOption.getAttribute("reports"))) {
+				continue;
+			}
+
+			String sTag = eOption.getTagName();
+			// OUCU is what the OU calls usernames, left in for backwards compatibility
+			if (sTag.equals("oucu") || sTag.equals("username"))
 			{
-				if(XML.getText(eOption).equals(ud.getUsername()))
-					return eOption;
+				if (XML.getText(eOption).equals(ud.getUsername())) return eOption;
 			}
 			else if(sTag.equals("authid"))
 			{
-				if(ud.hasAuthID(XML.getText(eOption)))
-					return eOption;
+				if (ud.hasAuthID(XML.getText(eOption))) return eOption;
 			}
 			else throw new OmFormatException(
 				"Error in test deployment file; unknown access tag <"+sTag+">");
 		}
+
+		// No matches.
 		return null;
 	}
 

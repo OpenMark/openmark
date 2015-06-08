@@ -7,7 +7,7 @@
 		<dates> - Dates affecting test (optional; if omitted test is always available)
 		<pcdc> - whether to generate a pre-course diagnostic code
 -->	
-<!ELEMENT deploy (definition,supportcontacts?,access,emailstudents,dates?,pcdc,templateset)>
+<!ELEMENT deploy (definition,supportcontacts?,access,emailstudents,dates,pcdc?,templateset?)>
 
 
 <!-- <definition> is just text (test definition ID) -->
