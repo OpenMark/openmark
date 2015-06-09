@@ -19,6 +19,7 @@ package om.tnavigator;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -218,5 +219,29 @@ public class MockHttpServletResponse implements HttpServletResponse
 	@Override
 	public void setStatus(int arg0, String arg1)
 	{
+	}
+
+	@Override
+	public String getHeader(String arg0)
+	{
+		return null;
+	}
+
+	@Override
+	public Collection<String> getHeaderNames()
+	{
+		return null;
+	}
+
+	@Override
+	public Collection<String> getHeaders(String arg0)
+	{
+		return null;
+	}
+
+	@Override
+	public int getStatus()
+	{
+		return 0;
 	}
 }
