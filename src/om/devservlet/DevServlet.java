@@ -28,7 +28,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URLEncoder;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -98,6 +97,8 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 	
 	/** Package names should not have upper-case letters and underscores. */
 	private final static Pattern PACKAGE_REGEXP = Pattern.compile("[^A-Z_]+");
+	/** Input parameter names in questions must be less than 32 chars, or they break when used in Moodle. */
+	private static final int MAX_ALLOWED_PARAM_LENGTH = 32;
 	
 	public static String SPECIFIC_QUESTION_DEPLOYMENT = "specificQuestionDeployment";
 
@@ -758,9 +759,19 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 			}
 
 			ActionParams ap=new ActionParams();
-			for(Enumeration<?> e = request.getParameterNames(); e.hasMoreElements();)
+			for(String sName : request.getParameterMap().keySet())
 			{
-				String sName = (String)e.nextElement();
+				if (sName.charAt(0) == '!') {
+					continue;
+				}
+				if (sName.length() > MAX_ALLOWED_PARAM_LENGTH) {
+					sendError(request,response,
+							HttpServletResponse.SC_METHOD_NOT_ALLOWED,
+							"Parameter name too long",
+							"Questions will not work in Moodle the name of any of the "
+							+ "ActionParams is longer than " + MAX_ALLOWED_PARAM_LENGTH
+							+ " characters. " + sName + " is too long and must be changed.", null);
+				}
 				ap.setParameter(sName,request.getParameter(sName));
 			}
 			if(ipInProgress.isPlainMode()) ap.setParameter("plain","yes");
