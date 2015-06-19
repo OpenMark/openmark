@@ -71,6 +71,7 @@ import util.misc.Exceptions;
 import util.misc.GeneralUtils;
 import util.misc.IO;
 import util.misc.LabelSets;
+import util.misc.MimeTypes;
 import util.misc.Strings;
 import util.misc.UserAgent;
 import util.misc.UtilityException;
@@ -728,6 +729,10 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				response.getOutputStream().write(r.getContent());
 				response.getOutputStream().close();
 			}
+			else if (sAfter.startsWith("!shared/")) {
+				handleShared(sAfter.substring("!shared/".length()), request, response);
+				return;
+			}
 			else if (sAfter.contains(TINYMCE)) 
 			{	
 				handleTinyMCEResponse(sRemainingPath, bPost, request, response);
@@ -809,6 +814,37 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				serveXHTML(sQuestion,ar,request,response,qInProgress);
 			}
 		}
+	}
+
+	private void handleShared(String filepath, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+
+		File file = new File(getServletContext().getRealPath("WEB-INF/shared/" + filepath));
+		if (!file.exists())
+		{
+			sendError(request, response, HttpServletResponse.SC_NOT_FOUND,
+					"Not found", "The requested resource is not present.", null);
+		}
+
+		// Handle If-Modified-Since
+		long ifModifiedSince = request.getDateHeader("If-Modified-Since");
+		if (ifModifiedSince != -1 && file.lastModified() <= ifModifiedSince)
+		{
+			response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+			return;
+		}
+
+		// Set type and length
+		response.setContentType(MimeTypes.getMimeType(filepath));
+		response.setContentLength((int) file.length());
+
+		// Set last-modified, and expiry for 4 hours
+		response.addDateHeader("Last-Modified", file.lastModified());
+		response.addDateHeader("Expires", System.currentTimeMillis() +
+				4L * 60L * 60L * 1000L);
+
+		// Send actual data
+		IO.copy(new FileInputStream(file), response.getOutputStream(), true);
 	}
 
 	/**
@@ -956,6 +992,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 		mReplace.put("RESOURCES","resources");
 		mReplace.put("IDPREFIX","");
 		mReplace.put("TINYMCE",TINYMCE);
+		mReplace.put("SHAREDRESOURCE:JSME", "!shared/jsme");
 
 		String progressInfo = r.getProgressInfo();
 		if (progressInfo == null)

@@ -3629,13 +3629,13 @@ public class NavigatorServlet extends HttpServlet {
 	 * @author Trevor Hinson
 	 */
 	private void handleTinyMCEResponse(String path, boolean post,
-		HttpServletRequest request, HttpServletResponse response)
-		throws Exception {
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
 		Map<String, Object> config = new HashMap<String, Object>();
 		config.put(RequestParameterNames.logPath.toString(),
-			getServletContext().getContextPath());
+				getServletContext().getContextPath());
 		RequestAssociates ra = new RequestAssociates(getServletContext(), path,
-			post, config);
+				post, config);
 		Map<String, String> params = AbstractOpenMarkServlet.getParameters(request);
 		params.put(TinyMCERequestHandler.FILE_PATH, path);
 		ra.setRequestParameters(params);
@@ -3821,7 +3821,6 @@ public class NavigatorServlet extends HttpServlet {
 					+ sTitle);
 		mReplace.put("CSSINDEX", "" + us.iCSSIndex);
 		mReplace.put("RESOURCES", "resources/" + us.getTestPosition());
-		mReplace.put("TINYMCE", TINYMCE);
 		mReplace.put("ACCESS", RequestHelpers.getAccessCSSAppend(request));
 
 		if (!us.isSingle()) {
@@ -4062,6 +4061,7 @@ public class NavigatorServlet extends HttpServlet {
 		// Fix up the replacement variables
 		mReplace = new HashMap<String, Object>(getLabelReplaceMap(us));
 		mReplace.put("RESOURCES", "resources/" + us.getTestPosition());
+		mReplace.put("SHAREDRESOURCE:JSME", "../!shared/jsme");
 		mReplace.put("TINYMCE", TINYMCE);
 		mReplace.put("IDPREFIX", "");
 

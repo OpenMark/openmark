@@ -190,6 +190,7 @@
 		<copy todir="${build}/webapps/om/WEB-INF/shared">
 			<fileset dir="webinf-tnavigator/shared">
 				<include name="tiny_mce/**"/>
+				<include name="jsme/**"/>
 			</fileset>
 		</copy>
 

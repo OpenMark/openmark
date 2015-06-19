@@ -17,20 +17,17 @@
  */
 package om.stdcomponent;
 
-import java.io.IOException;
-
 import om.*;
 import om.question.ActionParams;
 import om.stdquestion.*;
 
 import org.w3c.dom.Element;
 
-import util.misc.IO;
 import util.xml.XML;
 
 /**
-Inserts a pushbutton that users can press to open the JME (Java Molecular
-Editor) component. A popup window will appear, containing the JME itself plus
+Inserts a pushbutton that users can press to open the JSME (Java Molecular
+Editor) component. A popup window will appear, containing the JSME itself plus
 'OK' button.
 <p>
 If the user clicks 'OK', the internal SMILES value is updated and
@@ -40,9 +37,8 @@ The popup remains visible during one question. If the user begins a new
 question (or restarts the same one) it will vanish. It will also vanish if they
 navigate to another website.
 <p>
-Note that the JME applet itself is not OU software, but apparently we have
-an agreement to use it (for free, I think; it is normally free only for
-noncommercial use). <a href="http://www.molinspiration.com/jme/">JME website</a>.
+Note that the JSME is a third-party applet from
+<a href="http://peter-ertl.com/jsme/">http://peter-ertl.com/jsme/</a>.
 <h2>XML usage</h2>
 &lt;jme id='myjme' action='actionSubmit'/&gt;
 <h2>Properties</h2>
@@ -105,7 +101,7 @@ public class JMEComponent extends QComponent
 	{
 		Element eScript=qc.createElement("script");
 		eScript.setAttribute("type","text/javascript");
-		XML.createText(eScript,"jmeInit('"+sToken+"');");
+		XML.createText(eScript,"jsmeInit('" + sToken + "');");
 		qc.addInlineXHTML(eScript);
 
 		Element eInput=qc.createElement("input");
@@ -133,26 +129,10 @@ public class JMEComponent extends QComponent
 		eInput.setAttribute("type","button");
 		eInput.setAttribute("value",getString(PROPERTY_LABEL));
 		if(!isEnabled()) eInput.setAttribute("disabled","disabled");
-		eInput.setAttribute("onclick","jmeClick('%%RESOURCES%%','"+getID()+"','"+QDocument.ID_PREFIX+"')");
+		eInput.setAttribute("onclick", "jsmeClick('%%SHAREDRESOURCE:JSME%%/jsme.nocache.js', '"
+				+ getID() + "', '" + QDocument.ID_PREFIX + "')");
 		qc.addInlineXHTML(eInput);
 		if(isEnabled())	qc.informFocusable(sButtonID,bPlain);
-
-		if(bInit)
-		{
-			try
-			{
-				qc.addResource("jme.jar","application/java-archive",
-					IO.loadResource(JMEComponent.class,"jme.jar"));
-			}
-			catch(IllegalArgumentException e)
-			{
-				throw new OmException("Error loading jme.jar",e);
-			}
-			catch(IOException e)
-			{
-				throw new OmException("Error loading jme.jar",e);
-			}
-		}
 	}
 
 	/**

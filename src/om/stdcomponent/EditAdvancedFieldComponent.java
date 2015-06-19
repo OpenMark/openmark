@@ -91,7 +91,6 @@ import util.xml.XMLException;
  **/
 public class EditAdvancedFieldComponent extends QComponent implements Labelable {
 
-//	private static String TINYMCE="tiny_mce/";
 	private static String TINYMCE="%%TINYMCE%%/";
 
 	private static String DIV = "div";
