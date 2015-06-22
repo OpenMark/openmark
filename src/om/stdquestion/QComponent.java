@@ -967,55 +967,6 @@ public abstract class QComponent
 		}
 	}
 
-	/**
-	 * Iterates over all of the child QComponents and calls the method
-	 *  resetIndividualComponentState( ... );
-	 * 
-	 * @throws OmException
-	 * @author Trevor Hinson
-	 */
-	public void applyComponentResets() throws OmException {
-		for (Object o : llChildren) {
-			if(o instanceof QComponent) {
-				recurseResets((QComponent) o);
-			}
-		}
-	}
-
-	/**
-	 * Components are nested.  This component recurses through each of their
-	 *  children calling the resetIndividualComponentState() on each of them.
-	 * 
-	 * @param comp
-	 * @throws OmException
-	 * @author Trevor Hinson
-	 */
-	protected void recurseResets(QComponent comp) throws OmException {
-		if (null != comp) {
-			QComponent[] children = comp.getComponentChildren();
-			if (null != children ? children.length > 0 : false) {
-				for (int i = 0; i < children.length; i++) {
-					recurseResets(children[i]);
-				}
-			}
-			comp.resetIndividualComponentState();
-		}
-	}
-
-	/**
-	 * Components are held within the composite QComponent qcRoot within the
-	 *  QDocument.  Therefore in order to carry out tasks such as only providing
-	 *  one Javascript  output for multiple components then this method needs to 
-	 *  be overriden.  Then reset the state so that next time the produceOutput
-	 *  method is invoked it from the QDocument then everything is fresh again.
-	 *  
-	 * @throws OmException
-	 * @author Trevor Hinson
-	 */
-	public void resetIndividualComponentState() throws OmException {
-		
-	}
-
 	// Specially-handled property access
 	////////////////////////////////////
 

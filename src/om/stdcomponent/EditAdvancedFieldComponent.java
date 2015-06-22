@@ -17,8 +17,6 @@
  */
 package om.stdcomponent;
 
-import java.util.List;
-
 import om.OmDeveloperException;
 import om.OmException;
 import om.OmFormatException;
@@ -30,7 +28,6 @@ import om.stdquestion.QDocument;
 
 import org.w3c.dom.Element;
 
-import util.misc.Strings;
 import util.xml.XML;
 import util.xml.XMLException;
 
@@ -133,18 +130,6 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 
 	private boolean bGotLabel = false;
 
-	private boolean appliedTinyMCEJavascript = false;
-
-	private boolean appliedTinyMCEByAnotherComponentInDocument = false;
-	
-	public boolean isAppliedTinyMCEJavascript() {
-		return appliedTinyMCEJavascript;
-	}
-
-	public void setAppliedTinyMCEJavascript(boolean b) {
-		this.appliedTinyMCEJavascript = b;
-	}
-
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
 	public static String getTagName() {
 		return ADVANCED_FIELD;
@@ -170,13 +155,12 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 	protected void initChildren(Element eThis) throws OmException {
 		if (eThis.getFirstChild() != null)
 			throw new OmFormatException(
-					"<editfield> may not contain other content");
+					"<" + ADVANCED_FIELD + "> may not contain other content");
 	}
 
 	@Override
 	public void produceVisibleOutput(QContent qc, boolean bInit, boolean bPlain)
 		throws OmException {
-		determineExistingTinyMCEOutput();
 		SubSupEnum ssb = determineOutputType(getString(PROPERTY_TYPE));
 		if (!(bGotLabel || isPropertySet(PROPERTY_LABEL))) {
 			throw new OmFormatException("<editadvancedfield> " + getID()
@@ -186,36 +170,6 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 			generateVisibleOutputForPlainDisplay(ssb, qc);
 		} else {
 			generateVisibleOutput(qc, ssb);
-		}
-	}
-
-	/**
-	 * Simply resets the component state so that it is ready for rendering
-	 *  again.
-	 * @author Trevor Hinson
-	 */
-	public void resetIndividualComponentState() throws OmException {
-		appliedTinyMCEJavascript = false;
-		appliedTinyMCEByAnotherComponentInDocument = false;
-	}
-	
-	protected void determineExistingTinyMCEOutput() {
-		boolean hasAlready = false;
-		List<EditAdvancedFieldComponent> advs = getQDocument()
-			.find(EditAdvancedFieldComponent.class);
-		if (null != advs ? advs.size() > 0 : false) {
-			x : for (EditAdvancedFieldComponent adv : advs) {
-				 hasAlready = adv.isAppliedTinyMCEJavascript();
-				 if (hasAlready) {
-					 break x;
-				 }
-			}
-		}
-		if (hasAlready) {
-			appliedTinyMCEJavascript = hasAlready;
-			if (appliedTinyMCEJavascript) {
-				appliedTinyMCEByAnotherComponentInDocument = true;
-			}
 		}
 	}
 
@@ -243,7 +197,6 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 
 	protected void generateVisibleOutput(QContent qc, SubSupEnum enu)
 		throws OmException {
-		String sType = enu.toString();
 		Element eDiv = qc.createElement(DIV);
 		qc.addInlineXHTML(eDiv);
 		String classname = ADVANCED_FIELD;
@@ -254,17 +207,10 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 		double dZoom = getQuestion().getZoom();
 		applyTextArea(qc, eDiv, enu, dZoom);
 		applyHiddenInputField(qc, eDiv);
-		applyScript(qc, eDiv, sType, dZoom);
 	}
 
 	enum SubSupEnum {
-		
 		superscript, both, subscript
-		
-	}
-
-	protected String capitaliseFirstCharacter(String initial) {
-		return Strings.uppercaseFirstCharacter(initial);
 	}
 
 	protected void applyHiddenInputField(QContent qc, Element eDiv)
@@ -303,19 +249,23 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 			addLangAttributes(span);
 			return;
 		}
-		if (!appliedTinyMCEByAnotherComponentInDocument) {
-			Element s1 = qc.createElement("script");
-			s1.setAttribute("type", "text/javascript");
-			s1.setAttribute("src", TINYMCE+"tiny_mce_src.js");
-			eDiv.appendChild(s1);
-			setAppliedTinyMCEJavascript(true);
-		}
+		String outputType = determineOutputType(enu);
+		applyScript(qc, eDiv, outputType, dZoom);
+
+		String elements = QDocument.ID_PREFIX + QDocument.OM_PREFIX + getID() + "_iframe";
+		Element textarea = qc.createElement("textarea");
+		textarea.setAttribute("id", elements);
+		textarea.setAttribute("name", elements);
+		textarea.setAttribute("class", "om"+getID()+"iframe");
+		textarea.setAttribute("mysubtype", outputType);
+		textarea.setTextContent(getValue());
+		eDiv.appendChild(textarea);
+		addLangAttributes(textarea);
+
 		Element s2 = qc.createElement("script");
 		s2.setAttribute("type", "text/javascript");
-		String outputType = determineOutputType(enu);
-		String elements = QDocument.ID_PREFIX + QDocument.OM_PREFIX
-			+ getID() + "_iframe";
-		s2.setAttribute("src", TINYMCE+"tiny_mce_settings.js?"
+		s2.setAttribute("id", getID() + "_config");
+		s2.setAttribute("data-src", TINYMCE+"tiny_mce_settings.js?"
 			+ "&h=" + pixelHeight
 			+ "&w=" + pixelWidth
 			+ "&t=" + outputType
@@ -325,37 +275,33 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 			+ "&z=" + (dZoom > 1.7 ? "20" : dZoom > 1.2 ? "15" : ""));
 		s2.setAttribute("defer", "defer");
 		eDiv.appendChild(s2);
-		Element textarea = qc.createElement("textarea");
-		textarea.setAttribute("id", elements);
-		textarea.setAttribute("name", elements);
-		textarea.setAttribute("class", "om"+getID()+"iframe");
-		textarea.setAttribute("mysubtype", outputType);
-		textarea.setTextContent(getValue());
-		eDiv.appendChild(textarea);
-		addLangAttributes(textarea);
 	}
 
 	protected void applyScript(QContent qc, Element eDiv, String sType,
-		double dZoom) throws OmException {
+			double dZoom) throws OmException {
+
 		Element eScript = qc.createElement("script");
 		eDiv.appendChild(eScript);
 		eScript.setAttribute("type", "text/javascript");
-		String sfg = getQuestion().getFixedColourFG();
-		String sbg = getQuestion().getFixedColourBG();
-		if (sbg == null)
-			sbg = "#FFFFFF";
-		if (sfg == null) {
-			if (isEnabled())
-				sfg = "#000000";
-			else
-				sfg = "#999999";
-		}
-		XML.createText(eScript, "addOnLoad( function() { editadvancedfieldFix('"
-			+ getID() + "','" + QDocument.ID_PREFIX + "',"
-			+ (isEnabled() ? "true" : "false") + ",'" + sType + "',"
-			+ dZoom + ",'" + sfg + "','" + sbg + "'); } );");
+		String foregroundColour = getQuestion().getFixedColourFG();
+		String backgroundColour = getQuestion().getFixedColourBG();
 
-		// Can be focused (hopefully)
+		XML.createText(eScript,
+				  "if (!document.getElementById('tinymceloader')) {\n"
+				+ "  var scripttag = document.createElement('script');\n"
+				+ "  scripttag.setAttribute('type', 'text/javascript');\n"
+				+ "  scripttag.setAttribute('id', 'tinymceloader');\n"
+				+ "  scripttag.setAttribute('src', '" + TINYMCE + "tiny_mce_src.js');\n"
+				+ "  document.getElementsByTagName('body')[0].appendChild(scripttag);\n"
+				+ "}\n"
+				+ "addOnLoad(function() {\n"
+				+ "  editadvancedfieldFix('"
+						+ getID() + "','" + QDocument.ID_PREFIX + "',"
+						+ (isEnabled() ? "true" : "false") + ",'" + sType + "',"
+						+ dZoom + ",'" + foregroundColour + "','" + backgroundColour + "');"
+				+ "});");
+
+		// Can be focused (hopefully).
 		if (isEnabled()) {
 			String sID =  QDocument.ID_PREFIX
 					+ QDocument.OM_PREFIX + getID()

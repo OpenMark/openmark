@@ -1,24 +1,10 @@
-var OBJECT_TO_FOCUS;
 var mysubtype = new Array();
-var suppress = false;
-
-function delayedFocus(obj)
-{
-	OBJECT_TO_FOCUS=obj;
-	setTimeout(function() {OBJECT_TO_FOCUS.focus() },0);
-}
-
-function suppressEvent(e)
-{
-	suppress=true;
-	e.returnValue=false;
-	if(e.preventDefault) e.preventDefault();
-	return false;
-}
 
 function editadvancedfieldFix(fieldName,idPrefix,enabled,type,dZoom, sfg,sbg) {
 	if(enabled) {
 		setTimeout(function() { editadvancedfieldInit(fieldName,idPrefix, type) },0);
+		var configScript = document.getElementById(fieldName + "_config");
+		configScript.setAttribute('src', configScript.getAttribute('data-src'));
 	}
 }
 
