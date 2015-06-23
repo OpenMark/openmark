@@ -1,7 +1,6 @@
 package om.tnavigator.teststructure;
 
 import om.tnavigator.sessions.UserSession;
-import om.tnavigator.teststructure.SummaryTableBuilder.TableComponents;
 
 import org.w3c.dom.Node;
 
@@ -9,10 +8,10 @@ public class SummaryDetails {
 
 	private int dbTi;
 
-	// from us.getRootTestGroup().getFinalScore()
+	// From us.getRootTestGroup().getFinalScore().
 	private TestGroup rootTestGroup;
 
-	// from us.getTestLeavesInOrder;
+	// From us.getTestLeavesInOrder.
 	private TestLeaf[] testLeavesInOrder;
 
 	private TestDefinition testDefinition;
@@ -30,8 +29,6 @@ public class SummaryDetails {
 	private Node parent;
 
 	private Node plainParent;
-
-	private TableComponents tableComponents;
 
 	public SummaryDetails() {
 	}
@@ -93,14 +90,6 @@ public class SummaryDetails {
 
 	public void setPlainParent(Node n) {
 		plainParent = n;
-	}
-
-	public TableComponents getTableComponents() {
-		return tableComponents;
-	}
-
-	public void setTableComponents(TableComponents tc) {
-		tableComponents = tc;
 	}
 
 	public Node getParent() {

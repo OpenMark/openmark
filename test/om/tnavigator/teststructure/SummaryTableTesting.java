@@ -253,7 +253,7 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 		assertTrue(results.contains("<div id=\"summarytable\">"));
 		for (int i = 1; i < 6; i++) {
 			assertTrue(results.contains("<td colspan=\"3\">Chapter " + i));
-			assertTrue(results.contains("<tr class=\"answered\"><td>" + i + "</td><td>" + i + "</td><td>sA [" + i + "]</td></tr>"));
+			assertTrue(results.contains("<tr class=\"answered\"><td>" + i + "</td><td>sQ [" + i + "]</td><td>sA [" + i + "]</td></tr>"));
 		}
 	}
 
