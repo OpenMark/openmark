@@ -56,6 +56,7 @@ public class ComponentRegistry
 		MathMLEquationComponent.class,
 		RadioBoxComponent.class,
 		RightComponent.class,
+		SupSubFieldComponent.class,
 		TableComponent.class,
 		TextComponent.class,
 		TextEquationComponent.class,

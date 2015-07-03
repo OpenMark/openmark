@@ -4062,6 +4062,7 @@ public class NavigatorServlet extends HttpServlet {
 		mReplace = new HashMap<String, Object>(getLabelReplaceMap(us));
 		mReplace.put("RESOURCES", "resources/" + us.getTestPosition());
 		mReplace.put("SHAREDRESOURCE:JSME", "../!shared/jsme");
+		mReplace.put("SHAREDRESOURCE:SUPSUB", "../!shared/ousupsub");
 		mReplace.put("TINYMCE", TINYMCE);
 		mReplace.put("IDPREFIX", "");
 

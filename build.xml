@@ -191,6 +191,7 @@
 			<fileset dir="webinf-tnavigator/shared">
 				<include name="tiny_mce/**"/>
 				<include name="jsme/**"/>
+				<include name="ousupsub/**"/>
 			</fileset>
 		</copy>
 

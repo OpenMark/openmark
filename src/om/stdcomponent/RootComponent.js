@@ -15,8 +15,6 @@ function myOnLoad()
 	setTimeout(myPostLoad,0);
 }
 
-//window.addEventListener('load', myOnLoad, false);
-
 if (window.addEventListener){
 	window.addEventListener('load', myOnLoad, false);
 } else if (window.attachEvent){

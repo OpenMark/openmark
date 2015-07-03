@@ -1,0 +1,96 @@
+.editor_ousupsub {
+    display: inline-block;
+}
+
+.editor_ousupsub_content_wrap {
+    border: 1px solid #bbb;
+    border-top: none;
+    background-color: #fff;
+    color: #000;
+    white-space: nowrap;
+    overflow-x: auto;
+}
+.editor_ousupsub_content {
+    padding: 2px;
+    vertical-align: center;
+}
+
+div.editor_ousupsub_toolbar {
+    display: block;
+    background: #F2F2F2;
+    border: 1px solid #bbb;
+    height: 25px;
+}
+
+div.editor_ousupsub_toolbar div.ousupsub_group {
+    display: inline-block;
+    background: #FFF;
+}
+
+div.editor_ousupsub_toolbar button {
+    margin: 0;
+    border: 0;
+    border-right: 1px solid #bbb;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    cursor: pointer;
+    line-height: 20px;
+    width: 35px;
+    height: 25px;
+ }
+body.dir-rtl div.editor_ousupsub_toolbar button {
+    border-right: 0;
+    border-left: 1px solid #bbb;
+}
+div.editor_ousupsub_toolbar button img.icon {
+    padding: 0;
+    margin: 0;
+    /* The following is dedicated to the beloved IE8, clashing with Bootstrap. God bless you IE. */
+    vertical-align: bottom;
+    width: auto;
+    height: 16px;
+}
+div.editor_ousupsub_toolbar button:first-child img.icon {
+    vertical-align: top;
+}
+
+div.editor_ousupsub_toolbar button[disabled] {
+    opacity: .45;
+    background: none;
+    cursor: default;
+}
+
+.editor_ousupsub_toolbar button:hover {
+    background-image: radial-gradient(ellipse at center, #ffffff 60%,#D2691E 100%);
+    background-color: #ebebeb;
+}
+
+.editor_ousupsub_toolbar button:active, .editor_ousupsub_toolbar button.highlight {
+    background-image: radial-gradient(ellipse at center, #ffffff 40%,#D2691E 100%);
+    background-color: #dfdfdf;
+}
+
+/* Make firefox button sizes match other browsers */
+div.editor_ousupsub_toolbar button::-moz-focus-inner {
+    border:0;
+    padding:0;
+}
+
+/* The CSS above this line is the standard ousupsub CSS. Below this line comes the
+   additional styles required by OpenMark. */
+
+.supsubfield.readonly
+{
+    margin: 0;
+    padding: 0;
+}
+.supsubfield.readonly span.answer
+{
+	background-color: white;
+	border: 1px %%COLOUR:disabledtext%% solid;
+	margin: 0;
+    padding: 1px 0 0 3px;
+	display: block;
+    overflow-x: auto;
+}

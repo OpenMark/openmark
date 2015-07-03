@@ -626,7 +626,7 @@ public abstract class StandardQuestion implements Question
 			throw new OmDeveloperException("Component is not an <advancedfield>: "+sID);
 		}
 	}
-	
+
 	/**
 	 * @param sID ID of EditAdvancedfield component
 	 * @return Component object
@@ -643,6 +643,24 @@ public abstract class StandardQuestion implements Question
 			throw new OmDeveloperException("Component is not an <editadvancedfield>: "+sID);
 		}
 	}
+
+	/**
+	 * @param sID ID of SupSubField component
+	 * @return SupSubFieldComponent object
+	 * @throws OmDeveloperException If it doesn't exist or isn't correct type
+	 */
+	protected SupSubFieldComponent getSupSubField(String sID) throws OmDeveloperException
+	{
+		try
+		{
+			return (SupSubFieldComponent) getComponent(sID);
+		}
+		catch (ClassCastException cce)
+		{
+			throw new OmDeveloperException("Component is not a <supsubfield>: " + sID);
+		}
+	}
+
 	/**
 	 * @param sID ID of dropbox component
 	 * @return Component object

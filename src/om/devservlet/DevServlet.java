@@ -993,6 +993,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 		mReplace.put("IDPREFIX","");
 		mReplace.put("TINYMCE",TINYMCE);
 		mReplace.put("SHAREDRESOURCE:JSME", "!shared/jsme");
+		mReplace.put("SHAREDRESOURCE:SUPSUB", "!shared/ousupsub");
 
 		String progressInfo = r.getProgressInfo();
 		if (progressInfo == null)
