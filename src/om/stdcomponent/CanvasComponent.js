@@ -98,6 +98,7 @@ function canvasMarkerInit(canvasId,idPrefix,labelJS,originX,originY,factorX,fact
   {
     // Add events
     marker.onmousedown=function(e) { return canvasMarkerDown(fixEvent(e),marker); };
+    marker.ontouchstart=function(e) { return canvasMarkerDown(fixEvent(e),marker); };
     marker.onkeydown=function(e) { return canvasMarkerKeydown(fixEvent(e),marker); };
   }
 
@@ -158,7 +159,9 @@ function canvasMarkerDown(e,marker)
 
   // Listen to events across whole document
   document.onmouseup=function() { canvasMarkerUp(marker); };
-  document.onmousemove=function(e) { canvasMarkerMove(fixEvent(e),marker); };
+  document.ontouchend=function() { canvasMarkerUp(marker); };
+  document.onmousemove=function(e) { return canvasMarkerMove(fixEvent(e),marker); };
+  document.ontouchmove=function(e) { return canvasMarkerMove(fixEvent(e),marker); };
 
   // Set focus too
   marker.focus();
@@ -172,21 +175,31 @@ function canvasMarkerUp(marker)
   marker.mDown=false;
 
   // Release document events
-  document.onmouseup=null;
-  document.onmousemove=null;
+  document.onmouseup = null;
+  document.ontouchend = null;
+
+  document.onmousemove = null;
+  document.ontouchmove = null;
 }
 
 function canvasMarkerMove(e,marker)
 {
   if(!marker.mDown) return;
+  if (typeof e.touches !== 'undefined' && e.touches.length !== 1)
+  {
+    return canvasMarkerUp(e);
+  }
 
   // Get x/y relative to canvas
-   var canvasX=(e.mPageX-marker.mStartX)+
-	marker.mStartLeft-trueoffsetleft(marker.mCanvas.img)+marker.mCanvas.imageOffsetX;
+  var canvasX=(e.mPageX-marker.mStartX)+
+    marker.mStartLeft-trueoffsetleft(marker.mCanvas.img)+marker.mCanvas.imageOffsetX;
   var canvasY=(e.mPageY-marker.mStartY)+
-	marker.mStartTop-trueoffsettop(marker.mCanvas.img)+marker.mCanvas.imageOffsetY;
+    marker.mStartTop-trueoffsettop(marker.mCanvas.img)+marker.mCanvas.imageOffsetY;
 
   canvasSetPos(marker,canvasX,canvasY);
+
+  if (e.preventDefault) e.preventDefault();
+  return false;
 }
 
 function canvasSetPos(marker,canvasX,canvasY)
