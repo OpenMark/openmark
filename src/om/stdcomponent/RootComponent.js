@@ -215,34 +215,60 @@ function fixEvent(e)
 {
 	if(!e) e=window.event;
 
-	if(e.pageX)
-		e.mPageX=e.pageX;
-	else if(e.clientX)
-		e.mPageX=e.clientX+document.body.scrollLeft;
-	if(e.pageY)
-		e.mPageY=e.pageY;
-	else if(e.clientY)
-		e.mPageY=e.clientY+document.body.scrollTop;
+	if (typeof e.touches !== 'undefined' && e.touches.length === 1)
+	{
+		e.mPageX=e.touches[0].pageX;
+		e.mPageY=e.touches[0].pageY;
+	}
+	else
+	{
+		if(e.pageX)
+		{
+			e.mPageX=e.pageX;
+		}
+		else if(e.clientX)
+		{
+			e.mPageX=e.clientX+document.body.scrollLeft;
+		}
+		if(e.pageY)
+		{
+			e.mPageY=e.pageY;
+		}
+		else if(e.clientY)
+		{
+			e.mPageY=e.clientY+document.body.scrollTop;
+		}
+	}
+
 	if(e.target)
+	{
 		e.mTarget=e.target;
+	}
 	else if(e.srcElement)
+	{
 		e.mTarget=e.srcElement;
+	}
+
 	if(e.keyCode)
+	{
 		e.mKey=e.keyCode;
+	}
 	else if(e.which)
+	{
 		e.mKey=e.which;
+	}
 
 	return e;
 }
 
 function getUrlParameter(name)
 {
-	var regexStr = "[\\?&]"+name+"=([^&#]*)";  
-	var regex = new RegExp(regexStr);  
-	var match = regex.exec(window.location.href);  
-	if(match==null)    
-		return "";  
-	else    
+	var regexStr = "[\\?&]"+name+"=([^&#]*)";
+	var regex = new RegExp(regexStr);
+	var match = regex.exec(window.location.href);
+	if(match==null)
+		return "";
+	else
 		return match[1];
 }
 
@@ -258,41 +284,41 @@ function isAutoFocusOn()
 var focusList=new Array();
 function addFocusable(id, expr)
 {
-    var o=new Object();
-    o.id=id;
-    o.expr=expr;
+	var o=new Object();
+	o.id=id;
+	o.expr=expr;
 
-    if(focusList.length==0 && isAutoFocusOn())
-    {
-        addOnLoad(function()
-        {
-            setTimeout(function()
-            {
-                try
-                {
-                    eval(o.expr).focus()
-                }
-                catch(e) {}
-            }, 100);
-        });
-    }
+	if(focusList.length==0 && isAutoFocusOn())
+	{
+		addOnLoad(function()
+		{
+			setTimeout(function()
+			{
+				try
+				{
+					eval(o.expr).focus()
+				}
+				catch(e) {}
+			}, 100);
+		});
+	}
 
-    focusList.push(o);
+	focusList.push(o);
 }
 
 // Focus the next (offset=1) or previous (offset=-1) one
 function focusFromList(idThis,offset)
 {
-    for(var i=0;i<focusList.length;i++)
-    {
-        if(focusList[i].id==idThis)
-        {
-            var index=i+offset;
-            while(index<0) index+=focusList.length;
-            while(index>=focusList.length) index-=focusList.length;
-            setTimeout('try{'+focusList[index].expr+".focus()}catch(e){};",0);
-        }
-    }
+	for(var i=0;i<focusList.length;i++)
+	{
+		if(focusList[i].id==idThis)
+		{
+			var index=i+offset;
+			while(index<0) index+=focusList.length;
+			while(index>=focusList.length) index-=focusList.length;
+			setTimeout('try{'+focusList[index].expr+".focus()}catch(e){};",0);
+		}
+	}
 }
 
 // Adds pageX and pageY to the element
@@ -311,7 +337,7 @@ function resolvePageXY(e)
 
 	// Bug fix for IE7. When an eplace containing a text field is in an equation
 	// in an indented line of text, then IE7 was applying the left margin from the
-	// line of text to the input. In this case, add the offsetLeft from the first 
+	// line of text to the input. In this case, add the offsetLeft from the first
 	// child to the position of this element, so the input ends up in the right place.
 	if (e.firstChild && e.firstChild.nodeType==1 &&
 			e.firstChild.tagName.toLowerCase() == 'input' &&
@@ -345,50 +371,49 @@ if(window.isDevServlet===undefined || !window.isDevServlet)
 
 function getTrueOffset(El, position)
 {
-    var offsetPosition = 'offsetLeft';// Element offset position name
-    if(position=='top'){
-        offsetPosition = 'offsetTop';
-    }
-    
-    if(!isIE7){
-        return(El[offsetPosition]);
-    }
+	var offsetPosition = 'offsetLeft';// Element offset position name
+	if(position=='top'){
+		offsetPosition = 'offsetTop';
+	}
 
-    var last=0;
-    var currentLast=0;
-    var current=0;
-    
-    e=El;
-    if(e.offsetParent) {
-        current = e[offsetPosition];
-        
-        while (e = e.offsetParent) {
-            last=currentLast;
-            if(e == document.body){
-                break;
-            }
-            current += e[offsetPosition];  
-            currentLast=e[offsetPosition];
-        }
-    }  
+	if(!isIE7){
+		return(El[offsetPosition]);
+	}
 
-    var trueOffset = (current-last);
-    if(El[offsetPosition] == 0 && (El[offsetPosition] <= trueOffset)){
-        return trueOffset;
-    }
-    
-    return El[offsetPosition]; 
-    
+	var last=0;
+	var currentLast=0;
+	var current=0;
+
+	e=El;
+	if(e.offsetParent) {
+		current = e[offsetPosition];
+
+		while (e = e.offsetParent) {
+			last=currentLast;
+			if(e == document.body){
+				break;
+			}
+			current += e[offsetPosition];
+			currentLast=e[offsetPosition];
+		}
+	}
+
+	var trueOffset = (current-last);
+	if(El[offsetPosition] == 0 && (El[offsetPosition] <= trueOffset)){
+		return trueOffset;
+	}
+
+	return El[offsetPosition];
 }
 
 function trueoffsetleft(El)
 {
-    return getTrueOffset(El, 'left');
+	return getTrueOffset(El, 'left');
 }
 
 function trueoffsettop(El)
 {
-    return getTrueOffset(El, 'top');
+	return getTrueOffset(El, 'top');
 }
 
 function cleanstring(val)
@@ -455,113 +480,113 @@ function khtmlForceRepaint(element)
 // Event handler to save the scroll position when the form is submitted.
 function scrollHandlerOnSubmit(form)
 {
-    var lastScrollInput = document.getElementById('lastscrollpos');
-    if (!lastScrollInput)
-    {
-        return;
-    }
+	var lastScrollInput = document.getElementById('lastscrollpos');
+	if (!lastScrollInput)
+	{
+		return;
+	}
 
-    // Reliable scrollpos code thanks to https://developer.mozilla.org/en-US/docs/Web/API/window.scrollY#Notes.
-    var scrollpos;
-    if (window.pageYOffset)
-    {
-        lastScrollInput.value = window.pageYOffset;
-    }
-    else
-    {
-        lastScrollInput.value = (document.documentElement || document.body.parentNode || document.body).scrollTop;
-    }
+	// Reliable scrollpos code thanks to https://developer.mozilla.org/en-US/docs/Web/API/window.scrollY#Notes.
+	var scrollpos;
+	if (window.pageYOffset)
+	{
+		lastScrollInput.value = window.pageYOffset;
+	}
+	else
+	{
+		lastScrollInput.value = (document.documentElement || document.body.parentNode || document.body).scrollTop;
+	}
 }
 
 // Scroll the page to the correct position. We have to scroll to 0 if we are not
 // scrolling anywhere else, because of the focus handling we do.
 function scrollHandlerScrollToPosition()
 {
-    if (getUrlParameter('scrollpos')) {
-        // This will only happen if we are inside Moodle, and Moodle is doing
-        // something with the scroll position. In that case, we do nothing.
-        return;
-    }
+	if (getUrlParameter('scrollpos')) {
+		// This will only happen if we are inside Moodle, and Moodle is doing
+		// something with the scroll position. In that case, we do nothing.
+		return;
+	}
 
-    var lastScrollInput = document.getElementById('lastscrollpos');
-    var targetScrollInput = document.getElementById('scrollto');
-    var targetScroll;
-    if (!lastScrollInput || lastScrollInput.value === '')
-    {
-        // We should only manipulate the scroll if the user just clicked a
-        // button in the question, which will cause this hidden input to be set
-        // to a value.
-        targetScroll = 0;
-    }
+	var lastScrollInput = document.getElementById('lastscrollpos');
+	var targetScrollInput = document.getElementById('scrollto');
+	var targetScroll;
+	if (!lastScrollInput || lastScrollInput.value === '')
+	{
+		// We should only manipulate the scroll if the user just clicked a
+		// button in the question, which will cause this hidden input to be set
+		// to a value.
+		targetScroll = 0;
+	}
 
-    else if (!targetScrollInput)
-    {
-        // We should not scroll.
-        targetScroll = 0;
-    }
+	else if (!targetScrollInput)
+	{
+		// We should not scroll.
+		targetScroll = 0;
+	}
 
-    else if (targetScrollInput.value === '_same')
-    {
-        // Keep the same scroll position as before.
-        targetScroll = lastScrollInput.value;
-    }
+	else if (targetScrollInput.value === '_same')
+	{
+		// Keep the same scroll position as before.
+		targetScroll = lastScrollInput.value;
+	}
 
-    else
-    {
-        // Scroll a particular element into view.
-        var targetElement = document.getElementById(targetScrollInput.value);
-        if (!targetElement)
-        {
-            return;
-        }
+	else
+	{
+		// Scroll a particular element into view.
+		var targetElement = document.getElementById(targetScrollInput.value);
+		if (!targetElement)
+		{
+			return;
+		}
 
-        // We scroll the lesser of the two distances, Top of element at the top
-        // of the browser window, or bottom of the element at the bottom of the
-        // browser window.
-        // The extra 8 pixels is the typical padding between boxes.
-        resolvePageXY(targetElement);
-        targetScroll = Math.min(targetElement.pageY - 8,
-                Math.max(0, targetElement.pageY2 + 8 - getWindowHeight()));
-    }
+		// We scroll the lesser of the two distances, Top of element at the top
+		// of the browser window, or bottom of the element at the bottom of the
+		// browser window.
+		// The extra 8 pixels is the typical padding between boxes.
+		resolvePageXY(targetElement);
+		targetScroll = Math.min(targetElement.pageY - 8,
+				Math.max(0, targetElement.pageY2 + 8 - getWindowHeight()));
+	}
 
-    window.scrollTo(0, targetScroll);
-    addOnLoad(function() { window.scrollTo(0, targetScroll); });
+	window.scrollTo(0, targetScroll);
+	addOnLoad(function() { window.scrollTo(0, targetScroll); });
 
-    // And the following horror is necessary to make it work in IE 8.
-    if (isIE8OrBelow) {
-        scrollHandlerForceIeToScroll(targetScroll);
-    }
+	// And the following horror is necessary to make it work in IE 8.
+	if (isIE8OrBelow) {
+		scrollHandlerForceIeToScroll(targetScroll);
+	}
 }
 
 // Beat IE into submission.
 function scrollHandlerForceIeToScroll(targetpos) {
-    var hackcount = 25;
-    function do_scroll() {
-        window.scrollTo(0, targetpos);
-        hackcount -= 1;
-        if (hackcount > 0) {
-            setTimeout(do_scroll, 10);
-        }
-    }
-    addOnLoad(do_scroll);
+	var hackcount = 25;
+	function do_scroll() {
+		window.scrollTo(0, targetpos);
+		hackcount -= 1;
+		if (hackcount > 0) {
+			setTimeout(do_scroll, 10);
+		}
+	}
+	addOnLoad(do_scroll);
 }
 
 function getWindowHeight() {
-    if (window.innerHeight) return window.innerHeight;
-    // For older IE.
-    if (document.documentElement.offsetHeight) return document.documentElement.offsetHeight;
+	if (window.innerHeight) return window.innerHeight;
+	// For older IE.
+	if (document.documentElement.offsetHeight) return document.documentElement.offsetHeight;
 }
 
 // Initialise the scroll handling system.
 function scrollHandlerInit()
 {
-    scrollHandlerScrollToPosition();
+	scrollHandlerScrollToPosition();
 
-    var omDiv = document.getElementById('om');
-    if (!omDiv) return;
+	var omDiv = document.getElementById('om');
+	if (!omDiv) return;
 
-    var form = omDiv.parentNode;
-    if (!form || !form.getAttribute('action')) return;
-    addPreSubmit(form, function(e) { scrollHandlerOnSubmit(form); });
+	var form = omDiv.parentNode;
+	if (!form || !form.getAttribute('action')) return;
+	addPreSubmit(form, function(e) { scrollHandlerOnSubmit(form); });
 }
 setTimeout(scrollHandlerInit, 10);

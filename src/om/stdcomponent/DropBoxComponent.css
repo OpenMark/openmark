@@ -45,6 +45,11 @@
   right:2px;
 }
 
+.om .dragboxmoving {
+  z-index: 100;
+  box-shadow: 3px 3px 4px #000;
+}
+
 @media print /* For Bug 4942 */
 {
   .om .dragbox {

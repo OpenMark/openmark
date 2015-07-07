@@ -235,7 +235,11 @@ function dropboxFix2(id,idPrefix)
 			var img2=document.getElementById(dragboxArray[i]+"img");
 			moveMatch(db,img2,0,0);
 			db.style.visibility="visible";
-			if(db.isEnabled) db.onmousedown=dragboxMouseDown;
+			if(db.isEnabled)
+			{
+				db.onmousedown = dragboxMouseDown;
+				db.ontouchstart = dragboxMouseDown;
+			}
 			db.homeLeft=db.style.left;
 			db.homeTop=db.style.top;
 			db.isShown=true;
@@ -286,15 +290,22 @@ var dbMoving;
 function dragboxMouseDown(e)
 {
 	e = fixEvent(e);
+
+	if (typeof e.touches !== 'undefined' && e.touches.length !== 1)
+	{
+		return dragboxMouseUp(e);
+	}
 	dbMoving = resolveDragbox(e);
 
 	dragboxLeavingHome(dbMoving);
 
 	dbMoving.prevMouseX = e.mPageX;
 	dbMoving.prevMouseY = e.mPageY;
-	dbMoving.style.zIndex = 100;
+	dbMoving.className += " dragboxmoving";
 
-	dragboxUnplace(dbMoving, false);
+    dragboxUnplace(dbMoving, false);
+    dbMoving.originalParent = dbMoving.parentNode;
+    document.getElementById('om').appendChild(dbMoving);
 
 	// Get current dropbox locations
 	for (var i = 0; i < dropboxArray.length; i++)
@@ -303,7 +314,10 @@ function dragboxMouseDown(e)
 	}
 
 	document.onmouseup   = dragboxMouseUp;
+	document.ontouchend  = dragboxMouseUp;
+
 	document.onmousemove = dragboxMouseMove;
+	document.ontouchmove = dragboxMouseMove;
 }
 
 function dragboxMouseMove(e)
@@ -315,10 +329,14 @@ function dragboxMouseMove(e)
 	{
 		return dragboxMouseUp(e);
 	}
+	if (typeof e.touches !== 'undefined' && e.touches.length !== 1)
+	{
+		return dragboxMouseUp(e);
+	}
 	if (!dbMoving) return;
 
 	var deltaX = e.mPageX - dbMoving.prevMouseX,
-	    deltaY = e.mPageY - dbMoving.prevMouseY;
+		deltaY = e.mPageY - dbMoving.prevMouseY;
 
 	dbMoving.style.left = (Number(dbMoving.style.left.replace("px", "")) + deltaX) + "px";
 	dbMoving.style.top  = (Number(dbMoving.style.top.replace("px",  "")) + deltaY) + "px";
@@ -337,14 +355,20 @@ function dragboxMouseMove(e)
 	}
 
 	clearSelection();
-	return true;
+
+	if (e.preventDefault) e.preventDefault();
+	return false;
 }
 
 function dragboxReleaseCapture()
 {
-	document.onmouseup=null;
-	document.onmousemove=null;
-	dbMoving.style.zIndex=5;
+	document.onmouseup = null;
+	document.ontouchend = null;
+
+	document.onmousemove = null;
+	document.ontouchmove = null;
+
+	dbMoving.className=dbMoving.className.replace(/ dragboxmoving/g, "");
 	dbMoving=null;
 }
 
