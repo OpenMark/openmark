@@ -141,8 +141,9 @@ function log(line)
 // We don't really care about KHTML and Opera, they will both be served the
 // 'correct' version and are welcome to either work or not. They are detected
 // only so we know they're not the 'real' ones they imitate.
-var isKHTML=navigator.userAgent.indexOf('KHTML')!=-1;
-var isGecko=!isKHTML && navigator.userAgent.indexOf('Gecko/')!=-1;
+var isEdge=navigator.userAgent.indexOf('Edge/')!=-1;
+var isKHTML=!isEdge && navigator.userAgent.indexOf('KHTML')!=-1;
+var isGecko=!isEdge && !isKHTML && navigator.userAgent.indexOf('Gecko/')!=-1;
 var isOpera=navigator.userAgent.indexOf('Opera')!=-1;
 var isIE=!isOpera && navigator.userAgent.match('.*MSIE.*Windows.*');
 var isIE7OrBelow=!isOpera && navigator.userAgent.match('.*MSIE [1-7].*Windows.*');
@@ -150,7 +151,6 @@ var isIE8 = navigator.userAgent.match('.*Trident/4.*');
 var isIE7=!isOpera && navigator.userAgent.match('.*MSIE 7.*Windows.*') && !isIE8;
 var isIE8OrBelow=!isOpera && navigator.userAgent.match('.*Trident/[1-4].*Windows.*');
 var isFF=navigator.userAgent.indexOf("Firefox")!=-1;
-
 
 var isGecko18;
 if(isGecko)
@@ -162,7 +162,6 @@ if(isGecko)
 		isGecko18 = (matches[1]==1) ? (matches[2]>=8) : (matches[1]>1);
 	}
 }
-
 
 // Fix position of placeholders relative to an image. First argument is image Id,
 // following arguments are arrays of [id, x, y].
