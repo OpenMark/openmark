@@ -1,5 +1,18 @@
 .editor_ousupsub {
     display: inline-block;
+    vertical-align: -14px;
+}
+[class|=winie] .editor_ousupsub {
+    vertical-align: 21px;
+}
+/* Moodle does not add an 'edge' classname to body yet, and when they do
+   (MDL-50807) the class name used may not be 'edge', but in any case, this is
+   the right offset. */
+.edge .editor_ousupsub {
+    vertical-align: 24px;
+}
+.safari .editor_ousupsub {
+    vertical-align: 0;
 }
 
 .editor_ousupsub_content_wrap {
@@ -12,8 +25,21 @@
 }
 .editor_ousupsub_content {
     padding: 2px;
-    vertical-align: center;
 }
+
+.editor_ousupsub_content sub,
+.editor_ousupsub_content sup {
+    font-size: 80%;
+    position: relative;
+    vertical-align: baseline;
+}
+.editor_ousupsub_content sup {
+    top: -0.4em;
+}
+.editor_ousupsub_content sub {
+    bottom: -0.2em;
+}
+
 
 div.editor_ousupsub_toolbar {
     display: block;
@@ -38,7 +64,12 @@ div.editor_ousupsub_toolbar button {
     line-height: 20px;
     width: 35px;
     height: 25px;
- }
+}
+
+div.editor_ousupsub_toolbar button.ousupsub_undo_button, div.editor_ousupsub_toolbar button.ousupsub_redo_button {
+    display: none;
+}
+
 body.dir-rtl div.editor_ousupsub_toolbar button {
     border-right: 0;
     border-left: 1px solid #bbb;
@@ -51,8 +82,9 @@ div.editor_ousupsub_toolbar button img.icon {
     width: auto;
     height: 16px;
 }
-div.editor_ousupsub_toolbar button:first-child img.icon {
-    vertical-align: top;
+div.editor_ousupsub_toolbar button.ousupsub_superscript_button_superscript img.icon {
+    position: relative;
+    top: -4px;
 }
 
 div.editor_ousupsub_toolbar button[disabled] {
@@ -80,6 +112,9 @@ div.editor_ousupsub_toolbar button::-moz-focus-inner {
 /* The CSS above this line is the standard ousupsub CSS. Below this line comes the
    additional styles required by OpenMark. */
 
+.supsubfield {
+    display: inline-block;
+}
 .supsubfield.readonly
 {
     margin: 0;

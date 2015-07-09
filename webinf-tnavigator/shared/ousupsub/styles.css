@@ -7,6 +7,19 @@ body {
   background-color: #fff;
 }.editor_ousupsub {
     display: inline-block;
+    vertical-align: -14px;
+}
+body.safari .editor_ousupsub {
+    vertical-align: 0;
+}
+body.ie .editor_ousupsub {
+    vertical-align: 26px;
+}
+/* Moodle does not add an 'edge' classname to body yet, and when they do
+   (MDL-50807) the class name used may not be 'edge', but in any case, this is
+   the right offset. */
+body.edge .editor_ousupsub {
+    vertical-align: 25px;
 }
 
 .editor_ousupsub_content_wrap {
@@ -19,7 +32,6 @@ body {
 }
 .editor_ousupsub_content {
     padding: 2px;
-    vertical-align: center;
 }
 
 div.editor_ousupsub_toolbar {
@@ -46,6 +58,11 @@ div.editor_ousupsub_toolbar button {
     width: 35px;
     height: 25px;
  }
+ 
+div.editor_ousupsub_toolbar button.ousupsub_undo_button, div.editor_ousupsub_toolbar button.ousupsub_redo_button {
+    display: none;
+}
+
 body.dir-rtl div.editor_ousupsub_toolbar button {
     border-right: 0;
     border-left: 1px solid #bbb;

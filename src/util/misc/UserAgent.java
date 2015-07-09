@@ -42,9 +42,21 @@ public class UserAgent
 	public static String getBrowserString(HttpServletRequest request)
 	{
 		String sAgent=request.getHeader("user-agent");
+		String extra = "";
+
+		if (sAgent.indexOf("Edge/")!=-1) {
+			return "edge";
+		}
+
+		if (sAgent.indexOf("Chrome/")!=-1) {
+			extra = "chrome ";
+		} else if (sAgent.indexOf("Safari/")!=-1) {
+			extra = "safari ";
+		}
+
 		// Filter troublemakers
 		if(sAgent.indexOf("KHTML")!=-1)
-			return "khtml";
+			return extra + "khtml";
 		if(sAgent.indexOf("Opera")!=-1)
 			return "opera";
 
