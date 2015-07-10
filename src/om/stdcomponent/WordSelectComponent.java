@@ -29,30 +29,30 @@ import org.w3c.dom.*;
 import util.xml.XML;
 
 /**
-<p>A paragraph of plain text with selectable words.</p>
-<p>Users of this component may wish to award partial marks if substantial numbers of words have to be found.
-For example to recognise that students may have got close to the correct answer, i.e. getting 19 words out
-of 20 on the last attempt, a score of 0 which SimpleQuestion1 would give seems harsh. Whereas using the
-partial scoring method, depending on when they got to the 19 they would score something perhaps 40 - 60%.</p>
-<p>OU authors should see omqstns\src\fels\lib\partialquestion1 and the nearby questions that use it such as 
-omqstns\src\felsSMH\q01.</p>
-
-<h2>XML usage</h2>
-<pre>&lt;wordselect id="paragraph_1"&gt;
-	Some text that is not part of the answer 
- &lt;sw id="answer_1"&gt; required answer words &lt;/sw&gt;
- 	Some more text then 
- 	&lt;sw&gt; other required answer words auto id generation&lt;/sw&gt;
- 	 etc...
-&lt;/wordselect&gt;
-<h2>Properties</h2>
-<table border="1">
-<tr><th>Property</th><th>Values</th><th>Effect</th></tr>
-<tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
-<tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
-<tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates all children</td></tr>
-</table>
-*/
+ * <p>A paragraph of plain text with selectable words.</p>
+ * <p>Users of this component may wish to award partial marks if substantial numbers of words have to be found.
+ * For example to recognise that students may have got close to the correct answer, i.e. getting 19 words out
+ * of 20 on the last attempt, a score of 0 which SimpleQuestion1 would give seems harsh. Whereas using the
+ * partial scoring method, depending on when they got to the 19 they would score something perhaps 40 - 60%.</p>
+ * <p>OU authors should see omqstns\src\fels\lib\partialquestion1 and the nearby questions that use it such as
+ * omqstns\src\felsSMH\q01.</p>
+ *
+ * <h2>XML usage</h2>
+ * <pre>&lt;wordselect id="paragraph_1"&gt;
+ * 	Some text that is not part of the answer
+ * &lt;sw id="answer_1"&gt; required answer words &lt;/sw&gt;
+ * 	Some more text then
+ * 	&lt;sw&gt; other required answer words auto id generation&lt;/sw&gt;
+ * 	etc...
+ * &lt;/wordselect&gt;
+ * <h2>Properties</h2>
+ * <table border="1">
+ * <tr><th>Property</th><th>Values</th><th>Effect</th></tr>
+ * <tr><td>id</td><td>(string)</td><td>Specifies unique ID</td></tr>
+ * <tr><td>display</td><td>(boolean)</td><td>Includes in/removes from output</td></tr>
+ * <tr><td>enabled</td><td>(boolean)</td><td>Activates/deactivates all children</td></tr>
+ * </table>
+ */
 public class WordSelectComponent extends QComponent
 {
 	/** @return Tag name (introspected; this may be replaced by a 1.5 annotation) */
@@ -218,16 +218,16 @@ public class WordSelectComponent extends QComponent
 		boolean lastWordBlockEndedInSpace = true;
 		boolean nextWordBlockPrecedingNotWhitespace = false;
 		int countWordBlocks = 0;
-		
+
 		for (WordBlock wb : wordBlocks)
-		{	
+		{
 			if(countWordBlocks > 0){
 				WordBlock lastBlock = wordBlocks.get(countWordBlocks - 1);
 				int length = lastBlock.words.size() - 1;
 				if(length != -1){
 					Word lastWord = lastBlock.words.get(length);
-					if(!lastWord.following.trim().equals("") && 
-							lastWord.following.length() > 0 
+					if(!lastWord.following.trim().equals("") &&
+							lastWord.following.length() > 0
 							&& !Character.isWhitespace(lastWord.following.charAt(lastWord.following.length() - 1))){
 						lastWordBlockEndedInSpace = false;
 					}
@@ -236,8 +236,7 @@ public class WordSelectComponent extends QComponent
 					}
 				}
 			}
-			
-			
+
 			countWordBlocks++;
 			nextWordBlockPrecedingNotWhitespace = false;
 			if(countWordBlocks < wordBlocks.size()){
@@ -246,8 +245,7 @@ public class WordSelectComponent extends QComponent
 					nextWordBlockPrecedingNotWhitespace = true;
 				}
 			}
-			
-			
+
 			if (!wb.preceding.trim().equals("")) {
 				if (!bPlain && selectDiv != null) {
 					Element span = qc.createElement("div");
@@ -316,29 +314,29 @@ public class WordSelectComponent extends QComponent
 				Element label=qc.getOutputDocument().createElement("label");
 				label.setAttribute("for",QDocument.ID_PREFIX+"wordselectword_"+getID() + checkwordID);
 				label.setAttribute("id",QDocument.ID_PREFIX+"label_wordselectword_"+getID() + checkwordID);
-				
+
 				String labelText = "";
-				
-				if(!lastWordBlockEndedInSpace && w.id == 1 && wb.preceding.length() > 0 
+
+				if(!lastWordBlockEndedInSpace && w.id == 1 && wb.preceding.length() > 0
 						&& Character.isWhitespace(wb.preceding.charAt(wb.preceding.length() - 1))){
 					labelText += " ";
 				}
-				
-				
-				if((!w.following.trim().equals("") 
+
+				if((!w.following.trim().equals("")
 						&& !Character.isWhitespace(w.following.charAt(0)))
 						|| (nextWordBlockPrecedingNotWhitespace && w.id == wb.words.size())){
 					labelText += w.word;
 				}
+
 				//Note without the space the component doesn't
 				//display properly in IE unless there is a following dividing div
 				//with something other than whitespace in it
 				else{
 					labelText += w.word + " ";
 				}
-				
+
 				XML.createText(label, labelText);
-				
+
 				if (wb.isSecondHighlighted) {
 					if (!bPlain) {
 						labelclass = "selectword secondhilight";
@@ -347,7 +345,7 @@ public class WordSelectComponent extends QComponent
 						input.setAttribute("checked", "checked");
 					}
 				}
-				
+
 				if (w.isThirdHilight) {
 					if (!bPlain) {
 						labelclass = "selectword thirdhilight";
@@ -452,31 +450,31 @@ public class WordSelectComponent extends QComponent
 	}
 
 	/**
-	 * @return a count of all the selected words (integer value) 
+	 * @return a count of all the selected words (integer value)
 	 */
 	public int getTotalWordsSelected() {
 		return countAllSelected;
 	}
 
 	/**
-	 * @return a count of the words within the sw tags that 
-	 * have been selected (integer value) 
+	 * @return a count of the words within the sw tags that
+	 * have been selected (integer value)
 	 */
 	public int getTotalSWWordsSelected() {
 		return countSWWordsSelected;
 	}
 
 	/**
-	 * @return a count of the total number of words within 
-	 * the sw tags (integer value) 
+	 * @return a count of the total number of words within
+	 * the sw tags (integer value)
 	 */
 	public int getTotalSWWords() {
 		return countSWWords;
 	}
 
 	/**
-	 * @return true only if all the words within the sw tags 
-	 * have been selected and no other words are selected 
+	 * @return true only if all the words within the sw tags
+	 * have been selected and no other words are selected
 	 */
 	public boolean getIsCorrect() {
 		if (countSWWords == countSWWordsSelected
@@ -490,7 +488,7 @@ public class WordSelectComponent extends QComponent
 
 	/**
 	 * highlights all the words contained within all the sw tags
-	 * in a pink background(full colour mode) and a double underline. 
+	 * in a pink background(full colour mode) and a double underline.
 	 * Intended for use with final feedback
 	 */
 	public void secondHilightSWWords() {
@@ -503,7 +501,7 @@ public class WordSelectComponent extends QComponent
 
 	/**
 	 * highlights all the words contained within an sw tag
-	 * of the given id in a pink background(full colour mode) 
+	 * of the given id in a pink background(full colour mode)
 	 * and a double underline.
 	 * @param swId the id of the block of words to highlight.
 	 */
@@ -511,33 +509,31 @@ public class WordSelectComponent extends QComponent
 		WordBlock wb = wordsById.get(swId);
 		wb.isSecondHighlighted = true;
 	}
-	
+
 	/**
-	 * Highlights all the correctly selected words contained within 
-	 * all the sw tags with a grey background(full colour mode) 
-	 * and a dotted underline. Can be used in conjuction with 
-	 * secondHilightSWWords, where it takes precedence and with 
-	 * clearSelection. Note, if used with clearSelection 
+	 * Highlights all the correctly selected words contained within
+	 * all the sw tags with a grey background(full colour mode)
+	 * and a dotted underline. Can be used in conjuction with
+	 * secondHilightSWWords, where it takes precedence and with
+	 * clearSelection. Note, if used with clearSelection
 	 * then highlightCorrectSWWords MUST be called first.
 	 * Intended for use with final feedback.
 	 * @param swId the id of the block of words to clear.
 	 */
 	public void highlightCorrectSWWords() {
-		
 		for (WordBlock wb : wordBlocks) {
 			if (wb.isSW) {
 				highlightCorrectSWWords(wb.id);
 			}
-			
 		}
 	}
-	
+
 	/**
 	 * Highlights all the correctly selected words contained within an sw tag
-	 * of the given id with a grey background(full colour mode) 
-	 * and a dotted underline. Can be used in conjuction with 
-	 * secondHilightSWWords, where it takes precedence and with 
-	 * clearSelection. Note, if used with clearSelection 
+	 * of the given id with a grey background(full colour mode)
+	 * and a dotted underline. Can be used in conjuction with
+	 * secondHilightSWWords, where it takes precedence and with
+	 * clearSelection. Note, if used with clearSelection
 	 * then highlightCorrectSWWords MUST be called first.
 	 * Intended for use with final feedback.
 	 */
@@ -548,9 +544,8 @@ public class WordSelectComponent extends QComponent
 				w.isThirdHilight = true;
 			}
 		}
-			
 	}
-	
+
 	/**
 	 * Calls highlightCorrectSWWords() and secondHilightSWWords()
 	 * Intended for use with final feedback.
@@ -559,7 +554,7 @@ public class WordSelectComponent extends QComponent
 		highlightCorrectSWWords();
 		secondHilightSWWords();
 	}
-	
+
 	/**
 	 * Calls highlightCorrectSWWords(swId) and secondHilightSWWords(swId)
 	 * @param swId the id of the block of words to clear.
@@ -567,7 +562,5 @@ public class WordSelectComponent extends QComponent
 	public void highlightCorrectandUnselectedSWWords(String swId) {
 		highlightCorrectSWWords(swId);
 		secondHilightSWWords(swId);
-			
 	}
-	
 }
