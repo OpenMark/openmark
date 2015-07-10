@@ -30,7 +30,7 @@ function editadvancedfieldPreSubmit(fieldName, idPrefix, type) {
 function editadvancedfieldSupSubInit(fieldName, idPrefix, type){
     var editor = tinyMCE.get(idPrefix+"om_" + fieldName + "_iframe");
     if(!editor){
-        setTimeout(function() { editadvancedfieldSupSubInit(fieldName, idPrefix, type),100});
+        setTimeout(function() { editadvancedfieldSupSubInit(fieldName, idPrefix, type),50});
         return;
     }
     switch(type){

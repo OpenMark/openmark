@@ -305,8 +305,8 @@ public class EditAdvancedFieldComponent extends QComponent implements Labelable 
 		if (isEnabled()) {
 			String sID =  QDocument.ID_PREFIX
 					+ QDocument.OM_PREFIX + getID()
-					+ "_iframe";
-			qc.informFocusable(sID, false);
+					+ "_iframe_ifr";
+			qc.informFocusableFullJS(sID, "tinyMCE.getInstanceById('om_response_iframe')", false);
 		}
 	}
 

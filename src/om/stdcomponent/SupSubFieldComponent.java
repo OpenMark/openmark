@@ -246,8 +246,7 @@ public class SupSubFieldComponent extends QComponent implements Labelable
 		// Can be focused (hopefully)
 		if (isEnabled())
 		{
-			String sID =  QDocument.ID_PREFIX + QDocument.OM_PREFIX + getID() + "editable";
-			qc.informFocusable(sID, false);
+			qc.informFocusable(elementName + "editable", false);
 		}
 	}
 
