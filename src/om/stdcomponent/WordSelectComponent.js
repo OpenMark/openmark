@@ -9,9 +9,9 @@ function wordOnClick(checkboxID, idPrefix)
 	} else {
 		label.className = label.className.replace(" selectedhilight", "");
 	}
-	if (isKHTML) {
+	if (isSafari) {
 		// Fix some Chrome layout glitches.
-		khtmlForceRepaint(label.parentNode);
+		safariForceRepaint(label.parentNode);
 		checkbox.focus();
 	}
 }
@@ -22,9 +22,9 @@ function wordOnFocus(checkboxID, idPrefix)
 	// Firefox, IE8 and other browsers don't automatically create a focus rectangle so have to draw one in.
 	// IE7 and below versions do create a focus rectangle automatically.
 	div.className = div.className + " borderfocus";
-	if (isKHTML) {
+	if (isSafari) {
 		// Fix some Chrome layout glitches.
-		khtmlForceRepaint(div);
+		safariForceRepaint(div);
 	}
 }
 
@@ -42,8 +42,8 @@ function wordOnBlur(checkboxID, idPrefix)
 {
 	var div = document.getElementById(idPrefix+'div_wordselectword_'+checkboxID);
 	div.className = div.className.replace(" borderfocus", "");
-	if (isKHTML) {
+	if (isSafari) {
 		// Fix some Chrome layout glitches.
-		khtmlForceRepaint(div);
+		safariForceRepaint(div);
 	}
 }

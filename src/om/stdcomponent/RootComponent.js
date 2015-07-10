@@ -143,6 +143,8 @@ function log(line)
 // only so we know they're not the 'real' ones they imitate.
 var isEdge=navigator.userAgent.indexOf('Edge/')!=-1;
 var isKHTML=!isEdge && navigator.userAgent.indexOf('KHTML')!=-1;
+var isCrome=!isEdge && isKHTML && navigator.userAgent.indexOf('Chrome/')!=-1;
+var isSafari=!isEdge && isKHTML && !isCrome && navigator.userAgent.indexOf('Safari/')!=-1;
 var isGecko=!isEdge && !isKHTML && navigator.userAgent.indexOf('Gecko/')!=-1;
 var isOpera=navigator.userAgent.indexOf('Opera')!=-1;
 var isIE=!isOpera && navigator.userAgent.match('.*MSIE.*Windows.*');
@@ -463,7 +465,7 @@ function om_attachEvent(e, code, element)
 	}
 }
 
-function khtmlForceRepaint(element)
+function safariForceRepaint(element)
 {
 	var oldDisplay = element.style.display;
 	element.style.display = "none";
