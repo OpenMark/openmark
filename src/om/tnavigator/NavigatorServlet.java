@@ -32,6 +32,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -253,6 +254,9 @@ public class NavigatorServlet extends HttpServlet {
 	 */
 	private File maintenanceFile;
 
+	/** The time when the servlet was last restarted. */
+	private Date servletStartTime = null;
+
 	/** Just to stop us checking the file more than once in 3 seconds */
 	private long lastMaintenanceCheck = 0;
 
@@ -279,6 +283,7 @@ public class NavigatorServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
+		servletStartTime = Calendar.getInstance().getTime();
 		ServletContext sc = getServletContext();
 		try {
 			maintenanceFile = new File(sc.getRealPath("maintenance.xhtml"));
@@ -3764,9 +3769,12 @@ public class NavigatorServlet extends HttpServlet {
 		m.put("VERSION", OmVersion.getVersion());
 		m.put("BUILDDATE", OmVersion.getBuildDate());
 
+		m.put("LASTRESTART", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(servletStartTime));
+
 		getAuthentication().obtainPerformanceInfo(m);
 
 		m.put("DBCONNECTIONS", da.getConnectionCount() + "");
+		m.put("DBSERVER", nc.getDBInfo());
 
 		URL uThis = nc.getThisTN();
 		m.put("MACHINE", uThis.getHost().replaceAll(".open.ac.uk", "")

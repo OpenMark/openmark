@@ -135,9 +135,17 @@ public class NavigatorConfig
 	public String getDBName() {
 		return dbName;
 	}
+
 	public String getDBPrefix() {
 		return dbPrefix;
 	}	
+
+	/**
+	 * @return info about which DB server is being used. For the status page.
+	 */
+	public String getDBInfo() {
+		return dbServer + " / " + dbName + " / " + dbPrefix;
+	}
 
 	private static Map<String,String> getParams(Element parent) throws IOException
 	{
