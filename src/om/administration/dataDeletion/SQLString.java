@@ -13,7 +13,6 @@ import util.xml.XML;
 public class SQLString {
 
 	private String SQLname;
-	private String dbName;
 	private String tableName;
 	private String SQLStartString;
 	private String SQLEndstring;
@@ -39,37 +38,37 @@ public class SQLString {
 	private  String SQL4HEADER="";
 	private  String SQL5HEADER="";
 
-  	private static String SELECTSTRING1STRT="select {2} from [{0}].[dbo].[{1}] t where ";
+  	private static String SELECTSTRING1STRT="select {2} from [{1}] t where ";
   	private static String SELECTSTRING1END="";
   	
-	private static String UPDATESTRING1STRT="update [{0}].[dbo].[{1}] set oucu={2}, pi={2} where ti in ( select ti from from [{0}].[dbo].[{1}] where ";
+	private static String UPDATESTRING1STRT="update [{1}] set oucu={2}, pi={2} where ti in ( select ti from from [{0}].[dbo].[{1}] where ";
 	private static String UPDATESTRING1END=" ) ";
 	
   //	private static String SELECTSTRING2STRT="select ti,qi from [{0}].[dbo].[nav_questions] where ti in " +
   //			"(select ti	from [{0}].[dbo].[nav_tests] where ";
   //  	private static String SELECTSTRING2END=") order by ti,qi";
 
-	private static String SELECTSTRING2STRT="select distinct t.ti, q.qi from [{0}].[dbo].[nav_questions] q "+
+	private static String SELECTSTRING2STRT="select distinct t.ti, q.qi from [nav_questions] q "+
 	"join [{0}].[dbo].[nav_tests] t on q.ti = t.ti " +
 	"where (";
 	private static String SELECTSTRING2END=") order by t.ti, q.qi";
 	
-	private static String SELECTSTRING3STRT="select * from [{0}].[dbo].[{1}] where ";
+	private static String SELECTSTRING3STRT="select * from [{1}] where ";
 	private static String SELECTSTRING3END="";
 	
   	
-	private static String DELETESTRING5STRT="delete from [{0}].[dbo].[{1}] where ";
+	private static String DELETESTRING5STRT="delete from [{1}] where ";
 	private static String DELETESTRING5END="";
   	
 	private static String DELSTRING="DELETED";
 
     
     /* with the table name */
-	public SQLString(String tname,String name, String dbname, Integer bn, String dbia,String dbna,LinkedList<String> wc)	 throws DataDeletionException
+	public SQLString(String tname,String name, Integer bn, String dbia,String dbna,LinkedList<String> wc)	 throws DataDeletionException
 	{
 		try
 		{
-			initialise(tname,name,dbname,bn,dbia,dbna,wc);
+			initialise(tname,name,bn,dbia,dbna,wc);
 		}
 		catch(Exception x)
 		{
@@ -77,11 +76,11 @@ public class SQLString {
 		}
 	}
 	/*without the tablename */
-	public SQLString(String name, String dbname, Integer bn, String dbia,String dbna,LinkedList<String> wc)	 throws DataDeletionException
+	public SQLString(String name, Integer bn, String dbia,String dbna,LinkedList<String> wc)	 throws DataDeletionException
 	{
 		try
 		{
-			initialise("",name,dbname,bn,dbia,dbna,wc);
+			initialise("",name,bn,dbia,dbna,wc);
 		}
 		catch(Exception x)
 		{
@@ -89,12 +88,11 @@ public class SQLString {
 		}
 	}
 	
-	private void initialise(String tname, String name, String dbname, Integer bn, String dbia,String dbna,LinkedList<String> wc)	 throws DataDeletionException
+	private void initialise(String tname, String name, Integer bn, String dbia,String dbna,LinkedList<String> wc)	 throws DataDeletionException
 	{
 		try
 		{
 			this.SQLname=name;
-			this.dbName=dbname;
 			this.tableName=tname;
 			//Collections.copy(deployTestData,dtd);
 			batchNumber=bn;			
@@ -234,27 +232,27 @@ public class SQLString {
 		if (SQLname.equals(SQL1))
 		{
 			/* select everything */
-			Object[] arguments = {dbName,tableName,"*"};
+			Object[] arguments = {"",tableName,"*"};
 			str=MessageFormat.format(SELECTSTRING1STRT, arguments);
 		}
 		if (SQLname.equals(SQL2))
 		{
-			Object[] arguments = {dbName,tableName,"'"+DELSTRING+"'"};
+			Object[] arguments = {"",tableName,"'"+DELSTRING+"'"};
 			str=MessageFormat.format(UPDATESTRING1STRT, arguments);			
 		}		
 		if (SQLname.equals(SQL3))
 		{
-			Object[] arguments = {dbName};
+			Object[] arguments = {""};
 			str=MessageFormat.format(SELECTSTRING2STRT, arguments);	
 		}
 		if (SQLname.equals(SQL4))
 		{
-			Object[] arguments = {dbName,tableName};
+			Object[] arguments = {"",tableName};
 			str=MessageFormat.format(SELECTSTRING3STRT, arguments);	
 		}
 		if (SQLname.equals(SQL5))
 		{
-			Object[] arguments = {dbName,tableName};
+			Object[] arguments = {"",tableName};
 			str=MessageFormat.format(DELETESTRING5STRT, arguments);	
 		}
 		return str;

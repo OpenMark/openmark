@@ -22,7 +22,7 @@ public class SimpleSQLReporterUtils {
 			oq = (OmQueries) Class.forName(dbClass).getConstructor(
 					new Class[] { String.class }).newInstance(
 					new Object[] { dbPrefix });
-			da = new DatabaseAccess(nc.getDatabaseURL(oq),  null);
+			da = new DatabaseAccess(null);
 		} catch (Exception e) 
 		{
 			throw new SimpleSQLReporterException(

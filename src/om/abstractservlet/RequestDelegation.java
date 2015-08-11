@@ -63,7 +63,7 @@ public class RequestDelegation implements RequestManagement {
 	@Override
 	public void handleRequest(HttpServletRequest request,
 		HttpServletResponse response, RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		if (null != request && null != response && null != associates) {
 			RequestHandlerSettings rhs = requestHandlingConfiguration
 				.getRequestHandlerSettings(request.getPathInfo());
@@ -76,7 +76,7 @@ public class RequestDelegation implements RequestManagement {
 							delegateToRequestHandler(request, response, rh,
 								associates, rhs);
 						} else {
-							throw new RequestHandlingException(
+							throw new UtilityException(
 								"There is not a RequestHandler configured for this path : "
 								+ request.getPathInfo());
 						}
@@ -88,20 +88,20 @@ public class RequestDelegation implements RequestManagement {
 								e.printStackTrace();
 							}
 						}
-						throw new RequestHandlingException(x);
+						throw new UtilityException(x);
 					}
 				} else {
-					throw new RequestHandlingException(
+					throw new UtilityException(
 						"Access denied for the requested url : "
 						+ request.getPathInfo());
 				}
 			} else {
-				throw new RequestHandlingException("Unable to continue as the"
+				throw new UtilityException("Unable to continue as the"
 					+ " RequestHandlerSettings were null or invalid for the path : "
 					+ request.getPathInfo());
 			}
 		} else {
-			throw new RequestHandlingException("Invalid invocation.  "
+			throw new UtilityException("Invalid invocation.  "
 				+ "One of the required arguments was null : "
 				+ "\n HttpServletRequest = " + request
 				+ "\n HttpServletResponse = " + response
@@ -118,12 +118,12 @@ public class RequestDelegation implements RequestManagement {
 	 * @param rh
 	 * @param ra
 	 * @param rhs
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected void delegateToRequestHandler(HttpServletRequest request,
 		HttpServletResponse response, RequestHandler rh, RequestAssociates ra,
-		RequestHandlerSettings rhs) throws RequestHandlingException {
+		RequestHandlerSettings rhs) throws UtilityException {
 		try {
 			addToRequestAssociates(rhs, ra);
 			RequestResponse rr = rh.handle(request, response, ra);
@@ -138,15 +138,15 @@ public class RequestDelegation implements RequestManagement {
 						pw.write(rr.toString());
 						pw.close();
 					} catch (IOException x) {
-						throw new RequestHandlingException(x);
+						throw new UtilityException(x);
 					}
 				}
 			} else {
-				throw new RequestHandlingException(
+				throw new UtilityException(
 					"The request was uncessessful : " + rr);
 			}
 		} catch (UtilityException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		}
 	}
 
@@ -156,18 +156,18 @@ public class RequestDelegation implements RequestManagement {
 	 * @param request
 	 * @param response
 	 * @param output
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected void output(HttpServletRequest request,
-		HttpServletResponse response, String output) throws RequestHandlingException {
+		HttpServletResponse response, String output) throws UtilityException {
 		try {
 			Document d = XML.parse(output);
 			XHTML.output(d, request, response, EN);
 		} catch (XMLException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		} catch (IOException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		}
 	}
 
@@ -180,12 +180,12 @@ public class RequestDelegation implements RequestManagement {
 	 * @param ra
 	 * @param request
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected boolean allowedIPAddress(RequestHandlerSettings rhs,
 		RequestAssociates ra, HttpServletRequest request)
-		throws RequestHandlingException {
+		throws UtilityException {
 		boolean allowed = false;
 		if (null != rhs && null != ra) {
 			try {
@@ -209,9 +209,9 @@ public class RequestDelegation implements RequestManagement {
 					}
 				}
 			} catch (UnknownHostException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			} catch (UtilityException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			}
 		}
 		return allowed;
@@ -228,12 +228,12 @@ public class RequestDelegation implements RequestManagement {
 	 * @param rhs
 	 * @param ra
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected boolean isUserAllowed(HttpServletRequest request,
 		HttpServletResponse response, RequestHandlerSettings rhs,
-		RequestAssociates ra) throws RequestHandlingException {
+		RequestAssociates ra) throws UtilityException {
 		boolean allowed = false;
 		if (null != rhs && null != request && null != ra) {
 			boolean requiresAuthentication = rhs.is(
@@ -257,7 +257,7 @@ public class RequestDelegation implements RequestManagement {
 						}
 					}
 				} catch (IOException x) {
-					throw new RequestHandlingException(x);
+					throw new UtilityException(x);
 				}
 			} else {
 				allowed = true;
@@ -293,19 +293,19 @@ public class RequestDelegation implements RequestManagement {
 	 * 
 	 * @param cla
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected RequestHandler newRequestHandler(Class<RequestHandler> cla)
-		throws RequestHandlingException {
+		throws UtilityException {
 		RequestHandler rh = null;
 		if (null != cla) {
 			try {
 				rh = cla.newInstance();
 			} catch (InstantiationException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			} catch (IllegalAccessException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			}
 		}
 		return rh;

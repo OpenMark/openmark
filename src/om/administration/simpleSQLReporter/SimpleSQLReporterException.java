@@ -1,8 +1,8 @@
 package om.administration.simpleSQLReporter;
 
-import om.abstractservlet.RequestHandlingException;
+import util.misc.UtilityException;
 
-public class SimpleSQLReporterException extends RequestHandlingException {
+public class SimpleSQLReporterException extends UtilityException {
 	private static final long serialVersionUID = -7644496394483117921L;
 
 	public SimpleSQLReporterException() {

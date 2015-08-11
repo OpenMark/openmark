@@ -8,6 +8,7 @@ import javax.servlet.ServletContext;
 import om.Log;
 import om.tnavigator.NavigatorConfig;
 import util.misc.GeneralUtils;
+import util.misc.UtilityException;
 
 /**
  * Provides a visitor based pattern of things that may be needed by the request.
@@ -40,29 +41,29 @@ public class RequestAssociates {
 		}
 	}
 
-	public String getConfig(String key) throws RequestHandlingException {
+	public String getConfig(String key) throws UtilityException {
 		Object obj = getConfiguration().get(key);
 		return get(String.class, obj, key);
 	}
 
-	public String getConfig(Enum<?> enu) throws RequestHandlingException {
+	public String getConfig(Enum<?> enu) throws UtilityException {
 		return getConfig(null != enu ? enu.toString() : "");
 	}
 
-	public <T> T get(Class<T> cla, String key) throws RequestHandlingException {
+	public <T> T get(Class<T> cla, String key) throws UtilityException {
 		Object obj = getPrincipleObjects().get(key);
 		return get(cla, obj, key);
 	}
 
 	protected <T> T get(Class<T> cla, Object obj, String key)
-		throws RequestHandlingException {
+		throws UtilityException {
 		T o = null;
 		if (null != obj) {
 			if (cla.isAssignableFrom(obj.getClass())) {
 				o = cla.cast(obj);
 			}
 			if (null == o) {
-				throw new RequestHandlingException("There is no "
+				throw new UtilityException("There is no "
 					+ " object stored in the RequestAssociates for the key : "
 					+ key + " and the class : " + cla);
 			}
@@ -71,12 +72,12 @@ public class RequestAssociates {
 	}
 
 	public <T> T get(Class<T> cla, RequestParameterNames rpm)
-		throws RequestHandlingException {
+		throws UtilityException {
 		return null != rpm ? get(cla, rpm.toString()) : null;
 	}
 
 	public NavigatorConfig getNavigatorConfig()
-		throws RequestHandlingException {
+		throws UtilityException {
 		return get(NavigatorConfig.class,
 			RequestParameterNames.NavigatorConfig.toString());
 	}

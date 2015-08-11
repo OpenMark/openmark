@@ -1,5 +1,6 @@
 package om.abstractservlet;
 
+import om.OmException;
 import util.misc.FinalizedResponse;
 import util.misc.UtilityException;
 
@@ -25,6 +26,7 @@ public interface GracefulFinalization {
 	 * @return
 	 * @throws UtilityException
 	 * @author Trevor Hinson
+	 * @throws OmException 
 	 */
 	FinalizedResponse close(Object o) throws UtilityException;
 

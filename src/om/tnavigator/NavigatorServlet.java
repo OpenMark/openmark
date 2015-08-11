@@ -63,7 +63,6 @@ import om.abstractservlet.PreProcessingRequestHandler;
 import om.abstractservlet.RenderedOutput;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandler;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
 import om.axis.qengine.CustomResult;
@@ -143,8 +142,6 @@ public class NavigatorServlet extends HttpServlet {
 	private static String NOFLAG="X";
 
 	private static String TINYMCE="tiny_mce/3.5.8";
-
-	private static String DYNAMICQUESTIONS="dynamic_questions";
 
 	/**
 	 * User passed on question. Should match the definition in
@@ -244,8 +241,6 @@ public class NavigatorServlet extends HttpServlet {
 	 */
 	private TemplateLoader templateLoader;
 
-	private static String PRE_PROCESSING_REQUEST_HANDLER = "PreProcessingRequestHandler";
-
 	private Class<?> preProcessingRequestHandler;
 
 	/**
@@ -287,12 +282,12 @@ public class NavigatorServlet extends HttpServlet {
 		ServletContext sc = getServletContext();
 		try {
 			maintenanceFile = new File(sc.getRealPath("maintenance.xhtml"));
-			nc = new NavigatorConfig(new File(sc.getRealPath("navigator.xml")));
+			nc = new NavigatorConfig(sc);
 		} catch (MalformedURLException e) {
 			throw new ServletException("Unexpected error parsing service URL",
 					e);
-		} catch (IOException e) {
-			throw new ServletException("Error loading config file", e);
+		} catch (Exception e) {
+			throw new ServletException("Error configuration file", e);
 		}
 
 		try {
@@ -331,8 +326,7 @@ public class NavigatorServlet extends HttpServlet {
 			oq = (OmQueries) Class.forName(dbClass).getConstructor(
 					new Class[] { String.class }).newInstance(
 					new Object[] { dbPrefix });
-			da = new DatabaseAccess(nc.getDatabaseURL(oq), nc
-					.hasDebugFlag("log-sql") ? l : null);
+			da = new DatabaseAccess(nc.hasDebugFlag("log-sql") ? l : null);
 		} catch (Exception e) {
 			throw new ServletException(
 					"Error creating database class or JDBC driver (make sure DB plugin and JDBC driver are both installed): "
@@ -362,16 +356,6 @@ public class NavigatorServlet extends HttpServlet {
 		// Start expiry thread
 		sessionManager = new SessionManager(nc, l);
 		setUpPreProcessingRequestHandler();
-
-		// log that we are procfessing dynamic questions
-		if(nc.isOptionalFeatureOn(DYNAMICQUESTIONS))
-		{
-			l.logNormal("Dynamic Questions enabled");
-		}
-		else
-		{
-			l.logNormal("Dynamic questions not enabled");
-		}
 	}
 
 	/**
@@ -385,11 +369,10 @@ public class NavigatorServlet extends HttpServlet {
 	 */
 	private void setUpPreProcessingRequestHandler() {
 		String pre = getServletConfig().getInitParameter(
-				PRE_PROCESSING_REQUEST_HANDLER);
+				"PreProcessingRequestHandler");
 		if (Strings.isNotEmpty(pre)) {
 			try {
-				preProcessingRequestHandler = getClass().getClassLoader()
-						.loadClass(pre);
+				preProcessingRequestHandler = getClass().getClassLoader().loadClass(pre);
 			} catch (ClassNotFoundException x) {
 				l.logError("There was a problem with loading the"
 					+ " PreProcessingRequestHandler with the configured String : "
@@ -1406,7 +1389,7 @@ public class NavigatorServlet extends HttpServlet {
 		// This should use a proper question bank at some point
 		QuestionVersion qv = new QuestionVersion();
 		File[] af = IO.listFiles(questionBankFolder);
-		boolean bFound = VersionUtil.findLatestVersion(sQuestionID, iRequiredVersion, qv, af, nc.isOptionalFeatureOn(DYNAMICQUESTIONS));
+		boolean bFound = VersionUtil.findLatestVersion(sQuestionID, iRequiredVersion, qv, af);
 		if (!bFound) {
 			throw new OmException(
 				"Question file missing: " + sQuestionID
@@ -2150,12 +2133,12 @@ public class NavigatorServlet extends HttpServlet {
 	 * @param request
 	 * @param response
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	private RequestResponse preProcess(UserSession session,
 			HttpServletRequest request, HttpServletResponse response)
-			throws RequestHandlingException {
+			throws UtilityException {
 		RequestResponse rr = null;
 		PreProcessingRequestHandler pre = getPreProcessingRequestHandler();
 		if (null != pre) {
@@ -2173,13 +2156,13 @@ public class NavigatorServlet extends HttpServlet {
 	 * @param request
 	 * @param response
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @throws IOException
 	 * @author Trevor Hinson
 	 */
 	private boolean returnPreProcessingResponse(UserSession us,
 		HttpServletRequest request, HttpServletResponse response)
-		throws RequestHandlingException, IOException {
+		throws UtilityException, IOException {
 		boolean shouldDisplay = false;
 		RequestResponse rr = preProcess(us, request, response);
 		if (null != rr ? !rr.isSuccessful() : false) {
@@ -3498,14 +3481,6 @@ public class NavigatorServlet extends HttpServlet {
 		byte[] abQuestion = IO.loadBytes(new FileInputStream(file));
 		if (what.equals("question")) {
 			response.setContentType("application/x-openmark");
-			/* only do this if enabled */
-			if(nc.isOptionalFeatureOn(DYNAMICQUESTIONS))
-			{
-				if (file.getName().endsWith(".omxml"))
-				{
-					response.setContentType("application/x-openmark-dynamics");
-				}
-			}
 		} else {
 			response.setContentType("application/xml");
 			response.setCharacterEncoding("UTF-8");
@@ -3519,12 +3494,6 @@ public class NavigatorServlet extends HttpServlet {
 	private void handleQuestion(String sIDVersion, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		File file = new File(questionBankFolder, sIDVersion + ".jar");
-		if(nc.isOptionalFeatureOn(DYNAMICQUESTIONS))
-		{
-			if (!file.exists()) {
-				file = new File(questionBankFolder, sIDVersion + ".omxml");
-			}
-		}
 		handleTestOrQuestion(file, "question", request, response);
 	}
 
@@ -3774,7 +3743,6 @@ public class NavigatorServlet extends HttpServlet {
 		getAuthentication().obtainPerformanceInfo(m);
 
 		m.put("DBCONNECTIONS", da.getConnectionCount() + "");
-		m.put("DBSERVER", nc.getDBInfo());
 
 		URL uThis = nc.getThisTN();
 		m.put("MACHINE", uThis.getHost().replaceAll(".open.ac.uk", "")

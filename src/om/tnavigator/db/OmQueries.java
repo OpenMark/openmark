@@ -49,19 +49,6 @@ public abstract class OmQueries
 		this.prefix = prefix;
 	}
 
-	/**
-	 * Obtains JDBC URL for this database. Must also call Class.forName for the
-	 * JDBC driver.
-	 * @param server Database server
-	 * @param database Database name
-	 * @param username Username
-	 * @param password Password
-	 * @return JDB string
-	 * @throws ClassNotFoundException
-	 */
-	public abstract String getURL(String server,String database,String username,String password)
-	  throws ClassNotFoundException;
-
 	protected abstract String extractYearFromTimestamp(String value);
 	protected abstract String extractMonthFromTimestamp(String value);
 

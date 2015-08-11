@@ -5,11 +5,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import om.abstractservlet.RequestHandlingException;
 import om.tnavigator.NavigatorServlet;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.sessions.UserSession;
+import util.misc.UtilityException;
 
 /**
  * Class to generate a code to be used by the Are You ready for tests.
@@ -191,7 +191,7 @@ public class PreCourseDiagCode {
 	 * Here we check that the test meets the criteria for generating the code
 	 * only generate if option set and the test is not finished
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 */
 	public static boolean shouldDoCode(UserSession us)
 			throws Exception
@@ -231,7 +231,7 @@ public class PreCourseDiagCode {
 	/**
 	 * Here we check that the test shpould displayt he codeto the student
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author sarah wood
 	 */
 	public static boolean shouldDisplayCode(UserSession us)

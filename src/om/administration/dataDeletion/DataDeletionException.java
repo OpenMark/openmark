@@ -1,10 +1,11 @@
 package om.administration.dataDeletion;
 
-import om.abstractservlet.RequestHandlingException;
+import util.misc.UtilityException;
 
-public class DataDeletionException extends RequestHandlingException {
+public class DataDeletionException extends UtilityException {
+	private static final long serialVersionUID = 4782354216166419540L;
 
-	 public DataDeletionException() {
+	public DataDeletionException() {
 			super();
 		}
 

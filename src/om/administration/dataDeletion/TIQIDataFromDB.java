@@ -41,8 +41,8 @@ public class TIQIDataFromDB {
 				 {
 						/* output it */
 					 	l.logDebug("Batch Number "+btchCnt.toString()+" ...");
-						sqlString=new SQLString(name,nc.getDBName(),bn,
-								dbia,dbna,thisSetOfWhereStrings);	
+						sqlString=new SQLString(name, bn,
+								dbia, dbna, thisSetOfWhereStrings);	
 						/* then run the extraction which generates the list TIQIList*/
 						/*DEBUG*/
 						

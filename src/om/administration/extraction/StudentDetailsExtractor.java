@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import om.PersistenceException;
 import om.abstractservlet.GracefulFinalization;
 import om.abstractservlet.StandardFinalizedResponse;
 import om.tnavigator.AbstractPersistenceDelegator;
@@ -54,8 +53,6 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	private static String DAT_SUFFIX = ".dat";
 
 	private static String CSV_SUFFIX = ".csv";
-
-	private static Integer SIZE = new Integer(9999999);
 
 	private static String QI_TABLE = "nav_questions";
 
@@ -277,7 +274,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 			} catch (NumberFormatException x) {
 				try {
 					getLog().logDebug("Input is not a valid Integer value.", x);
-				} catch (PersistenceException ex) {
+				} catch (UtilityException ex) {
 					ex.printStackTrace();
 				}
 			}
@@ -363,7 +360,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 					if (null == qii) {
 						qii = identifier;
 					}
-				} catch (PersistenceException x) {
+				} catch (UtilityException x) {
 					throw new ExtractorException(x);
 				} catch (SQLException x) {
 					throw new ExtractorException(x);
@@ -404,7 +401,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 						dat = getDatabaseAccess().newTransaction();
 						ResultSet rs = dat.query(sql);
 						applyToOutputRendering(output, imr, rs, tableName, qii, er);
-					} catch (PersistenceException x) {
+					} catch (UtilityException x) {
 						throw new ExtractorException(x);
 					} catch (SQLException x) {
 						throw new ExtractorException(x);
@@ -488,7 +485,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 				}
 			} catch (SQLException x) {
 				throw new ExtractorException(x);
-			} catch (PersistenceException x) {
+			} catch (UtilityException x) {
 				throw new ExtractorException(x);
 			}
 		} else {
@@ -556,7 +553,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	 */
 	private QuestionInstanceIdentification checkForQuestionInstance(ResultSet rs,
 		String tableName, QuestionInstanceIdentification qii)
-		throws SQLException, PersistenceException {
+		throws SQLException, UtilityException {
 		if (null != rs && null == qii
 			&& tableName.equalsIgnoreCase(QI_TABLE)) {
 			getLog().logDebug("ExtractorEnums.qi.toString() = "
@@ -577,7 +574,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	 * @author Trevor Hinson
 	 */
 	StringBuilder accomodateForDataType(String typeName, Object value)
-		throws PersistenceException {
+		throws UtilityException {
 		StringBuilder res = new StringBuilder();
 		if (Strings.isNotEmpty(typeName)) {
 			if (DataType.bit.toString().equalsIgnoreCase(typeName)) {
@@ -614,7 +611,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	 * @author Trevor Hinson
 	 */
 	private void applyTypicalRendering(StringBuilder sb, Object value, String type)
-		throws PersistenceException {
+		throws UtilityException {
 		getLog().logDebug("rendering normally for : " + type + " with value = "
 			+ value);
 		sb.append(null != value ? value : "''");
@@ -646,7 +643,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 							isDebugging(metaData));
 						accomodateForConfiguredTables(metaData);
 						valid = true;
-					} catch (PersistenceException e) {
+					} catch (UtilityException e) {
 						e.printStackTrace();
 					}
 				}
@@ -663,7 +660,7 @@ public class StudentDetailsExtractor extends AbstractPersistenceDelegator
 	 * @author Trevor Hinson
 	 */
 	private void accomodateForConfiguredTables(Map<String, Object> metaData)
-		throws PersistenceException {
+		throws UtilityException {
 		if (null != metaData) {
 			List<String> testInstanceTables = retrieveList(metaData,
 				ExtractorEnums.TestInstanceTables);

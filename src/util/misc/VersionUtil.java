@@ -33,22 +33,14 @@ public class VersionUtil {
 	 * @throws OmException
 	 */
 	public static boolean findLatestVersion(String sQuestionID,
-			int iRequiredVersion, QuestionVersion qv, File[] af, Boolean doingDynamic)
-			throws OmException {
-			boolean bFound = false;
+			int iRequiredVersion, QuestionVersion qv, File[] af)
+			throws OmException
+		{
 			
 			Pattern p = Pattern.compile(sQuestionID + suffix);
 
-			bFound=findLatestVersionOfQuestion(sQuestionID,
+			return findLatestVersionOfQuestion(sQuestionID,
 					 iRequiredVersion,  qv, af,p);
-			/** see if its  dynamic question **/
-			if (!bFound && doingDynamic)
-			{			
-				Pattern xp = Pattern.compile(sQuestionID + xmlSuffix);
-				bFound=findLatestVersionOfQuestion(sQuestionID,
-					 iRequiredVersion,  qv, af,xp);
-			}
-			return bFound;
 		}
 	/**
 	 * @param sQuestionID

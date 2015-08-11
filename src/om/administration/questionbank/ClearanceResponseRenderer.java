@@ -12,12 +12,12 @@ import java.util.Map;
 import java.util.Set;
 
 import om.abstractservlet.RequestAssociates;
-import om.abstractservlet.RequestHandlingException;
 
 import org.apache.commons.io.FilenameUtils;
 
 import util.misc.IO;
 import util.misc.Strings;
+import util.misc.UtilityException;
 import util.xml.XML;
 
 /**
@@ -119,7 +119,7 @@ public class ClearanceResponseRenderer implements Serializable {
 				sb.append(renderBrokenTests(cr.getBrokenTests()));
 				sb.append(CLOSE_FORM);
 				rcr.append(mergeTemplate(sb, associates));
-			} catch (RequestHandlingException x) {
+			} catch (UtilityException x) {
 				throw new CleaningException(x);
 			}
 		}
@@ -346,7 +346,7 @@ public class ClearanceResponseRenderer implements Serializable {
 	 * @author Trevor Hinson
 	 */
 	protected StringBuffer renderSuperfluousQuestions(RequestAssociates associates,
-		Map<String, IdentifiedSuperfluousQuestion> qs) throws RequestHandlingException {
+		Map<String, IdentifiedSuperfluousQuestion> qs) throws UtilityException {
 		StringBuffer sb = new StringBuffer();
 		if (null != qs ? qs.size() > 0 : false) {
 			sb.append(H2).append("Superfluous Questions").append(H2_CLOSE)
@@ -380,7 +380,7 @@ public class ClearanceResponseRenderer implements Serializable {
 
 	protected void pageResults(StringBuffer sb, PagingDetails pd,
 		Map<String, IdentifiedSuperfluousQuestion> qs)
-		throws RequestHandlingException {
+		throws UtilityException {
 		if (null != pd.pageNumber ? pd.pageNumber > 0 : false) {
 			Integer numberOfPages = qs.size() / pd.numberPerPage;
 			if ((numberOfPages % pd.numberPerPage) > 0) {
@@ -434,11 +434,11 @@ public class ClearanceResponseRenderer implements Serializable {
 	 * 
 	 * @param ra
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	Integer getNumberPerPage(RequestAssociates ra)
-		throws RequestHandlingException {
+		throws UtilityException {
 		Integer number = DEFAULT_NUMBER_PER_PAGE;
 		if (null != ra) {
 			String s = ra.getConfig(ClearanceEnums.resultsPerPage.toString());
@@ -448,7 +448,7 @@ public class ClearanceResponseRenderer implements Serializable {
 					number = n;
 				}
 			} catch (NumberFormatException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			}
 		}
 		return number;
@@ -463,7 +463,7 @@ public class ClearanceResponseRenderer implements Serializable {
 	 * @author Trevor Hinson
 	 */
 	protected String renderFormStart(RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		String action = DEFAULT_FORM_ACTION;
 		if (null != associates) {
 			String value = associates.getConfig(ClearanceEnums.postToUrl.toString());
@@ -708,7 +708,7 @@ public class ClearanceResponseRenderer implements Serializable {
 			String s = ra.getConfig(TEMPLATE);
 			String name = ra.getServletContext().getRealPath(s);
 			return null != ra ? name : null;
-		} catch (RequestHandlingException x) {
+		} catch (UtilityException x) {
 			throw new CleaningException(x);
 		}
 	}

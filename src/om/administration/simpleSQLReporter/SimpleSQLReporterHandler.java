@@ -15,15 +15,15 @@ import om.abstractservlet.AbstractRequestHandler;
 import om.abstractservlet.RenderedOutput;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandlerEnums;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
 import om.administration.dataDeletion.DataDeletionException;
 import om.administration.dataDeletion.DatabaseDeletionUtils;
-import om.administration.databaseCleaner.ExtractorException;
+import om.administration.extraction.ExtractorException;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
 import util.misc.Strings;
+import util.misc.UtilityException;
 
 
 public class SimpleSQLReporterHandler extends AbstractRequestHandler {
@@ -47,7 +47,7 @@ public class SimpleSQLReporterHandler extends AbstractRequestHandler {
 	@Override
 	public RequestResponse handle(HttpServletRequest request,
 		HttpServletResponse response, RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		RequestResponse rr = new RenderedOutput();
 		if (null != request && null != response && null != associates) {
 			
@@ -207,7 +207,7 @@ public class SimpleSQLReporterHandler extends AbstractRequestHandler {
 	}
 
 	public void initialise(RequestAssociates associates)
-	throws RequestHandlingException {
+	throws UtilityException {
 	
 		try
 		{
@@ -241,7 +241,7 @@ public class SimpleSQLReporterHandler extends AbstractRequestHandler {
 		}
 		catch (Exception e)
 		{
-			throw new RequestHandlingException(e);
+			throw new UtilityException(e);
 		}
 	}
 

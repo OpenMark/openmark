@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import om.Log;
-
+import om.OmException;
 import util.misc.FinalizedResponse;
 import util.misc.GeneralUtils;
 import util.misc.UtilityException;
@@ -31,13 +31,9 @@ public abstract class AbstractRequestHandler implements RequestHandler {
 	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
-	protected Log getLog() throws RequestHandlingException {
+	protected Log getLog() throws UtilityException {
 		if (null == log) {
-			try {
-				log = GeneralUtils.getLog(getClass(), getLogPath(), true);
-			} catch (UtilityException x) {
-				throw new RequestHandlingException(x);
-			}
+			log = GeneralUtils.getLog(getClass(), getLogPath(), true);
 		}
 		return log;
 	}
@@ -46,10 +42,11 @@ public abstract class AbstractRequestHandler implements RequestHandler {
 	 * This implementation should be overridden but with the initial call back
 	 *  to super.handle(...
 	 * @author Trevor Hinson
+	 * @throws UtilityException 
 	 */
 	public RequestResponse handle(HttpServletRequest request,
 		HttpServletResponse response, RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		initialise(associates);
 		return new RenderedOutput();
 	}
@@ -57,11 +54,11 @@ public abstract class AbstractRequestHandler implements RequestHandler {
 	/**
 	 * Initialises the RequestHandler implementation with the logPath.
 	 * @param associates
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	public void initialise(RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		logPath = associates.getConfig(RequestParameterNames.logPath.toString());
 	}
 
@@ -72,7 +69,7 @@ public abstract class AbstractRequestHandler implements RequestHandler {
 			if (null != log) {
 				log.close();
 			}
-		} catch (RequestHandlingException x) {
+		} catch (UtilityException x) {
 			x.printStackTrace();
 		}
 		return null;

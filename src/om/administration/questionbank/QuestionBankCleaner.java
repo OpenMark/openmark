@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import om.abstractservlet.RequestAssociates;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.reports.std.DeployedTestsReport.Test;
@@ -29,6 +28,7 @@ import util.misc.GeneralUtils;
 import util.misc.QuestionName;
 import util.misc.StandardFileFilter;
 import util.misc.Strings;
+import util.misc.UtilityException;
 import util.misc.VersionUtil;
 import util.xml.XML;
 
@@ -519,7 +519,7 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 						query = MessageFormat.format(q, args);
 					}
 				}
-			} catch (RequestHandlingException x) {
+			} catch (UtilityException x) {
 				throw new CleaningException(x);
 			}
 		}

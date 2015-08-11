@@ -23,6 +23,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import om.Log;
+import om.OmException;
 
 
 
@@ -117,17 +118,17 @@ public class GeneralUtils implements Serializable {
 	}
 
 	public static Object invoke(Method m, Object obj, Object[] args)
-		throws UtilityException {
+		throws OmException {
 		Object result = null;
 		if (null != m && null != obj) {
 			try {
 				result = m.invoke(obj, args);
 			} catch (IllegalArgumentException x) {
-				throw new UtilityException(x);
+				throw new OmException(x);
 			} catch (IllegalAccessException x) {
-				throw new UtilityException(x);
+				throw new OmException(x);
 			} catch (InvocationTargetException x) {
-				throw new UtilityException(x);
+				throw new OmException(x);
 			}
 		}
 		return result;
@@ -195,18 +196,8 @@ public class GeneralUtils implements Serializable {
 			try {
 				obj = cla.getConstructor(new Class[] {}).newInstance(
 						new Object[] {});
-			} catch (IllegalArgumentException x) {
-				throw new UtilityException();
-			} catch (SecurityException x) {
-				throw new UtilityException();
-			} catch (InstantiationException x) {
-				throw new UtilityException();
-			} catch (IllegalAccessException x) {
-				throw new UtilityException();
-			} catch (InvocationTargetException x) {
-				throw new UtilityException();
-			} catch (NoSuchMethodException x) {
-				throw new UtilityException();
+			} catch (Exception x) {
+				throw new UtilityException(x);
 			}
 		}
 		return obj;

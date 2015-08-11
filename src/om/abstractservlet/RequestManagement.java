@@ -6,6 +6,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import util.misc.UtilityException;
+
 
 public interface RequestManagement extends GracefulFinalization, Serializable {
 
@@ -14,12 +16,12 @@ public interface RequestManagement extends GracefulFinalization, Serializable {
 	 *  RequestHandler implementation and then delegate to it providing the
 	 *  response back to that which invoked this.
 	 * @param request
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	void handleRequest(HttpServletRequest request,
 		HttpServletResponse response, RequestAssociates associates)
-		throws RequestHandlingException;
+		throws UtilityException;
 
 	/**
 	 * Provides runtime details of the configuration settings.  Should return

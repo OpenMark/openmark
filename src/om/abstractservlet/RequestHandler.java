@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import util.misc.UtilityException;
+
 
 /**
  * For each request a <b>new</b> implementation of this contract is created.
@@ -26,12 +28,13 @@ public interface RequestHandler extends Serializable, GracefulFinalization {
 	 * @param request
 	 * @param response
 	 * @param associates
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @return
 	 * @author Trevor Hinson
+	 * @throws UtilityException 
 	 */
 	RequestResponse handle(HttpServletRequest request,
 		HttpServletResponse response, RequestAssociates associates)
-		throws RequestHandlingException;
+		throws UtilityException;
 
 }

@@ -14,7 +14,6 @@ import om.Log;
 import om.abstractservlet.RenderedOutput;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandler;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestResponse;
 import om.abstractservlet.StandardFinalizedResponse;
 
@@ -69,12 +68,12 @@ public class DeploymentRequestHandler implements RequestHandler {
 	 * @param request
 	 * @param response
 	 * @param associates
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	public RequestResponse handle(HttpServletRequest req,
 		HttpServletResponse res, RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		if (null != req && null != res && null != associates ? associates.valid() : false) {
 			requestAssociates = associates;
 			setUpDeployableQuestionLocation(associates);
@@ -87,10 +86,10 @@ public class DeploymentRequestHandler implements RequestHandler {
 				List<String> names = pickUpDeploymentChoicesFromSession();
 				return doDeploy() ? deploy(names) : renderPage(names);
 			} catch (QuestionDeploymentException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			}
 		} else {
-			throw new RequestHandlingException("The arguments did not match"
+			throw new UtilityException("The arguments did not match"
 				+ " what is required by this method.  No object can be null"
 				+ " and the RequestAssociate must be valid: "
 				+ "\n HttpServletRequest = " + req
@@ -100,12 +99,12 @@ public class DeploymentRequestHandler implements RequestHandler {
 	}
 
 	private void setUpDeployableQuestionLocation(RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		if (null != associates ? null != associates.getServletContext() : false) {
 			deployableQuestionLocation = associates.getServletContext()
 				.getRealPath(QUESTIONS_PATH);
 		} else {
-			throw new RequestHandlingException("Unable to continue:"
+			throw new UtilityException("Unable to continue:"
 				+ " RequestAssociates: " + associates);
 		}
 	}
@@ -276,14 +275,14 @@ public class DeploymentRequestHandler implements RequestHandler {
 	 * @author Trevor Hinson
 	 */
 	private RenderedOutput deploy(List<String> names)
-		throws RequestHandlingException {
+		throws UtilityException {
 		try {
 			return hasConfirmedDeployment()
 				? doDeployment(names)
 					: questionDeploymentRenderer.requestConfirmation(names,
 						retrieveDeployMetaData());
 		} catch (QuestionDeploymentException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		}
 	}
 

@@ -1,8 +1,8 @@
 package om.administration.extraction;
 
-import om.abstractservlet.RequestHandlingException;
+import util.misc.UtilityException;
 
-public class ExtractorException extends RequestHandlingException {
+public class ExtractorException extends UtilityException {
 
 	private static final long serialVersionUID = 4942824297939017821L;
 

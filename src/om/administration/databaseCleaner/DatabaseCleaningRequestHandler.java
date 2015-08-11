@@ -14,13 +14,14 @@ import om.abstractservlet.AbstractRequestHandler;
 import om.abstractservlet.RenderedOutput;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandlerEnums;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
+import om.administration.extraction.ExtractorException;
 import om.administration.questionbank.CleaningException;
 import om.administration.questionbank.QuestionAndTestBankLocations;
 import om.tnavigator.NavigatorConfig;
 import util.misc.Strings;
+import util.misc.UtilityException;
 
 
 /**
@@ -67,7 +68,7 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	@Override
 	public RequestResponse handle(HttpServletRequest request,
 		HttpServletResponse response, RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		RequestResponse rr = new RenderedOutput();
 		if (null != request && null != response && null != associates) {
 			initialise(associates);
@@ -104,7 +105,7 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	 * @author Trevor Hinson
 	 */
 	public void initialise(RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		super.initialise(associates);
 		Object o = associates.getConfiguration().get(
 			RequestHandlerEnums.invocationPath.toString());
@@ -196,7 +197,7 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 			RequestResponse rr = super.handle(request, response, associates);
 			identifyQuestions(associates, request, rr);
 		}
-		catch(RequestHandlingException e)
+		catch(UtilityException e)
 		{
 			throw new ExtractorException(e);
 
@@ -210,12 +211,12 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	 * @param associates
 	 * @param request
 	 * @param rr
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected void identifyQuestions(RequestAssociates associates,
 			HttpServletRequest request, RequestResponse rr)
-			throws RequestHandlingException {
+			throws UtilityException {
 			try {
 				QueryQuestionBanks cqb = getQuestionBanks(associates);
 				QBTBQueryResponse cr = cqb.identify(
@@ -227,7 +228,7 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 				//}
 				//request.getSession().setAttribute(CLEARANCE_RESPONSE, cr);
 			} catch (CleaningException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			}
 		}
 	
@@ -237,11 +238,11 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	 * 
 	 * @param associates
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected QuestionAndTestBankLocations identifyLocations(
-		RequestAssociates associates) throws RequestHandlingException {
+		RequestAssociates associates) throws UtilityException {
 		QuestionAndTestBankLocations locations = null;
 		if (null != associates) {
 			List<String> questionBanks = retrieveXBank(associates,
@@ -276,11 +277,11 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	 * @param associates
 	 * @param key
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected List<String> retrieveXBank(RequestAssociates associates,
-		String key) throws RequestHandlingException {
+		String key) throws UtilityException {
 		List<String> banks = null;
 		if (null != associates ? Strings.isNotEmpty(key) : false) {
 			String value = associates.getConfig(key);
@@ -308,11 +309,11 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	 * 
 	 * @param associates
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected QueryQuestionBanks getQuestionBanks(
-			RequestAssociates associates) throws RequestHandlingException {
+			RequestAssociates associates) throws UtilityException {
 		if (null == questionBanks) {
 			if (null != associates) {
 				String className = associates.getConfig(QUERYER);
@@ -331,11 +332,11 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	 * 
 	 * @param className
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected QueryQuestionBanks retrieveConfiguredCleaner(String className)
-		throws RequestHandlingException {
+		throws UtilityException {
 		QueryQuestionBanks cqb = new QuestionBankQueryer();
 		if (Strings.isNotEmpty(className)) {
 			try {
@@ -348,13 +349,13 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 							cqb = (QueryQuestionBanks) obj;
 						}
 					} catch (InstantiationException x) {
-						throw new RequestHandlingException(x);
+						throw new UtilityException(x);
 					} catch (IllegalAccessException x) {
-						throw new RequestHandlingException(x);
+						throw new UtilityException(x);
 					}
 				}
 			} catch (ClassNotFoundException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			}
 		}
 		return cqb;
@@ -451,7 +452,7 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 		/*
 	protected void identifyTestQuestions(RequestAssociates associates,
 			HttpServletRequest request, RequestResponse rr)
-			throws RequestHandlingException {
+			throws UtilityException {
 			try {
 				QuestionBanks cqb = getQuestionBanks(associates);
 				ClearanceResponse cr = cqb.identify(
@@ -463,13 +464,13 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 				}
 				request.getSession().setAttribute(CLEARANCE_RESPONSE, cr);
 			} catch (CleaningException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			}
 		}
 	
 
 	  protected QuestionBanks getQuestionBanks(
-			RequestAssociates associates) throws RequestHandlingException {
+			RequestAssociates associates) throws UtilityException {
 		if (null == QuestionBanks) {
 			if (null != associates) {
 				String className = associates.getConfig(QUERYER);
@@ -482,7 +483,7 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	}
 	
 	protected QuestionAndTestBankLocations identifyLocations(
-			RequestAssociates associates) throws RequestHandlingException {
+			RequestAssociates associates) throws UtilityException {
 			QuestionAndTestBankLocations locations = null;
 			if (null != associates) {
 				List<String> questionBanks = retrieveXBank(associates,

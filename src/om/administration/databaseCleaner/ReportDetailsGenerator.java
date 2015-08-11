@@ -13,9 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import om.PersistenceException;
 import om.abstractservlet.GracefulFinalization;
 import om.abstractservlet.StandardFinalizedResponse;
+import om.administration.extraction.ExtractorException;
 import om.tnavigator.AbstractPersistenceDelegator;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
@@ -281,7 +281,7 @@ public class ReportDetailsGenerator extends AbstractPersistenceDelegator
 			} catch (NumberFormatException x) {
 				try {
 					getLog().logDebug("Input is not a valid Integer value.", x);
-				} catch (PersistenceException ex) {
+				} catch (UtilityException ex) {
 					ex.printStackTrace();
 				}
 			}
@@ -364,7 +364,7 @@ public class ReportDetailsGenerator extends AbstractPersistenceDelegator
 					if (null == qii) {
 						qii = identifier;
 					}
-				} catch (PersistenceException x) {
+				} catch (UtilityException x) {
 					throw new ExtractorException(x);
 				} catch (SQLException x) {
 					throw new ExtractorException(x);
@@ -403,7 +403,7 @@ public class ReportDetailsGenerator extends AbstractPersistenceDelegator
 						dat = getDatabaseAccess().newTransaction();
 						ResultSet rs = dat.query(sql);
 						applyToOutputRendering(output, imr, rs, tableName, qii, er);
-					} catch (PersistenceException x) {
+					} catch (UtilityException x) {
 						throw new ExtractorException(x);
 					} catch (SQLException x) {
 						throw new ExtractorException(x);
@@ -487,7 +487,7 @@ public class ReportDetailsGenerator extends AbstractPersistenceDelegator
 				}
 			} catch (SQLException x) {
 				throw new ExtractorException(x);
-			} catch (PersistenceException x) {
+			} catch (UtilityException x) {
 				throw new ExtractorException(x);
 			}
 		} else {
@@ -556,7 +556,7 @@ public class ReportDetailsGenerator extends AbstractPersistenceDelegator
 	 */
 	private QuestionInstanceIdentification checkForQuestionInstance(ResultSet rs,
 		String tableName, QuestionInstanceIdentification qii)
-		throws SQLException, PersistenceException {
+		throws SQLException, UtilityException {
 		if (null != rs && null == qii
 			&& tableName.equalsIgnoreCase(QI_TABLE)) {
 			//TODO SLW2
@@ -579,7 +579,7 @@ public class ReportDetailsGenerator extends AbstractPersistenceDelegator
 	 * @author Trevor Hinson
 	 */
 	StringBuilder accomodateForDataType(String typeName, Object value)
-		throws PersistenceException {
+		throws UtilityException {
 		StringBuilder res = new StringBuilder();
 		if (Strings.isNotEmpty(typeName)) {
 			if (DataType.bit.toString().equalsIgnoreCase(typeName)) {
@@ -616,7 +616,7 @@ public class ReportDetailsGenerator extends AbstractPersistenceDelegator
 	 * @author Trevor Hinson
 	 */
 	private void applyTypicalRendering(StringBuilder sb, Object value, String type)
-		throws PersistenceException {
+			throws UtilityException {
 		getLog().logDebug("rendering normally for : " + type + " with value = "
 			+ value);
 		sb.append(null != value ? value : "''");
@@ -650,7 +650,7 @@ public class ReportDetailsGenerator extends AbstractPersistenceDelegator
 							isDebugging(metaData));
 						accomodateForConfiguredTables(metaData);
 						valid = true;
-					} catch (PersistenceException e) {
+					} catch (UtilityException e) {
 						e.printStackTrace();
 					}
 				}
@@ -667,7 +667,7 @@ public class ReportDetailsGenerator extends AbstractPersistenceDelegator
 	 * @author Trevor Hinson
 	 */
 	private void accomodateForConfiguredTables(Map<String, Object> metaData)
-		throws PersistenceException {
+		throws UtilityException {
 		if (null != metaData) {
 			List<String> testInstanceTables = retrieveList(metaData,
 				ExtractorEnums.TestInstanceTables);

@@ -22,13 +22,13 @@ import om.abstractservlet.AbstractRequestHandler;
 import om.abstractservlet.RenderedOutput;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandlerEnums;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
-import om.administration.databaseCleaner.ExtractorException;
+import om.administration.extraction.ExtractorException;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess;
 import util.misc.Strings;
+import util.misc.UtilityException;
 
 
 public class DatabaseDeletionReports extends AbstractRequestHandler {
@@ -119,7 +119,7 @@ public class DatabaseDeletionReports extends AbstractRequestHandler {
 	
 	public RequestResponse handleAll(HttpServletRequest request,
 		HttpServletResponse response, RequestAssociates associates,boolean doUpdate)
-		throws RequestHandlingException {
+		throws UtilityException {
 		RequestResponse rr = new RenderedOutput();
 		
 		setDoDBUpdate(doUpdate);
@@ -344,7 +344,7 @@ public class DatabaseDeletionReports extends AbstractRequestHandler {
 			 * and output them */
 			boolean first=true;
 			QuestionAverageData QADbyQuestion= new QuestionAverageData();
-			  for(Iterator itr = questionScores.iterator(); itr.hasNext();) 
+			  for (Iterator itr = questionScores.iterator(); itr.hasNext();) 
 			  {
 				  //QuestionAverageData qdata = new QuestionAverageData();
 				 QuestionAverageData qdata = (QuestionAverageData) itr.next();
@@ -431,7 +431,7 @@ public class DatabaseDeletionReports extends AbstractRequestHandler {
 	}
 
 	public void initialise(RequestAssociates associates)
-	throws RequestHandlingException {
+	throws UtilityException {
 	super.initialise(associates);
 	Object o = associates.getConfiguration().get(
 		RequestHandlerEnums.invocationPath.toString());

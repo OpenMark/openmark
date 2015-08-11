@@ -32,18 +32,11 @@ public class SQLServer extends OmQueries
 {
 	/**
 	 * @param prefix the database prefix to use.
+	 * @throws ClassNotFoundException
 	 */
-	public SQLServer(String prefix) {
+	public SQLServer(String prefix) throws ClassNotFoundException {
 		super(prefix);
-	}
-
-	@Override
-	public String getURL(String server,String database,String username,String password)
-		throws ClassNotFoundException
-	{
 		Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
-		return "jdbc:microsoft:sqlserver://"+server+";DatabaseName="+database+
-			";User="+username+";Password="+password;
 	}
 
 	@Override

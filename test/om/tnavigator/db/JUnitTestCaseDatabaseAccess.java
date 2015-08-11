@@ -3,15 +3,16 @@ package om.tnavigator.db;
 import java.sql.SQLException;
 
 import om.Log;
+import om.OmException;
 
 public class JUnitTestCaseDatabaseAccess extends DatabaseAccess {
 
-	public JUnitTestCaseDatabaseAccess() {
-		super(null, null);
+	public JUnitTestCaseDatabaseAccess() throws OmException {
+		super(null);
 	}
 	
-	public JUnitTestCaseDatabaseAccess(String sURL, Log l) {
-		super(sURL, l);
+	public JUnitTestCaseDatabaseAccess(Log l) throws OmException {
+		super(l);
 	}
 	
 	public Transaction newTransaction() throws SQLException {

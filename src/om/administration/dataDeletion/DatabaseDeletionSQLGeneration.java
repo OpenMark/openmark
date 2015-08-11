@@ -10,7 +10,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,19 +27,19 @@ import om.abstractservlet.AbstractRequestHandler;
 import om.abstractservlet.RenderedOutput;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandlerEnums;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
-import om.administration.databaseCleaner.ExtractorException;
+import om.administration.extraction.ExtractorException;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.reports.std.DeployedTestsReport.Test;
 import util.misc.Strings;
+import util.misc.UtilityException;
 
 public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
+	private static final long serialVersionUID = 4079560317752550572L;
 
 	private String filteredUrl;
 
-	private String postToUrl;
 	private String displayName;
 	
 	public static String DATEFORMATFORDB="yyyyMMdd HH:mm:ss";
@@ -61,8 +60,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 	private String sDateDeleteBeforeIsAssessed;
 	private String sDateDeleteBeforeNotAssessed;
 	private String sqlFileName="SQLDATA";
-	private static String HTML_PREFIX=".htm";
-	
+
     private NavigatorConfig nc;	
 	private String SQLIDString="";
 	
@@ -70,15 +68,11 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 	private static int NOTASSESSEDYEARS=-2;
 	private final static Pattern filenamePattern = Pattern.compile("^(.*)\\.deploy\\.xml$");
 	private final static DateFormat IDdateFormat = new SimpleDateFormat("HHmmss");
-	private final static boolean 	HTML_IT=true;
 
 	private final static String TESTBANK="C:\\Program Files\\apache-tomcat-6.0.33\\webapps\\om-tn\\testbank";
 	private static String WHERESTRING1="t.deploy=\'%s\' and t.clock < '%s'";
 	private static String WHERESTRING2="ti=\'%s\'";
 	private static String WHERESTRING3="qi=\'%s\'";
-
-
-
 
 	private static String TESTSTABLE="tests";
     public static String SQL1="sql1";
@@ -87,13 +81,9 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
     public static String SQL4="sql4";
     public static String SQL5="sql5";
 
-    
-	/* create a stamp for the og file so sql statmenets can easily be extracted as a group */
-
-
 	public RequestResponse handleAll(HttpServletRequest request,
 			HttpServletResponse response, RequestAssociates associates,boolean findQuestions)
-			throws RequestHandlingException {
+			throws UtilityException {
 		
 		
 		RequestResponse rr = new RenderedOutput();
@@ -190,10 +180,8 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 	private String process(HttpServletRequest request,
 		RequestAssociates associates,boolean findQuestions) throws DataDeletionException {
 		StringBuilder output = new StringBuilder();
-		Map<String, Object> metaData = new HashMap<String, Object>();
 		try
 		{
-				metaData=generateMetaData(request, associates);
 				this.nc=pickupNavigatorConfig(associates);
 				/* note this doesnt actually do much yet */
 				//Map<String, Object> metaData = new HashMap<String, Object>();
@@ -265,12 +253,13 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 						 */
 						LinkedList<String> whereConditions=setWhereConditionsTest(deployData,WHERESTRING1);
 
-						SQLString sql1=new SQLString(nc.getDBPrefix()+TESTSTABLE,SQL1,nc.getDBName(),batchNumber,
+						SQLString sql1 = new SQLString(nc.getDBPrefix() + TESTSTABLE,
+								SQL1, batchNumber,
 								sDateDeleteBeforeIsAssessed,sDateDeleteBeforeNotAssessed,whereConditions);						
 						output.append(sql1.getHeader());
 						output.append(sql1.getFullSQLasHTML());
 						
-						SQLString sql2=new SQLString(nc.getDBPrefix()+TESTSTABLE,SQL2,nc.getDBName(),batchNumber,
+						SQLString sql2=new SQLString(nc.getDBPrefix()+TESTSTABLE,SQL2,batchNumber,
 								sDateDeleteBeforeIsAssessed,sDateDeleteBeforeNotAssessed,whereConditions);
 						output.append(sql2.getHeader());
 						output.append(sql2.getFullSQLasHTML());
@@ -342,7 +331,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 		{
 			for (String tableName: tiTables)
 			{
-				SQLString sqlT=new SQLString(nc.getDBPrefix()+tableName,whatToDO,nc.getDBName(),batchNumber,
+				SQLString sqlT=new SQLString(nc.getDBPrefix()+tableName,whatToDO,batchNumber,
 						sDateDeleteBeforeIsAssessed,sDateDeleteBeforeNotAssessed,TIwhereConditions);						
 				output.append(sqlT.getHeader()+nc.getDBPrefix()+tableName+" select on TI<br/>");
 				//output.append(sqlT.getFullSQLasHTML());
@@ -351,7 +340,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 			/* then we do the QITables */
 			for (String tableName: qiTables)
 			{
-				SQLString sqlT=new SQLString(nc.getDBPrefix()+tableName,whatToDO,nc.getDBName(),batchNumber,
+				SQLString sqlT=new SQLString(nc.getDBPrefix()+tableName,whatToDO,batchNumber,
 						sDateDeleteBeforeIsAssessed,sDateDeleteBeforeNotAssessed,QIwhereConditions);						
 				output.append(sqlT.getHeader()+nc.getDBPrefix()+tableName +" select on QI<br/>");
 				//output.append(sqlT.getFullSQLasHTML());
@@ -435,12 +424,6 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 		return outputStr.toString();
 	}
 	
-	private String getInstancesAsString(LinkedList<String> WhereData,Log l) throws DataDeletionException
-	{
-
-		return InstancesAsString(WhereData,false,"",l);
-	}
-	
 	private String logInstancesAsString(LinkedList<String> WhereData,String tag,Log l) throws DataDeletionException
 	{
 
@@ -478,7 +461,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 		StringBuilder whereStr=new StringBuilder();
 		try
 		{	
-			String thisOne=String.format(whatWhere, testConditions);
+			String thisOne = String.format(whatWhere, testConditions);
 			whereStr.append(thisOne);
 
 		}
@@ -583,42 +566,6 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 		return navigatorConfig;
 	}
 
-
-
-
-	/**
-	 * Builds the metaData map from the various parameters needed to handle
-	 *  the request.
-	 * @param request
-	 * @return
-	 * @throws ExtractorException
-	 * @author Trevor Hinson
-	 */
-	private Map<String, Object> generateMetaData(HttpServletRequest request,
-		RequestAssociates associates) throws DataDeletionException 
-		{
-		/* doesnt actually do much for now, just a load of nulls, will fill it in later */
-		Map<String, Object> metaData = new HashMap<String, Object>();
-		try {
-			metaData.put(DatabaseDeletionEnums.DatabaseDeletionUrl.toString(), filteredUrl);
-			metaData.put(DatabaseDeletionEnums.postToUrl.toString(), postToUrl);
-			metaData.put(DatabaseDeletionEnums.navigatorConfigKey.toString(),
-				pickupNavigatorConfig(associates));
-			metaData.put(RequestParameterNames.logPath.toString(), getLogPath());
-			if (null != TestBanks) {
-				metaData.put(DatabaseDeletionEnums.testBanks.toString(),
-						TestBanks);
-			}
-
-			metaData.put(DatabaseDeletionEnums.batchNumber.toString(),batchNumber);
-			metaData.put(DatabaseDeletionEnums.displayName.toString(),displayName);
-	
-
-		} catch (IOException x) {
-			throw new DataDeletionException(x);
-		}
-		return metaData;
-	}
 	/**
 	 * Returns a generated List<String> based on what is configured within the
 	 *  web.xml for this filter implementation.
@@ -648,7 +595,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 
 	
 	public void initialise(RequestAssociates associates)
-	throws RequestHandlingException {
+	throws UtilityException {
 	
 		try
 		{
@@ -728,7 +675,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 		}
 		catch (Exception e)
 		{
-			throw new RequestHandlingException(e);
+			throw new UtilityException(e);
 		}
 
 	}

@@ -30,9 +30,11 @@ public class PostgreSQL extends OmQueries
 {
 	/**
 	 * @param prefix the database prefix to use.
+	 * @throws ClassNotFoundException
 	 */
-	public PostgreSQL(String prefix) {
+	public PostgreSQL(String prefix) throws ClassNotFoundException {
 		super(prefix);
+		Class.forName("org.postgresql.Driver");
 	}
 
 	@Override
@@ -47,13 +49,6 @@ public class PostgreSQL extends OmQueries
 		ResultSet rs=dat.query("SELECT currval('"+getPrefix()+table+"_"+column+"_seq')");
 		rs.next();
 		return rs.getInt(1);
-	}
-
-	@Override
-	public String getURL(String server,String database,String username,String password) throws ClassNotFoundException
-	{
-		Class.forName("org.postgresql.Driver");
-		return "jdbc:postgresql://"+server+"/"+database+"?user="+username+"&password="+password;
 	}
 
 	@Override

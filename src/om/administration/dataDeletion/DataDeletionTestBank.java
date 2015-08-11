@@ -1,7 +1,6 @@
 package om.administration.dataDeletion;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -20,26 +19,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import om.DisplayUtils;
-import om.Log;
 import om.OmException;
 import om.OmUnexpectedException;
 import om.abstractservlet.AbstractRequestHandler;
 import om.abstractservlet.RenderedOutput;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandlerEnums;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
-import om.administration.databaseCleaner.ExtractorException;
+import om.administration.extraction.ExtractorException;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.reports.std.DeployedTestsReport.Test;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
-import util.misc.GeneralUtils;
+import util.misc.UtilityException;
 
 public class DataDeletionTestBank extends AbstractRequestHandler {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2382451311202597521L;
 
 	private String filteredUrl;
 
@@ -81,7 +82,7 @@ public class DataDeletionTestBank extends AbstractRequestHandler {
 
 	public RequestResponse handleAll(HttpServletRequest request,
 			HttpServletResponse response, RequestAssociates associates)
-			throws RequestHandlingException {
+			throws UtilityException {
 		
 		
 		RequestResponse rr = new RenderedOutput();
@@ -428,7 +429,7 @@ public class DataDeletionTestBank extends AbstractRequestHandler {
 
 	
 	public void initialise(RequestAssociates associates)
-	throws RequestHandlingException {
+	throws UtilityException {
 	
 		try
 		{
@@ -481,7 +482,7 @@ public class DataDeletionTestBank extends AbstractRequestHandler {
 		}
 		catch (Exception e)
 		{
-			throw new RequestHandlingException(e);
+			throw new UtilityException(e);
 		}
 
 	}

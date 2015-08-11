@@ -19,12 +19,12 @@ import javax.servlet.http.HttpServletResponse;
 import om.OmUnexpectedException;
 import om.abstractservlet.AbstractRequestHandler;
 import om.abstractservlet.RequestAssociates;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestResponse;
 import util.misc.FileTypesEnum;
 import util.misc.IO;
 import util.misc.MimeTypes;
 import util.misc.Strings;
+import util.misc.UtilityException;
 
 public class TinyMCERequestHandler extends AbstractRequestHandler {
 	private static final long serialVersionUID = 1907168380166795247L;
@@ -47,14 +47,14 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 
 	public RequestResponse handle(HttpServletRequest request,
 		HttpServletResponse response, RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		RequestResponse rr = super.handle(request, response, associates);
 		String filePath = associates.getRequestParameters().get("filePath");
 		return handle(response, filePath, associates, rr);
 	}
 
 	private RequestResponse handle(HttpServletResponse response, String filePath,
-		RequestAssociates ra, RequestResponse rr) throws RequestHandlingException {
+		RequestAssociates ra, RequestResponse rr) throws UtilityException {
 		String fullPath = determineTinyMCEResourceFullPath(filePath,
 			ra.getServletContext());
 		byte[] bytes = {};
@@ -88,13 +88,13 @@ public class TinyMCERequestHandler extends AbstractRequestHandler {
 			}
 			rr.setByteOutput(bytes);
 		} catch (OmUnexpectedException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		} catch (FileNotFoundException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		} catch (UnsupportedEncodingException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		} catch (IOException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		}
 		return rr;
 	}

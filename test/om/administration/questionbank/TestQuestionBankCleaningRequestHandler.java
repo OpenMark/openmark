@@ -1,9 +1,10 @@
 package om.administration.questionbank;
 
 import junit.framework.TestCase;
-import om.abstractservlet.RequestHandlingException;
 
 import org.junit.Test;
+
+import util.misc.UtilityException;
 
 public class TestQuestionBankCleaningRequestHandler extends TestCase {
 
@@ -15,7 +16,7 @@ public class TestQuestionBankCleaningRequestHandler extends TestCase {
 			handler.retrieveConfiguredCleaner("tester");
 			assertTrue(false);
 		} catch (Exception x) {
-			assertTrue(x instanceof RequestHandlingException);
+			assertTrue(x instanceof UtilityException);
 			assertTrue(x.getMessage().contains("java.lang.ClassNotFoundException"));
 		}
 	}

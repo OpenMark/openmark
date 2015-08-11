@@ -119,8 +119,8 @@ public abstract class AbstractDatabaseSpecificOpenMarkServlet
 			omQueries = (OmQueries) Class.forName(dbClass).getConstructor(
 				new Class[] { String.class }).newInstance(
 				new Object[] { dbPrefix });
-			databaseAccess = new DatabaseAccess(getNavigatorConfig().getDatabaseURL(
-				omQueries), getNavigatorConfig().hasDebugFlag("log-sql") ? getLog() : null);
+			databaseAccess = new DatabaseAccess(
+					getNavigatorConfig().hasDebugFlag("log-sql") ? getLog() : null);
 		} catch (Exception e) {
 			throw new ServletException(
 				"Error creating database class or JDBC driver"

@@ -19,7 +19,6 @@ import om.abstractservlet.AbstractRequestHandler;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandlerEnums;
 import om.abstractservlet.RequestHandlerSettings;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestManagement;
 import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
@@ -45,8 +44,8 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 
 	@Override
 	public RequestResponse handle(HttpServletRequest request,
-		HttpServletResponse response, RequestAssociates associates)
-		throws RequestHandlingException {
+			HttpServletResponse response, RequestAssociates associates)
+			throws UtilityException {
 		RequestResponse rr = super.handle(request, response, associates);
 		RequestManagement rm = getRequestManagement(associates);
 		String output = renderRequestHandlerSettings(associates, rm);
@@ -66,11 +65,11 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 	 *  configuration.
 	 * @param ra
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected String retrieveFullTemplatePath(RequestAssociates ra)
-		throws RequestHandlingException {
+		throws UtilityException {
 		String fullTemplatePath = null; 
 		String templateName = null != ra ? ra.getConfig(
 			AdministrationDisplayEnums.template.toString()) : null;		
@@ -86,11 +85,11 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 	 * @param ra
 	 * @param output
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected String applyOutputToTemplate(HttpServletRequest request,
-		RequestAssociates ra, String output) throws RequestHandlingException {
+		RequestAssociates ra, String output) throws UtilityException {
 		String response = null;
 		String templateLocation = retrieveFullTemplatePath(ra);
 		getLog().logDebug("Full Template Path : " + templateLocation);
@@ -106,7 +105,7 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 				new File(templateLocation)));
 			response = XML.replaceTokens(response, "%%", replacements);
 		} catch (IOException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		}
 		return response;
 	}
@@ -118,11 +117,11 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 	 *  RequestHandlers.
 	 * @param rm
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected String renderRequestHandlerSettings(RequestAssociates associates,
-		RequestManagement rm) throws RequestHandlingException 
+		RequestManagement rm) throws UtilityException 
 	{
 		StringBuffer sb = new StringBuffer();
 		Map<String, RequestHandlerSettings> rhs = getRequestHandlerSettings(rm);
@@ -185,11 +184,11 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 	 *  and return the settings.
 	 * @param rm
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected Map<String, RequestHandlerSettings> getRequestHandlerSettings(
-		RequestManagement rm) throws RequestHandlingException {
+		RequestManagement rm) throws UtilityException {
 		Map<String, RequestHandlerSettings> rhs = null;
 		if (null != rm ? null != rm.getSettings() : false) {
 			rhs = rm.getSettings();
@@ -201,11 +200,11 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 	 * Tries to return the RequestManagement from the RequestAssociates argument
 	 * @param associates
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected RequestManagement getRequestManagement(RequestAssociates associates)
-		throws RequestHandlingException {		
+		throws UtilityException {		
 		RequestManagement rm = null;
 		if (null != associates) {
 			rm = associates.get(RequestManagement.class,
@@ -218,7 +217,7 @@ public class AdministrationDisplayRequestHandler extends AbstractRequestHandler 
 	public FinalizedResponse close(Object o) throws UtilityException {
 		try {
 			getLog().close();
-		} catch (RequestHandlingException x) {
+		} catch (UtilityException x) {
 			x.printStackTrace();
 		}
 		return new StandardFinalizedResponse(true);

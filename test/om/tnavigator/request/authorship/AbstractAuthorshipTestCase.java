@@ -7,6 +7,7 @@ import java.util.HashMap;
 import javax.servlet.ServletContext;
 
 import om.Log;
+import om.OmException;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestParameterNames;
 import om.tnavigator.AbstractNavigatorTestCase;
@@ -102,7 +103,7 @@ public abstract class AbstractAuthorshipTestCase extends AbstractNavigatorTestCa
 			updateResponse), log, getAuthorshipQueryBean());
 	}
 
-	protected DatabaseAccess getAuthorshipTestCaseDatabaseAccess(int updateResponse) {
+	protected DatabaseAccess getAuthorshipTestCaseDatabaseAccess(int updateResponse) throws OmException {
 		TestCaseAuthorshipConfirmationDatabaseAccess databaseAccess = new TestCaseAuthorshipConfirmationDatabaseAccess();
 		dummyTransaction = new TestAuthorshipConfirmationTransaction(databaseAccess, null);
 		dummyTransaction.dummyQueryResultSet = new TestAuthorshipConfirmationResultSet(1, 1);
@@ -125,7 +126,11 @@ public abstract class AbstractAuthorshipTestCase extends AbstractNavigatorTestCa
 	}
 
 	protected class TestCaseAuthorshipConfirmationDatabaseAccess extends JUnitTestCaseDatabaseAccess {
-		
+		public TestCaseAuthorshipConfirmationDatabaseAccess() throws OmException
+		{
+			super();
+		}
+
 		public Transaction newTransaction() throws SQLException {
 			return dummyTransaction;
 		}

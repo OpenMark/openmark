@@ -16,6 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import util.misc.Strings;
+import util.misc.UtilityException;
 import util.xml.XML;
 
 /**
@@ -44,11 +45,11 @@ public class RequestHandlingConfiguration {
 	 * Constructs the object based on the configuration file provided.
 	 * @param f
 	 * @throws IOException
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	public RequestHandlingConfiguration(File f)
-		throws IOException, RequestHandlingException {
+		throws IOException, UtilityException {
 		if (null != f) {
 			Document doc = XML.parse(f);
 			if (null != doc) {
@@ -65,7 +66,7 @@ public class RequestHandlingConfiguration {
 				}
 				applyRequestHandlerSettings(settings);
 			} else {
-				throw new RequestHandlingException("Unable to setup as the "
+				throw new UtilityException("Unable to setup as the "
 					+ getClass().getName() + " as the Document object was null.");
 			}
 		}
@@ -99,7 +100,7 @@ public class RequestHandlingConfiguration {
 	 * @author Trevor Hinson
 	 */
 	protected void applyRequestHandlerSettings(List<RequestHandlerSettings> rhs)
-		throws RequestHandlingException {
+		throws UtilityException {
 		if (null != rhs ? rhs.size() > 0 : false) {
 			for (RequestHandlerSettings settings : rhs) {
 				if (null != settings ? settings.valid() : false) {
@@ -119,7 +120,7 @@ public class RequestHandlingConfiguration {
 	 * @author Trevor Hinson
 	 */
 	protected List<RequestHandlerSettings> unpackRequestHandlers(Element e)
-		throws RequestHandlingException {
+		throws UtilityException {
 		List<RequestHandlerSettings> settings = new ArrayList<RequestHandlerSettings>();
 		if (null != e) {
 			NodeList nl = e.getChildNodes();
@@ -145,7 +146,7 @@ public class RequestHandlingConfiguration {
 	 * @author Trevor Hinson
 	 */
 	protected RequestHandlerSettings parseRequestHandler(Element ele)
-		throws RequestHandlingException {
+		throws UtilityException {
 		RequestHandlerSettings settings = null;
 		if (null != ele ? REQUEST_HANDLER.equals(ele.getNodeName()) : false) {
 			NodeList rhNodeList = ele.getChildNodes();
@@ -186,7 +187,7 @@ public class RequestHandlingConfiguration {
 	 * @author Trevor Hinson
 	 */
 	protected Class<RequestHandler> retrieveRequestHandlerClass(String className)
-		throws RequestHandlingException {
+		throws UtilityException {
 		Class<RequestHandler> rh = null;
 		if (Strings.isNotEmpty(className)) {
 			try {
@@ -194,15 +195,15 @@ public class RequestHandlingConfiguration {
 				if (RequestHandler.class.isAssignableFrom(cla)) {
 					rh = getRequestHandlerClass(cla);
 				} else {
-					throw new RequestHandlingException("The configured class name : "
+					throw new UtilityException("The configured class name : "
 						+ className + " is not assignable from : "
 						+ RequestHandler.class.getName());
 				}
 			} catch (ClassNotFoundException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			}
 		} else {
-			throw new RequestHandlingException("Unable to retrieve the" +
+			throw new UtilityException("Unable to retrieve the" +
 				" RequestHandler as the name was null.");
 		}
 		return rh;

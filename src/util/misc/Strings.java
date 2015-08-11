@@ -62,6 +62,46 @@ public class Strings
 	}
 
 	/**
+	 * Split string on runs of , and space. Handle the empty case as you would expect.
+	 *
+	 * So, for example
+	 *     "frog, toad" -> { "frog", "toad" }
+	 *     "" -> {}
+	 *     ",,,," -> {}
+	 *
+	 * @param string the string to split
+	 * @return the separate items from the list.
+	 */
+	public static String[] splitSensibly(String string)
+	{
+		return splitSensibly(", ", string);
+	}
+
+	/**
+	 * Split string on runs of the separator characters. Handle the empty case as you would expect.
+	 *
+	 * So, for example
+	 *     ", ", "frog, toad" -> { "frog", "toad" }
+	 *     ", ", "" -> {}
+	 *     ", ", ",,,," -> {}
+	 *
+	 * @param separators the characters that are separators.
+	 * @param string the string to split
+	 * @return the separate items from the list.
+	 */
+	public static String[] splitSensibly(String separators, String string)
+	{
+		if (string.matches("^[" + separators + "]*$"))
+		{
+			return new String[0];
+		}
+		else
+		{
+			return string.split("[" + separators + "]+");
+		}
+	}
+
+	/**
 	 * Converts an array of items into a textual list depending on the number of
 	 * items:
 	 * <ol>

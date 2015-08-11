@@ -14,7 +14,6 @@ import om.abstractservlet.AbstractRequestHandler;
 import om.abstractservlet.RenderedOutput;
 import om.abstractservlet.RequestAssociates;
 import om.abstractservlet.RequestHandlerEnums;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
 import om.tnavigator.NavigatorConfig;
@@ -38,7 +37,7 @@ public class TestInstanceExtractionRequestHandler extends AbstractRequestHandler
 	@Override
 	public RequestResponse handle(HttpServletRequest request,
 		HttpServletResponse response, RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		RequestResponse rr = new RenderedOutput();
 		if (null != request && null != response && null != associates) {
 			initialise(associates);
@@ -75,7 +74,7 @@ public class TestInstanceExtractionRequestHandler extends AbstractRequestHandler
 	 * @author Trevor Hinson
 	 */
 	public void initialise(RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		super.initialise(associates);
 		Object o = associates.getConfiguration().get(
 			RequestHandlerEnums.invocationPath.toString());

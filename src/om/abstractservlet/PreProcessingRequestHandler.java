@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import om.tnavigator.sessions.UserSession;
+import util.misc.UtilityException;
 
 /**
  * Template contract for things that need to be handled before the rest of the
@@ -25,12 +26,12 @@ public interface PreProcessingRequestHandler extends RequestHandler {
 	 * @param response
 	 * @param session
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	RequestAssociates generateRequiredRequestAssociates(HttpServlet servlet,
 		HttpServletRequest request, HttpServletResponse response,
 		UserSession session)
-		throws RequestHandlingException;
+		throws UtilityException;
 
 }

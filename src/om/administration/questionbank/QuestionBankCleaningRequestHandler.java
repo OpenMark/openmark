@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import om.abstractservlet.AbstractRequestHandler;
 import om.abstractservlet.RequestAssociates;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestResponse;
 import util.misc.Strings;
+import util.misc.UtilityException;
 
 
 /**
@@ -53,11 +53,11 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 	 * 
 	 * @param associates
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected CleanQuestionBanks getCleanQuestionBanks(
-			RequestAssociates associates) throws RequestHandlingException {
+			RequestAssociates associates) throws UtilityException {
 		if (null == cleanQuestionBanks) {
 			if (null != associates) {
 				String className = associates.getConfig(CLEANER);
@@ -76,11 +76,11 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 	 * 
 	 * @param className
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected CleanQuestionBanks retrieveConfiguredCleaner(String className)
-		throws RequestHandlingException {
+		throws UtilityException {
 		CleanQuestionBanks cqb = new QuestionBankCleaner();
 		if (Strings.isNotEmpty(className)) {
 			try {
@@ -93,13 +93,13 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 							cqb = (CleanQuestionBanks) obj;
 						}
 					} catch (InstantiationException x) {
-						throw new RequestHandlingException(x);
+						throw new UtilityException(x);
 					} catch (IllegalAccessException x) {
-						throw new RequestHandlingException(x);
+						throw new UtilityException(x);
 					}
 				}
 			} catch (ClassNotFoundException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			}
 		}
 		return cqb;
@@ -107,7 +107,7 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 
 	public RequestResponse handle(HttpServletRequest request,
 		HttpServletResponse response, RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		RequestResponse rr = super.handle(request, response, associates);
 		checkForReset(associates, request);
 		ClearanceResponse cr = pickUpClearanceResponse(request);
@@ -123,7 +123,7 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 						rr.append(rcr.toString());
 					}
 				} catch (CleaningException x) {
-					throw new RequestHandlingException(x);
+					throw new UtilityException(x);
 				}
 			}
 		} else {
@@ -179,12 +179,12 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 	 * @param request
 	 * @param cqb
 	 * @param cr
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected void handleClearing(RequestResponse rr,
 		RequestAssociates associates, HttpServletRequest request,
-		ClearanceResponse cr) throws RequestHandlingException {
+		ClearanceResponse cr) throws UtilityException {
 		try {
 			CleanQuestionBanks cqb = getCleanQuestionBanks(associates);
 			Map<String, String> params = associates.getRequestParameters();
@@ -196,7 +196,7 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 			}
 			request.getSession().setAttribute(CLEARANCE_RESPONSE, null);
 		} catch (CleaningException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		}
 	}
 
@@ -234,12 +234,12 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 	 * @param associates
 	 * @param request
 	 * @param rr
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected void identifySuperflousQuestions(RequestAssociates associates,
 		HttpServletRequest request, RequestResponse rr)
-		throws RequestHandlingException {
+		throws UtilityException {
 		try {
 			CleanQuestionBanks cqb = getCleanQuestionBanks(associates);
 			ClearanceResponse cr = cqb.identify(
@@ -251,7 +251,7 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 			}
 			request.getSession().setAttribute(CLEARANCE_RESPONSE, cr);
 		} catch (CleaningException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		}
 	}
 
@@ -261,11 +261,11 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 	 * 
 	 * @param associates
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected QuestionAndTestBankLocations identifyLocations(
-		RequestAssociates associates) throws RequestHandlingException {
+		RequestAssociates associates) throws UtilityException {
 		QuestionAndTestBankLocations locations = null;
 		if (null != associates) {
 			List<String> questionBanks = retrieveXBank(associates,
@@ -299,11 +299,11 @@ public class QuestionBankCleaningRequestHandler extends AbstractRequestHandler {
 	 * @param associates
 	 * @param key
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected List<String> retrieveXBank(RequestAssociates associates,
-		String key) throws RequestHandlingException {
+		String key) throws UtilityException {
 		List<String> banks = null;
 		if (null != associates ? Strings.isNotEmpty(key) : false) {
 			String value = associates.getConfig(key);

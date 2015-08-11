@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import util.misc.GeneralUtils;
+import util.misc.UtilityException;
 
 /**
  * Holds reference to the configuration specified in the requestHandlers.xml
@@ -70,10 +71,10 @@ public class RequestHandlerSettings {
 	 * Checks for the requires settings in order to ensure that the
 	 *  configuration provided will work correctly.
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
-	public boolean valid() throws RequestHandlingException {
+	public boolean valid() throws UtilityException {
 		boolean valid = false;
 		if (null != invocationPath ? invocationPath.length() > 0 : false) {
 			if (null != requestHandlerClassReference ? hasLogPath() : false) {
@@ -81,7 +82,7 @@ public class RequestHandlerSettings {
 			}
 		}
 		if (!valid) {
-			throw new RequestHandlingException("Unable to continue as these"
+			throw new UtilityException("Unable to continue as these"
 				+ " RequestHandlerSettings are invalid : " + toString());
 		}
 		return valid;

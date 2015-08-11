@@ -47,13 +47,6 @@ public class JUnitTestCaseOmQueries extends OmQueries {
 	}
 
 	@Override
-	public String getURL(String server, String database, String username,
-			String password) throws ClassNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	protected String alterStringColumnWidthSQL(String table, String column,
 			int newWidth) {
 		// TODO Auto-generated method stub

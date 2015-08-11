@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import om.abstractservlet.RequestAssociates;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.administration.questionbank.AllQuestionsPool;
 import om.administration.questionbank.CleaningException;
@@ -37,6 +36,7 @@ import util.misc.GeneralUtils;
 import util.misc.QuestionName;
 import util.misc.StandardFileFilter;
 import util.misc.Strings;
+import util.misc.UtilityException;
 import util.misc.VersionUtil;
 import util.xml.XML;
 
@@ -476,7 +476,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 						query = MessageFormat.format(q, args);
 					}
 				}
-			} catch (RequestHandlingException x) {
+			} catch (UtilityException x) {
 				throw new CleaningException(x);
 			}
 		}

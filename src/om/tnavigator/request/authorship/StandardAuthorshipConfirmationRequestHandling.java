@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import om.Log;
 import om.abstractservlet.RenderedOutput;
 import om.abstractservlet.RequestAssociates;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestParameterNames;
 import om.abstractservlet.RequestResponse;
 import om.abstractservlet.StandardFinalizedResponse;
@@ -78,11 +77,11 @@ public class StandardAuthorshipConfirmationRequestHandling
 		Collections.unmodifiableMap(requiresValidation);
 	}
 
-	private AuthorshipRenderedResponseBuilder authorshipRenderedResponseBuilder
-		= new XMLAuthorshipConfirmationBuilder();
+	private AuthorshipRenderedResponseBuilder authorshipRenderedResponseBuilder =
+			new XMLAuthorshipConfirmationBuilder();
 
 	private AuthorshipRenderedResponseBuilder getAuthorshipRenderedResponseBuilder()
-		throws RequestHandlingException {
+			throws UtilityException {
 		return authorshipRenderedResponseBuilder;
 	}
 
@@ -90,7 +89,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 	public RequestAssociates generateRequiredRequestAssociates(
 		HttpServlet servlet, HttpServletRequest request,
 		HttpServletResponse response, UserSession userSession)
-		throws RequestHandlingException {
+		throws UtilityException {
 		RequestAssociates ra = null;
 		if (null != servlet && null != request && null != response) {
 			if (servlet instanceof NavigatorServlet) {
@@ -126,7 +125,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 							RequestHelpers.inPlainMode(request), userSession.isSingle()), true);
 					ra.getPrincipleObjects().put(RequestParameterNames.ParentTemplate.toString(), parentTemplate);
 				} catch (Exception x) {
-					throw new RequestHandlingException(x);
+					throw new UtilityException(x);
 				}
 			}
 		}
@@ -140,7 +139,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 	@Override
 	public RequestResponse handle(HttpServletRequest request,
 		HttpServletResponse response, RequestAssociates associates)
-		throws RequestHandlingException {
+		throws UtilityException {
 		RequestResponse rr = null;
 		if (shouldRun(associates)) {
 			addUsersResponseToRequestAssociates(request, associates);
@@ -154,7 +153,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 			rr = new RenderedOutput();
 		}
 		if (null == rr) {
-			throw new RequestHandlingException("There was an issue"
+			throw new UtilityException("There was an issue"
 				+ " processing the Authorship Confirmation.");
 		}
 		return rr;
@@ -166,23 +165,23 @@ public class StandardAuthorshipConfirmationRequestHandling
 	 *  specifies that the test is Accessed and therefore we need to run.
 	 * @param associates
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected boolean shouldRun(RequestAssociates associates)
-			throws RequestHandlingException {
+			throws UtilityException {
 		UserSession us = getUserSession(associates);
 		return null != us && null != us.getTestDeployment()
 				&& us.getTestDeployment().authorshipRequired();
 	}
 
 	private boolean hasConfirmedAlready(RequestAssociates associates,
-		AuthorshipConfirmationChecking checking) throws RequestHandlingException {
+		AuthorshipConfirmationChecking checking) throws UtilityException {
 		RenderedOutput ro = null;
 		try {
 			ro = checking.hasSuccessfullyConfirmed(getUserSession(associates));
 		} catch (AuthorshipConfirmationException x) {
-			throw new RequestHandlingException(x);
+			throw new UtilityException(x);
 		}
 		return null != ro ? ro.isSuccessful() : false;
 	}
@@ -192,11 +191,11 @@ public class StandardAuthorshipConfirmationRequestHandling
 	 *  RequestAssociates object which we use later on.
 	 * @param request
 	 * @param associates
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected void addUsersResponseToRequestAssociates(HttpServletRequest request,
-		RequestAssociates associates) throws RequestHandlingException {
+		RequestAssociates associates) throws UtilityException {
 		if (null != request && null != associates) {
 			String key = RequestParameterNames.UserAuthorshipConfirmationResponse.toString();
 			String response = request.getParameter(key);
@@ -206,7 +205,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 					AuthorshipAction.confirmingAuthorship);
 			}
 		} else {
-			throw new RequestHandlingException("Invalid request as either the"
+			throw new UtilityException("Invalid request as either the"
 				+ " HttpServletRequest object or the RequestAssociates object was null :"
 				+ "\n > HttpServletRequest : " + request
 				+ "\n > RequestAssociates : " + associates);
@@ -216,11 +215,11 @@ public class StandardAuthorshipConfirmationRequestHandling
 	/**
 	 * Checks that everything is in place so that processing can continue.
 	 * @param ra
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected void validatePrincipleObjects(RequestAssociates ra)
-		throws RequestHandlingException {
+		throws UtilityException {
 		if (null != ra ? null != ra.getPrincipleObjects() : false) {
 			for (String key : requiresValidation.keySet()) {
 				Class<?> cls = requiresValidation.get(key);
@@ -243,11 +242,11 @@ public class StandardAuthorshipConfirmationRequestHandling
 	 *  an Exception.
 	 * @param ra
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected AuthorshipConfirmationChecking createAuthorshipConfirmationChecking(
-		RequestAssociates ra) throws RequestHandlingException {
+		RequestAssociates ra) throws UtilityException {
 		AuthorshipConfirmationChecking checking = null;
 		validatePrincipleObjects(ra);
 		Object bn = ra.getPrincipleObjects().get(
@@ -260,7 +259,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 				AuthorshipQueryBean.toString(), bn);
 		}
 		if (null == checking) {
-			throw new RequestHandlingException("Unable to create the"
+			throw new UtilityException("Unable to create the"
 				+ " AuthorshipConfirmationChecking bean. Please check the"
 				+ " request paramters.");
 		}
@@ -324,12 +323,12 @@ public class StandardAuthorshipConfirmationRequestHandling
 	 *  type issues.
 	 * @param nameOfNullObject
 	 * @param obj
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	private void throwProblemBack(String nameOfNullObject, Object obj)
-		throws RequestHandlingException {
-		throw new RequestHandlingException("Unable to continue as the "
+		throws UtilityException {
+		throw new UtilityException("Unable to continue as the "
 				+ nameOfNullObject + " object was either null or of "
 				+ "the wrong expected type : " + obj);
 	}
@@ -343,12 +342,12 @@ public class StandardAuthorshipConfirmationRequestHandling
 	 * @param checking
 	 * @param checking
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	protected RequestResponse handleAuthorshipConfirmationChecking(
 		HttpServletRequest request, RequestAssociates associates,
-		AuthorshipConfirmationChecking checking) throws RequestHandlingException {
+		AuthorshipConfirmationChecking checking) throws UtilityException {
 		RequestResponse rr = null;
 		Object us = associates.getPrincipleObjects().get(
 			RequestParameterNames.UserSession.toString());
@@ -375,7 +374,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 						associates, (RenderedOutput) rr);
 				}
 			} catch (AuthorshipConfirmationException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			}
 		} else {
 			throwProblemBack(RequestParameterNames.UserSession.toString(), us);
@@ -410,12 +409,12 @@ public class StandardAuthorshipConfirmationRequestHandling
 	 * @param ra
 	 * @param ro
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @throws AuthorshipConfirmationException
 	 * @author Trevor Hinson
 	 */
 	protected String retrieveAuthorshipConfirmationXML(HttpServletRequest request,
-		RequestAssociates ra, RenderedOutput ro) throws RequestHandlingException,
+		RequestAssociates ra, RenderedOutput ro) throws UtilityException,
 		AuthorshipConfirmationException {
 		String xml = null;
 		if (null != ra) {
@@ -437,12 +436,12 @@ public class StandardAuthorshipConfirmationRequestHandling
 								ro.append(XML.saveString(merged));
 								ro.setResponse(merged);
 							} else {
-								throw new RequestHandlingException("Unable to "
+								throw new UtilityException("Unable to "
 									+ "continue with the Authorship processing "
 									+ "as the merged document returned was null.");
 							}
 						} catch (IOException x) {
-							throw new RequestHandlingException(x);
+							throw new UtilityException(x);
 						}
 					} else {
 						throwProblemBack(XML_OUTPUT_RESPONSE, output);
@@ -467,13 +466,13 @@ public class StandardAuthorshipConfirmationRequestHandling
 	 * @author Trevor Hinson
 	 */
 	protected void applyBodyOnLoadJavascript(Document doc)
-		throws RequestHandlingException {
+		throws UtilityException {
 		if (null != doc ? XML.hasChild(doc.getFirstChild(), BODY) : false) {
 			try {
 				Element e = XML.getChild(doc.getFirstChild(), BODY);
 				e.setAttribute(ON_LOAD, ESTABLISH);
 			} catch (XMLException e) {
-				throw new RequestHandlingException("Unable to continue as the"
+				throw new UtilityException("Unable to continue as the"
 					+ " body of the response was not present.");
 			}
 		}
@@ -481,7 +480,7 @@ public class StandardAuthorshipConfirmationRequestHandling
 
 	protected Document applyResponseDetails(HttpServletRequest request,
 		Element authorship, RequestAssociates ra, RenderedOutput ro)
-		throws RequestHandlingException {
+		throws UtilityException {
 		Document parentTemplate = getParentTemplate(ra);
 		if (null != ra && null != ro && null != parentTemplate) {
 			try {
@@ -494,11 +493,11 @@ public class StandardAuthorshipConfirmationRequestHandling
 				XML.replaceTokens(parentTemplate, mReplace);
 				buildPreProcessedPageOutput(request, parentTemplate, getUserSession(ra));
 			} catch (XMLException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			} catch (DOMException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			} catch (IOException x) {
-				throw new RequestHandlingException(x);
+				throw new UtilityException(x);
 			}
 		} else {
 			// ...
@@ -553,11 +552,11 @@ public class StandardAuthorshipConfirmationRequestHandling
 	 *  confirm or not.
 	 * @param aa
 	 * @return
-	 * @throws RequestHandlingException
+	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
 	private boolean isMakingConfirmation(AuthorshipAction aa)
-		throws RequestHandlingException {
+		throws UtilityException {
 		return AuthorshipAction.confirmingAuthorship.equals(aa);
 	}
 

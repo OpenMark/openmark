@@ -17,37 +17,29 @@
  */
 package om.tnavigator;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import om.tnavigator.db.OmQueries;
+import javax.servlet.ServletContext;
+
+import om.OmException;
 import om.tnavigator.util.IPAddressCheckUtil;
-
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import util.misc.Strings;
-import util.xml.XML;
-import util.xml.XMLException;
+import util.misc.UtilityException;
 
 /** Loads navigator configuration file. */
 public class NavigatorConfig
 {
-	private static String REQUEST_MANAGEMENT_NODE = "RequestManagement";
-
-	private static String REQUEST_BASED = "requestBased";
-
 	/** Om services */
 	private URL[] omServices;
 
@@ -57,17 +49,8 @@ public class NavigatorConfig
 	/** URLs of other test navigators */
 	private String[] otherNavigators;
 
-	/** Database server machine e.g. "codd" */
-	private String dbServer;
-
-	/** DB username */
-	private String dbUsername;
-
-	/** DB password */
-	private String dbPassword;
-
-	/** Database name e.g. "oms-dev" */
-	private String dbName;
+	/** Class of database plugin */
+	private String dbClass;
 
 	/** Database prefix e.g. "nav_" */
 	private String dbPrefix;
@@ -89,9 +72,6 @@ public class NavigatorConfig
 	/** Class of authentication plugin */
 	private String authClass;
 
-	/** Class of database plugin */
-	private String dbClass;
-
 	/** Extra report plugins */
 	private String[] extraReports;	
 
@@ -101,24 +81,10 @@ public class NavigatorConfig
 	/** Parameters for auth */
 	private Map<String,String> authParams=null;
 	
-	/** Additional databases */
-	private Map<String, ExtraDatabase> extraDatabases = new HashMap<String, ExtraDatabase>();
-	
 	/** Standard admin usernames that may be required to be present in test deploy files */
 	private List<String> standardAdmins = new ArrayList<String>();
-	
-	/** list of optional fieatures switched on */
-	private List<String> optionalFeatures = new ArrayList<String>();
-
-	private static String PRE_PROCESSOR = "preprocessor";
 
 	private Class<?> preProcessingRequestHandler;
-
-	private boolean requestManagementRequestBased;
-
-	public boolean isRequestManagementRequestBased() {
-		return requestManagementRequestBased;
-	}
 
 	public Class<?> retrievePreProcessingRequestHandler() {
 		return preProcessingRequestHandler;
@@ -132,29 +98,20 @@ public class NavigatorConfig
 		return dbClass;
 	}
 
-	public String getDBName() {
-		return dbName;
-	}
-
 	public String getDBPrefix() {
 		return dbPrefix;
 	}	
 
-	/**
-	 * @return info about which DB server is being used. For the status page.
-	 */
-	public String getDBInfo() {
-		return dbServer + " / " + dbName + " / " + dbPrefix;
-	}
-
-	private static Map<String,String> getParams(Element parent) throws IOException
+	private static Map<String,String> getParams(ServletContext sc) throws IOException
 	{
-		Map<String,String> m=new HashMap<String,String>();
-		Element[] params=XML.getChildren(parent,"param");
-		for(int i=0;i<params.length;i++)
+		Map<String, String> m = new HashMap<String, String>();
+		Enumeration<String> paramNames = sc.getInitParameterNames();
+		while (paramNames.hasMoreElements())
 		{
-			m.put(XML.getRequiredAttribute(params[i],"name"),
-				XML.getText(params[i]));
+			String name = paramNames.nextElement();
+			if (name.startsWith("auth-param-")) {
+				m.put(name.substring("auth-param-".length()), sc.getInitParameter(name));
+			}
 		}
 		return m;
 	}
@@ -171,7 +128,7 @@ public class NavigatorConfig
 	{
 		String value=authParams.get(name);
 		if(value==null && required)
-			throw new IOException("navigator.xml: <authentication> - missing <param name='"+name+"'>");
+			throw new IOException("Missing authentication parameter " + name + ".");
 		return value;
 	}
 
@@ -193,7 +150,7 @@ public class NavigatorConfig
 		}
 		catch(MalformedURLException e)
 		{
-			throw new IOException("navigator.xml: <authentication> - <param name='"+name+"'> is not a valid URL");
+			throw new IOException("Missing authentication parameter " + name + ".");
 		}
 	}
 
@@ -230,218 +187,83 @@ public class NavigatorConfig
 
 	/**
 	 * Initialises config.
-	 * @param fConfig Config file
+	 * @param sc Servlet context from which to get the config.
 	 * @throws IOException If there's any problem parsing the file etc.
+	 * @throws OmException 
 	 */
-	public NavigatorConfig(File fConfig) throws IOException {
-		Document dConfig=XML.parse(fConfig);
-		Element eRoot=dConfig.getDocumentElement();
+	public NavigatorConfig(ServletContext sc) throws IOException, OmException, UtilityException {
+		dbClass = getParam(sc, "database-class");
+		dbPrefix = getParam(sc, "database-prefix");
 
-		Element eDB=XML.getChild(eRoot,"database");
-		dbClass=XML.getRequiredAttribute(eDB,"plugin");
-		dbServer=XML.getText(eDB,"server");
-		dbName=XML.getText(eDB,"name");
-		dbPrefix=XML.getText(eDB,"prefix");
-		dbUsername=XML.getText(eDB,"username");
-		dbPassword=XML.getText(eDB,"password");
+		thisTN = new URL(getParam(sc, "server-url"));
+		otherNavigators = Strings.splitSensibly(getParam(sc, "server-other-urls"));
+		for (int i = 0; i < otherNavigators.length; i++)
+		{
+			trustedTNs.add(InetAddress.getByName((new URL(otherNavigators[i])).getHost()));
+		}
 
-		Element eAuth=XML.getChild(eRoot,"authentication");
-		authClass=XML.getRequiredAttribute(eAuth,"plugin");
-		authParams=getParams(eAuth);
+		String[] qeUrls = getParam(sc, "question-engine-service-urls").split("[, ]+");
+		omServices = new URL[qeUrls.length];
+		for (int i = 0; i < qeUrls.length; i++)
+		{
+			URL u = new URL(qeUrls[i]);
+			omServices[i] = u;
+			trustedQEs.add(InetAddress.getByName(u.getHost()));
+		}
+		if(omServices.length == 0)
+		{
+			throw new IOException("At least one question engine must be configured.");
+		}
+
+		Mail.setSMTPHost(getParam(sc, "smtp-server"));
+
+		extraReports = Strings.splitSensibly(getParam(sc, "report-extra-classes"));
+
+		authClass = getParam(sc, "authentication-class");
+		authParams = getParams(sc);
+
+		trustedAddresses = Strings.splitSensibly(getParam(sc, "trusted-ips"));
+		IPAddressCheckUtil.checkIpAddressPatterns(trustedAddresses,
+				"Invalid trusted-ips in the servlet configuration.");
+
+		secureAddresses = Strings.splitSensibly(getParam(sc, "secure-ips"));
+		IPAddressCheckUtil.checkIpAddressPatterns(secureAddresses,
+				"Invalid secure-ips in the servlet configuration.");
+
+		templateLocation = getParam(sc, "template-location");
+
+		debugFlags.addAll(Arrays.asList(Strings.splitSensibly(getParam(sc, "log-flags"))));
+
+		alertMailFrom = getParam(sc, "alert-email-from");
+		alertMailTo = Strings.splitSensibly(getParam(sc, "alert-email-to"));
+		alertMailCC = Strings.splitSensibly(getParam(sc, "alert-email-cc"));
+
+		standardAdmins = Arrays.asList(Strings.splitSensibly(getParam(sc, "standard-admins")));
 
 		try
 		{
-			trustedAddresses=XML.getTextFromChildren(XML.getChild(eRoot,"trustedaddresses"),"address");
-			IPAddressCheckUtil.checkIpAddressPatterns(trustedAddresses,
-					"navigator.xml: <trustedaddresses> <address> not in valid format: ");
-
-			secureAddresses=XML.getTextFromChildren(XML.getChild(eRoot,"secureaddresses"),"address");
-			IPAddressCheckUtil.checkIpAddressPatterns(secureAddresses,
-					"navigator.xml: <secureaddresses> <address> not in valid format: ");
+			preProcessingRequestHandler = getClass().getClassLoader().loadClass(
+					getParam(sc, "preprocessor-class"));
 		}
-		catch(Exception e)
+		catch(ClassNotFoundException e)
 		{
-			throw new IOException(e);
-		}
-
-		Mail.setSMTPHost(XML.getText(eRoot,"smtpserver"));
-
-		Element eQE=XML.getChild(eRoot,"questionengines");
-		String[] asURLs=XML.getTextFromChildren(eQE,"url");
-		omServices=new URL[asURLs.length];
-		for(int i=0;i<asURLs.length;i++)
-		{
-			URL u=new URL(asURLs[i]);
-			omServices[i]=u;
-			trustedQEs.add(InetAddress.getByName(u.getHost()));
-		}
-		if(omServices.length==0) throw new IOException(
-			"navigator.xml: requires at leat one <url> inside <questionengines>");
-
-		Element eTN=XML.getChild(eRoot,"testnavigators");
-		Element[] aeTN=XML.getChildren(eTN,"url");
-		if(aeTN.length==0) throw new IOException(
-			"navigator.xml: requires at least one <url> inside <testnavigators>");
-		List<String> lNavigators=new LinkedList<String>();
-		boolean bGotThis=false;
-		for(int i=0;i<aeTN.length;i++)
-		{
-			String sURL=XML.getText(aeTN[i]);
-			if("yes".equals(aeTN[i].getAttribute("this")))
-			{
-				bGotThis=true;
-				thisTN=new URL(sURL);
-			}
-			else
-			{
-				lNavigators.add(sURL);
-				trustedTNs.add(InetAddress.getByName((new URL(sURL)).getHost()));
-			}
-		}
-		if(!bGotThis) throw new IOException(
-			"navigator.xml: requires one <url this='yes'> inside <testnavigators>");
-		otherNavigators=lNavigators.toArray(new String[lNavigators.size()]);
-
-		if(XML.hasChild(eRoot,"extrareports"))
-		{
-			extraReports=XML.getTextFromChildren(XML.getChild(eRoot,"extrareports"),"report");
-		}
-		else
-		{
-			extraReports = new String[0];
-		}		
-
-		if (XML.hasChild(eRoot, "templatelocation"))
-		{
-			templateLocation = XML.getText(eRoot, "templatelocation");
-		}
-
-		if(XML.hasChild(eRoot,"debugflags"))
-		{
-			Element[] aeFlags=XML.getChildren(XML.getChild(eRoot,"debugflags"));
-			for(int i=0;i<aeFlags.length;i++)
-			{
-				debugFlags.add(aeFlags[i].getTagName());
-			}
-		}
-
-		if(XML.hasChild(eRoot,"alertmail"))
-		{
-			Element eAlertMail=XML.getChild(eRoot,"alertmail");
-			alertMailFrom=XML.getText(eAlertMail,"from");
-			alertMailTo=XML.getTextFromChildren(eAlertMail,"to");
-			alertMailCC=XML.getTextFromChildren(eAlertMail,"cc");
-		}
-		else
-		{
-			alertMailTo=alertMailCC=new String[0];
-		}
-		
-		if(XML.hasChild(eRoot,"extradatabases")) {
-			Element eExtraDB=XML.getChild(eRoot, "extradatabases");
-			Element[] eEDbs=XML.getChildren(eExtraDB, "database");
-			for(Element e : eEDbs) {
-				String key = XML.getText(e, "key");
-				if (!Strings.isEmpty(key)) {
-					extraDatabases.put(key, 
-							new ExtraDatabase(key, XML.getText(e, "driverclass"), 
-							XML.getText(e, "connectionurl"), XML.getText(e, "username"),
-							XML.getText(e, "password")));
-				}
-			}
-		}		
-		
-		if(XML.hasChild(eRoot, "standardadmins")) {
-			Element[] eUsers=XML.getChildren(XML.getChild(eRoot,"standardadmins"));
-			for (Element eUser : eUsers) {
-				// OUCU is what the OU calls usernames
-				if ("oucu".equals(eUser.getTagName()) || "username".equals(eUser.getTagName())) {
-					standardAdmins.add(XML.getText(eUser));
-				}				
-			}
-		}
-		/* allows us to turn features on and off */
-		
-		if(XML.hasChild(eRoot, "optionalfeatures")) {
-			Element eOptionalFeatures=XML.getChild(eRoot,"optionalfeatures");
-			Element[] eFeatures=XML.getChildren(eOptionalFeatures, "feature");
-			for (Element eFeature : eFeatures) 
-			{	
-				if (eFeature.hasAttribute("name") && eFeature.hasAttribute("enable"))
-				{
-					if (eFeature.getAttribute("enable").compareToIgnoreCase("yes") ==0)
-					{
-						optionalFeatures.add(eFeature.getAttribute("name"));
-					}	
-				}
-			}
-		}
-		establishPreProcessor(eRoot);
-		establishRequestManagementPosition(eRoot);
-	}
-
-	/**
-	 * Checks to see if there is a <RequestManagement> node set and if it has
-	 *  been configured with REQUEST_BASED.  If it has then the composite
-	 *  requestManagementRequestBased boolean is set to true.
-	 * @param eRoot
-	 * @author Trevor Hinson
-	 */
-	private void establishRequestManagementPosition(Element eRoot) {
-		String s = retrieveElementText(eRoot, REQUEST_MANAGEMENT_NODE);
-		if (Strings.isNotEmpty(s)
-			? REQUEST_BASED.equalsIgnoreCase(s) : false) {
-			requestManagementRequestBased = true;
+			throw new OmException("Request preprocessor class could not be found.", e);
 		}
 	}
 
 	/**
-	 * Identifies and returns the textContent of a specified Element child
-	 * 	within the provided eRoot element.  Wraps XML.getChild() with some
-	 *  additional checks.
-	 * @param eRoot
-	 * @param nodeName
-	 * @return
-	 * @author Trevor Hinson
+	 * Get a parameter, throwing an exception if it is not present.
+	 * @param sc the servlet context.
+	 * @param name the parameter to get.
+	 * @return the value of the parameter.
+	 * @throws OmException if the parameter is missing.
 	 */
-	private String retrieveElementText(Element eRoot, String nodeName) {
-		String s = null;
-		if (null != eRoot && Strings.isNotEmpty(nodeName)
-			? XML.hasChild(eRoot, nodeName) : false) {
-			try {
-				Element e = XML.getChild(eRoot, nodeName);
-				s = e.getTextContent();
-			} catch (XMLException x) {
-				x.printStackTrace();
-			} catch (DOMException x) {
-				x.printStackTrace();
-			}
+	private String getParam(ServletContext sc, String name) throws OmException {
+		String value = sc.getInitParameter(name);
+		if (null == value) {
+			throw new OmException("Missing parameter " + name + " in the servlet configuration.");
 		}
-		return s;
-	}
-
-	/**
-	 * Used to pick up the configured "pre processor" from the navigator.xml
-	 *  which is then invoked before other stages of the test rendering to the
-	 *  user.
-	 * @param eRoot
-	 * @author Trevor Hinson
-	 */
-	private void establishPreProcessor(Element eRoot) {
-		String pre = retrieveElementText(eRoot, PRE_PROCESSOR);
-		if (Strings.isNotEmpty(pre)) {
-			try {
-				preProcessingRequestHandler = getClass().getClassLoader()
-					.loadClass(pre);
-			} catch (ClassNotFoundException x) {
-				x.printStackTrace();
-			}
-		}
-	}
-
-	/** @return Full JDBC URL of database including username and password */
-	public String getDatabaseURL(OmQueries oq) throws ClassNotFoundException {
-		return oq.getURL(dbServer,dbName,dbUsername,dbPassword);
+		return value;
 	}
 
 	/**
@@ -531,69 +353,12 @@ public class NavigatorConfig
 	{
 		return alertMailCC;
 	}
-	
-	/**
-	 * Get addtional database details from <extradatabases> tag.
-	 * @param key for the database configuration
-	 * @return database details
-	 */
-	public ExtraDatabase getExtraDatabase(String key) {		
-		return extraDatabases.get(key);
-	}
-	
+
 	/**
 	 * @return array of standard admin usernames
 	 */
 	public String[] getStandardAdminUsernames() {
 		return standardAdmins.toArray(new String[0]);
-	}
-	
-	/** Additional database details */
-	public static class ExtraDatabase {		
-		private String key;
-		
-		private String driverClass;
-		
-		private String connectionUrl;
-		
-		private String username;
-		
-		private String password;
-		
-		public ExtraDatabase(String key, String driverClass,
-				String connectionUrl, String username, String password) {
-			this.key = key;
-			this.driverClass = driverClass;
-			this.connectionUrl = connectionUrl;
-			this.username = username;
-			this.password = password;
-		}
-
-		public String getKey() {
-			return key;
-		}
-
-		public String getDriverClass() {
-			return driverClass;
-		}
-
-		public String getConnectionUrl() {
-			return connectionUrl;
-		}
-
-		public String getUsername() {
-			return username;
-		}
-
-		public String getPassword() {
-			return password;
-		}		
-		
-	}
-	
-	public boolean isOptionalFeatureOn(String what)
-	{	
-		return optionalFeatures.contains(what);		
 	}
 
 	public String getTemplateLocation()

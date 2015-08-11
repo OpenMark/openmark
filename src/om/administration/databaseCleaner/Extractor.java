@@ -2,6 +2,8 @@ package om.administration.databaseCleaner;
 
 import java.util.Map;
 
+import om.administration.extraction.ExtractorException;
+
 public interface Extractor {
 
 	/**

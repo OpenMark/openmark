@@ -5,7 +5,7 @@
     "http://java.sun.com/j2ee/dtds/web-app_2.2.dtd">
 <web-app>
 	<display-name>OpenMark test navigator</display-name>
-	
+
 	<servlet>
 		<servlet-name>Navigator</servlet-name>
 		<servlet-class>om.tnavigator.NavigatorServlet</servlet-class>

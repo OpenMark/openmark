@@ -1,7 +1,6 @@
 package om.tnavigator;
 
 import om.Log;
-import om.PersistenceException;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import util.misc.GeneralUtils;
@@ -34,13 +33,9 @@ public abstract class AbstractPersistenceDelegator {
 	 * @throws UtilityException
 	 * @author Trevor Hinson
 	 */
-	protected Log getLog() throws PersistenceException {
+	protected Log getLog() throws UtilityException {
 		if (null == log) {
-			try {
-				log = GeneralUtils.getLog(getClass(), logPath, showDebug);
-			} catch (UtilityException x) {
-				throw new PersistenceException(x);
-			}
+			log = GeneralUtils.getLog(getClass(), logPath, showDebug);
 		}
 		return log;
 	}
@@ -54,7 +49,7 @@ public abstract class AbstractPersistenceDelegator {
 	 * @author Trevor Hinson
 	 */
 	protected void initialise(NavigatorConfig nc, String path, boolean debug)
-		throws PersistenceException {
+			throws UtilityException {
 		logPath = path;
 		showDebug = debug;
 		setNavigatorConfig(nc);
@@ -72,17 +67,17 @@ public abstract class AbstractPersistenceDelegator {
 	 * @throws PersistenceException
 	 * @author Trevor Hinson
 	 */
-	protected void databaseAccessSetup() throws PersistenceException {
+	protected void databaseAccessSetup() throws UtilityException {
 		String dbClass = getNavigatorConfig().getDBClass();
 		String dbPrefix = getNavigatorConfig().getDBPrefix();
 		try {
 			oq = (OmQueries) Class.forName(dbClass).getConstructor(
 					new Class[] { String.class }).newInstance(
 					new Object[] { dbPrefix });
-			da = new DatabaseAccess(getNavigatorConfig().getDatabaseURL(oq),
+			da = new DatabaseAccess(
 					getNavigatorConfig().hasDebugFlag("log-sql") ? getLog() : null);
 		} catch (Exception e) {
-			throw new PersistenceException(
+			throw new UtilityException(
 				"Error creating database class or JDBC driver (make sure DB "
 				+ "plugin and JDBC driver are both installed): "
 				+ e.getMessage());
@@ -92,7 +87,7 @@ public abstract class AbstractPersistenceDelegator {
 			dat = da.newTransaction();
 			oq.checkTables(dat, getLog(), getNavigatorConfig());
 		} catch (Exception e) {
-			throw new PersistenceException("Error initialising database tables: "
+			throw new UtilityException("Error initialising database tables: "
 					+ e.getMessage(), e);
 		} finally {
 			if (dat != null)
@@ -106,9 +101,9 @@ public abstract class AbstractPersistenceDelegator {
 	 * @return
 	 * @throws PersistenceException
 	 */
-	protected DatabaseAccess getDatabaseAccess() throws PersistenceException {
+	protected DatabaseAccess getDatabaseAccess() throws UtilityException {
 		if (null == da) {
-			throw new PersistenceException("Unable to continue as the"
+			throw new UtilityException("Unable to continue as the"
 				+ " DatabaseAccess object was null.");
 		}
 		return da;
@@ -118,9 +113,9 @@ public abstract class AbstractPersistenceDelegator {
 		navigatorConfig = nc;
 	}
 
-	protected NavigatorConfig getNavigatorConfig() throws PersistenceException {
+	protected NavigatorConfig getNavigatorConfig() throws UtilityException {
 		if (null == navigatorConfig) {
-			throw new PersistenceException("Unable to continue as the"
+			throw new UtilityException("Unable to continue as the"
 					+ " NavigatorConfig was null.");
 		}
 		return navigatorConfig;

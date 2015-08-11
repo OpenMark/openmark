@@ -20,31 +20,36 @@ package om.tnavigator.db;
 import java.sql.*;
 import java.util.*;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 import om.Log;
+import om.OmException;
 
 /** Thread-safe database access code */
 public class DatabaseAccess
 {
 	/** JDBC URL for database */
-	private String sURL;
+	private DataSource dataSource;
 
 	/** Maximum number of JDBC connections */
 	private int iMaxConnections=5;
 
 	/** How long an unused connection lurks around before expiring (1 hr) */
-	private final static int CONNECTIONEXPIRY=60 * 60 * 1000;
+	private final static int CONNECTIONEXPIRY = 60 * 60 * 1000;
 
 	/** How often we check for expired connections (15 mins) */
-	private final static int CONNECTIONCHECKDELAY=15*60*1000;
+	private final static int CONNECTIONCHECKDELAY = 15*60*1000;
 
 	/** Current available connections (List of ConnectionInfo) */
-	private LinkedList<ConnectionInfo> llAvailableConnections=new LinkedList<ConnectionInfo>();
+	private LinkedList<ConnectionInfo> llAvailableConnections = new LinkedList<ConnectionInfo>();
 
 	/** Connections currently in-use */
-	private Set<ConnectionInfo> sInUseConnections=new HashSet<ConnectionInfo>();
+	private Set<ConnectionInfo> sInUseConnections = new HashSet<ConnectionInfo>();
 
 	/** If access has been closed */
-	private boolean bClosed=false;
+	private boolean bClosed = false;
 
 	/** Log for debug logging */
 	private Log l;
@@ -73,12 +78,12 @@ public class DatabaseAccess
 		private ConnectionInfo ci;
 
 		/** True if an error has occurred and we should rollback instead of committing */
-		private boolean bError=false;
+		private boolean bError = false;
 
 		/** Current result-set (if any) */
-		private ResultSet rsCurrent=null;
+		private ResultSet rsCurrent = null;
 
-		private long lTime=0L;
+		private long lTime = 0L;
 
 		/**
 		 * Constructs internally.
@@ -277,11 +282,11 @@ public class DatabaseAccess
 	 * take care to always call close().
 	 * @param sURL JDBC URL of database including password etc.
 	 * @param l Log to use for debug and error logging (null if none required)
+	 * @throws OmException 
 	 */
-	public DatabaseAccess(String sURL,Log l)
+	public DatabaseAccess(Log l) throws OmException
 	{
-		this.sURL=sURL;
-		this.l=l;
+		this.l = l;
 		(new CheckThread()).start();
 	}
 
@@ -356,9 +361,30 @@ public class DatabaseAccess
 	 */
 	public Connection newUnpooledConnection() throws SQLException
 	{
-		Connection c = DriverManager.getConnection(sURL);
+		Connection c = getDataSource().getConnection();
 		c.setAutoCommit(false);
 		return c;
+	}
+
+	private DataSource getDataSource() throws SQLException {
+		if (dataSource != null) {
+			return dataSource;
+		}
+
+		try
+		{
+			InitialContext context = new InitialContext();
+			dataSource = (DataSource)context.lookup("java:/comp/env/jdbc/openmark");
+			if(dataSource == null)
+			{
+				throw new SQLException("Could not find data source jdbc/openmark");
+			}
+		}
+		catch(NamingException e)
+		{
+			throw new SQLException("Error loading data source jdbc/openmark", e);
+		}
+		return dataSource;
 	}
 
 	/**
@@ -386,7 +412,7 @@ public class DatabaseAccess
 
 				ConnectionInfo ci=new ConnectionInfo();
 
-				ci.c = DriverManager.getConnection(sURL);
+				ci.c = getDataSource().getConnection();
 				ci.c.setAutoCommit(false);
 				ci.s=ci.c.createStatement();
 

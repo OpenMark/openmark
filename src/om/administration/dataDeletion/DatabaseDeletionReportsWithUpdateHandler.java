@@ -5,8 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import om.abstractservlet.RenderedOutput;
 import om.abstractservlet.RequestAssociates;
-import om.abstractservlet.RequestHandlingException;
 import om.abstractservlet.RequestResponse;
+import util.misc.UtilityException;
 
 public class DatabaseDeletionReportsWithUpdateHandler extends DatabaseDeletionReports {
 
@@ -14,16 +14,16 @@ public class DatabaseDeletionReportsWithUpdateHandler extends DatabaseDeletionRe
 	private static final long serialVersionUID = 3432094601409857406L;
 
 
-@Override
-public RequestResponse handle(HttpServletRequest request,
-	HttpServletResponse response, RequestAssociates associates)
-	throws RequestHandlingException {		
-	
-	RequestResponse rr = new RenderedOutput();
+	@Override
+	public RequestResponse handle(HttpServletRequest request,
+		HttpServletResponse response, RequestAssociates associates)
+		throws UtilityException {
 
-	rr=handleAll(request,response,associates,DOUPDATE);
+		RequestResponse rr = new RenderedOutput();
 
-	return rr;
+		rr=handleAll(request,response,associates,DOUPDATE);
+
+		return rr;
 	}
 
 }

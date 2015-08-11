@@ -50,8 +50,6 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -6026057637254633705L;
 
-	private static String NAVIGATOR_XML = "navigator.xml";
-
 	private static String REQUEST_HANDLING_XML = "requestHandling.xml";
 
 	private static String DEFAULT_ERROR_TITLE = "Request Handling Issue.";
@@ -355,14 +353,14 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 			rm = new RequestDelegation(rhc);
 		} catch (IOException x) {
 			throw new ServletException(x);
-		} catch (RequestHandlingException x) {
+		} catch (UtilityException x) {
 			throw new ServletException(x);
 		}
 		return rm;
 	}
 
 	private boolean isRequestManagementRequestBased() throws ServletException {
-		return getNavigatorConfig().isRequestManagementRequestBased();
+		return false;
 	}
 
 	/**
@@ -403,12 +401,11 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 	 */
 	private void initialiseNavigatorConfig() throws ServletException {
 		try {
-			navigatorConfig = new NavigatorConfig(
-				new File(getServletContext().getRealPath(NAVIGATOR_XML)));
+			navigatorConfig = new NavigatorConfig(getServletContext());
 		} catch (MalformedURLException x) {
 			throw new ServletException("Unexpected error parsing service URL",
 				x);
-		} catch (IOException x) {
+		} catch (Exception x) {
 			throw new ServletException("Error loading NavigatorConfig file", x);
 		}
 

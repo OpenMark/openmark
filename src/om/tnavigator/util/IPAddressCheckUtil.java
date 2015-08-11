@@ -102,40 +102,6 @@ public class IPAddressCheckUtil {
 	}
 
 	/**
-	 * What this is doing is rather unclear. It seems to be cehcking whether locahost
-	 * is a list of addresses.
-	 * @param addresses
-	 * @param nc
-	 * @param log
-	 * @return
-	 * @throws UtilityException
-	 */
-	public static boolean checkIPAddress(String[] addresses, NavigatorConfig nc,
-		Log log) throws UtilityException {
-		boolean passed = false;
-		try {
-			if (null != addresses && addresses.length > 0) {
-				passed = IPAddressCheckUtil.isIPInList(InetAddress.getLocalHost(),
-					addresses, log);
-			}
-		} catch (UnknownHostException x) {
-			throw new UtilityException(x);
-		}
-		return passed;
-	}
-
-	/**
-	 * Deprecated. Do not use.
-	 * Get the local host address.
-	 * @return
-	 * @throws UnknownHostException
-	 */
-	@Deprecated
-	public static InetAddress getINetAddress() throws UnknownHostException {
-		return InetAddress.getLocalHost();
-	}
-
-	/**
 	 * Check whether a given IP address is in a list of allowed address patterns.
 	 * @param address an IP address to check.
 	 * @param addresses list of allowed address patterns.
