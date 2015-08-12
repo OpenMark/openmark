@@ -74,7 +74,6 @@ import om.axis.qengine.StartReturn;
 import om.tnavigator.auth.Authentication;
 import om.tnavigator.auth.AuthenticationFactory;
 import om.tnavigator.auth.AuthenticationInstantiationException;
-import om.tnavigator.auth.SAMSOucuPi;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.reports.ReportDispatcher;
@@ -1177,23 +1176,10 @@ public class NavigatorServlet extends HttpServlet {
 				l.logDebug("Not Logged in determining sPI="+sPi);
 
 			}
-			/* XXXX problem getting correct pi, so check it with web service here if the oucu and the pi are euqal
-			 *  */
-			if (GeneralUtils.isOUCUPIequalButNotTemp(us.sOUCU,sPi) )
-			{
-				 SAMSOucuPi op=new SAMSOucuPi(us.sOUCU,sPi,this.getNavigatorConfig(),l);
-				 oq.insertTest(dat, us.sOUCU, sTestID, us.getRandomSeed(),
+
+			oq.insertTest(dat, us.sOUCU, sTestID, us.getRandomSeed(),
 					iMaxAttempt + 1, us.bAdmin,
-					op.getPi(), us.getFixedVariant(), us.navigatorVersion);
-			}
-			else
-			{
-				oq.insertTest(dat, us.sOUCU, sTestID, us.getRandomSeed(),
-						iMaxAttempt + 1, us.bAdmin,
-						sPi, us.getFixedVariant(), us.navigatorVersion);
-
-			}
-
+					sPi, us.getFixedVariant(), us.navigatorVersion);
 
 			int dbTi = oq.getInsertedSequenceID(dat, "tests", "ti");
 
@@ -1711,52 +1697,10 @@ public class NavigatorServlet extends HttpServlet {
 		return code;
 	}
 
-	/* this function reads the oucu and pi for the test, check whether they are the same, and if the pi has changed.
-	 * If it has there may have been a problem so we update it
-	 */
-	private void checkAndUpdatePI(DatabaseAccess.Transaction d, UserSession us) throws Exception
-	{
-		String sPI=us.ud.getPersonID();
-		String sOUCU=us.getOUCU();
-		String sTestID=us.getTestId();
-		int iTI=us.getDbTi();
-		if (sPI != null && !sPI.isEmpty() && ! sOUCU.isEmpty() && ! sTestID.isEmpty() )
-		{
-			try
-			{
-				ResultSet rs = oq.queryPI(d, sOUCU, sTestID,iTI);
-				if (rs.next())
-				{
-					String dOUCU = rs.getString(1);
-					String dPI = rs.getString(2);
-					/* so if PI read not epmty, , the oucu and the pi are the same, and the pi
-					in the datbase and the pi passed are different we may have one of the problem users so update */
-					if (GeneralUtils.isOUCUPIequalButNotTemp(dOUCU,dPI) )
-					{
-						SAMSOucuPi op=new SAMSOucuPi(dOUCU,dPI,this.getNavigatorConfig(),l);
-						oq.updatePI(d,iTI,op.getPi());
-						l.logDebug("Updating PI for oucu,ti="+iTI+","+sOUCU+" from dPI "+dPI+" to pi "+op.getPi());
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to query/update PI");
-			}
-
-
-		}
-
-	}
-
-
-
 	private TrafficLights processTrafficLights(RequestTimings rt, UserSession us,
 			Element eParent, Element eTarget, CombinedScore ps ,
 			HttpServletRequest request,Log l) throws Exception
-
 	{
-
 			TrafficLights tls=new TrafficLights();
 
 			if (PreCourseDiagCode.shouldDoCode(us))
@@ -3276,15 +3220,6 @@ public class NavigatorServlet extends HttpServlet {
 		try {
 			oq.updateSetTestPosition(dat, us.getDbTi(), iNewIndex);
 			us.setTestPosition(iNewIndex);
-			/* check the pi stored is the same as the one we have now and update if necessary*/
-			try
-			{
-				checkAndUpdatePI(dat, us);
-			}
-			catch (Exception e)
-			{
-				throw new SQLException(e);
-			}
 		}
 		finally
 		{

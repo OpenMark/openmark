@@ -4,7 +4,6 @@
 package om.tnavigator.reports.std;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -82,28 +81,25 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 			batchid = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 			title = testId + " results for export to Moodle";
 		}
-		
-	private void outputScoresForPI(AttemptForPI bestAttempt,TabularReportWriter reportWriter)
-		{
 
-		
-		String assignmentid=bestAttempt.getassignmentid();
-		CombinedScore score=bestAttempt.getScore();
-		String pi=bestAttempt.getPI();
-		try
+		private void outputScoresForPI(AttemptForPI bestAttempt,TabularReportWriter reportWriter)
 		{
-			// Output a row of the report for each axis.
-			for (String axis : score.getAxesOrdered()) {
-				Map<String, String> row = new HashMap<String, String>();				
-				row.put("student", pi);
-				row.put("assignment", axis != null ? assignmentid + "." + axis : assignmentid);
-				row.put("score", score.getScore(axis) + "");
-				reportWriter.printRow(row);
-			}	
-		} catch (Exception e) {
-			throw new OmUnexpectedException("Error outputting report.", e);
-		}
-		
+			String assignmentid=bestAttempt.getAssignmentid();
+			CombinedScore score=bestAttempt.getScore();
+			String pi=bestAttempt.getPI();
+			try
+			{
+				// Output a row of the report for each axis.
+				for (String axis : score.getAxesOrdered()) {
+					Map<String, String> row = new HashMap<String, String>();
+					row.put("student", pi);
+					row.put("assignment", axis != null ? assignmentid + "." + axis : assignmentid);
+					row.put("score", score.getScore(axis) + "");
+					reportWriter.printRow(row);
+				}
+			} catch (Exception e) {
+				throw new OmUnexpectedException("Error outputting report.", e);
+			}
 		}
 
 		/* (non-Javadoc)
@@ -111,14 +107,11 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 		 */
 		@Override
 		public void generateReport(TabularReportWriter reportWriter) {
-			DatabaseAccess.Transaction dat;
-			try {
-				dat = ns.getDatabaseAccess().newTransaction();
-			} catch (SQLException e1) {
-				throw new OmUnexpectedException("Cannot connect to the database");
-			}
+			DatabaseAccess.Transaction dat = null;
 			try
 			{
+				dat = ns.getDatabaseAccess().newTransaction();
+
 				// Get list of people who did the test.
 				// Show:
 				// * Each person only once
@@ -127,98 +120,70 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 				// * Within categories (finished/unfinished), sorting by PI
 				// I achieve this by setting the sort order and dropping all but the first
 				// result for each PI.
-				
-				ResultSet rs = ns.getOmQueries().queryTestAttemptersByPIandFinishedASC(dat, testId);
-				//create empty lists
-				boolean startflag=true;
-				String lastpi="";
-				AttemptForPI BestAttempt = new AttemptForPI("",0,null,"",false);
 
+				ResultSet rs = ns.getOmQueries().queryTestAttemptersByPIandFinishedASC(dat, testId);
+
+				String lastpi = "";
+				AttemptForPI bestAttempt = new AttemptForPI("", 0, null, "", false);
 				while(rs.next())
 				{
 					String pi = rs.getString(2);
 
-					//ns.getLog().logDebug("*************** pi " + pi);
-					//we dont do admins, and we dont do dummy students which start with a Q
-					//comment out as we are now going to export dummy and admin
-					//if (isAdmin != 1 && pi != "" && !isDummy) //need the test on pi just to be on safe side
-					//{
-						
-						//first we deal with the previous student and output it if necesary
-						if (!pi.equals(lastpi) && !(startflag) && !pi.equals(""))
+					// First we deal with the previous student and output it if necessary.
+					if (!"".equals(lastpi) && !"".equals(pi) && !pi.equals(lastpi))
+					{
+						// We need to output the last student if they finished.
+						if (bestAttempt.hasFinished())
 						{
-							// ok, we need to process and output last student if they finished
-							// startflag is there so we dont process the first student yet
-			
-							if(BestAttempt.gethasFinished())
-							{
-									outputScoresForPI(BestAttempt,reportWriter);	
-									ns.getLog().logDebug("Output score for  " +BestAttempt.getPI() +
-											" score " + BestAttempt.gettestScore() );
-							}
-							//reset BestAttempt
-							BestAttempt = new AttemptForPI("",0,null,"",false);
-
+							outputScoresForPI(bestAttempt, reportWriter);
 						}
-						//we checked wether to output this one, so reset the startflag 
-					    startflag=false;
-						
-						// now we get on with checking this student
-						int ti = rs.getInt(9);
-						int isFinished=rs.getInt(4);
-						long randomSeed = rs.getLong(7);
-						int fixedVariant = rs.getInt(8);
-						
-						//not an admin so go with it
-						//is this pi the same as the last? if it isnt we need to process it
-						//ns.getLog().logDebug("pi *" + pi +
-						//		"* lastpi *" + lastpi + "* ti " + ti );
 
-						// Create TestRealisation
-						TestRealisation testRealisation = TestRealisation.realiseTest(
-								def, randomSeed, fixedVariant, testId, ti);	
-						// Use it to get the score.
-						String assignmentid = testRealisation.getTestId();
-						
-						CombinedScore score = testRealisation.getScore(new NavigatorServlet.RequestTimings(), ns, ns.getDatabaseAccess(), ns.getOmQueries());
-						//set up out test attempt ready for the list
-						// despite the comments in the getscore declaration., using null causes a java exception
-						// so we use the get axis ordered and pick of the first one.
-						
-						String defaultAxis=null;
-						for (String axis : score.getAxesOrdered()) {
-							//  get the score for the first one, which is the default
-							ns.getLog().logDebug("axis " + axis );
-							defaultAxis=axis;
-							break;
-							}
-
-						double thisscore=score.getScore(defaultAxis);					
-						ns.getLog().logDebug("this attempt " + pi +
-								" score " + thisscore );	
-						//set values for the current attempt then compare with th best attempt so far
-						AttemptForPI ThisAttempt = new AttemptForPI(pi,thisscore,score,assignmentid,isFinished==1);
-		
-						BestAttempt.SetIfGreater(ThisAttempt);
-						lastpi=pi;
+						bestAttempt = new AttemptForPI("", 0, null, "", false);
 					}
-				//}
-				// now output the last student as long as they aren't an admin
-				if (BestAttempt.gethasFinished())
-				{	
-					outputScoresForPI(BestAttempt,reportWriter);
-					ns.getLog().logDebug("Output score for  " +BestAttempt.getPI() +
-							" score " + BestAttempt.gettestScore() );
+
+					// Now we get on with checking this student.
+					int ti = rs.getInt(9);
+					int isFinished = rs.getInt(4);
+					long randomSeed = rs.getLong(7);
+					int fixedVariant = rs.getInt(8);
+
+					// Create TestRealisation
+					TestRealisation testRealisation = TestRealisation.realiseTest(
+							def, randomSeed, fixedVariant, testId, ti);
+
+					// Use it to get the score.
+					String assignmentid = testRealisation.getTestId();
+					CombinedScore score = testRealisation.getScore(new NavigatorServlet.RequestTimings(), ns, ns.getDatabaseAccess(), ns.getOmQueries());
+
+					// Get the name of the first axis, which is the default.
+					String defaultAxis=null;
+					for (String axis : score.getAxesOrdered()) {
+						defaultAxis = axis;
+						break;
+					}
+
+					double thisscore = score.getScore(defaultAxis);
+
+					// Set values for the current attempt then compare with th best attempt so far.
+					AttemptForPI ThisAttempt = new AttemptForPI(pi, thisscore, score, assignmentid, isFinished == 1);
+					bestAttempt.SetIfGreater(ThisAttempt);
+					lastpi = pi;
 				}
 
-				//
-				
+				if (bestAttempt.hasFinished())
+				{
+					outputScoresForPI(bestAttempt,reportWriter);
+				}
+
 			} catch (Exception e) {
 				throw new OmUnexpectedException("Error generating report.", e);
 			}
 			finally
 			{
-				dat.finish();
+				if (dat != null)
+				{
+					dat.finish();
+				}
 			}
 
 		}
@@ -264,5 +229,4 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 	public boolean isSecurityRestricted() {
 		return true;
 	}
-
 }

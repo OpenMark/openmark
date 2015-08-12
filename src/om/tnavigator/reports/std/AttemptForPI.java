@@ -45,7 +45,7 @@ public class AttemptForPI
 	
 	public void SetIfGreater(AttemptForPI attempt)
 	{
-		if (attempt.gettestScore() >= this.testscore && attempt.gethasFinished())
+		if (attempt.getTestScore() >= this.testscore && attempt.hasFinished())
 		{
 			this.PI = attempt.PI;
 			this.score = attempt.score;
@@ -60,12 +60,12 @@ public class AttemptForPI
 		return this.score;
 	}
 
-	public boolean gethasFinished()
+	public boolean hasFinished()
 	{
 		return this.hasFinished;
 	}
 
-	public double gettestScore()
+	public double getTestScore()
 	{
 		return this.testscore;
 	}
@@ -75,7 +75,7 @@ public class AttemptForPI
 		return this.PI;
 	}
 
-	public String getassignmentid()
+	public String getAssignmentid()
 	{
 		return this.assignmentid;
 	}
