@@ -1,0 +1,51 @@
+How to get set up for OpenMark development at the OU
+
+Note, relative paths are within this project. Assumes Windows, but with suitable
+changes should work on any OS.
+
+
+1. Install a recent JDK and Tomcat.
+
+2. Work out which code editor/IDE you will use, and hence where your working
+copy of the code should be.
+
+3. Check the project out from git. If you are reading this file, you have
+probably already got that far! The repository URL is currently
+        http://tjh238@csr-tfsclt-live.open.ac.uk:8080/tfs/IT_Development_Live/LearningMediaAndCollaboration/_git/LMC_Repo_OpenMark
+
+4. Work out where you want to put extra files related to the test install that
+will be running on your computer. The following assumes you will use C:\Temp.
+
+5. Copy samples/tests/testbank -> C:\Temp\testbank
+
+6. Copy samples/tests/questionbank -> C:\Temp\questionbank
+
+7. Create an empty folder C:\Temp\om-logs
+
+8. Copy misc/localhost.om-tn.xml ->
+        C:\Program Files\Apache Software Foundation\Tomcat 7.0_ApacheTomcat7\conf\Catalina\localhost\om-tn.xml
+(With the appropriate path for your version of Tomcat.)
+
+9. Edit that file, to make it work for your computer. (The bits you are likely to
+need to change have TODO in them, like TODO-your-email.
+
+10. If you are using Postgres, copy lib/postgresql/postgresql-8.2-505.jdbc3.jar
+        -> C:\Program Files\Apache Software Foundation\Tomcat 7.0_ApacheTomcat7\lib
+
+11. Copy build.local-ou.properties -> build.local.properties.
+
+12. Make any edits to that file that seem necessary.
+
+13. Right-click on build.xml, chooose Run as -> Ant build .... Select the
+localhost-install target, and run it.
+
+14. Visit URLs like
+    * http://pcd[TODO].open.ac.uk:8080/om/
+    * http://pcd[TODO].open.ac.uk:8080/om-qe/services/check
+    * http://pcd[TODO].open.ac.uk:8080/om-qe/services/Om?wsdl
+    * http://pcd[TODO].open.ac.uk:8080/om-qe/services/Om
+    * http://pcd[TODO].open.ac.uk:8080/om-tn/!status/check
+    * http://pcd[TODO].open.ac.uk:8080/om-tn/!status
+    * http://pcd[TODO].open.ac.uk:8080/om-tn/mu120.module5/
+    * http://pcd[TODO].open.ac.uk:8080/om-tn/singlequestion.question01/
+and hopefully it all works.

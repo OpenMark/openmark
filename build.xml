@@ -254,24 +254,19 @@
 		<copy todir="${build}/webapps/om-tn/WEB-INF">
 			<fileset dir="webinf-tnavigator"/>
 		</copy>
-		<!-- Sample navigator.xml doesn't go in web-inf -->
-		<move file="${build}/webapps/om-tn/WEB-INF/navigator.sample.xml"
-			todir="${build}/webapps/om-tn/"/>
-
-		<!-- Copy sample tests -->
-		<copy todir="${build}/webapps/om-tn/">
-			<fileset dir="samples/tests"/>
-		</copy>
 
 		<copy todir="${build}/webapps/om-tn/WEB-INF/lib" file="${build}/jars/om-navigator.jar"/>
 
-		<jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn"/>
-
+		<jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn">
+			<include name="**"/>
+		</jar>
 	</target>
 
 
 	<target name="tnavigator-nolibs" depends="tnavigator-base">
-		<jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn"/>
+		<jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn">
+			<include name="**"/>
+		</jar>
 	</target>
 
 
@@ -303,7 +298,9 @@
 				<include name="*.jar"/>
 			</fileset>
 		</copy>
-		<jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn"/>
+		<jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn">
+			<include name="**"/>
+		</jar>
 	</target>
 
 
@@ -335,7 +332,9 @@
 
 		<copy todir="${build}/webapps/om-admin/WEB-INF/lib" file="${build}/jars/om-administration.jar"/>
 
-		<jar jarfile="${build}/webapps/om-admin.war" basedir="${build}/webapps/om-admin"/>
+		<jar jarfile="${build}/webapps/om-admin.war" basedir="${build}/webapps/om-admin">
+			<include name="**"/>
+		</jar>
 
 	</target>
 
@@ -367,7 +366,9 @@
 				<include name="*.jar"/>
 			</fileset>
 		</copy>
-		<jar jarfile="${build}/webapps/om-admin.war" basedir="${build}/webapps/om-admin"/>
+		<jar jarfile="${build}/webapps/om-admin.war" basedir="${build}/webapps/om-admin">
+			<include name="**"/>
+		</jar>
 	</target>
 
 	<target name="all" depends="qengine, tnavigator, adminserver, devserver"
@@ -381,14 +382,10 @@
 
 	<target name="update-localhost"
 		description="Copy the compiled files code into a localhost tomcat install.">
-		<delete dir="${localhostwebapps}/om-tn/WEB-INF"/>
-		<copy todir="${localhostwebapps}/om-tn/WEB-INF">
-			<fileset dir="${build}/webapps/om-tn/WEB-INF/"/>
-		</copy>
-		<delete dir="${localhostwebapps}/om-qe/WEB-INF"/>
-		<copy todir="${localhostwebapps}/om-qe/WEB-INF">
-			<fileset dir="${build}/webapps/om-qe/WEB-INF/"/>
-		</copy>
+		<copy todir="${localhostwebapps}"
+				file="${build}/webapps/om-tn.war"/>
+		<copy todir="${localhostwebapps}"
+				file="${build}/webapps/om-qe.war"/>
 		<delete dir="${localhostwebapps}/om/WEB-INF"/>
 		<copy todir="${localhostwebapps}/om/WEB-INF">
 			<fileset dir="${build}/webapps/om/WEB-INF/"/>
