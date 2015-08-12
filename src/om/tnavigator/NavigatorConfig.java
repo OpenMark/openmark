@@ -75,6 +75,12 @@ public class NavigatorConfig
 	/** Extra report plugins */
 	private String[] extraReports;	
 
+	/**
+	 * Location of the maintenance mode file on disc.
+	 * If this file exists, the system is in maintenance mode.
+	 */
+	private String maintenanceModeFile;
+
 	/** Location of the testbank on disc. */
 	private String testbankPath;
 
@@ -239,6 +245,7 @@ public class NavigatorConfig
 		IPAddressCheckUtil.checkIpAddressPatterns(secureAddresses,
 				"Invalid secure-ips in the servlet configuration.");
 
+		maintenanceModeFile = getParam(sc, "maintenance-mode-file");
 		testbankPath = getParam(sc, "testbank-folder");
 		questionbankPath = getParam(sc, "questionbank-folder");
 		logsPath = getParam(sc, "logs-folder");
@@ -373,12 +380,16 @@ public class NavigatorConfig
 		return standardAdmins.toArray(new String[0]);
 	}
 
-	public String getTemplateLocation()
+	/**
+	 * @return the location of the maintenance mode file on disc.
+	 * If this file exists, the system is in maintenance mode.
+	 */
+	public String getMaintenanceModeFilePath()
 	{
-		return templateLocation;
+		return 	maintenanceModeFile;
 	}
 
-	/** @return the testbankPath */
+	/** @return the questionbankPath */
 	public String getTestbankPath()
 	{
 		return testbankPath;
@@ -394,5 +405,11 @@ public class NavigatorConfig
 	public String getLogsPath()
 	{
 		return logsPath;
+	}
+
+	/** @return the path to the folder where templates are stored. */
+	public String getTemplateLocation()
+	{
+		return templateLocation;
 	}
 }

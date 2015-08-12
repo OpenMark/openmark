@@ -281,7 +281,6 @@ public class NavigatorServlet extends HttpServlet {
 		servletStartTime = Calendar.getInstance().getTime();
 		ServletContext sc = getServletContext();
 		try {
-			maintenanceFile = new File(sc.getRealPath("maintenance.xhtml"));
 			nc = new NavigatorConfig(sc);
 		} catch (MalformedURLException e) {
 			throw new ServletException("Unexpected error parsing service URL",
@@ -289,6 +288,8 @@ public class NavigatorServlet extends HttpServlet {
 		} catch (Exception e) {
 			throw new ServletException("Error configuration file", e);
 		}
+
+		maintenanceFile = new File(nc.getMaintenanceModeFilePath());
 
 		try {
 			templateLoader = new TemplateLoader(new File(
