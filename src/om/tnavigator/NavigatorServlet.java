@@ -298,7 +298,7 @@ public class NavigatorServlet extends HttpServlet {
 		}
 
 		try {
-			l = new Log(new File(sc.getRealPath("logs")), "navigator", nc
+			l = new Log(new File(nc.getLogsPath()), "navigator", nc
 					.hasDebugFlag("log-general"));
 		} catch (IOException e) {
 			throw new ServletException("Error creating log", e);

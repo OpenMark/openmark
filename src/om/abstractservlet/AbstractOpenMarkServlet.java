@@ -386,7 +386,7 @@ public abstract class AbstractOpenMarkServlet extends HttpServlet {
 	 */
 	private void initialiseLogging() throws ServletException {
 		try {
-			log = new Log(new File(getServletContext().getRealPath("logs")),
+			log = new Log(new File(navigatorConfig.getLogsPath()),
 				getClass().getName(), true);
 		} catch (IOException x) {
 			throw new ServletException("Error creating log", x);

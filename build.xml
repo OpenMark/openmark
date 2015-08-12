@@ -250,7 +250,6 @@
 		<mkdir dir="${build}/webapps/om-tn"/>
 		<mkdir dir="${build}/webapps/om-tn/WEB-INF"/>
 		<mkdir dir="${build}/webapps/om-tn/WEB-INF/lib"/>
-		<mkdir dir="${build}/webapps/om-tn/logs"/>
 
 		<copy todir="${build}/webapps/om-tn/WEB-INF">
 			<fileset dir="webinf-tnavigator"/>

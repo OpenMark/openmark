@@ -75,11 +75,14 @@ public class NavigatorConfig
 	/** Extra report plugins */
 	private String[] extraReports;	
 
-	/** Location of the test bank on disc. */
+	/** Location of the testbank on disc. */
 	private String testbankPath;
 
-	/** Location of the test bank on disc. */
+	/** Location of the questionbank on disc. */
 	private String questionbankPath;
+
+	/** Location of the openmark logs on disc. */
+	private String logsPath;
 
 	/** Template location. */
 	private String templateLocation = "WEB-INF/templates";
@@ -238,6 +241,7 @@ public class NavigatorConfig
 
 		testbankPath = getParam(sc, "testbank-folder");
 		questionbankPath = getParam(sc, "questionbank-folder");
+		logsPath = getParam(sc, "logs-folder");
 		templateLocation = getParam(sc, "template-folder");
 
 		debugFlags.addAll(Arrays.asList(Strings.splitSensibly(getParam(sc, "log-flags"))));
@@ -384,5 +388,11 @@ public class NavigatorConfig
 	public String getQuestionbankPath()
 	{
 		return questionbankPath;
+	}
+
+	/** @return the questionbankPath */
+	public String getLogsPath()
+	{
+		return logsPath;
 	}
 }
