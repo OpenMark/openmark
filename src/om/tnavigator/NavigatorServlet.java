@@ -316,7 +316,7 @@ public class NavigatorServlet extends HttpServlet {
 			throw new ServletException("Unexpected error obtaining service", e);
 		}
 
-		questionBankFolder = new File(sc.getRealPath("questionbank"));
+		questionBankFolder = new File(nc.getQuestionbankPath());
 
 		labelSets = new LabelSets(new File(sc.getRealPath("WEB-INF/labels/")));
 
@@ -4123,14 +4123,14 @@ public class NavigatorServlet extends HttpServlet {
 	}
 
 	public File getTestbankFolder() {
-		return resolveRelativePath("testbank");
+		return resolveTestbankRelativePath("");
 	}
 
 	public File pathForTestDeployment(String testId) {
-		return resolveRelativePath("testbank/" + testId + ".deploy.xml");
+		return resolveTestbankRelativePath("/" + testId + ".deploy.xml");
 	}
 
-	public File resolveRelativePath(String relativePath) {
-		return new File(getServletContext().getRealPath(relativePath));
+	private File resolveTestbankRelativePath(String relativePath) {
+		return new File(nc.getTestbankPath() + relativePath);
 	}
 }

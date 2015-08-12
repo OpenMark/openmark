@@ -75,6 +75,12 @@ public class NavigatorConfig
 	/** Extra report plugins */
 	private String[] extraReports;	
 
+	/** Location of the test bank on disc. */
+	private String testbankPath;
+
+	/** Location of the test bank on disc. */
+	private String questionbankPath;
+
 	/** Template location. */
 	private String templateLocation = "WEB-INF/templates";
 
@@ -230,7 +236,9 @@ public class NavigatorConfig
 		IPAddressCheckUtil.checkIpAddressPatterns(secureAddresses,
 				"Invalid secure-ips in the servlet configuration.");
 
-		templateLocation = getParam(sc, "template-location");
+		testbankPath = getParam(sc, "testbank-folder");
+		questionbankPath = getParam(sc, "questionbank-folder");
+		templateLocation = getParam(sc, "template-folder");
 
 		debugFlags.addAll(Arrays.asList(Strings.splitSensibly(getParam(sc, "log-flags"))));
 
@@ -364,5 +372,17 @@ public class NavigatorConfig
 	public String getTemplateLocation()
 	{
 		return templateLocation;
+	}
+
+	/** @return the testbankPath */
+	public String getTestbankPath()
+	{
+		return testbankPath;
+	}
+
+	/** @return the questionbankPath */
+	public String getQuestionbankPath()
+	{
+		return questionbankPath;
 	}
 }
