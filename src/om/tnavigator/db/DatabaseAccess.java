@@ -17,8 +17,10 @@
  */
 package om.tnavigator.db;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -32,24 +34,6 @@ public class DatabaseAccess
 {
 	/** JDBC URL for database */
 	private DataSource dataSource;
-
-	/** Maximum number of JDBC connections */
-	private int iMaxConnections=5;
-
-	/** How long an unused connection lurks around before expiring (1 hr) */
-	private final static int CONNECTIONEXPIRY = 60 * 60 * 1000;
-
-	/** How often we check for expired connections (15 mins) */
-	private final static int CONNECTIONCHECKDELAY = 15*60*1000;
-
-	/** Current available connections (List of ConnectionInfo) */
-	private LinkedList<ConnectionInfo> llAvailableConnections = new LinkedList<ConnectionInfo>();
-
-	/** Connections currently in-use */
-	private Set<ConnectionInfo> sInUseConnections = new HashSet<ConnectionInfo>();
-
-	/** If access has been closed */
-	private boolean bClosed = false;
 
 	/** Log for debug logging */
 	private Log l;
@@ -223,60 +207,6 @@ public class DatabaseAccess
 		if(l!=null) l.logDebug("DatabaseAccess",s,null);
 	}
 
-	/** @return Number of DB connections currently up */
-	private synchronized int getNumConnections()
-	{
-		return llAvailableConnections.size()+sInUseConnections.size();
-	}
-
-	/** Thread that gets rid of unused connections every now and then */
-	private class CheckThread extends Thread
-	{
-		@Override
-		public void run()
-		{
-			synchronized(DatabaseAccess.this)
-			{
-				while(!bClosed)
-				{
-					if(!llAvailableConnections.isEmpty())
-					{
-						// If least-recently-used connection hasn't been used for an hour, chuck it
-						ConnectionInfo ci=llAvailableConnections.getLast();
-						if(ci.lLastUsed + CONNECTIONEXPIRY < System.currentTimeMillis())
-						{
-							logDebug("Discarding unused DB connection " +
-								"(# before: "+getNumConnections()+")");
-							try
-							{
-								ci.s.close();
-								ci.c.close();
-							}
-							catch(SQLException e)
-							{
-								logError("Error closing DB connection",e);
-							}
-							llAvailableConnections.removeLast();
-						}
-					}
-
-					// Wait until it's time to check again
-					long lWakeTarget=System.currentTimeMillis()+CONNECTIONCHECKDELAY;
-					while(!bClosed && System.currentTimeMillis() < lWakeTarget)
-					{
-						try
-						{
-							DatabaseAccess.this.wait(CONNECTIONCHECKDELAY);
-						}
-						catch(InterruptedException e)
-						{
-						}
-					}
-				}
-			}
-		}
-	}
-
 	/**
 	 * Constructs access pool. Note that this starts a cleanup thread so you must
 	 * take care to always call close().
@@ -287,7 +217,6 @@ public class DatabaseAccess
 	public DatabaseAccess(Log l) throws OmException
 	{
 		this.l = l;
-		(new CheckThread()).start();
 	}
 
 	/**
@@ -295,47 +224,6 @@ public class DatabaseAccess
 	 */
 	public synchronized void close()
 	{
-		if(bClosed) return;
-
-		logDebug("Database connection closing ("+sInUseConnections.size()+" active)");
-
-		for(ConnectionInfo ci : llAvailableConnections)
-		{
-			try
-			{
-				ci.s.close();
-				ci.c.close();
-			}
-			catch(SQLException e)
-			{
-				logError("Error closing DB connection",e);
-			}
-		}
-		llAvailableConnections=null;
-		for(ConnectionInfo ci : sInUseConnections)
-		{
-			try
-			{
-				ci.s.close();
-				ci.c.close();
-			}
-			catch(SQLException e)
-			{
-			}
-		}
-		sInUseConnections=null;
-
-		bClosed=true;
-		notifyAll();
-	}
-
-	/**
-	 * Sets the number of JDBC connections to open (at maximum). Default is 5.
-	 * @param iMaxConnections Max. number of connections
-	 */
-	public void setMaxConnections(int iMaxConnections)
-	{
-		this.iMaxConnections=iMaxConnections;
 	}
 
 	/**
@@ -394,44 +282,11 @@ public class DatabaseAccess
 	 */
 	private synchronized ConnectionInfo getConnection() throws SQLException
 	{
-		while(!bClosed)
-		{
-			// If a connection is available, use that
-			if(!llAvailableConnections.isEmpty())
-			{
-				ConnectionInfo ci=llAvailableConnections.removeFirst();
-				sInUseConnections.add(ci);
-				return ci;
-			}
-
-			// If we're allowed to create another connection, do so
-			if(sInUseConnections.size() < iMaxConnections)
-			{
-				logDebug("Creating new DB connection " +
-					"(# before: "+getNumConnections()+")");
-
-				ConnectionInfo ci=new ConnectionInfo();
-
-				ci.c = getDataSource().getConnection();
-				ci.c.setAutoCommit(false);
-				ci.s=ci.c.createStatement();
-
-				sInUseConnections.add(ci);
-				return ci;
-			}
-
-			// Otherwise connections must be maxed, so block
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				throw new SQLException("Interrupted while waiting for connection");
-			}
-		}
-
-		throw new SQLException("Database access closed while getting connection");
+		ConnectionInfo ci=new ConnectionInfo();
+		ci.c = getDataSource().getConnection();
+		ci.c.setAutoCommit(false);
+		ci.s = ci.c.createStatement();
+		return ci;
 	}
 
 	/**
@@ -442,24 +297,5 @@ public class DatabaseAccess
 	 */
 	private synchronized void releaseConnection(ConnectionInfo ci,boolean bDiscard)
 	{
-		if(bClosed) return;
-
-		// Remove from 'in use' and add to front of available pile
-		if(!sInUseConnections.remove(ci))
-			throw new Error("Tried to release connection that was not in use");
-		if(!bDiscard) // Don't add it back if discarding!
-			llAvailableConnections.addFirst(ci);
-
-		// Set last-used date
-		ci.lLastUsed=System.currentTimeMillis();
-
-		// Notify for anyone waiting (note: we should do this even if discarding)
-		notifyAll();
-	}
-
-	/** @return Number of connections currently up */
-	public synchronized int getConnectionCount()
-	{
-		return sInUseConnections.size() + llAvailableConnections.size();
 	}
 }

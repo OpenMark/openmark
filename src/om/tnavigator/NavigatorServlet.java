@@ -3678,8 +3678,6 @@ public class NavigatorServlet extends HttpServlet {
 
 		getAuthentication().obtainPerformanceInfo(m);
 
-		m.put("DBCONNECTIONS", da.getConnectionCount() + "");
-
 		URL uThis = nc.getThisTN();
 		m.put("MACHINE", uThis.getHost().replaceAll(".open.ac.uk", "")
 				+ uThis.getPath());
