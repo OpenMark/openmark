@@ -1,0 +1,14 @@
+Dear Student
+
+This email is to advise you that even though you have registered answers
+to one or more questions you have not clicked on the button to submit this assignment.
+
+If you deliberately did not submit this assignment please ignore this email.
+However if you do wish to submit {0} you may do so by noon (UK time) on {1}
+by following this link: {2}
+
+You should note that you will not be able to review, amend or add to your
+answers. You will only be able to submit the answers that you completed
+before the cut off date. Unless you follow the link and submit the assignment
+your work will not be marked and you will receive a zero score
+for this assignment.

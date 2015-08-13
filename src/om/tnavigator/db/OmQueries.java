@@ -26,11 +26,11 @@ import om.OmVersion;
 import om.tnavigator.NavigatorConfig;
 import om.tnavigator.db.DatabaseAccess.Transaction;
 import om.tnavigator.teststructure.PreCourseDiagCode;
-
 import util.misc.IO;
-import util.misc.Strings;
-import util.misc.NavVersion;
 import util.misc.NameValuePairs;
+import util.misc.NavVersion;
+import util.misc.Strings;
+import util.misc.UtilityException;
 
 /**
  * Used to obtain a version of the SQL queries used in Om for a given database.
@@ -71,7 +71,6 @@ public abstract class OmQueries
 					"CASE WHEN q.finished = 0 THEN 0 ELSE 1 END DESC, " +
 					"q.attempt DESC";
 			return dat.query(sqlstr);
-
 	}
 
 	/**
@@ -191,7 +190,7 @@ public abstract class OmQueries
 		return dat.query(
 			"SELECT name,value FROM " + getPrefix() + "navconfig");
 	}
-	
+
 	/**
 	 * Get the list of info pages a user has seen within a test attempt.
 	 * @param dat the transaction within which the query should be executed.
@@ -524,6 +523,34 @@ public abstract class OmQueries
 	}
 
 	/**
+	 * Get the list of info pages a user has seen within a test attempt.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param ti test instance id.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
+	public ResultSet queryOverdueAttemptsForTest(DatabaseAccess.Transaction dat,
+			String deploy, int requiredNumberOfFinishedQuestions)
+	  throws SQLException
+	{
+		return dat.query(
+				"SELECT t.ti, oucu, pi " +
+				"FROM " + getPrefix() + "tests t " +
+				"JOIN (" +
+					"SELECT ti, count(finished) AS finished_count " +
+					"FROM " + getPrefix() + "questions " +
+					"WHERE finished > 0 " +
+					"GROUP BY ti" +
+				") q ON t.ti = q.ti " +
+				"WHERE deploy = " + Strings.sqlQuote(deploy) + " " +
+					"AND t.finished = 0 " +
+					"AND dateWarningEmailSent IS NULL " +
+					"AND admin = 0 " +
+					"AND finished_count >= " + requiredNumberOfFinishedQuestions + " " +
+				"ORDER BY ti");
+	}
+
+	/**
 	 * Store a user's action within an question attempt.
 	 * @param dat the transaction within which the query should be executed.
 	 * @param qi question instance id.
@@ -723,13 +750,14 @@ public abstract class OmQueries
 	{
 		dat.update("UPDATE " + getPrefix() + "tests SET finished=1,finishedclock="+currentDateFunction()+" WHERE ti="+ti+";");
 	}
+
 	/**
 	 * add precourse diagnostic code if necessary
 	 * @param dat the transaction within which the query should be executed.
 	 * @param ti test instance id.
 	 * @param precoursediag the code to add.
 	 * @throws SQLException
-*/
+	 */
 	public void updateTestPreCourseDiagCode(DatabaseAccess.Transaction dat, PreCourseDiagCode pcdc)
 		throws SQLException
 	{
@@ -815,13 +843,21 @@ public abstract class OmQueries
 	 * @param minor new minorversion.
 	 * @throws SQLException
 	 */
-	public void updateSetQuestionVersion(DatabaseAccess.Transaction dat,int qi, int major,int minor)
+	public void updateSetQuestionVersion(DatabaseAccess.Transaction dat, int qi, int major,int minor)
 	  throws SQLException
 	{
 		dat.update(
 			"UPDATE " + getPrefix() + "questions " +
 			"SET majorversion="+major+", minorversion="+minor+" " +
 			"WHERE qi="+qi);
+	}
+
+	public void updateTestOverdueNotificationSent(DatabaseAccess.Transaction dat,
+			int ti) throws SQLException, UtilityException {
+		dat.update(
+			"UPDATE " + getPrefix() + "tests " +
+			"SET dateWarningEmailSent = " + currentDateFunction() + " " +
+			"WHERE ti = " + ti);
 	}
 
 	protected boolean tableExists(DatabaseAccess.Transaction dat,String table)

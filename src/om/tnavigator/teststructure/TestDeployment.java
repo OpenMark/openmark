@@ -68,7 +68,7 @@ public class TestDeployment
 	public final static int TYPE_NOTASSESSED = 1;
 	/** Test is assessed and students are in trouble if they don't submit */
 	public final static int TYPE_ASSESSED = 2;
-	
+
 	/* PCDC message   required */
 	public final static boolean PCDC_REQUIRED=true;
 	public final static boolean PCDC_NOT_REQUIRED=false;
@@ -76,7 +76,7 @@ public class TestDeployment
 	public final static boolean PCDC_DISPLAY=true;
 	public final static boolean PCDC_NODISPLAY=false;
 
-	private boolean bPcdc=PCDC_NOT_REQUIRED;	
+	private boolean bPcdc=PCDC_NOT_REQUIRED;
 	private boolean bDisplayPcdc=PCDC_DISPLAY;
 
 	/** True if the test should send out confirm emails */
@@ -84,9 +84,9 @@ public class TestDeployment
 
 	private static final int DEFAULT_NUMBER_OF_QUESTIONS = 1;
 
-	private static final int DEFAULT_FORBID_EXTENSION = 7;
+	private static final int DEFAULT_FORBID_EXTENSION_DAYS = 7;
 
-	private int iForbidExtensionValue = DEFAULT_FORBID_EXTENSION;
+	private int forbidExtensionDays = DEFAULT_FORBID_EXTENSION_DAYS;
 
 	private static String NUMBER_OF_QUESTIONS = "numberofquestions";
 
@@ -125,16 +125,20 @@ public class TestDeployment
 	public boolean getbPcdc() {
 		return bPcdc;
 	}
-	
-	
+
 	public boolean getbDisplayPcdc() {
 		return bDisplayPcdc;
-	}	
-	public int getiForbidExtensionValue() {
-		return iForbidExtensionValue;
 	}
 
-	public int getNumberOfQuestions() {
+	public int getForbidExtensionDays() {
+		return forbidExtensionDays;
+	}
+
+	/**
+	 * @return the student must have finished this many questions before they
+	 * get a notification about overdue quiz attempts.
+	 */
+	public int getNumberOfQuestionsForNotification() {
 		return numberOfQuestions;
 	}
 
@@ -302,9 +306,9 @@ public class TestDeployment
 					}
 					if (XML.hasChild(e, FORBID_EXTENSION)) {
 						Integer n = retrieveValue(e, FORBID_EXTENSION);
-						iForbidExtensionValue = null != n ? n : DEFAULT_FORBID_EXTENSION;
-					} else {
-						iForbidExtensionValue = DEFAULT_FORBID_EXTENSION;
+						if (null != n) {
+							forbidExtensionDays = n;
+						}
 					}
 					module = retrieveTextValue(e, MODULE);
 					icma = retrieveTextValue(e, ICMA);
@@ -336,7 +340,7 @@ public class TestDeployment
 	{
 		return iType;
 	}
-	
+
 	/** @return One of the TYPE_xx constants */
 	public boolean isAssessed()
 	{
@@ -503,7 +507,7 @@ public class TestDeployment
 	}
 
 	/** @return True if it's after/on the open date for the test (always returns
-	 *   true if the open date was set to 'yes') 
+	 *   true if the open date was set to 'yes')
 	 * @throws OmFormatException */
 	public boolean isAfterOpen() throws OmFormatException
 	{
@@ -513,7 +517,7 @@ public class TestDeployment
 	/**
 	 * @return True if it's after/on the close date for the test, i.e. results
 	 *   don't count any more (always returns false if there is no close date)
-	 * @throws OmFormatException 
+	 * @throws OmFormatException
 	 */
 	public boolean isAfterClose() throws OmFormatException
 	{
@@ -524,30 +528,30 @@ public class TestDeployment
 	 * @return True if it's after/on the forbid date for the test, i.e. students
 	 *   literally can't take the test any more
 	 *   (always returns false if there is no forbid date)
-	 * @throws OmFormatException 
+	 * @throws OmFormatException
 	 */
 	public boolean isAfterForbid() throws OmFormatException
 	{
 		return isAfterDate("forbid","23:59:59",false,null,-1);
 	}
-	
+
 	public boolean isDateAfterForbid(long when) throws OmFormatException
 	{
 		return isAfterDate("forbid","23:59:59",false,null,when);
 	}
 
-	
+
 	/**
 	 * After the forbid date there is a 4 hour extension during which you can
 	 * submit the test but can't do anything else.
 	 * @return True if it's after/on the forbid extension
 	 *   (always returns false if there is no forbid date)
-	 * @throws OmFormatException 
+	 * @throws OmFormatException
 	 */
 	public boolean isAfterForbidExtension() throws OmFormatException {
 		int reduceBy = 4;
 		if (isUsingEmailStudents()) {
-			int num = getiForbidExtensionValue();
+			int num = getForbidExtensionDays();
 			reduceBy = num > 0 ? num * 24 : reduceBy;
 		}
 		return isAfterDate("forbid","23:59:59",false,null,
@@ -557,7 +561,7 @@ public class TestDeployment
 	/**
 	 * @return True if feedback is permitted (always returns true if there is
 	 *   no feedback date)
-	 * @throws OmFormatException 
+	 * @throws OmFormatException
 	 */
 	public boolean isAfterFeedback() throws OmFormatException
 	{
@@ -669,24 +673,24 @@ public class TestDeployment
 			throw new OmUnexpectedException(e);
 		}
 	}
-	
+
 	/**
 	 * @param tagName Date tag
 	 * @return Java Date object. Returns null if tag doesn't exist.
-	 * @throws OmFormatException 
+	 * @throws OmFormatException
 	 */
 	public Date getActualDate(String tagName) throws OmFormatException {
 		if (!XML.hasChild(eDates, tagName)) {
 			return null;
 		}
-		return getActualDate(tagName, "00:00:00");		
+		return getActualDate(tagName, "00:00:00");
 	}
 
 	/**
 	 * @param tagName Date tag
 	 * @param sDefaultTime default time to use if none specified
 	 * @return Java Date object. Returns null if tag doesn't exist.
-	 * @throws OmFormatException 
+	 * @throws OmFormatException
 	 */
 	public Date getActualDateWithDefaultTime(String tagName,String sDefaultTime) throws OmFormatException {
 		if (!XML.hasChild(eDates, tagName)) {
@@ -694,7 +698,7 @@ public class TestDeployment
 		}
 		if (sDefaultTime != null)
 		{
-			return getActualDate(tagName,sDefaultTime );	
+			return getActualDate(tagName,sDefaultTime );
 		}
 		else
 		{
@@ -755,30 +759,34 @@ public class TestDeployment
 
 	/**
 	 * Used to display the date of the forbid extension for when a student is
-	 *  to be notified.
+	 * to be notified.
 	 * @return
 	 * @throws OmFormatException
 	 */
-	public String displayEmailStudentsForbidExtension()
+	public String displayForbidExtensionDate()
 		throws OmFormatException {
-		String display = null;
-		Date FinishDate = null;
-		if (isUsingEmailStudents()) {
-			Integer extensionValue = getiForbidExtensionValue();
-			if (null != extensionValue ? extensionValue > -1 : false) {
-				if (XML.hasChild(eDates, "forbid")) {
-					FinishDate = getActualDate("forbid", "00:00:00");
-				}
-				if (null != FinishDate) {
-					long time = FinishDate.getTime();
-					long extensionDate = time + (extensionValue * 24) *60*60*1000;
-					Date eDate = new Date(extensionDate);
-					SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
-					display = sdf.format(eDate);
-				}
-			}
+
+		int extensionValue = getForbidExtensionDays();
+		if (extensionValue <= 0)
+		{
+			return null;
 		}
-		return display;
+
+		if (!XML.hasChild(eDates, "forbid"))
+		{
+			return null;
+		}
+		Date finishDate = getActualDate("forbid", "00:00:00");
+
+		if (null == finishDate)
+		{
+			return null;
+		}
+
+		long extensionDate = finishDate.getTime() + extensionValue * 24 * 60 * 60 * 1000;
+		Date eDate = new Date(extensionDate);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
+		return sdf.format(eDate);
 	}
 
 	/**
@@ -840,7 +848,7 @@ public class TestDeployment
 			return "";
 		}
 	}
-	
+
 	/**
 	 * @return List of usernames who can access the test
 	 */
@@ -852,7 +860,7 @@ public class TestDeployment
 			for (Element eUser : eUsers) {
 				if ("oucu".equals(eUser.getTagName()) || "username".equals(eUser.getTagName())) {
 					usernames.add(XML.getText(eUser));
-				}				
+				}
 			}
 		} catch (XMLException e) {
 			// Can't happen as we just checked hasChild
@@ -860,7 +868,7 @@ public class TestDeployment
 		}
 		return usernames;
 	}
-	
+
 	/**
 	 * @return List of allowed user authids
 	 */
@@ -872,7 +880,7 @@ public class TestDeployment
 			for (Element eUser : eUsers) {
 				if ("authid".equals(eUser.getTagName())) {
 					userAuthids.add(XML.getText(eUser));
-				}				
+				}
 			}
 		} catch (XMLException e) {
 			// Can't happen as we just checked hasChild
@@ -880,7 +888,7 @@ public class TestDeployment
 		}
 		return userAuthids;
 	}
-	
+
 	/**
 	 * @return List of all admin usernames
 	 */
@@ -892,7 +900,7 @@ public class TestDeployment
 			for (Element eUser : eUsers) {
 				if ("oucu".equals(eUser.getTagName()) || "username".equals(eUser.getTagName())) {
 					adminUsernames.add(XML.getText(eUser));
-				}				
+				}
 			}
 		} catch (XMLException e) {
 			// Can't happen as we just checked hasChild
@@ -900,8 +908,8 @@ public class TestDeployment
 		}
 		return adminUsernames;
 	}
-	
-	/** 
+
+	/**
 	 * @return List of admin authids
 	 */
 	public List<String> getAdminAuthids() {
@@ -912,7 +920,7 @@ public class TestDeployment
 			for (Element eUser : eUsers) {
 				if ("authid".equals(eUser.getTagName())) {
 					adminAuthids.add(XML.getText(eUser));
-				}				
+				}
 			}
 		} catch (XMLException e) {
 			// Can't happen as we just checked hasChild

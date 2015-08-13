@@ -76,6 +76,7 @@ import om.tnavigator.auth.AuthenticationFactory;
 import om.tnavigator.auth.AuthenticationInstantiationException;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
+import om.tnavigator.overduenotifier.OverdueTestNotifier;
 import om.tnavigator.reports.ReportDispatcher;
 import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 import om.tnavigator.scores.CombinedScore;
@@ -198,6 +199,8 @@ public class NavigatorServlet extends HttpServlet {
 	 * Manages the user/test sessions.
 	 */
 	private SessionManager sessionManager;
+
+	private OverdueTestNotifier overdueNotifier;
 
 	/**
 	 * Cache of question metadata: String (ID\nversion) -> Document.
@@ -356,6 +359,11 @@ public class NavigatorServlet extends HttpServlet {
 		// Start expiry thread
 		sessionManager = new SessionManager(nc, l);
 		setUpPreProcessingRequestHandler();
+
+		if (nc.shouldRunOverdueTestNotifier()) {
+			overdueNotifier = new OverdueTestNotifier(nc, l, da, oq,
+					authentication, templateLoader);
+		}
 	}
 
 	/**
@@ -418,6 +426,10 @@ public class NavigatorServlet extends HttpServlet {
 
 	@Override
 	public void destroy() {
+		if (overdueNotifier != null) {
+			overdueNotifier.close();
+		}
+
 		// Close the session handler.
 		sessionManager.close();
 		// Close SAMS and kill their threads

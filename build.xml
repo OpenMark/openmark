@@ -208,7 +208,6 @@
 		<mkdir dir="${build}/webapps/om-qe"/>
 		<mkdir dir="${build}/webapps/om-qe/WEB-INF"/>
 		<mkdir dir="${build}/webapps/om-qe/WEB-INF/lib"/>
-		<mkdir dir="${build}/webapps/om-qe/questioncache"/>
 
 		<copy todir="${build}/webapps/om-qe/WEB-INF">
 			<fileset dir="webinf-qengine">

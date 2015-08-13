@@ -49,6 +49,9 @@ public class NavigatorConfig
 	/** URLs of other test navigators */
 	private String[] otherNavigators;
 
+	/** The URL people acutally use to access OpenMark. */
+	private String publicUrl;
+
 	/** Class of database plugin */
 	private String dbClass;
 
@@ -81,6 +84,12 @@ public class NavigatorConfig
 	 */
 	private String maintenanceModeFile;
 
+	/**
+	 * Location of the not notifier file on disc.
+	 * If this file exists, the overdue test notifer will not run.
+	 */
+	private String stopNotifierFile;
+
 	/** Location of the testbank on disc. */
 	private String testbankPath;
 
@@ -92,6 +101,8 @@ public class NavigatorConfig
 
 	/** Template location. */
 	private String templateLocation = "WEB-INF/templates";
+
+	private boolean shouldRunOverdueTestNotifier;
 
 	/** Parameters for auth */
 	private Map<String,String> authParams=null;
@@ -210,6 +221,7 @@ public class NavigatorConfig
 		dbClass = getParam(sc, "database-class");
 		dbPrefix = getParam(sc, "database-prefix");
 
+		publicUrl = getParam(sc, "public-url");
 		thisTN = new URL(getParam(sc, "server-url"));
 		otherNavigators = Strings.splitSensibly(getParam(sc, "server-other-urls"));
 		for (int i = 0; i < otherNavigators.length; i++)
@@ -246,6 +258,7 @@ public class NavigatorConfig
 				"Invalid secure-ips in the servlet configuration.");
 
 		maintenanceModeFile = getParam(sc, "maintenance-mode-file");
+		stopNotifierFile = getParam(sc, "stop-notifier-file");
 		testbankPath = getParam(sc, "testbank-folder");
 		questionbankPath = getParam(sc, "questionbank-folder");
 		logsPath = getParam(sc, "logs-folder");
@@ -256,6 +269,8 @@ public class NavigatorConfig
 		alertMailFrom = getParam(sc, "alert-email-from");
 		alertMailTo = Strings.splitSensibly(getParam(sc, "alert-email-to"));
 		alertMailCC = Strings.splitSensibly(getParam(sc, "alert-email-cc"));
+
+		shouldRunOverdueTestNotifier = "yes".equals(getParam(sc, "run-overdue-notifier"));
 
 		standardAdmins = Arrays.asList(Strings.splitSensibly(getParam(sc, "standard-admins")));
 
@@ -389,6 +404,15 @@ public class NavigatorConfig
 		return 	maintenanceModeFile;
 	}
 
+	/**
+	 * @return the location of the not notifier file on disc.
+	 * If this file exists, the overdue test notifer will not run.
+	 */
+	public String getStopNotifierFilePath()
+	{
+		return 	stopNotifierFile;
+	}
+
 	/** @return the questionbankPath */
 	public String getTestbankPath()
 	{
@@ -411,5 +435,15 @@ public class NavigatorConfig
 	public String getTemplateLocation()
 	{
 		return templateLocation;
+	}
+
+	public boolean shouldRunOverdueTestNotifier()
+	{
+		return shouldRunOverdueTestNotifier;
+	}
+
+	public String getPublicUrl()
+	{
+		return publicUrl;
 	}
 }
