@@ -297,5 +297,13 @@ public class DatabaseAccess
 	 */
 	private synchronized void releaseConnection(ConnectionInfo ci,boolean bDiscard)
 	{
+		try
+		{
+			ci.c.close();
+		}
+		catch(SQLException e)
+		{
+			l.logError("DatabaseAccess", "Failed to close a database connection.", e);
+		}
 	}
 }
