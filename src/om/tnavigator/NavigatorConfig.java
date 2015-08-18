@@ -226,7 +226,8 @@ public class NavigatorConfig
 		otherNavigators = Strings.splitSensibly(getParam(sc, "server-other-urls"));
 		for (int i = 0; i < otherNavigators.length; i++)
 		{
-			trustedTNs.add(InetAddress.getByName((new URL(otherNavigators[i])).getHost()));
+			URL url = new URL(otherNavigators[i]);
+			trustedTNs.add(InetAddress.getByName(url.getHost()));
 		}
 
 		String[] qeUrls = getParam(sc, "question-engine-service-urls").split("[, ]+");
