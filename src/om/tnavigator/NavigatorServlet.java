@@ -617,9 +617,8 @@ public class NavigatorServlet extends HttpServlet {
 			// Vitally important, otherwise any input with unicode gets screwed
 			// up
 			request.setCharacterEncoding("UTF-8");
-			//putip address in the log
-			String localIPAddr=IPAddressCheckUtil.getIPAddress(request);
-			l.setIPAddress(localIPAddr);
+			// Tell the log the IP address we are handling a request for.
+			l.setIpAddressForThisThread(IPAddressCheckUtil.getIPAddress(request));
 			// Check path
 			sPath = request.getPathInfo();
 			if (sPath == null)
@@ -1123,6 +1122,8 @@ public class NavigatorServlet extends HttpServlet {
 					+ sPath
 					+ (request.getQueryString() == null ? "" : "?"
 							+ request.getQueryString()));
+
+			l.removeIpAddressForThisThread();
 		}
 	}
 

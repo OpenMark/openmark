@@ -282,16 +282,12 @@ public class IPAddressCheckUtil {
 	 */
 	public static String getIPAddress(HttpServletRequest request)
 	{
-		// students.open.ac.uk actually provides the one with the underline,
-		// but I think the more standard header would be as below.
-		String clientIp = request.getHeader("client_ip");
-		if (clientIp == null) {
-			clientIp = request.getHeader("Client-IP");
-		}
-		if (clientIp == null) {
-			clientIp = request.getHeader("X_FORWARDED_FOR");
-		}
-		if (clientIp == null) {
+		// This first one seems to be the one that is actually used.
+		// The others are ones that were used at various times in the past.
+		// Seems safer not to delete them. (getHeader is case insensitive.)
+		String clientIp = request.getHeader("X-Forwarded-For");
+		if (clientIp == null)
+		{
 			clientIp = request.getRemoteAddr();
 		}
 		return clientIp;

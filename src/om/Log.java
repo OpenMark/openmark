@@ -65,8 +65,11 @@ public class Log
 	/** List of recent errors/warnings */
 	private LinkedList<String> llRecentProblems=new LinkedList<String>();
 	
-	/** ip address **/
-	private String sIPAddress="";
+	/**
+	 * Logging IP address was a late addition, so the only feasible way to
+	 * handle it without API changes was a thread-local.
+	 */
+	private ThreadLocal<String> ipAddressForThread = new ThreadLocal<String>();
 
 	/** Message for debugging purposes */
 	private final static String SEVERITY_DEBUG = "debug";
@@ -207,7 +210,7 @@ public class Log
 	 * @param tException Exception to be logged (null if none)
 	 */
 	private synchronized void log(String sSeverity,
-		String sCategory,String sMessage,Throwable tException)
+		String sCategory, String sMessage, Throwable tException)
 	{
 		if(bClosed) return;
 
@@ -215,13 +218,12 @@ public class Log
 		  return;
 
 		String messageTag="";
-		/* if we are logging with tage, then the tag is passed in the sCatagory fields */
+		// If we are logging with tag, then the tag is passed in the sCatagory fields.
 		if(sSeverity.equals(SEVERITY_WITHTAG))
 		{
 			messageTag=sCategory;
 		}
-		
-				
+
 		// Obtain current date
 		Date dNow=new Date();
 		String sDate=DATEFORMAT.format(dNow);
@@ -271,41 +273,38 @@ public class Log
 			sCurrentDate=sDate;
 		}
 
+		String ipAddressBit = "";
+		String ipAddress = ipAddressForThread.get();
+		if (null != ipAddress)
+		{
+			ipAddressBit = " address='" + ipAddress + "'";
+		}
+
 		// Make up log entry text
 		StringBuffer sbEntry=new StringBuffer();
 		if(sSeverity.equals(SEVERITY_WITHTAG) && !(messageTag.isEmpty()))
 		{
-			sbEntry.append("<entry='"+messageTag); 
-			if (!this.sIPAddress.isEmpty())
-			{
-				sbEntry.append(" address='"+this.sIPAddress+"'");
-			}
-			sbEntry.append(">");
-			if(sMessage!=null) sbEntry.append(sMessage);
+			sbEntry.append("<entry='").append(messageTag).append(ipAddressBit).append(">");
+			if (sMessage!=null) sbEntry.append(sMessage);
 		}
 		else
 		{
-			sbEntry.append(
-				"<entry time='"+TIMEFORMAT.format(dNow)+"' " +
-				"severity='"+XML.escape(sSeverity)+"'");
-			if(sCategory!=null)
-				sbEntry.append(" category='"+XML.escape(sCategory)+"'");
-
-			if (!this.sIPAddress.isEmpty())
+			sbEntry.append("<entry time='" + TIMEFORMAT.format(dNow) +
+					"' severity='" + XML.escape(sSeverity) + "'");
+			if(sCategory != null)
 			{
-				sbEntry.append(" address='"+this.sIPAddress+"'");
+				sbEntry.append(" category = '"+XML.escape(sCategory)+"'");
 			}
-			sbEntry.append(">");
+			sbEntry.append(ipAddressBit).append(">");
 
-		
-			if(sMessage!=null) sbEntry.append(XML.escape(sMessage));
-			
-			if(tException!=null)
+			if (sMessage!=null) sbEntry.append(XML.escape(sMessage));
+
+			if (tException!=null)
 			{
 				sbEntry.append("<exception>");
-	
+
 				sbEntry.append(XML.escape(getOmExceptionString(tException))+"\n");
-	
+
 				sbEntry.append("</exception>");
 			}
 		}
@@ -702,14 +701,32 @@ public class Log
 		}
 		return sb.toString();
 	}
-	
-	public void setIPAddress(String ipaddr)
+
+	/**
+	 * Set the IP address to use in log entries for future log calls from this thread.
+	 *
+	 * In order to add IP logging in the most seamless way possible, we had to
+	 * add this as a separate call, separate from the log calls.
+	 *
+	 * To avoid memory leaks, call removeIpAddressForThisThread when processing is
+	 * finished in a particular thread.
+	 *
+	 * @param ipAddress the IP address to use for log calls from the thread until further notice.
+	 */
+	public void setIpAddressForThisThread(String ipAddress)
 	{
-		this.sIPAddress=ipaddr;
+		ipAddressForThread.set(ipAddress);
 	}
-	
-	public String getsIPAddress()
+
+	/**
+	 * Clear the IP address for future log calls from this thread.
+	 *
+	 * As well as accuracy, it is also important to remember to call this method
+	 * after processing because otherwise there will be a small memory leak
+	 * whenever Tomcat kills a thread.
+	 */
+	public void removeIpAddressForThisThread()
 	{
-		return this.sIPAddress;
+		ipAddressForThread.remove();
 	}
 }
