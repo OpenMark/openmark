@@ -17,10 +17,14 @@
  */
 package om.tnavigator.db;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -322,5 +326,69 @@ public class DatabaseAccess
 			}
 			ci.c = null;
 		}
+	}
+
+	/**
+	 * Return information for the status page about how the database connection is working.
+	 *
+	 * All keys in the Map returned should start DB.
+	 *
+	 * @return various statistics about the performance of database connections.
+	 */
+	public Map<String, String> getConnectionStats()
+	{
+		Map<String, String> stats = new HashMap<String, String>();
+		Method method;
+
+		try
+		{
+			try
+			{
+				method = dataSource.getClass().getMethod("getActive");
+				stats.put("DBACTIVE", "" + method.invoke(dataSource));
+			}
+			catch (NoSuchMethodException e)
+			{
+				// Ignore.
+			}
+
+			try
+			{
+				method = dataSource.getClass().getMethod("getIdle");
+				stats.put("DBIDLE", "" + method.invoke(dataSource));
+			}
+			catch (NoSuchMethodException e)
+			{
+				// Ignore.
+			}
+
+			try
+			{
+				method = dataSource.getClass().getMethod("getPoolSize");
+				stats.put("DBTOTAL", "" + method.invoke(dataSource));
+			}
+			catch (NoSuchMethodException e)
+			{
+				// Ignore.
+			}
+		}
+		catch (SecurityException e)
+		{
+			// Ignore.
+		}
+		catch(IllegalAccessException e)
+		{
+			// Ignore.
+		}
+		catch(IllegalArgumentException e)
+		{
+			// Ignore.
+		}
+		catch(InvocationTargetException e)
+		{
+			// Ignore.
+		}
+
+		return stats;
 	}
 }

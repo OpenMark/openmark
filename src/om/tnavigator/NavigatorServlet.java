@@ -3696,6 +3696,8 @@ public class NavigatorServlet extends HttpServlet {
 				+ uThis.getPath());
 
 		m.put("_qeperformance", osb.getPerformanceInfo());
+
+		m.putAll(da.getConnectionStats());
 	}
 
 	/**
