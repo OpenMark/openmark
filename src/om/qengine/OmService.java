@@ -79,9 +79,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 	/** Single instance (needed only for check method) */
 	private static OmService osSingleton=null;
 
-	/** Used so random code can find the current question engine using a static method. */
-    private static ThreadLocal<OmService> servletForThread = new ThreadLocal<OmService>();
-
     /** Used to store information read from the configuration file, and also things added
      * later by setConfiguration. */
     private Map<String, Object> configuration = new HashMap<String, Object>();
@@ -135,12 +132,11 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 	 * @throws OmException Whenever something goes wrong
 	 */
 	public StartReturn start(
-		String questionID,String questionVersion,String questionBaseURL,
-		String[] initialParamNames,String[] initialParamValues,
-		String[] cachedResources)
-	  throws OmException
+			String questionID,String questionVersion,String questionBaseURL,
+			String[] initialParamNames,String[] initialParamValues,
+			String[] cachedResources)
+					throws OmException
 	{
-		setServletForThread();
 		if(initialParamNames==null) initialParamNames=new String[0];
 		if(initialParamValues==null) initialParamValues=new String[0];
 		if(cachedResources==null) cachedResources=new String[0];
@@ -241,10 +237,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 		{
 			throw handleException("start",t);
 		}
-		finally
-		{
-			unsetServletForThread();
-		}
 	}
 
 	/**
@@ -279,7 +271,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 		String questionID,String questionVersion,String questionBaseURL)
 		throws OmException
 	{
-		setServletForThread();
 		try
 		{
 			// Initial part
@@ -314,10 +305,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 		catch(Throwable t)
 		{
 			throw handleException("getQuestionMetadata",t);
-		}
-		finally
-		{
-			unsetServletForThread();
 		}
 	}
 
@@ -390,7 +377,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 	public ProcessReturn process(String questionSession,String[] names,String[] values)
     		throws OmException
 	{
-		setServletForThread();
 		if(names==null) names=new String[0];
 		if(values==null) values=new String[0];
 
@@ -440,10 +426,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 		catch(Throwable t)
 		{
 			throw handleException("process",t);
-		}
-		finally
-		{
-			unsetServletForThread();
 		}
 	}
 
@@ -522,7 +504,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 	 */
 	public void stop(String questionSession) throws OmException
 	{
-		setServletForThread();
 		try
 		{
 			synchronized(this)
@@ -537,10 +518,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 		catch(Throwable t)
 		{
 			throw handleException("stop",t);
-		}
-		finally
-		{
-			unsetServletForThread();
 		}
 	}
 
@@ -650,24 +627,6 @@ public class OmService implements ServiceLifecycle, QEngineConfig
 			"<usedmemory>"+sMemoryUsed+"</usedmemory>\n"+
 			"<activesessions>"+mQuestionSessions.size()+"</activesessions>\n"+
 			"</engineinfo>";
-	}
-
-	/**
-	 * This method must be called in a thread before getServletForThread will work.
-	 */
-	private void setServletForThread() {
-		servletForThread.set(this);
-	}
-
-	/**
-	 * @return the instace of this class that is currently handling the current thread.
-	 */
-	public static OmService getServletForThread() {
-		return servletForThread.get();
-	}
-
-	private void unsetServletForThread() {
-		servletForThread.set(null);
 	}
 
 	/**
