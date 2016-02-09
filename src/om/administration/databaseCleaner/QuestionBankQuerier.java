@@ -46,20 +46,17 @@ import util.xml.XML;
  * what has to happen and a reluctance on heavy IO otherwise. <br />
  * <br />
  * Note that this is implemented with a single thread approach.
- * 
- * @author Trevor Hinson
  */
-
-public class QuestionBankQueryer implements QueryQuestionBanks {
+public class QuestionBankQuerier implements QueryQuestionBanks {
 
 	private static String DIRECTORY_DATE_FORMAT = "yyyyMMdd";
-	
+
 	private static String DIRECTORY_TIME_FORMAT = "HHmm";
-	
+
 	private static String FILENAME_SEPARATOR = "_";
 
 	private static String TEST = "test";
-	
+
 	private static String DEPLOY = "deploy";
 
 	private static String ASSESSED = "assessed";
@@ -75,7 +72,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	private static String COMMA = ",";
 
 	private static String DOT_TEST_DOT_XML = ".test.xml";
-	
+
 	private static String DOT_DEPLOY_DOT_XML = ".deploy.xml";
 
 
@@ -84,7 +81,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	private FileFilter deployFileFilter = new StandardFileFilter(DOT_DEPLOY_DOT_XML);
 
 	private FileFilter questionFilter = new StandardFileFilter(VersionUtil.DOT_JAR);
-	
+
 	private String archiveFilename = renderDate()+ FILENAME_SEPARATOR + renderTime();
 
 	private static Set<String> splitOn = new HashSet<String>();
@@ -110,7 +107,6 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	public FileFilter getFileFilter() {
 		return fileFilter;
 	}
-	
 
 	public FileFilter getDeployFileFilter() {
 		return deployFileFilter;
@@ -137,13 +133,13 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 					if (null != tests ? tests.size() > 0 : false) {
 				//		TestQuestionsReferencedPool pool
 					//		= new TestQuestionsReferencedPool();
-						
+
 						/* iterate over the testsand get the data from the database */
 						for (TestBankData testCheck : tests
-								.values()) 
+								.values())
 						{
 							String tName=testCheck.getName();
-							
+
 					//		addTestReferencedQuestions(testCheck, pool);
 					//		if (!identifySyncStatus(testCheck, banks)) {
 					//			cr.addOutOfSyncTest(testCheck);
@@ -162,31 +158,30 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	}
 
 	/**
-	 * get al the tests and the assoicated questions
+	 * get al the tests and the associated questions
 	 * check if they are assessed or not
-	 * 
+	 *
 	 * @param testCheck
 	 * @param questionPool
 	 * @param cr
 	 * @param banks
-	 * @author sarah wood
 	 */
 	protected void determineTests( TestBankData testCheck,QBTBQueryResponse cr, Banks banks) {
-		
-		if ( null != cr && null != banks) 
-		{			
+
+		if ( null != cr && null != banks)
+		{
 			//Map<String, TestQuestionReferences> tqr
 			//	= new HashMap<String, TestQuestionReferences>();
 			/* look at each test and get its details */
 
-			if (null != testCheck && null != testCheck.getTestDetails()) 
+			if (null != testCheck && null != testCheck.getTestDetails())
 			{
 				for (String location : testCheck.getTestDetails().keySet()) {
 					TestDetails td = testCheck.getTestDetails().get(location);
 					if (null != td ? null != td.getTestDefinition() : false) {
 						TestQuestionsReferenced tqr = td
 								.getQuestionsReferenced();
-						if (null != tqr) 
+						if (null != tqr)
 						{
 							for (String questionName : tqr
 									.getNamesOfQuestions()) {
@@ -197,7 +192,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 					}
 				}
 			}
-			
+
 		//	if (tqr.size() > 0) {
 		//		Set<TestQuestionReferences> testRef
 		//			= new HashSet<TestQuestionReferences>();
@@ -210,19 +205,18 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	/**
 	 *  tries to create a TestQuestionReference and place
 	 *  it within the tqr Collection.
-	 * 
+	 *
 	 * @param questionName
 	 * @param td
 	 * @param questionPool
 	 * @param banks
 	 * @param testCheck
 	 * @param tqr
-	 * @author Trevor Hinson
 	 */
 	protected void maintainTest(String questionName, TestDetails td,
 		AllQuestionsPool questionPool, Banks banks,
 		TestBankData testCheck,
-		
+
 		Map<String, TestQuestionReferences> tqr) {
 		/* if there is a question name */
 		if (Strings.isNotEmpty(questionName)) {
@@ -238,7 +232,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 					Set<String> set = verNum.get(latestVersion);
 					if (null != set) {
 						if (set.size() != banks.numberOfQuestionBanks) {
-							
+
 							TestQuestionReferences ref = tqr
 									.get(questionName);
 							if (null == ref) {
@@ -260,31 +254,22 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	/**
 	 * Simplified means of keeping reference to the number of Question and Test
 	 * banks that are to be analysed.
-	 * 
-	 * @author Trevor Hinson
 	 */
 	protected class Banks {
-
 		int numberOfQuestionBanks = 0;
-
 		int numberOfTestBanks = 0;
-
 	}
-
 
 	/**
 	 * Looks through all of the questions to identify if each question is
 	 * references by a test. If not at all then we take that to mean the
-	 * question is superflous to the system now (probably an old version).
+	 * question is superfluous to the system now (probably an old version).
 	 * Therefore it is subject to being discarded.
-	 * 
+	 *
 	 * @param pool
-	 * @param allQuestionsFound
-	 *            All questions found within the questionbanks.
+	 * @param allQuestionsFound All questions found within the question banks.
 	 * @param cr
 	 * @param ra
-	 * @exception
-	 * @author Trevor Hinson
 	 */
 	protected void identifySuperflousQuestions(TestQuestionsReferencedPool trq,
 		AllQuestionsPool qp, QBTBQueryResponse cr, RequestAssociates ra)
@@ -309,12 +294,10 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	 * which are within the QuestionPoolDetails that are NOT the latest version
 	 * of the Question itself and then classifies them as superflous and
 	 * therefore a candidate for removal.
-	 * 
+	 *
 	 * @param qp
 	 * @param referencedQuestionName
 	 * @param cr
-	 * @exception
-	 * @author Trevor Hinson
 	 */
 	protected void identifySuperflousQuestionsFromTest(AllQuestionsPool qp,
 		String testReferencedQuestionName, QBTBQueryResponse cr,
@@ -354,10 +337,9 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	/**
 	 * Picks up the DatabaseAccess object from the RequestAssociates argument
 	 *  and returns this.
-	 * 
+	 *
 	 * @param ra
 	 * @return
-	 * @author Trevor Hinson
 	 */
 	protected DatabaseAccess getDatabaseAccess(RequestAssociates ra) {
 		DatabaseAccess da = null;
@@ -377,15 +359,13 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	 * a version open then the method returns true and the question itself is
 	 * therefore still required for that student and therefore can not be
 	 * classified as superfluous as a result.
-	 * 
+	 *
 	 * Defaults to true in order to be safe as those that are set to open will
 	 * not appear within the superfluous listing.
-	 * 
+	 *
 	 * @param fullName
 	 * @param da
 	 * @return
-	 * @exception
-	 * @author Trevor Hinson
 	 */
 	protected boolean isOpenForAnyStudent(String query, DatabaseAccess da)
 		throws CleaningException {
@@ -419,12 +399,11 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	 * After the identification of the non referenced questions then the rest of
 	 * the questions within the AllQuestionsPool become superfluous by
 	 * definition.
-	 * 
+	 *
 	 * @param qp
 	 * @param cr
 	 * @param ra
 	 * @exception
-	 * @author Trevor Hinson
 	 */
 	protected void applyRemainingNonReferencedQuestions(AllQuestionsPool qp,
 			QBTBQueryResponse cr, RequestAssociates ra)
@@ -454,12 +433,11 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	/**
 	 * Based on the configured query this is substituted with the
 	 * questionFullName argument and returned.
-	 * 
+	 *
 	 * @param ra
 	 * @param questionFullName
-	 * @exception 
+	 * @exception
 	 * @return
-	 * @author Trevor Hinson
 	 */
 	protected String generateQuery(RequestAssociates ra, String questionFullName)
 		throws CleaningException {
@@ -470,9 +448,9 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 				if (Strings.isNotEmpty(q)) {
 					QuestionName qn = VersionUtil.represented(questionFullName);
 					if (null != qn ? qn.isValid() : false) {
-						Object[] args = {"'" + qn.getPrefix() + "'",
-							qn.getQuestionVersion().iMajor,
-							qn.getQuestionVersion().iMinor};
+						Object[] args = {"'" + qn.getQuestionId() + "'",
+							qn.getQuestionVersion().getMajor(),
+							qn.getQuestionVersion().getMinor()};
 						query = MessageFormat.format(q, args);
 					}
 				}
@@ -483,16 +461,13 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 		return query;
 	}
 
-
-
 	/**
 	 * Identifies all the composite questions within the test xml and returns
 	 * their names for checking against.
-	 * 
+	 *
 	 * @param f
 	 * @return
 	 * @throws IOException
-	 * @author Trevor Hinson
 	 */
 	protected List<String> retrieveCompositeQuestions(File f)
 		throws IOException {
@@ -519,24 +494,23 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 		}
 		return composedQuestions;
 	}
-	
-	/* identifies if a test is assed rom the XML file 
-	 * first find the deploy file that corresponds, error if we cant find it
+
+	/**
+	 * Identifies if a test is assessed from the XML file
+	 * first find the deploy file that corresponds, error if we can't find it
 	 * @param f
 	 * @return
 	 * @throws IOException
-	 * @author Sarah Wood
 	 */
-	
-	protected boolean retrieveIsAssessed(String fname,File[] deployFiles) 
+	protected boolean retrieveIsAssessed(String fname,File[] deployFiles)
 	throws IOException
 	{
 		boolean isAssessed=false;
-		
+
 		boolean foundit=false;
 		String testName = fname.split(DOT_TEST_DOT_XML)[0];
 
-		for (int i = 0; i < deployFiles.length && !foundit; i++) 
+		for (int i = 0; i < deployFiles.length && !foundit; i++)
 		{
 			File f = deployFiles[i];
 			String thisFileName=f.getName();
@@ -544,7 +518,7 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 			String deployName = thisFileName.split(DOT_DEPLOY_DOT_XML)[0];
 			if (deployName.equals(testName))
 			{
-				foundit=true;		
+				foundit=true;
 				if (null != f ? f.canRead() : false) {
 					Document dDeploy = XML.parse(f);
 					if (null != dDeploy) {
@@ -568,10 +542,9 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	/**
 	 * Either a QUESTION or a SECTION (which contains QUESTIONS) are examined
 	 * and then the ID is extracted to the composedQuestions collection.
-	 * 
+	 *
 	 * @param e
 	 * @param composedQuestions
-	 * @author Trevor Hinson
 	 */
 	protected void handleQuestionsAndSections(Element e,
 		List<String> composedQuestions) {
@@ -592,10 +565,9 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	/**
 	 * Tries to extract the value of the ID attribute from the Element argument
 	 * and places it within the composedQuestions collection.
-	 * 
+	 *
 	 * @param e
 	 * @param composedQuestions
-	 * @author Trevor Hinson
 	 */
 	protected void retrieveElementID(Element e, List<String> composedQuestions) {
 		if (null != e && null != composedQuestions) {
@@ -609,11 +581,10 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	/**
 	 * Identifies all the questions from within the configured questionbanks so
 	 * that they can be analysed against the tests.
-	 * 
+	 *
 	 * @param qbl
 	 * @return
 	 * @throws CleaningException
-	 * @author Trevor Hinson
 	 */
 	protected AllQuestionsPool identifyAllQuestions(List<String> questionBanks)
 		throws CleaningException {
@@ -654,19 +625,17 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 	 * On finding a test we create a new TestBankData. If a test by
 	 * the same name exists within the Map that is being built then we
 	 * essentially tick the location setting for that TestBankData
-	 * 
+	 *
 	 * @param locations
 	 * @param cr
 	 * @return
-	 * @author Trevor Hinson
 	 */
 	protected Map<String, TestBankData> identifyAllTests(
 		List<String> locations, QBTBQueryResponse cr) throws IOException {
-		
+
 		Map<String, TestBankData> found
 			= new HashMap<String, TestBankData>();
-		
-		
+
 		if (null != cr && (null != locations ? locations.size() > 0 : false)) {
 			/* for all the test banks */
 			for (String testLocation : locations) {
@@ -678,13 +647,13 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 						File[] deployFiles = dir.listFiles(getDeployFileFilter());
 
 						/* for each test file */
-						for (int i = 0; i < testFiles.length; i++) 
+						for (int i = 0; i < testFiles.length; i++)
 						{
 							File test = testFiles[i];
 							if (null != test ? test.canRead() : false) {
 								TestBankData checker = found
 									.get(test.getName());
-								try {	
+								try {
 									/* get a list of the questions from the XML file */
 									/* if we alread foundnd and processed it? NULL if we havent */
 									if (null != checker) {
@@ -697,9 +666,9 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 										checker = new TestBankData(locations);
 										/* read the file name */
 										checker.setName(test.getName());
-										
+
 										checker.foundAt(testLocation, test,
-											new TestQuestionsReferenced(questions));	
+											new TestQuestionsReferenced(questions));
 										/* set the assessed tag for the test */
 										TestDetails thisTest=checker.getThisTestDetails(test.getName());
 										boolean ia=retrieveIsAssessed(test.getName(),deployFiles);
@@ -720,19 +689,13 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 		return found;
 	}
 
-
-
-
-
-
 	/**
 	 * Places the questions that have been selected by the user into an
 	 *  appropriate archive for so that they may be retrieved in the future if
 	 *  need be.
-	 * 
+	 *
 	 * @param questions
 	 * @param cr
-	 * @author Trevor Hinson
 	 */
 	protected void archiveSelectedQuestions(List<String> questions,
 		IdentifiedSuperfluousQuestion isq, QBTBQueryResponse cr,
@@ -758,16 +721,12 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 				}
 			}
 		}
-
 	}
-
-
 
 	/**
 	 * Simply renders todays date to a String in the DIRECTORY_DATE_FORMAT
-	 * 
+	 *
 	 * @return
-	 * @author Trevor Hinson
 	 */
 	protected String renderDate() {
 		return new SimpleDateFormat(DIRECTORY_DATE_FORMAT).format(new Date());
@@ -775,20 +734,19 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 
 	/**
 	 * Simply renders todays time to a String in the DIRECTORY_DATE_FORMAT
-	 * 
+	 *
 	 * @return
-	 * @author sarah wood
 	 */
 	protected String renderTime() {
 		return new SimpleDateFormat(DIRECTORY_TIME_FORMAT).format(new Date());
 	}
+
 	/**
 	 * Retrieves the actual selected question details from that provided in the
 	 * request from the user.
-	 * 
+	 *
 	 * @param responseParameterValue
 	 * @return
-	 * @author Trevor Hinson
 	 */
 	public static List<String> getQuestions(String requestParameterValue) {
 		List<String> names = new ArrayList<String>();
@@ -813,11 +771,10 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 
 	/**
 	 * Determines a valid splitting suffix from within the String argument and
-	 *  then returns it.
-	 * 
+	 * then returns it.
+	 *
 	 * @param s
 	 * @return
-	 * @author Trevor Hinson
 	 */
 	protected static String splitter(String s) {
 		String splitter = null;
@@ -831,22 +788,20 @@ public class QuestionBankQueryer implements QueryQuestionBanks {
 		}
 		return splitter;
 	}
-	
-
 
 	protected QBTBQueryResponse handleCleanOrUndo(QBTBQueryResponse cr,
-		ClearanceEnums ce, Map<String, String> params) throws CleaningException {
+			ClearanceEnums ce, Map<String, String> params) throws CleaningException {
 		return cr;
 	}
-	@Override 
+
+	@Override
 	public QBTBQueryResponse undo(QBTBQueryResponse cr,
-		Map<String, String> params) throws CleaningException {
+			Map<String, String> params) throws CleaningException {
 		return handleCleanOrUndo(cr, ClearanceEnums.undo, params);
 	}
-	
+
 	public QBTBQueryResponse clean(QBTBQueryResponse cr,
 			Map<String, String> params) throws CleaningException {
-			return handleCleanOrUndo(cr, ClearanceEnums.undo, params);
-		}
-
+		return handleCleanOrUndo(cr, ClearanceEnums.undo, params);
+	}
 }

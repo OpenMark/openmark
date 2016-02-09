@@ -44,7 +44,7 @@ public class AbstractNavigatorTestCase extends AbstractTestCase {
 
 		@Override
 		public Score[] getMaximumScores(RequestTimings rt, String sID,
-			String sVersion) throws IOException, RemoteException {
+				String sVersion) throws IOException, RemoteException {
 			List<Score> scores = new ArrayList<Score>();
 			for (int i = 1; i < 6; i++) {
 				scores.add(new Score("axis-" + i, i * 10));

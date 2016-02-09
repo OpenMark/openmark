@@ -227,13 +227,12 @@ public class TestRealisation {
 				Map<String, Double> scores = questionScores.get(sQuestion);
 				if (scores == null)
 				{
-					QuestionVersion qv = new QuestionVersion();
+					QuestionVersion qv;
 					if (bGotVersion)
 					{
 						// If they actually took the question, we use the version they took
 						// (this version info is used for getting max score)
-						qv.iMajor = iMajor;
-						qv.iMinor = iMinor;
+						qv = new QuestionVersion(iMajor, iMinor);
 					}
 					else
 					{

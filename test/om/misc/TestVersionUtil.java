@@ -28,21 +28,21 @@ public class TestVersionUtil extends TestCase {
 	@Test public void testRepresentedWithName() {
 		QuestionName qn = VersionUtil.represented("sdk125b6.question02f.1.2.jar");
 		assertNotNull(qn);
-		assertTrue(Strings.isNotEmpty(qn.getPrefix()));
-		assertEquals(qn.getPrefix(), "sdk125b6.question02f");
+		assertTrue(Strings.isNotEmpty(qn.getQuestionId()));
+		assertEquals(qn.getQuestionId(), "sdk125b6.question02f");
 		assertNotNull(qn.getQuestionVersion());
-		assertEquals(qn.getQuestionVersion().iMajor, 1);
-		assertEquals(qn.getQuestionVersion().iMinor, 2);
+		assertEquals(qn.getQuestionVersion().getMajor(), 1);
+		assertEquals(qn.getQuestionVersion().getMinor(), 2);
 	}
 
 	@Test public void testRepresentedWithValidName() {
 		QuestionName qn = VersionUtil.represented("sdk125b6.question02f.112.22.jar");
 		assertNotNull(qn);
-		assertTrue(Strings.isNotEmpty(qn.getPrefix()));
-		assertEquals(qn.getPrefix(), "sdk125b6.question02f");
+		assertTrue(Strings.isNotEmpty(qn.getQuestionId()));
+		assertEquals(qn.getQuestionId(), "sdk125b6.question02f");
 		assertNotNull(qn.getQuestionVersion());
-		assertEquals(qn.getQuestionVersion().iMajor, 112);
-		assertEquals(qn.getQuestionVersion().iMinor, 22);
+		assertEquals(qn.getQuestionVersion().getMajor(), 112);
+		assertEquals(qn.getQuestionVersion().getMinor(), 22);
 	}
 
 }

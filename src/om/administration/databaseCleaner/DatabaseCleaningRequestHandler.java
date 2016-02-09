@@ -337,7 +337,7 @@ public class DatabaseCleaningRequestHandler extends AbstractRequestHandler {
 	 */
 	protected QueryQuestionBanks retrieveConfiguredCleaner(String className)
 		throws UtilityException {
-		QueryQuestionBanks cqb = new QuestionBankQueryer();
+		QueryQuestionBanks cqb = new QuestionBankQuerier();
 		if (Strings.isNotEmpty(className)) {
 			try {
 				Class<?> cla = Class.forName(className);

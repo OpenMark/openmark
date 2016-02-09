@@ -39,7 +39,7 @@ public abstract class TabularReportBase {
 	protected String title;
 	protected NavigatorServlet ns;
 
-	protected class ColumnDefinition {
+	protected static class ColumnDefinition {
 		/** The internal name of this column, used, for example, as a tag name when writing to XML, or a CSS class name. */
 		public final String id;
 		/** The public name of this column, used, as the content for &lt;th> when writing to HTML. */

@@ -20,6 +20,7 @@ public class JUnitTestCaseTestDefinition extends TestDefinition {
 		super(d);
 	}
 
+	@Override
 	TestGroup getResolvedContent(long lRandomSeed) throws OmFormatException {
 		Random r = new Random(lRandomSeed);
 		TestGroup tg = (TestGroup) getTestItem(r, eContent,null);

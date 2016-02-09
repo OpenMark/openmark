@@ -1385,16 +1385,15 @@ public class NavigatorServlet extends HttpServlet {
 	 * @throws OmException
 	 */
 	public QuestionVersion getLatestVersion(String sQuestionID,
-		int iRequiredVersion) throws OmException {
+			int iRequiredVersion) throws OmException {
+
 		// This should use a proper question bank at some point
-		QuestionVersion qv = new QuestionVersion();
 		File[] af = IO.listFiles(questionBankFolder);
-		boolean bFound = VersionUtil.findLatestVersion(sQuestionID, iRequiredVersion, qv, af);
-		if (!bFound) {
-			throw new OmException(
-				"Question file missing: " + sQuestionID
+		QuestionVersion qv = VersionUtil.findLatestVersion(sQuestionID, iRequiredVersion, af);
+		if (qv == null) {
+			throw new OmException("Question file missing: " + sQuestionID
 					+ (iRequiredVersion != VersionUtil.VERSION_UNSPECIFIED ? " "
-						+ iRequiredVersion : ""));
+					+ iRequiredVersion : ""));
 		}
 		return qv;
 	}
@@ -1433,22 +1432,20 @@ public class NavigatorServlet extends HttpServlet {
 			// 0).
 			qv = getLatestVersion(tq.getID(), tq.getVersion());
 			if (!us.isSingle()) {
-				if (us.iDBqi == 0 || qv.iMajor == 0)
+				if (us.iDBqi == 0 || qv.getMajor() == 0)
 					throw new OmUnexpectedException(
 							"Unexpected data setting question versions ("
-									+ us.iDBqi + "): " + qv.iMajor);
+									+ us.iDBqi + "): " + qv.getMajor());
 				DatabaseAccess.Transaction dat = da.newTransaction();
 				try {
-					oq.updateSetQuestionVersion(dat, us.iDBqi, qv.iMajor,
-							qv.iMinor);
+					oq.updateSetQuestionVersion(dat, us.iDBqi, qv.getMajor(),
+							qv.getMinor());
 				} finally {
 					rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 				}
 			}
 		} else {
-			qv = new QuestionVersion();
-			qv.iMajor = iMajor;
-			qv.iMinor = iMinor;
+			qv = new QuestionVersion(iMajor, iMinor);
 		}
 
 		// Question parameters

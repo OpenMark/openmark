@@ -11,23 +11,16 @@ import util.misc.VersionUtil;
 
 /**
  * Holds all references to a particular question from the different question
- *  banks.  The internal collection "questionsWithVersionNumbering" holds
- *  reference to the actual question name with the version numbering also in
- *  order to identify the latest version and also so to fully qualify those that
- *  are then superfluous.
- * @author Trevor Hinson
+ * banks.  The internal collection "questionsWithVersionNumbering" holds
+ * reference to the actual question name with the version numbering also in
+ * order to identify the latest version and also so to fully qualify those that
+ * are then superfluous.
  */
-
 public class QuestionPoolDetails {
-
-	private static String JAR = ".jar";
-
-	private static String DOT = ".";
 
 	private String namePrefix;
 
-	Map<String, Set<String>> questionsWithVersionNumbering
-		= new HashMap<String, Set<String>>();
+	Map<String, Set<String>> questionsWithVersionNumbering = new HashMap<String, Set<String>>();
 
 	public QuestionPoolDetails(String prefix) {
 		namePrefix = prefix;
@@ -40,14 +33,13 @@ public class QuestionPoolDetails {
 	 * @author Trevor Hinson
 	 */
 	public String identifyLatestVersion() {
-		String latest = null;
 		Set<String> keys = questionsWithVersionNumbering.keySet();
-		QuestionVersion qv = new QuestionVersion();
-		if (VersionUtil.findLatestVersion(namePrefix,
-			VersionUtil.VERSION_UNSPECIFIED, qv, keys)) {
-			latest = namePrefix + DOT + qv.toString() + JAR;
+		QuestionVersion qv = VersionUtil.findLatestVersion(namePrefix,
+				VersionUtil.VERSION_UNSPECIFIED, keys);
+		if (qv == null) {
+			return null;
 		}
-		return latest;
+		return namePrefix + "." + qv + ".jar";
 	}
 
 	/**

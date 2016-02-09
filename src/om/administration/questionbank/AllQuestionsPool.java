@@ -16,7 +16,7 @@ public class AllQuestionsPool {
 	private static String JAR = ".jar";
 
 	public Map<String, QuestionPoolDetails> questionDetails
-		= new HashMap<String, QuestionPoolDetails>();
+			= new HashMap<String, QuestionPoolDetails>();
 
 	public QuestionPoolDetails getDetails(String questionPrefixName) {
 		return questionDetails.get(questionPrefixName);

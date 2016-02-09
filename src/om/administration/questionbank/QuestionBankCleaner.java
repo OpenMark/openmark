@@ -512,9 +512,9 @@ public class QuestionBankCleaner implements CleanQuestionBanks {
 				if (Strings.isNotEmpty(q)) {
 					QuestionName qn = VersionUtil.represented(questionFullName);
 					if (null != qn ? qn.isValid() : false) {
-						Object[] args = {"'" + qn.getPrefix() + "'",
-							qn.getQuestionVersion().iMajor,
-							qn.getQuestionVersion().iMinor,
+						Object[] args = {"'" + qn.getQuestionId() + "'",
+							qn.getQuestionVersion().getMajor(),
+							qn.getQuestionVersion().getMinor(),
 							"'"+FULLSTOP+"'"};
 						query = MessageFormat.format(q, args);
 					}
