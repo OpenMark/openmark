@@ -12,8 +12,8 @@
 }
 .om .editfielddisabled
 {
-  color:#999;
-  border-color: %%COLOUR:innerbg%%;
+  color:%%COLOUR:disabledtext%%;
+  border-color: %%COLOUR:disabledbg%%;
 }
 .om .editfielddisabledfixed
 {

@@ -3,7 +3,7 @@ body {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
   font-size: 14px;
   line-height: 20px;
-  color: #333;
+  color: #000;
   background-color: #fff;
 }.editor_ousupsub {
     display: inline-block;
@@ -23,7 +23,7 @@ body.edge .editor_ousupsub {
 }
 
 .editor_ousupsub_content_wrap {
-    border: 1px solid #bbb;
+    border: 1px solid #d4d2d2;
     border-top: none;
     background-color: #fff;
     color: #000;
@@ -36,8 +36,8 @@ body.edge .editor_ousupsub {
 
 div.editor_ousupsub_toolbar {
     display: block;
-    background: #F2F2F2;
-    border: 1px solid #bbb;
+    background: #f0f0f1;
+    border: 1px solid #d4d2d2;
     height: 25px;
 }
 
@@ -49,7 +49,7 @@ div.editor_ousupsub_toolbar div.ousupsub_group {
 div.editor_ousupsub_toolbar button {
     margin: 0;
     border: 0;
-    border-right: 1px solid #bbb;
+    border-right: 1px solid #d4d2d2;
     padding: 0;
     background: none;
     border-radius: 0;
@@ -65,7 +65,7 @@ div.editor_ousupsub_toolbar button.ousupsub_undo_button, div.editor_ousupsub_too
 
 body.dir-rtl div.editor_ousupsub_toolbar button {
     border-right: 0;
-    border-left: 1px solid #bbb;
+    border-left: 1px solid #d4d2d2;
 }
 div.editor_ousupsub_toolbar button img.icon {
     padding: 0;
@@ -88,12 +88,12 @@ div.editor_ousupsub_toolbar button[disabled] {
 
 .editor_ousupsub_toolbar button:hover {
     background-image: radial-gradient(ellipse at center, #ffffff 60%,#D2691E 100%);
-    background-color: #ebebeb;
+    background-color: #d4d2d2;
 }
 
 .editor_ousupsub_toolbar button:active, .editor_ousupsub_toolbar button.highlight {
     background-image: radial-gradient(ellipse at center, #ffffff 40%,#D2691E 100%);
-    background-color: #dfdfdf;
+    background-color: #d4d2d2;
 }
 
 /* Make firefox button sizes match other browsers */

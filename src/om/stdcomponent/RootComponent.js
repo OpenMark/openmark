@@ -125,7 +125,7 @@ function log(line)
 		logBox.style.height="120px";
 		logBox.style.fontFamily="Andale Mono, monospace";
 		logBox.style.fontSize="11px";
-		logBox.style.borderTop="2px solid #888";
+		logBox.style.borderTop="2px solid #676463";
 	}
 
 	var newLine=document.createElement("div");

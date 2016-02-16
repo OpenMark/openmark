@@ -40,7 +40,7 @@ function appClick(resourcesPath,id,idprefix,app,clssNm,w,h,params)
     "this window and try again.\n"+
     "</applet>\n"+
     "<div style='position:relative;'>\n"+
-	"<div style='color:#999; font: 10px Verdana, sans-serif; padding: 6px 0 0 4px; position:absolute; width:150px; left:0px;'>\n"+
+	"<div style='color:#676463; font: 10px Verdana, sans-serif; padding: 6px 0 0 4px; position:absolute; width:150px; left:0px;'>\n"+
     "<div style='text-align:right;padding-right:8px;padding-top:8px;'>\n"+
     "<input type='button' id='enter' value='    OK    ' onclick='window.opener.appSet(\""+id+"\",\""+idprefix+"\",document.APP.answer());'/>\n"+
     "</div></div>\n"+

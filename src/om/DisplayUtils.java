@@ -28,7 +28,7 @@ public class DisplayUtils {
 		"a { color: black; }\n" +
 		"h2 { font: 14px Verdana, sans-serif; }\n" +
 		".alert { font: bold 21px; font-weight: bold; color:red; Verdana, sans-serif; }\n" +
-		"#create,#questionbox { margin-bottom:20px; border:1px solid #888; padding:10px; }\n"+
+		"#create,#questionbox { margin-bottom:20px; border:1px solid #d4d2d2; padding:10px; }\n"+
 		"#create span { float:left; width:20em; margin-top: 5px }\n" +
 		"#create span.fields { width:auto; }\n" +
 		"#create div { clear:left; }\n"+

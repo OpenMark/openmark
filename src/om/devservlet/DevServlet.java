@@ -462,7 +462,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				"<style type='text/css'>" +
 				"body { font: 10px Andale Mono, Lucida Console, monospace; }" +
 				".out,.err { white-space:pre; }"+
-				".err { color:#900; }"+
+				".err { color:#832884; }"+
 				"</style>"+
 				"</head>" +
 				"<body>");
@@ -501,7 +501,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				"<style type='text/css'>" +
 				"body { font: 10px Andale Mono, Lucida Console, monospace; }" +
 				".out,.err { white-space:pre; }"+
-				".err { color:#900; }"+
+				".err { color:#832884; }"+
 				"</style>"+
 				"</head>" +
 				"<body>");
@@ -658,7 +658,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				String sAccess=request.getParameter("access");
 				boolean bPlain="plain".equals(sAccess);
 				double dZoom="big".equals(sAccess) ? 2.0 : 1.0;
-				String sFG="bw".equals(sAccess) ? "#00ff00" : null;
+				String sFG="bw".equals(sAccess) ? "#0f8372" : null;
 				String sBG="bw".equals(sAccess) ? "#000000" : null;
 				boolean readOnly = false;
 				boolean feedbackVisible = null == request.getParameter("nofeedback");
@@ -679,7 +679,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 						response.setCharacterEncoding("UTF-8");
 						PrintWriter pw = new PrintWriter(response.getWriter());
 						pw.println("<html><head><title>Error starting question</title></head><body>");
-						pw.println("<div style='border: 1px solid #888; padding: 1em; background: #fdc; font-weight: bold'>Error: " +
+						pw.println("<div style='border: 1px solid #832884; padding: 1em; background: #e6d3e6; font-weight: bold'>Error: " +
 								"Starting the question twice with the same random seed produced " +
 								"different results. This means there is a bug in your question.</div>");
 						pw.println("<p><a href='../../build/" + sQuestion + "/'>Rebuild</a></p>");
@@ -790,7 +790,7 @@ public class DevServlet extends HttpServlet implements QEngineConfig {
 				PrintWriter pw=new PrintWriter(response.getWriter());
 				pw.println("<html><head><title>Question ended</title></head><body>");
 				if (!questionHasSentResults) {
-					pw.println("<div style='border: 1px solid #888; padding: 1em; background: #fdc; font-weight: bold'>Error: The question ended without sending back any results.</div>");
+					pw.println("<div style='border: 1px solid #676463; padding: 1em; background: #e6d3e6; font-weight: bold'>Error: The question ended without sending back any results.</div>");
 					pw.println("<p><a href='./'>Restart</a></p>");
 				} else {
 					pw.println("<p>Question ended. <a href='./'>Restart</a></p>");

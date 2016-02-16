@@ -127,7 +127,7 @@ html.zoom20 body.progresswideleft #titles { width: 1286px; }
 #titles h1
 {
   font: 24px normal Verdana, sans-serif;
-  color: #acb0d5;
+  color: #68a4d4;
 /*FIXED*/ color: %%FG%%;
   margin:0;
 }
@@ -145,7 +145,7 @@ html.zoom20 #titles h2 { font-size: 26px; }
 
 #auxtitle,#progressinfo
 {
-  font: normal 10px Verdana,sans-serif;
+  font: normal 13px Verdana,sans-serif;
 }
 html.zoom15 #auxtitle,html.zoom15 #progressinfo { font-size:15px; }
 html.zoom20 #auxtitle,html.zoom20 #progressinfo { font-size:20px; }
@@ -155,24 +155,23 @@ html.zoom20 #auxtitle,html.zoom20 #progressinfo { font-size:20px; }
 {
   float:left;
   width:188px;
-  margin-top:4px;
+  margin-top:0;
   text-align:right;
 }
-* html #buttons { margin-top:0px; }
 html.zoom15 #buttons { width:282px; }
 html.zoom20 #buttons { width:376px; }
 
 #buttons .button
 {
   display:inline;
-  border:1px solid #ccc;
+  border:1px solid #d4d2d2;
 /*FIXED*/ border:1px dotted %%FG%%;
   padding:2px;
-  font-size:10px;
-  line-height:24px;
+  font-size:13px;
+  line-height:28px;
 }
-html.zoom15 #buttons .button  { font-size:15px; line-height: 36px;}
-html.zoom20 #buttons .button  { font-size:20px; line-height: 48px;}
+html.zoom15 #buttons .button  { font-size:19.5px; line-height: 39px;}
+html.zoom20 #buttons .button  { font-size:26px; line-height: 52px;}
 
 #buttons .button a
 {
@@ -188,8 +187,8 @@ html.zoom20 #buttons .button  { font-size:20px; line-height: 48px;}
 /* Main section (question goes within) */
 #main
 {
-  border-top:1px solid #ccc;
-  border-bottom:1px solid #ccc;
+  border-top:1px solid #d4d2d2;
+  border-bottom:1px solid #d4d2d2;
 /*FIXED*/ border-top:1px dotted %%FG%%;
 /*FIXED*/ border-bottom:1px dotted %%FG%%;
   padding-top:8px;
@@ -231,35 +230,46 @@ body.progresswide #main
 
 #progress .question,#progress .text,#progress .sectiontag
 {
-  font-size:10px;
-  line-height:2;
+  font-size:13px;
 }
-html.zoom15 #progress .question,html.zoom15 #progress .text,html.zoom15 #progress .sectiontag { font-size:15px; }
-html.zoom20 #progress .question,html.zoom20 #progress .text,html.zoom20 #progress .sectiontag { font-size:20px; }
+html.zoom15 #progress .question,html.zoom15 #progress .text,html.zoom15 #progress .sectiontag { font-size:19.5px; }
+html.zoom20 #progress .question,html.zoom20 #progress .text,html.zoom20 #progress .sectiontag { font-size:26px; }
 
 #progress .sectiontag
 {
   font-weight:bold;
   margin-left:1px;
+  margin-top: 0.5em;
+  line-height:1.5;
 }
 
 #progress .question,#progress .text
 {
   display:inline-block;
-  margin:2px; 
+  margin: 4px 8px 4px 0;
+  line-height:2;
 }
+html.zoom15 #progress .question, html.zoom15 #progress .text { margin: 6px 12px 6px 0; }
+html.zoom15 #progress .question, html.zoom15 #progress .text { margin: 8px 16px 8px 0; }
+
 #progress .question a,#progress .question span,#progress .text a,#progress .text span
 {
   border:1px solid #221037; /* fix for bug 9640 */
 /*FIXED*/ border-color:%%FG%%;
+  display: inline-block;
+  border-radius: 4px;
 }
+html.zoom15 #progress .question a,html.zoom15 #progress .question span,html.zoom15 #progress .text a,html.zoom15 #progress .text span { border-radius: 6px; }
+html.zoom20 #progress .question a,html.zoom20 #progress .question span,html.zoom20 #progress .text a,html.zoom20 #progress .text span { border-radius: 8px; }
 
 #progress a,#progress span
 {
-  padding:2px;
+  padding:0 6px;
   text-decoration:none;
   color:%%FG%%;
 }
+html.zoom15 #progress a, html.zoom15 #progress span { padding:0 9px; }
+html.zoom20 #progress a, html.zoom20 #progress span { padding:0 12px; }
 
 #progress .done a,#progress .done span
 {
@@ -270,8 +280,8 @@ html.zoom20 #progress .question,html.zoom20 #progress .text,html.zoom20 #progres
 
 #progress .unavailable a, #progress .unavailable span
 {
-  background:#ddd;
-	color:#888;
+  background:#d4d2d2;
+  color:#676463;
 /*FIXED*/ background:%%BG%%;
 /*FIXED*/ color:%%FG%%;
 /*FIXED*/ border-style:none;
@@ -279,7 +289,7 @@ html.zoom20 #progress .question,html.zoom20 #progress .text,html.zoom20 #progres
 
 #progress .current span,#progress .current a
 {
-  background:#888;
+  background:#676463;
 /*FIXED*/ background:%%BG%%;
 	color:%%BG%%;
 /*FIXED*/ color:%%FG%%;
@@ -358,8 +368,8 @@ body.progresswide #progress .sectiontagafter
 /* Singles pages */
 .singleslinks
 {
-	font-size:10px;
-	text-align:right;
+  font-size:10px;
+  text-align:right;
   margin-bottom:4px;
 }
 body.singles
@@ -447,11 +457,11 @@ em.warning
 }
 .basicpage table tr.even
 {
-  background:#eee;
+  background:#f0f0f1;
 }
 .basicpage table tr.error
 {
-  background:#ff9999;
+  background:#e6d3e6;
 }
 
 .displayoptions .examples .option img
@@ -487,7 +497,7 @@ em.warning
 .adminmsg
 {
 	margin: 1em 2em;
-	border: 1px solid #ccc;
+	border: 1px solid #d4d2d2;
 	padding: 4px;
 }
 
@@ -517,8 +527,8 @@ em.warning
 .errormessage .technical
 {
   margin-top:4em;
-  background:#eee;
-  color:#555;
+  background:#f0f0f1;
+  color:#464542;
   padding:1em;
 }
 .errormessage a
@@ -533,8 +543,8 @@ em.warning
 
 #contentbox
 {
-	border-top:1px solid #ccc;
-	border-bottom:1px solid #ccc;
+	border-top:1px solid #d4d2d2;
+	border-bottom:1px solid #d4d2d2;
 	padding:4px 0 3px 0;
 }
 
@@ -555,7 +565,7 @@ em.warning
 }
 .questionreport .attempt,.userreport .qattempt
 {
-  border-top:1px dotted #acb0d5;
+  border-top:1px dotted #c4daf0;
   padding:0.5em 0;
 }
 .report .scores .t
@@ -578,7 +588,7 @@ em.warning
 }
 .report .sessions .useragent
 {
-  color:#555;
+  color:#464542;
 }
 
 

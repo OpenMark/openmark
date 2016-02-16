@@ -177,7 +177,7 @@ public class DropBoxComponent extends QComponent
 			if(
 				getBoolean(PROPERTY_FORCEBORDER) ||
 				convertHash(getBackground()).equals(sBorderColour))
-				sBorderColour="#ccc";
+				sBorderColour="#d4d2d2";
 
 			eBox.setAttribute("style",
 				"background:"+sColour+"; border-color: "+sBorderColour+";");

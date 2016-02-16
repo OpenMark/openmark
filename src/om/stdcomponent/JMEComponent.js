@@ -39,8 +39,8 @@ function jsmeClick(jsmeurl, id, idprefix)
     "<body style='border:0;margin:0;' onunload='try { window.opener.jsmePopup = null;} catch(e){}'>\n" +
     "<div id='jsme_container'></div>\n" +
     "<div style='position: relative;'>\n" +
-    "<div style='color: #999; font: 10px Verdana, sans-serif; padding: 6px 0 0 4px; position: absolute; width: 150px; left: 0px;'>" +
-        "<a href='http://peter-ertl.com/jsme/' target='_blank' style='color:#999'>JSME Editor</a> courtesy of Peter Ertl, Novartis</div>\n" +
+    "<div style='color: #676463; font: 10px Verdana, sans-serif; padding: 6px 0 0 4px; position: absolute; width: 150px; left: 0px;'>" +
+        "<a href='http://peter-ertl.com/jsme/' target='_blank' style='color:#676463'>JSME Editor</a> courtesy of Peter Ertl, Novartis</div>\n" +
     "<div style='text-align: right; padding-right: 8px; padding-top: 8px;'>\n" +
     "<input type='button' id='enter' value='    OK    ' onclick='window.opener.jsmeSet(" +
         "\"" + id + "\", \"" + idprefix + "\", window.jsmeApplet.smiles());'/>\n" +

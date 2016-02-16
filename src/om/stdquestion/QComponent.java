@@ -63,24 +63,24 @@ public abstract class QComponent
 		"bg","#fff","bg",
 
 		// Three main background panes
-		"input","#e4f1fa","bg",
-		"answer","#fff3bf","bg",
-		"other","#f3f0e0","bg",
+		"input","#ddf0f8","bg",
+		"answer","#fff8eb","bg",
+		"other","#f0f0f1","bg",
 
 		// Background for checkboxes/radioboxes/other things inside (white)
 		"innerbg","#ffffff","bg",
 
 		// Highlight version of background
-		"innerbghi","#bfcbd8","bg",
+		"innerbghi","#bfe2ef","bg",
 
 		// Background for dragboxes and anything that needs a cycle of up to 4 groups
 		"innerbg0","#ffffff","bg",
-		"innerbg1","#d6dbd7","bg",
-		"innerbg2","#bfcbd8 ","bg",
-		"innerbg3","#ddbfcc","bg",
+		"innerbg1","#d4d2d2","bg",
+		"innerbg2","#c4daf0","bg",
+		"innerbg3","#e6d3e6","bg",
 
-		"disabledtext","#666666","disabledfg",
-		"disabledbg",  "#eeeeee","disabledbg"
+		"disabledtext","#676463","disabledfg",
+		"disabledbg",  "#f0f0f1","disabledbg"
 	};
 	/** Regular expression allowing all colour constants */
 	protected static final String COLOURCONSTANTS_REGEXP;

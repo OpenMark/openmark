@@ -64,7 +64,7 @@ public class ClearanceResponseRenderer implements Serializable {
 
 	private static String B_CLOSE = "</b>";
 	
-	private static String LOUD = "<div style=\"font-size: 18px; color: #FF0000\">";
+	private static String LOUD = "<div style=\"font-size: 18px; color: #832884\">";
 	
 	private static String LOUD_CLOSE="</div><br/>";
 

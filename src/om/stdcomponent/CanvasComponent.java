@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
+*/
 package om.stdcomponent;
 
 import java.awt.*;
@@ -805,22 +805,22 @@ public class CanvasComponent extends QComponent implements World.Context
 	}
 
 	/** Map from colour constant (String) to #colour (String) */
-  private static final Map<String, String> mColourConstants=new HashMap<String, String>();
-  static
-  {
-  	String[] COLOURDEFAULTS=
-  	{
-  		"fg","#000000",
-  		"graph1","#ef6820",
-  		"graph2","#00afad",
-  		"graph3","#780032",
-  		"whitebg","#ffffff",
-  	};
-  	for(int i=0;i<COLOURDEFAULTS.length;i+=2)
-  	{
-  		mColourConstants.put(COLOURDEFAULTS[i],COLOURDEFAULTS[i+1]);
-  	}
-  }
+	private static final Map<String, String> mColourConstants=new HashMap<String, String>();
+	static
+	{
+		String[] COLOURDEFAULTS=
+		{
+			"fg","#000000",
+			"graph1","#cc6702",
+			"graph2","#3ab1ce",
+			"graph3","#832884",
+			"whitebg","#ffffff",
+		};
+		for(int i=0;i<COLOURDEFAULTS.length;i+=2)
+		{
+			mColourConstants.put(COLOURDEFAULTS[i],COLOURDEFAULTS[i+1]);
+		}
+	}
 
 
 	// Implementation for World.Context
