@@ -341,11 +341,11 @@ public class TestDeployment
 		return iType;
 	}
 
-	/** @return One of the TYPE_xx constants */
+	/** @return Whether this is an assessed test. */
 	public boolean isAssessed()
 	{
-		/* assume its asseded if its noit NOT assesed, ie reuqired or optional */
-		return (iType > TYPE_NOTASSESSED);
+		// Allow any value > TYPE_NOTASSESSED, not just TYPE_ASSESSED.
+		return iType > TYPE_NOTASSESSED;
 	}
 
 	/**

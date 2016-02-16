@@ -225,17 +225,15 @@ public class DeployedTestsReport implements OmReport {
 			Map<String, String> row = new HashMap<String, String>();
 			row.put("deploy", deploy);
 			row.put("deploy" + HtmlReportWriter.LINK_SUFFIX, "../" + deploy + "/");
-			//row.put("deployfile", deploy);
-			//row.put("deployfile" + HtmlReportWriter.LINK_SUFFIX, "../!deploy/" + deploy);
 			row.put("deploymodified", deployModified);
 			row.put("deploymodified" + HtmlReportWriter.NOWRAP_SUFFIX, "");
 			row.put("test", test);
 			row.put("testmodified", testModified);
+			row.put("testmodified" + HtmlReportWriter.NOWRAP_SUFFIX, "");
 			if (linkToDownloads) {
 				row.put("deploymodified" + HtmlReportWriter.LINK_SUFFIX, "../!deploy/" + deploy);
 				if (!"".equals(testModified)&& !FILE_MISSING.equalsIgnoreCase(testModified)) {
 					row.put("testmodified" + HtmlReportWriter.LINK_SUFFIX, "../!test/" + test);
-					row.put("testmodified" + HtmlReportWriter.NOWRAP_SUFFIX, "");
 				}
 			}
 			row.put("open", open ? "Yes" : "No");
@@ -245,7 +243,7 @@ public class DeployedTestsReport implements OmReport {
 			row.put("forbiddate", forbidDate);
 			row.put("feedbackdate", feedbackDate);
 			row.put("supportcontacts", supportcontacts);
-			row.put("supportcontacts", supportcontacts);
+			row.put("isassessed", isAssessed ? "Yes" : "No");
 			return row;
 		}
 		
@@ -356,19 +354,18 @@ public class DeployedTestsReport implements OmReport {
 			}
 
 			List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
-			columns.add(new ColumnDefinition("deploy", "Deploy file"));
-			columns.add(new ColumnDefinition("deploymodified", "Deploy updated"));
+			columns.add(new ColumnDefinition("deploy", "Test id"));
+			columns.add(new ColumnDefinition("deploymodified", "Deploy file last modified"));
 			columns.add(new ColumnDefinition("test", "Test file"));
-			columns.add(new ColumnDefinition("testmodified", "Test updated"));
+			columns.add(new ColumnDefinition("testmodified", "Test file last modified"));
 			columns.add(new ColumnDefinition("open", "Open now?"));
 			columns.add(new ColumnDefinition("world", "World accessible?"));
 			columns.add(new ColumnDefinition("opendate", "Open date"));
 			columns.add(new ColumnDefinition("closedate", "Close date"));
 			columns.add(new ColumnDefinition("forbiddate", "Forbid date"));
 			columns.add(new ColumnDefinition("feedbackdate", "Feedback date"));
-			columns.add(new ColumnDefinition("supportcontacts", "Support Contacts"));
-			columns.add(new ColumnDefinition("isassessed", "Is Assessed?"));
-			columns.add(new ColumnDefinition("isassessed", "Is Assessed?"));
+			columns.add(new ColumnDefinition("supportcontacts", "Support contacts"));
+			columns.add(new ColumnDefinition("isassessed", "Assessed?"));
 
 			return columns;
 		}
