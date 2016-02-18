@@ -344,18 +344,6 @@ public abstract class OmQueries
 			"ORDER BY finished DESC,pi,clock DESC");
 	}
 
-
-	/**
-	 * @return The list of oucu and pi data
-	 */
-	public ResultSet queryPiFromOucu(DatabaseAccess.Transaction dat)
-	  throws SQLException
-	{
-		return dat.query(
-			"SELECT oucu,pi " +
-			"FROM " + getPrefix() + "oucupi");
-	}
-
 	/**
 	 * Get a list of all the questions attempts for all questions in a test.
 	 * @param dat the transaction within which the query should be executed.
