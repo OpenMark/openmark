@@ -162,6 +162,28 @@ public class CombinedScore
 	}
 
 	/**
+	 * Get the default axis for this score set. That is normally the one with
+	 * null name, but anyway, it is the first according to getAxesOrdered().
+	 * @return axis name.
+	 * @throws OmFormatException
+	 */
+	public String getFirstAxis() throws OmFormatException
+	{
+		for (String axis : getAxesOrdered()) {
+			return axis;
+		}
+		throw new OmFormatException("No axes found!");
+	}
+
+	/**
+	 * @return the score for axis getFirstAxis().
+	 * @throws OmFormatException
+	 */
+	public double getScoreForFirstAxis() throws OmFormatException {
+		return getScore(getFirstAxis());
+	}
+
+	/**
 	 * @return the set of all contributions on all axes.
 	 */
 	Set<Map.Entry<String, ScoreOnAxis>> getParts() {

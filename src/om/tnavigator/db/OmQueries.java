@@ -110,27 +110,7 @@ public abstract class OmQueries
 	}
 
 	/**
-	 * Get a user's pi from the test
-	 * @param dat the transaction within which the query should be executed.
-	 * @param oucu the user's username.
-	 * @param testID the deploy file ID.
-	 * @param ti the test it
-	 * @return the requestedt data.
-	 * @throws SQLException
-	 */
-	public ResultSet queryPI(DatabaseAccess.Transaction dat,String oucu,String testID,int ti) throws SQLException
-	{
-		String sqlstr="SELECT oucu,pi " +
-			"FROM " + getPrefix() + "tests " +
-			"WHERE oucu="+Strings.sqlQuote(oucu)+
-			" AND deploy="+Strings.sqlQuote(testID)+
-			" AND ti="+ti+
-			" ORDER BY ti";
-			return dat.query(sqlstr);
-	}	
-
-	/**
-	 * Get a user's scores on a test attempt.
+	 * Get all the data need to compute a user's scores on a test attempt.
 	 * @param dat the transaction within which the query should be executed.
 	 * @param ti test instance id.
 	 * @return the requested data.
@@ -139,12 +119,55 @@ public abstract class OmQueries
 	public ResultSet queryScores(DatabaseAccess.Transaction dat,int ti) throws SQLException
 	{
 		return dat.query(
-			"SELECT tq.question,q.majorversion,q.minorversion,q.attempt,s.axis,s.score,tq.requiredversion "+
+			"SELECT tq.question, " +
+					"q.majorversion, q.minorversion, q.attempt, " +
+					"s.axis, s.score, " +
+					"tq.requiredversion, " + ti + " AS ti "+
+
 			"FROM " + getPrefix() + "testquestions tq " +
-			"LEFT JOIN " + getPrefix() + "questions q ON tq.question=q.question AND tq.ti=q.ti " +
-			"LEFT JOIN " + getPrefix() + "scores s ON s.qi=q.qi " +
-			"WHERE tq.ti="+ti+" " +
-			"ORDER BY tq.question,SIGN(q.finished) DESC,q.attempt DESC;");
+			"LEFT JOIN " + getPrefix() + "questions q ON tq.question = q.question AND tq.ti = q.ti " +
+			"LEFT JOIN " + getPrefix() + "scores s ON s.qi = q.qi " +
+
+			"WHERE tq.ti = " + ti + " " +
+
+			"ORDER BY tq.question, SIGN(q.finished) DESC, q.attempt DESC");
+	}
+
+	/**
+	 * Like queryScores, but get the data for all the finished attempts at a
+	 * given test. The data is sorted so the rows for each ti are together,
+	 * and attempts for each user are together and in order
+	 * (ORDER BY pi, attempt, ti).
+	 *
+	 * The first 8 columns in the result test are the same as the 8 columns
+	 * returned by queryScores, then there are 3 extra columns with more
+	 * information about the ti.
+	 *
+	 * @param dat the transaction within which the query should be executed.
+	 * @param testID the deploy file ID.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
+	public ResultSet queryScoresForAllAttemptsAtTest(DatabaseAccess.Transaction dat, String testID)
+	  throws SQLException
+	{
+		return dat.query(
+				"SELECT " +
+					"tq.question, " +
+					"q.majorversion, q.minorversion, q.attempt, " +
+					"s.axis, s.score, " +
+					"tq.requiredversion, " +
+					"t.ti, t.pi, t.rseed, t.variant " +
+
+				"FROM " + getPrefix() + "tests t " +
+				"LEFT JOIN " + getPrefix() + "testquestions tq ON tq.ti = t.ti " +
+				"LEFT JOIN " + getPrefix() + "questions q ON tq.question = q.question AND tq.ti = q.ti " +
+				"LEFT JOIN " + getPrefix() + "scores s ON s.qi = q.qi " +
+
+				"WHERE deploy = " + Strings.sqlQuote(testID) + " " +
+				"AND t.finished <> 0 " +
+
+				"ORDER BY t.pi, t.attempt, t.ti, tq.question, SIGN(q.finished) DESC, q.attempt DESC");
 	}
 
 	/**
@@ -320,26 +343,10 @@ public abstract class OmQueries
 			"WHERE deploy="+Strings.sqlQuote(testID)+" " +
 			"ORDER BY finished DESC,pi,clock DESC");
 	}
-	
+
+
 	/**
-	 * Get a list of all the people who have attempted a particular test, ordered by PI
-	 * @param dat the transaction within which the query should be executed.
-	 * @param testID the deploy file ID.
-	 * @return the requested data.
-	 * @throws SQLException
-	 */
-	public ResultSet queryTestAttemptersByPIandFinishedASC(DatabaseAccess.Transaction dat,String testID)
-	  throws SQLException
-	{
-		return dat.query(
-			"SELECT oucu,pi,clock,finished,admin,finishedclock,rseed,variant,ti " +
-			"FROM " + getPrefix() + "tests t " +
-			"WHERE deploy="+Strings.sqlQuote(testID)+" " +
-			"ORDER BY pi,finished DESC,clock ASC");
-	}
-	
-	/**
-	* get the list of oucu and pi data
+	 * @return The list of oucu and pi data
 	 */
 	public ResultSet queryPiFromOucu(DatabaseAccess.Transaction dat)
 	  throws SQLException

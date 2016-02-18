@@ -84,18 +84,15 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 			title = testId + " results for export to Moodle";
 		}
 
-		private void outputScoresForPI(AttemptForPI bestAttempt,TabularReportWriter reportWriter)
+		private void outputScoresForPI(String pi, CombinedScore score, TabularReportWriter reportWriter)
 		{
-			String assignmentid=bestAttempt.getAssignmentid();
-			CombinedScore score=bestAttempt.getScore();
-			String pi=bestAttempt.getPI();
 			try
 			{
 				// Output a row of the report for each axis.
 				for (String axis : score.getAxesOrdered()) {
 					Map<String, String> row = new HashMap<String, String>();
 					row.put("student", pi);
-					row.put("assignment", axis != null ? assignmentid + "." + axis : assignmentid);
+					row.put("assignment", axis != null ? testId + "." + axis : testId);
 					row.put("score", score.getScore(axis) + "");
 					reportWriter.printRow(row);
 				}
@@ -115,67 +112,59 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 			{
 				dat = ns.getDatabaseAccess().newTransaction();
 
-				// Get list of people who did the test.
-				// Show:
-				// * Each person only once
-				// * Only the most recent finished attempt, or most recent unfinished attempt
-				//   if there aren't any finished
-				// * Within categories (finished/unfinished), sorting by PI
-				// I achieve this by setting the sort order and dropping all but the first
-				// result for each PI.
-				ResultSet rs = ns.getOmQueries().queryTestAttemptersByPIandFinishedASC(dat, testId);
+				// Get all the data for all the attempts by each user. The results
+				// are sorted by user, and then attempt number.
+				// We will loop through the attempts for each user, and keep the
+				// one with the highest score. (So, if there are two with equal
+				// score, we take the first.)
+				ResultSet rs = ns.getOmQueries().queryScoresForAllAttemptsAtTest(dat, testId);
 
-				String lastpi = "";
-				AttemptForPI bestAttempt = new AttemptForPI("", 0, null, "", false);
-				while(rs.next())
+				// Becuase Java ResultSets are stupid (you cannot rely on isAfterLast) we
+				// adopt the convention that the it is closed as soon at rs.next() returns false.
+				if (!rs.next()) {
+					rs.close();
+				}
+
+				String currentPi = "";
+				double bestScore = -1;
+				CombinedScore allScoresForBest = null;
+				while (!rs.isClosed())
 				{
-					String pi = rs.getString(2);
+					String pi = rs.getString(9);
 
-					// First we deal with the previous student and output it if necessary.
-					if (!"".equals(lastpi) && !"".equals(pi) && !pi.equals(lastpi))
+					// If PI has changed, then .
+					if (!"".equals(currentPi) && !pi.equals(currentPi))
 					{
 						// We need to output the last student if they finished.
-						if (bestAttempt.hasFinished())
-						{
-							outputScoresForPI(bestAttempt, reportWriter);
-						}
-
-						bestAttempt = new AttemptForPI("", 0, null, "", false);
+						outputScoresForPI(currentPi, allScoresForBest, reportWriter);
+						bestScore = -1;
+						allScoresForBest = null;
 					}
+					currentPi = pi;
 
 					// Now we get on with checking this student.
-					int ti = rs.getInt(9);
-					int isFinished = rs.getInt(4);
-					long randomSeed = rs.getLong(7);
-					int fixedVariant = rs.getInt(8);
+					int ti = rs.getInt(8);
+					long randomSeed = rs.getLong(10);
+					int fixedVariant = rs.getInt(11);
 
 					// Create TestRealisation
 					TestRealisation testRealisation = TestRealisation.realiseTest(
 							def, randomSeed, fixedVariant, testId, ti);
 
 					// Use it to get the score.
-					String assignmentid = testRealisation.getTestId();
-					CombinedScore score = testRealisation.getScore(new NavigatorServlet.RequestTimings(),
-							metadataSource, ns.getDatabaseAccess(), ns.getOmQueries());
+					CombinedScore score = testRealisation.getScoreFromResultSet(
+							new NavigatorServlet.RequestTimings(), rs, metadataSource);
 
-					// Get the name of the first axis, which is the default.
-					String defaultAxis=null;
-					for (String axis : score.getAxesOrdered()) {
-						defaultAxis = axis;
-						break;
+					// If this attempt is better, remember it.
+					double thisScore = score.getScoreForFirstAxis();
+					if (thisScore > bestScore) {
+						bestScore = thisScore;
+						allScoresForBest = score;
 					}
-
-					double thisscore = score.getScore(defaultAxis);
-
-					// Set values for the current attempt then compare with th best attempt so far.
-					AttemptForPI ThisAttempt = new AttemptForPI(pi, thisscore, score, assignmentid, isFinished == 1);
-					bestAttempt.SetIfGreater(ThisAttempt);
-					lastpi = pi;
 				}
 
-				if (bestAttempt.hasFinished())
-				{
-					outputScoresForPI(bestAttempt,reportWriter);
+				if (allScoresForBest != null) {
+					outputScoresForPI(currentPi, allScoresForBest, reportWriter);
 				}
 
 			} catch (Exception e) {
@@ -188,7 +177,6 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 					dat.finish();
 				}
 			}
-
 		}
 
 		/* (non-Javadoc)

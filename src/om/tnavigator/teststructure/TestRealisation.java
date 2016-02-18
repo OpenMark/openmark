@@ -174,96 +174,125 @@ public class TestRealisation {
 		return dbTi;
 	}
 
-	/**
-	 * Compute and return the score for this test attempt. The process of computing
-	 * the score fills in the score for each qustion and section, so sometimes
-	 * this method is called to precompute all that, and the result is discarded.
-	 *
-	 * @param rt Used for storing performance information.
-	 * @param ns The servlet we are computing the answer for.
-	 * @param da Database access.
-	 * @param oq For querying the database.
-	 * @return the score for this testRealisation by fetching the scores from the database.
-	 * @throws Exception
-	 */
-	public CombinedScore getScore(RequestTimings rt, QuestionMetadataSource metadataSource, DatabaseAccess da, OmQueries oq) throws Exception
-	{
-		// These two maps should always have the say set of keys.
-		Map<String, Map<String, Double> > questionScores =
-				new HashMap<String, Map<String, Double>>();
-		Map<String, QuestionVersion> questionVersions =
-				new HashMap<String, QuestionVersion>();
-		DatabaseAccess.Transaction dat=da.newTransaction();
+	public CombinedScore getScore(RequestTimings rt, QuestionMetadataSource metadataSource,
+			DatabaseAccess da, OmQueries oq) throws Exception {
+
+		DatabaseAccess.Transaction dat = da.newTransaction();
 		try
 		{
 			// Query for all questions in test alongside each completed attempt
 			// at that question, ordered so that the most recent completed attempt
 			// occurs *first* [we then ignore following attempts for each question
-			// in code]
-			ResultSet rs=oq.queryScores(dat,dbTi);
+			// in code].
+			ResultSet rs = oq.queryScores(dat, dbTi);
 
-			// Build into map of question ID -> axis string/"" -> score (Integer)
-			String sCurQuestion="";
-			int iCurAttempt=-1;
-			while(rs.next())
-			{
-				String sQuestion=rs.getString(1);
-				int iMajor=rs.getInt(2),iMinor=rs.getInt(3); // Will be 0 if null
-				boolean bGotVersion=!rs.wasNull() && iMajor!=0;
-				int iAttempt=rs.getInt(4);
-				String sAxis=rs.getString(5);
-				int iScore=rs.getInt(6);
-				int iRequiredMajor=rs.getInt(7);
-
-				// Ignore all attempts on a question other than the first encountered
-				// (this is a pain to do in SQL so I'm doing it in code, relying on
-				// the sort order that makes the latest finished attempt appear first)
-				if(sCurQuestion.equals(sQuestion) && iAttempt!=iCurAttempt)
-					continue;
-				sCurQuestion = sQuestion;
-
-				// Find question. If it's not there create it - all questions get
-				// an entry in the hashmap even if they have no results
-				Map<String, Double> scores = questionScores.get(sQuestion);
-				if (scores == null)
-				{
-					QuestionVersion qv;
-					if (bGotVersion)
-					{
-						// If they actually took the question, we use the version they took
-						// (this version info is used for getting max score)
-						qv = new QuestionVersion(iMajor, iMinor);
-					}
-					else
-					{
-						// If they didn't take the question then either use the latest version
-						// overall or the latest specified major version
-						qv = metadataSource.getLatestVersion(sQuestion,
-								iRequiredMajor==0 ? VersionUtil.VERSION_UNSPECIFIED : iRequiredMajor);
-					}
-					questionVersions.put(sQuestion, qv);
-
-					scores = new HashMap<String, Double>();
-					questionScores.put(sQuestion, scores);
-				}
-
-				// In this case null axis => SQL null => no results for this question.
-				// Default axis is ""
-				if(sAxis!=null)
-				{
-					if(sAxis.equals(""))
-						scores.put(null,(double)iScore);
-					else
-						scores.put(sAxis,(double)iScore);
-				}
-				
-			}
+			rs.next();
+			return getScoreFromResultSet(rt, rs, metadataSource);
 		}
 		finally
 		{
 			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
-		
+	}
+
+	/**
+	 * Compute and return the score for this test attempt, pulling the data from
+	 * the given result set.
+	 *
+	 * The first 8 columns of the result set, must match what is returned by
+	 * {@link OmQueries.queryScores}, and the cursor must be at the first row
+	 * for this ti. Once the method is complete, the cursor will be at the first
+	 * row with a different ti, or the end of the recordset.
+	 *
+	 * The process of computing the score fills in the score for each question
+	 * and section, so sometimes this method is called to pre-compute all that,
+	 * and the result is discarded.
+	 *
+	 * Becuase Java ResultSets are stupid (you cannot rely on isAfterLast) we
+	 * adopt the convention that the it is closed as soon at rs.next() returns false.
+	 *
+	 * @param rt Used for storing performance information.
+	 * @param metadataSource The servlet we are computing the answer for.
+	 * @param da Database access.
+	 * @param oq For querying the database.
+	 * @return the score for this testRealisation by fetching the scores from the database.
+	 * @throws Exception
+	 */
+	public CombinedScore getScoreFromResultSet(RequestTimings rt, ResultSet rs, QuestionMetadataSource metadataSource) throws Exception
+	{
+		// These two maps should always have the same set of keys.
+		Map<String, Map<String, Double> > questionScores =
+				new HashMap<String, Map<String, Double>>();
+		Map<String, QuestionVersion> questionVersions =
+				new HashMap<String, QuestionVersion>();
+
+		// Build into map of question ID -> axis string/"" -> score (Integer)
+		String sCurQuestion="";
+		int iCurAttempt=-1;
+		while (!rs.isClosed())
+		{
+			int ti = rs.getInt(8);
+
+			// Detect if we have multiple tis in this result set, and have
+			// consumed all the rows for this ti.
+			if (dbTi != ti) {
+				break;
+			}
+
+			String sQuestion=rs.getString(1);
+			int iMajor=rs.getInt(2),iMinor=rs.getInt(3); // Will be 0 if null
+			boolean bGotVersion=!rs.wasNull() && iMajor!=0;
+			int iAttempt=rs.getInt(4);
+			String sAxis=rs.getString(5);
+			int iScore=rs.getInt(6);
+			int iRequiredMajor=rs.getInt(7);
+			if (!rs.next()) {
+				rs.close();
+			}
+
+			// Ignore all attempts on a question other than the first encountered
+			// (this is a pain to do in SQL so I'm doing it in code, relying on
+			// the sort order that makes the latest finished attempt appear first)
+			if(sCurQuestion.equals(sQuestion) && iAttempt!=iCurAttempt)
+				continue;
+			sCurQuestion = sQuestion;
+
+			// Find question. If it's not there create it - all questions get
+			// an entry in the hash map even if they have no results
+			Map<String, Double> scores = questionScores.get(sQuestion);
+			if (scores == null)
+			{
+				QuestionVersion qv;
+				if (bGotVersion)
+				{
+					// If they actually took the question, we use the version they took
+					// (this version info is used for getting max score)
+					qv = new QuestionVersion(iMajor, iMinor);
+				}
+				else
+				{
+					// If they didn't take the question then either use the latest version
+					// overall or the latest specified major version
+					qv = metadataSource.getLatestVersion(sQuestion,
+							iRequiredMajor==0 ? VersionUtil.VERSION_UNSPECIFIED : iRequiredMajor);
+				}
+				questionVersions.put(sQuestion, qv);
+
+				scores = new HashMap<String, Double>();
+				questionScores.put(sQuestion, scores);
+			}
+
+			// In this case null axis => SQL null => no results for this question.
+			// Default axis is ""
+			if(sAxis!=null)
+			{
+				if(sAxis.equals(""))
+					scores.put(null,(double)iScore);
+				else
+					scores.put(sAxis,(double)iScore);
+			}
+		}
+
 		applyScores(questionVersions, questionScores, metadataSource, rt);
 
 		// Sanity check: make sure all the questions have a score
