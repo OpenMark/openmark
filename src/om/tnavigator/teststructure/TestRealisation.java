@@ -23,7 +23,6 @@ import java.util.Map;
 
 import om.OmException;
 import om.OmFormatException;
-import om.tnavigator.NavigatorServlet;
 import om.tnavigator.NavigatorServlet.RequestTimings;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
@@ -31,6 +30,7 @@ import om.tnavigator.scores.CombinedScore;
 
 import org.w3c.dom.Element;
 
+import util.misc.QuestionName;
 import util.misc.QuestionVersion;
 import util.misc.VersionUtil;
 import util.xml.XML;
@@ -186,7 +186,7 @@ public class TestRealisation {
 	 * @return the score for this testRealisation by fetching the scores from the database.
 	 * @throws Exception
 	 */
-	public CombinedScore getScore(RequestTimings rt, NavigatorServlet ns, DatabaseAccess da, OmQueries oq) throws Exception
+	public CombinedScore getScore(RequestTimings rt, QuestionMetadataSource metadataSource, DatabaseAccess da, OmQueries oq) throws Exception
 	{
 		// These two maps should always have the say set of keys.
 		Map<String, Map<String, Double> > questionScores =
@@ -238,7 +238,7 @@ public class TestRealisation {
 					{
 						// If they didn't take the question then either use the latest version
 						// overall or the latest specified major version
-						qv = ns.getLatestVersion(sQuestion,
+						qv = metadataSource.getLatestVersion(sQuestion,
 								iRequiredMajor==0 ? VersionUtil.VERSION_UNSPECIFIED : iRequiredMajor);
 					}
 					questionVersions.put(sQuestion, qv);
@@ -264,7 +264,7 @@ public class TestRealisation {
 			rt.setDatabaseElapsedTime(rt.getDatabaseElapsedTime() + dat.finish());
 		}
 		
-		applyScores(questionVersions, questionScores, ns, rt);
+		applyScores(questionVersions, questionScores, metadataSource, rt);
 
 		// Sanity check: make sure all the questions have a score
 		sanityCheckScores();
@@ -287,7 +287,7 @@ public class TestRealisation {
 	}
 
 	protected void applyScores(Map<String, QuestionVersion> questionVersions,
-		Map<String, Map<String, Double>> questionScores, NavigatorServlet ns, RequestTimings rt)
+		Map<String, Map<String, Double>> questionScores, QuestionMetadataSource metadataSource, RequestTimings rt)
 		throws Exception {
 		// Loop around all questions, setting up the score in each one.
 		for (Map.Entry<String, QuestionVersion> me : questionVersions.entrySet()) {
@@ -296,13 +296,13 @@ public class TestRealisation {
 			QuestionVersion qv = me.getValue();
 			CombinedScore score = CombinedScore.fromArrays(
 				questionScores.get(sQuestion),
-				ns.getMaximumScores(rt, sQuestion, qv.toString()));
+				metadataSource.getMaximumScores(rt, new QuestionName(sQuestion, qv)));
 			attatchToAppropriateTestQuestion(score, sQuestion);
 		}
 	}
 
 	/**
-	 * Attatches the score to the TestQuestion itself.
+	 * Attaches the score to the TestQuestion itself.
 	 * @param score
 	 * @param sQuestion
 	 */

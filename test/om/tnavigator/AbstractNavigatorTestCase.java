@@ -13,6 +13,7 @@ import om.axis.qengine.Score;
 import om.tnavigator.scores.CombinedScore;
 import om.tnavigator.teststructure.JUnitTestCaseTestDefinition;
 import om.tnavigator.teststructure.TestDeployment;
+import util.misc.QuestionName;
 
 public class AbstractNavigatorTestCase extends AbstractTestCase {
 
@@ -43,8 +44,7 @@ public class AbstractNavigatorTestCase extends AbstractTestCase {
 		}
 
 		@Override
-		public Score[] getMaximumScores(RequestTimings rt, String sID,
-				String sVersion) throws IOException, RemoteException {
+		public Score[] getMaximumScores(RequestTimings rt, QuestionName question) throws IOException, RemoteException {
 			List<Score> scores = new ArrayList<Score>();
 			for (int i = 1; i < 6; i++) {
 				scores.add(new Score("axis-" + i, i * 10));

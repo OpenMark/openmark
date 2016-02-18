@@ -16,7 +16,10 @@ import om.tnavigator.*;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.reports.OmTestReport;
 import om.tnavigator.sessions.UserSession;
+import om.tnavigator.teststructure.CachingQuestionMetadataSource;
+import om.tnavigator.teststructure.QuestionMetadataSource;
 import om.tnavigator.teststructure.TestDeployment;
+import util.misc.QuestionName;
 
 /**
  * The main OM report. Lists summaries of various things with links to more detailed reports.
@@ -76,6 +79,7 @@ public class HomeTestReport implements OmTestReport {
 		List<DbInfoPerson> lUnfinished=new LinkedList<DbInfoPerson>();
 		List<DbInfoPerson> lAdmin=new LinkedList<DbInfoPerson>();
 		List<DbInfoQuestion> lQuestions=new LinkedList<DbInfoQuestion>();
+		QuestionMetadataSource metaDataSource = new CachingQuestionMetadataSource(ns);
 
 		SimpleDateFormat
 			sdfD=new SimpleDateFormat("dd MMMM yyyy"),
@@ -195,9 +199,9 @@ public class HomeTestReport implements OmTestReport {
 		sb.append("<table class='topheaders'><tr><th>#</th><th>ID</th><th>Taken by</th><th>Average score</th><th>Out of</th></tr>");
 		for(DbInfoQuestion diq : lQuestions)
 		{
-			Score[] as=ns.getMaximumScores(null,diq.sQuestion,
-				ns.getLatestVersion(diq.sQuestion,diq.iMajor).toString());
-			String sMax="??";
+			Score[] as = metaDataSource.getMaximumScores(null, new QuestionName(diq.sQuestion,
+					metaDataSource.getLatestVersion(diq.sQuestion, diq.iMajor)));
+			String sMax = "??";
 			for(int iScore=0;iScore<as.length;iScore++)
 			{
 				if(as[iScore].getAxis()==null)

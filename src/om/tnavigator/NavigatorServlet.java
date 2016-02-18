@@ -85,6 +85,7 @@ import om.tnavigator.sessions.SessionManager;
 import om.tnavigator.sessions.TemplateLoader;
 import om.tnavigator.sessions.UserSession;
 import om.tnavigator.teststructure.PreCourseDiagCode;
+import om.tnavigator.teststructure.QuestionMetadataSource;
 import om.tnavigator.teststructure.SummaryDetails;
 import om.tnavigator.teststructure.SummaryTableBuilder;
 import om.tnavigator.teststructure.TestDefinition;
@@ -105,6 +106,7 @@ import util.misc.IO;
 import util.misc.LabelSets;
 import util.misc.MimeTypes;
 import util.misc.NameValuePairs;
+import util.misc.QuestionName;
 import util.misc.QuestionVersion;
 import util.misc.RequestHelpers;
 import util.misc.StopException;
@@ -118,7 +120,7 @@ import util.xml.XML;
 import util.xml.XMLException;
 
 /** Om test navigator; implementation of the test delivery engine. */
-public class NavigatorServlet extends HttpServlet {
+public class NavigatorServlet extends HttpServlet implements QuestionMetadataSource {
 
 	/** Required by the Serializable interface. */
 	private static final long serialVersionUID = 7256101326461641553L;
@@ -1376,16 +1378,8 @@ public class NavigatorServlet extends HttpServlet {
 				+ RequestHelpers.endOfURL(request));
 	}
 
-	/**
-	 * Returns appropriate version of question to use.
-	 * @param sQuestionID  Question ID
-	 * @param iRequiredVersion
-	 *            Desired version or TestQuestion.VERSION_UNSPECIFIED
-	 * @return Appropriate version
-	 * @throws OmException
-	 */
-	public QuestionVersion getLatestVersion(String sQuestionID,
-			int iRequiredVersion) throws OmException {
+	@Override
+	public QuestionVersion getLatestVersion(String sQuestionID, int iRequiredVersion) throws OmException {
 
 		// This should use a proper question bank at some point
 		File[] af = IO.listFiles(questionBankFolder);
@@ -1997,17 +1991,10 @@ public class NavigatorServlet extends HttpServlet {
 		}
 	}
 
-	/**
-	 * @param rt
-	 * @param sID
-	 * @param sVersion
-	 * @return something to do with scores.
-	 * @throws IOException
-	 * @throws RemoteException
-	 */
-	public Score[] getMaximumScores(RequestTimings rt, String sID,
-			String sVersion) throws IOException, RemoteException {
-		Element eMetadata = getQuestionMetadata(rt, sID, sVersion);
+	@Override
+	public Score[] getMaximumScores(RequestTimings rt, QuestionName question) throws IOException, RemoteException {
+		Element eMetadata = getQuestionMetadata(rt, question.getQuestionId(),
+				question.getQuestionVersion().toString());
 		if (XML.hasChild(eMetadata, "scoring")) {
 			try {
 				Element[] aeMarks = XML.getChildren(XML.getChild(eMetadata,

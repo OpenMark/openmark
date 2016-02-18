@@ -1,6 +1,5 @@
 package om.tnavigator.teststructure;
 
-import om.tnavigator.NavigatorServlet;
 import om.tnavigator.NavigatorServlet.RequestTimings;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
@@ -28,7 +27,7 @@ public class JUnitTestCaseTestRealisation extends TestRealisation {
 	}
 
 	@Override
-	public CombinedScore getScore(RequestTimings rt, NavigatorServlet ns,
+	public CombinedScore getScore(RequestTimings rt, QuestionMetadataSource metadataSource,
 			DatabaseAccess da, OmQueries oq) throws Exception {
 		applyDummyScores();
 		return combinedScore;

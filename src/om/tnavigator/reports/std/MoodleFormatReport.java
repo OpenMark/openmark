@@ -24,6 +24,8 @@ import om.tnavigator.reports.TabularReportBase;
 import om.tnavigator.reports.TabularReportWriter;
 import om.tnavigator.scores.CombinedScore;
 import om.tnavigator.sessions.UserSession;
+import om.tnavigator.teststructure.CachingQuestionMetadataSource;
+import om.tnavigator.teststructure.QuestionMetadataSource;
 import om.tnavigator.teststructure.TestDefinition;
 import om.tnavigator.teststructure.TestDeployment;
 import om.tnavigator.teststructure.TestRealisation;
@@ -107,6 +109,7 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 		 */
 		@Override
 		public void generateReport(TabularReportWriter reportWriter) {
+			QuestionMetadataSource metadataSource = new CachingQuestionMetadataSource(ns);
 			DatabaseAccess.Transaction dat = null;
 			try
 			{
@@ -120,7 +123,6 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 				// * Within categories (finished/unfinished), sorting by PI
 				// I achieve this by setting the sort order and dropping all but the first
 				// result for each PI.
-
 				ResultSet rs = ns.getOmQueries().queryTestAttemptersByPIandFinishedASC(dat, testId);
 
 				String lastpi = "";
@@ -153,7 +155,8 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 
 					// Use it to get the score.
 					String assignmentid = testRealisation.getTestId();
-					CombinedScore score = testRealisation.getScore(new NavigatorServlet.RequestTimings(), ns, ns.getDatabaseAccess(), ns.getOmQueries());
+					CombinedScore score = testRealisation.getScore(new NavigatorServlet.RequestTimings(),
+							metadataSource, ns.getDatabaseAccess(), ns.getOmQueries());
 
 					// Get the name of the first axis, which is the default.
 					String defaultAxis=null;
