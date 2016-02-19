@@ -17,8 +17,11 @@
  */
 package util.misc;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
@@ -29,6 +32,7 @@ import java.util.regex.Pattern;
 /** Utilities related to strings and string formatting */
 public class Strings
 {
+	private final static DateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private static Random random;
 
 	private static synchronized Random getRandom() {
@@ -260,6 +264,23 @@ public class Strings
 			return "NULL";
 		else
 			return "'"+s.replaceAll("'","''")+"'";
+	}
+
+	/**
+	 * Quotes a date for SQL.
+	 * @param date the date/time to insert in a query.
+	 * @return value ready to use.
+	 */
+	public static String sqlQuote(Calendar date)
+	{
+		if (date == null)
+		{
+			return "NULL";
+		}
+		else
+		{
+			return "'" + sqlDateFormat.format(date.getTime()) + "'";
+		}
 	}
 
 	/** @return A random alphanumeric character */

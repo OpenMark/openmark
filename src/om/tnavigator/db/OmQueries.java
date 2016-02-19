@@ -20,6 +20,7 @@ package om.tnavigator.db;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import om.Log;
 import om.OmVersion;
@@ -173,6 +174,55 @@ public abstract class OmQueries
 				"WHERE deploy = " + Strings.sqlQuote(testID) + " " +
 				"AND t.finished <> 0 " +
 				excludeAnonymousSql +
+
+				"ORDER BY t.pi, t.attempt, t.ti, tq.question, SIGN(q.finished) DESC, q.attempt DESC");
+	}
+
+	/**
+	 * Like queryScores, but get the data for all the finished attempts at a
+	 * given test. The data is sorted so the rows for each ti are together,
+	 * and attempts for each user are together and in order
+	 * (ORDER BY pi, attempt, ti).
+	 *
+	 * The first 8 columns in the result test are the same as the 8 columns
+	 * returned by queryScores, then there are 3 extra columns with more
+	 * information about the ti.
+	 *
+	 * @param dat the transaction within which the query should be executed.
+	 * @param testID the deploy file ID.
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
+	public ResultSet queryScoresForAttemptsAtTestByDate(DatabaseAccess.Transaction dat,
+			String testID, Calendar startDate, Calendar endDate)
+			throws SQLException
+	{
+		String extraConditions = "";
+
+		if (startDate != null)
+		{
+			extraConditions += " AND finishedclock >= " + Strings.sqlQuote(startDate);
+		}
+
+		if (endDate != null)
+		{
+			extraConditions += " AND finishedclock < " + Strings.sqlQuote(endDate);
+		}
+
+		return dat.query(
+				"SELECT " +
+					"tq.question, " +
+					"q.majorversion, q.minorversion, q.attempt, " +
+					"s.axis, s.score, " +
+					"tq.requiredversion, " +
+					"t.ti, t.pi, t.rseed, t.variant, t.oucu, t.clock, t.finishedclock " +
+
+				"FROM " + getPrefix() + "tests t " +
+				"LEFT JOIN " + getPrefix() + "testquestions tq ON tq.ti = t.ti " +
+				"LEFT JOIN " + getPrefix() + "questions q ON tq.question = q.question AND tq.ti = q.ti " +
+				"LEFT JOIN " + getPrefix() + "scores s ON s.qi = q.qi " +
+
+				"WHERE deploy = " + Strings.sqlQuote(testID) + extraConditions + " " +
 
 				"ORDER BY t.pi, t.attempt, t.ti, tq.question, SIGN(q.finished) DESC, q.attempt DESC");
 	}

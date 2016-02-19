@@ -413,9 +413,6 @@ public class DeployedTestsReport implements OmReport {
 			return;
 		}
 
-		/* (non-Javadoc)
-		 * @see om.tnavigator.reports.TabularReportBase#extraHtmlContent(org.w3c.dom.Element)
-		 */
 		@Override
 		public void extraHtmlContent(Element mainElement) {
 			super.extraHtmlContent(mainElement);
