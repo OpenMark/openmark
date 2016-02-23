@@ -145,12 +145,18 @@ public abstract class OmQueries
 	 *
 	 * @param dat the transaction within which the query should be executed.
 	 * @param testID the deploy file ID.
+	 * @param includeAnonymous whether anonymous users should be included.
 	 * @return the requested data.
 	 * @throws SQLException
 	 */
-	public ResultSet queryScoresForAllAttemptsAtTest(DatabaseAccess.Transaction dat, String testID)
+	public ResultSet queryScoresForAllAttemptsAtTest(DatabaseAccess.Transaction dat,
+			String testID, boolean includeAnonymous)
 	  throws SQLException
 	{
+		String excludeAnonymousSql = "";
+		if (!includeAnonymous) {
+			excludeAnonymousSql = "AND NOT (t.oucu = t.pi AND t.pi LIKE '\\________' ESCAPE '\\') ";
+		}
 		return dat.query(
 				"SELECT " +
 					"tq.question, " +
@@ -166,6 +172,7 @@ public abstract class OmQueries
 
 				"WHERE deploy = " + Strings.sqlQuote(testID) + " " +
 				"AND t.finished <> 0 " +
+				excludeAnonymousSql +
 
 				"ORDER BY t.pi, t.attempt, t.ti, tq.question, SIGN(q.finished) DESC, q.attempt DESC");
 	}

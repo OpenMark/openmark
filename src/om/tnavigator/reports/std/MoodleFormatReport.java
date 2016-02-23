@@ -14,6 +14,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import om.OmException;
 import om.OmUnexpectedException;
 import om.tnavigator.NavigatorServlet;
@@ -29,6 +33,8 @@ import om.tnavigator.teststructure.QuestionMetadataSource;
 import om.tnavigator.teststructure.TestDefinition;
 import om.tnavigator.teststructure.TestDeployment;
 import om.tnavigator.teststructure.TestRealisation;
+import util.xml.XML;
+import util.xml.XMLException;
 
 /**
  * This report exports test scores in the format expected by the Moodle &gt;=1.9 gradebook.
@@ -44,30 +50,22 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 		this.ns = ns;
 	}
 
-	/* (non-Javadoc)
-	 * @see om.tnavigator.reports.OmTestReport#getUrlTestReportName()
-	 */
+	@Override
 	public String getUrlTestReportName() {
 		return "moodle";
 	}
 
-	/* (non-Javadoc)
-	 * @see om.tnavigator.reports.OmTestReport#getReadableReportName()
-	 */
+	@Override
 	public String getReadableReportName() {
 		return "Results for import into the Moodle gradebook";
 	}
 
-	/* (non-Javadoc)
-	 * @see om.tnavigator.reports.OmTestReport#isApplicable(om.tnavigator.TestDeployment)
-	 */
+	@Override
 	public boolean isApplicable(TestDeployment td) {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see om.tnavigator.reports.OmReport#getUrlReportName()
-	 */
+	@Override
 	public String getUrlReportName() {
 		return "moodle";
 	}
@@ -75,16 +73,60 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 	private class MoodleTabularReport extends TabularReportBase {
 		private String testId;
 		private TestDefinition def;
+		private boolean includeAnonymous;
 
-		MoodleTabularReport(String testId, TestDeployment deploy) throws OmException {
+		MoodleTabularReport(String testId, TestDeployment deploy, boolean includeAnonymous) throws OmException {
 			this.testId = testId;
 			this.def = deploy.getTestDefinition();
 			this.ns = MoodleFormatReport.this.ns;
+			this.includeAnonymous = includeAnonymous;
 			batchid = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 			title = testId + " results for export to Moodle";
 		}
 
-		private void outputScoresForPI(String pi, CombinedScore score, TabularReportWriter reportWriter)
+		@Override
+		public void extraHtmlContent(Element mainElement) {
+			super.extraHtmlContent(mainElement);
+			try {
+				Document d = mainElement.getOwnerDocument();
+				Element form = XML.getChild(XML.getChild(mainElement, "form"), "p");
+
+				Element label = d.createElement("label");
+				label.setAttribute("for", "anonymous-input");
+				XML.setText(label, "Include anonymous users ");
+
+				Element input = d.createElement("input");
+				input.setAttribute("type", "checkbox");
+				input.setAttribute("value", "1");
+				input.setAttribute("name", "anonymous");
+				input.setAttribute("id", "anonymous-input");
+				if (includeAnonymous)
+				{
+					input.setAttribute("checked", "checked");
+				}
+
+				Element hidden = d.createElement("input");
+				hidden.setAttribute("type", "hidden");
+				hidden.setAttribute("name", "test");
+				hidden.setAttribute("value", testId);
+
+				Node oldFirstChild = form.getFirstChild();
+				form.insertBefore(label, oldFirstChild);
+				form.insertBefore(input, oldFirstChild);
+				form.insertBefore(hidden, oldFirstChild);
+				form.insertBefore(d.createTextNode(" "), oldFirstChild);
+			} catch (XMLException e) {
+				throw new OmUnexpectedException("Cannot find form element.", e);
+			}
+		}
+
+		/**
+		 * Output all the scores for a given user.
+		 * @param pi the user id
+		 * @param score the scores
+		 * @param reportWriter where to send the output.
+		 */
+		protected void outputScoresForPI(String pi, CombinedScore score, TabularReportWriter reportWriter)
 		{
 			try
 			{
@@ -101,9 +143,6 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 			}
 		}
 
-		/* (non-Javadoc)
-		 * @see om.tnavigator.reports.TabularReportBase#generateReport(om.tnavigator.reports.TabularReportWriter)
-		 */
 		@Override
 		public void generateReport(TabularReportWriter reportWriter) {
 			QuestionMetadataSource metadataSource = new CachingQuestionMetadataSource(ns);
@@ -117,9 +156,9 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 				// We will loop through the attempts for each user, and keep the
 				// one with the highest score. (So, if there are two with equal
 				// score, we take the first.)
-				ResultSet rs = ns.getOmQueries().queryScoresForAllAttemptsAtTest(dat, testId);
+				ResultSet rs = ns.getOmQueries().queryScoresForAllAttemptsAtTest(dat, testId, includeAnonymous);
 
-				// Becuase Java ResultSets are stupid (you cannot rely on isAfterLast) we
+				// Because Java ResultSets are stupid (you cannot rely on isAfterLast) we
 				// adopt the convention that the it is closed as soon at rs.next() returns false.
 				if (!rs.next()) {
 					rs.close();
@@ -179,9 +218,6 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 			}
 		}
 
-		/* (non-Javadoc)
-		 * @see om.tnavigator.reports.TabularReportBase#init(javax.servlet.http.HttpServletRequest)
-		 */
 		@Override
 		public List<ColumnDefinition> init(HttpServletRequest request) {
 			List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
@@ -192,30 +228,25 @@ public class MoodleFormatReport implements OmTestReport, OmReport {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see om.tnavigator.reports.OmTestReport#handleTestReport(om.tnavigator.UserSession, java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 */
+	@Override
 	public void handleTestReport(UserSession us, String suffix,
 			HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		MoodleTabularReport report = new MoodleTabularReport(us.getTestId(), us.getTestDeployment());
+		boolean includeAnonymous = "1".equals(request.getParameter("anonymous"));
+		MoodleTabularReport report = new MoodleTabularReport(us.getTestId(), us.getTestDeployment(), includeAnonymous);
 		report.handleReport(request, response);
 	}
 
-	/* (non-Javadoc)
-	 * @see om.tnavigator.reports.OmReport#handleReport(java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 */
+	@Override
 	public void handleReport(String suffix, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String testId = request.getParameter("test");
 		TestDeployment deploy = new TestDeployment(ns.pathForTestDeployment(testId));
+		boolean includeAnonymous = "1".equals(request.getParameter("anonymous"));
 
-		MoodleTabularReport report = new MoodleTabularReport(testId, deploy);
+		MoodleTabularReport report = new MoodleTabularReport(testId, deploy, includeAnonymous);
 		report.handleReport(request, response);
 	}
 
-	/* (non-Javadoc)
-	 * @see om.tnavigator.reports.OmReport#isSecurityRestricted()
-	 */
 	@Override
 	public boolean isSecurityRestricted() {
 		return true;
