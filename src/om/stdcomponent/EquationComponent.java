@@ -340,6 +340,14 @@ public class EquationComponent extends QComponent
 					apPlaces[i].iActualX=p.x;
 					apPlaces[i].iActualY=p.y;
 				}
+
+				// Generate double-size image for retina displays.
+				Equation e2x=Equation.create(sCurrent,(float)(dZoom*2));
+				if(getBoolean(PROPERTY_TEXTFONT))
+					e2x.setFont("Verdana",new int[]{13,11,9});
+				BufferedImage bi2x=e2x.render(cForeground,cBackground,true);
+				qc.addResource("2x"+sFilename,"image/png",QContent.convertPNG(bi2x));
+
 				sSent=sFilename;
 			}
 
@@ -356,6 +364,7 @@ public class EquationComponent extends QComponent
 			eImg.setAttribute("id",sImageID);
 			eImg.setAttribute("onmousedown","return false;"); // Prevent Firefox drag/drop
 			eImg.setAttribute("src","%%RESOURCES%%/"+sFilename);
+			eImg.setAttribute("srcset","%%RESOURCES%%/2x"+sFilename+" 2x");
 			eImg.setAttribute("alt",getString("alt"));
 			eImg.setAttribute("style","vertical-align:-"+(e.getHeight()-e.getBaseline())+"px;");
 
