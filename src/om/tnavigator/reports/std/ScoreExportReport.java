@@ -212,7 +212,7 @@ public class ScoreExportReport implements OmTestReport, OmReport
 		public List<ColumnDefinition> init(HttpServletRequest request)
 		{
 			List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
-			columns.add(new ColumnDefinition("pi", "Student"));
+			columns.add(new ColumnDefinition("student", "Student"));
 			columns.add(new ColumnDefinition("oucu", "OUCU"));
 			columns.add(new ColumnDefinition("starttime", "Start time"));
 			columns.add(new ColumnDefinition("finishtime", "Submit time"));
