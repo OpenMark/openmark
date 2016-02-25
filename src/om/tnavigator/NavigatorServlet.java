@@ -1146,8 +1146,7 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 		// Set up the basic parts of the test session
 
 		// Random seed is normally time in milliseconds. For system testing we
-		// fix
-		// it to always be the same value.
+		// fix it to always be the same value.
 		initTestSession(us, rt, sTestID, request, response, false, false,
 				System.currentTimeMillis(), variant);
 
@@ -1163,11 +1162,11 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 			if (rs.next() && rs.getMetaData().getColumnCount() > 0)
 				iMaxAttempt = rs.getInt(1);
 			// Use same PI as OUCU for non-logged-in guests
-			String sPi=us.ud.isLoggedIn() ? us.ud.getPersonID() : us.sOUCU;
-			// lots of debugging to try to work out why its storing ouc and not pi
+			String sPi=us.ud.isLoggedIn() ? us.ud.getPersonId() : us.sOUCU;
+			// lots of debugging to try to work out why its storing oucu and not pi
 			try
 			{
-				String sPInew=us.ud.getPersonID();
+				String sPInew=us.ud.getPersonId();
 				if (sPInew != null)
 				{
 					l.logDebug("navigatorservlet us.ud.getPersonID() ="+sPInew);
@@ -1197,12 +1196,11 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 					sPi, us.getFixedVariant(), us.navigatorVersion);
 
 			int dbTi = oq.getInsertedSequenceID(dat, "tests", "ti");
-
-			l.logDebug("TI = " + dbTi);
+			l.logDebug("Created new test attempt with ti " + dbTi);
 
 			us.setDbTi(dbTi);
 
-			// generate an pre course diagnostic code code if appropriate and add to database table
+			// Generate an pre-course diagnostic code code if appropriate and add to database table
 			if (PreCourseDiagCode.shouldGenerateNewCode(us))
 			{
 				PreCourseDiagCode pcdc=new PreCourseDiagCode(dbTi, us.sOUCU);
@@ -1631,7 +1629,7 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 		}
 
 		serveTestContent(us, "Results for "
-				+ (us.ud.isLoggedIn() ? us.ud.getPersonID() : "guest"), "",
+				+ (us.ud.isLoggedIn() ? us.ud.getPersonId() : "guest"), "",
 				null, null, XML.saveString(dTemp), false, request, response,
 				true);
 	}
@@ -2753,7 +2751,7 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 				sEmail = XML.replaceTokens(sEmail, "%%", mReplace);
 
 				try {
-					String token = getAuthentication().sendMail(us.sOUCU, us.ud.getPersonID(),
+					String token = getAuthentication().sendMail(us.sOUCU, us.ud.getPersonId(),
 							sEmail, Authentication.EMAIL_CONFIRMSUBMIT);
 					getLog().logNormal(
 							"Sent submit confirm email to " + us.sOUCU

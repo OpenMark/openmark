@@ -881,7 +881,7 @@ public abstract class OmQueries
 	 * @param sPI the new pi
 	 * @throws SQLException
 	 */
-	public void updatePI(DatabaseAccess.Transaction dat,int ti,String sPI)
+	public void updatePi(DatabaseAccess.Transaction dat,int ti,String sPI)
 	  throws SQLException
 	{
 		dat.update("UPDATE " + getPrefix() + "tests SET pi="+Strings.sqlQuote(sPI)+" WHERE ti="+ti);
@@ -1312,6 +1312,4 @@ public abstract class OmQueries
 	
 		}
 	}
-
-
 }

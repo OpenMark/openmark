@@ -356,7 +356,7 @@ public class SessionManager
 		us.touch();
 
 		// If they now have a claimed real OUCU, but were previously using a fake
-		// OUCU, kill their session cookie so they start a new session with thier OUCU.
+		// OUCU, kill their session cookie so they start a new session with their OUCU.
 		if (us.ud != null && sOUCU != null && !us.ud.isLoggedIn())
 		{
 			Cookie c = new Cookie(getTestCookieName(sTestID), "");

@@ -44,24 +44,27 @@ public class SimpleUncheckedUser implements UncheckedUserDetails
 		this.cookieName=cookieName;
 	}
 
+	@Override
 	public String getCookie()
 	{
 		return cookie;
 	}
 
-	public String getPersonID()
+	@Override
+	public String getPersonId()
 	{
 		return getUsername();
 	}
 
+	@Override
 	public String getUsername()
 	{
 		return username;
 	}
-	
+
+	@Override
 	public String getsCookieName()
 	{
 		return cookieName;
 	}
-	
 }

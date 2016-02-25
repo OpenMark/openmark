@@ -27,7 +27,7 @@ public interface UserDetails
 	public String getUsername();
 
 	/** @return Person ID or empty string if user isn't logged on */
-	public String getPersonID();
+	public String getPersonId();
 
 	/** @return Authentication cookie or empty string if user is not logged in */
 	public String getCookie();

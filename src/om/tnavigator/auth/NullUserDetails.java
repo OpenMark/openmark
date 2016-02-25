@@ -6,36 +6,43 @@ package om.tnavigator.auth;
  */
 public class NullUserDetails implements UserDetails
 {
+	@Override
 	public String getAuthIDsAsString()
 	{
 		return "";
 	}
 
+	@Override
 	public String getCookie()
 	{
 		return "";
 	}
 
-	public String getPersonID()
+	@Override
+	public String getPersonId()
 	{
 		return "";
 	}
 
+	@Override
 	public String getUsername()
 	{
 		return "";
 	}
 
+	@Override
 	public boolean hasAuthID(String sAuthId)
 	{
 		return false;
 	}
 
+	@Override
 	public boolean isLoggedIn()
 	{
 		return false;
 	}
 
+	@Override
 	public boolean shouldReceiveTestMail()
 	{
 		return false;

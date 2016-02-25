@@ -43,6 +43,7 @@ public class SimpleUser implements UserDetails
 		groups.add(group);
 	}
 
+	@Override
 	public String getAuthIDsAsString()
 	{
 		StringBuffer result=new StringBuffer();
@@ -54,31 +55,37 @@ public class SimpleUser implements UserDetails
 		return result.toString();
 	}
 
+	@Override
 	public String getCookie()
 	{
 		return cookie;
 	}
 
-	public String getPersonID()
+	@Override
+	public String getPersonId()
 	{
 		return username;
 	}
 
+	@Override
 	public String getUsername()
 	{
 		return username;
 	}
 
+	@Override
 	public boolean hasAuthID(String sAuthId)
 	{
 		return groups.contains(sAuthId);
 	}
 
+	@Override
 	public boolean isLoggedIn()
 	{
 		return this!=NOTLOGGEDIN;
 	}
 
+	@Override
 	public boolean shouldReceiveTestMail()
 	{
 		return email!=null;
