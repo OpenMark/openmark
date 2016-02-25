@@ -85,29 +85,43 @@ public abstract class OmQueries
 	public ResultSet queryUnfinishedSessions(DatabaseAccess.Transaction dat,String oucu,String testID) throws SQLException
 	{
 		return dat.query(
-			"SELECT ti,rseed,finished,variant,testposition,navigatorversion " +
+			"SELECT ti,rseed,finished,variant,testposition,navigatorversion,pi " +
 			"FROM " + getPrefix() + "tests " +
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(testID)+" " +
 			"ORDER BY attempt DESC LIMIT 1");
 	}
 
 	/**
-	 * do a simple one table select in an openmark way
-	 * @param dat the transaction within which the query should be executed.
-	 * @param select what we are selecting
-	 * @param from the table wer are selecting from
-	 * @param where the where clause
-	 * @param order the order wanted as used in order by
-	 * @return the requestedt data.
+	 * Sometimes the authentication system fails to return the user's PI. In that
+	 * case we use this function to guess the PI by taking the one from the most
+	 * recently started other attempt for this OUCU.
+	 * @param dat in-progress database query.
+	 * @param oucu the username to guess the PI for.
+	 * @return guessed PI, or null if we cannot find one.
 	 * @throws SQLException
 	 */
-	public ResultSet querySimpleSelect(DatabaseAccess.Transaction dat,String select,String from, String where, String order) throws SQLException
+	public String queryGuessPiForOucu(Transaction dat, String oucu) throws SQLException
 	{
-		return dat.query(
-			"SELECT " + select +
-			"FROM " + getPrefix() + from +
-			"WHERE " + where +
-			"ORDER BY " + order);
+		ResultSet rs = dat.query(
+				"SELECT pi " +
+				"FROM " + getPrefix() + "tests " +
+				"WHERE oucu = " + Strings.sqlQuote(oucu) + " AND pi <> oucu " +
+				"ORDER BY clock DESC LIMIT 1");
+		try
+		{
+			if (rs.next())
+			{
+				return rs.getString(1);
+			}
+			else
+			{
+				return null;
+			}
+		}
+		finally
+		{
+			rs.close();
+		}
 	}
 
 	/**

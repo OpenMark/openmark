@@ -74,6 +74,7 @@ import om.axis.qengine.StartReturn;
 import om.tnavigator.auth.Authentication;
 import om.tnavigator.auth.AuthenticationFactory;
 import om.tnavigator.auth.AuthenticationInstantiationException;
+import om.tnavigator.auth.sams.SAMSUserDetails;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.overduenotifier.OverdueTestNotifier;
@@ -1161,34 +1162,28 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 			int iMaxAttempt = 0;
 			if (rs.next() && rs.getMetaData().getColumnCount() > 0)
 				iMaxAttempt = rs.getInt(1);
-			// Use same PI as OUCU for non-logged-in guests
-			String sPi=us.ud.isLoggedIn() ? us.ud.getPersonId() : us.sOUCU;
-			// lots of debugging to try to work out why its storing oucu and not pi
-			try
-			{
-				String sPInew=us.ud.getPersonId();
-				if (sPInew != null)
-				{
-					l.logDebug("navigatorservlet us.ud.getPersonID() ="+sPInew);
-				}
-				else
-				{
-					l.logDebug("navigatorservlet us.ud.getPersonID() null");
-				}
-			}
-			catch (Exception e)
-			{
-				l.logDebug("navigatorservlet us.ud.getPersonID() errors");
-			}
 
-			if(us.ud.isLoggedIn())
+			String sPi;
+			if (us.ud.isLoggedIn())
 			{
-				l.logDebug("Logged in determining sPI="+sPi);
+				sPi = us.ud.getPersonId();
+				if (us.sOUCU.equals(sPi) && us.ud instanceof SAMSUserDetails)
+				{
+					// There is a bug with the authentication services where it
+					// sometimes fails to get the right PI, in which case look
+					// for the most recent previous attempt by this users, and
+					// assume the same id.
+					String guessedPi = oq.queryGuessPiForOucu(dat, us.sOUCU);
+					if (guessedPi != null) {
+						sPi = guessedPi;
+						((SAMSUserDetails) us.ud).setPersonID(guessedPi);
+					}
+				}
 			}
 			else
 			{
-				l.logDebug("Not Logged in determining sPI="+sPi);
-
+				// Use same PI as OUCU for non-logged-in guests
+				sPi = us.sOUCU;
 			}
 
 			oq.insertTest(dat, us.sOUCU, sTestID, us.getRandomSeed(),
@@ -3316,6 +3311,7 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 			int iTestVariant = -1;
 			int iPosition = -1;
 			String navigatorversion = "";
+			String dbPi = null;
 			if (rs.next()) {
 				iDBti = rs.getInt(1);
 				lRandomSeed = rs.getLong(2);
@@ -3325,6 +3321,7 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 					iTestVariant = -1;
 				iPosition = rs.getInt(5);
 				navigatorversion = rs.getString(6);
+				dbPi = rs.getString(7);
 			}
 
 			// No match? OK, return false
@@ -3340,6 +3337,24 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 					true, lRandomSeed, iTestVariant);
 			us.setTestPosition(iPosition);
 			us.navigatorVersion = navigatorversion;
+
+			if (us.ud.isLoggedIn() && us.ud instanceof SAMSUserDetails &&
+					!us.ud.getPersonId().equals(dbPi))
+			{
+				// There is a bug with the authentication services where it
+				// sometimes fails to get the right PI.
+				if (!us.sOUCU.equals(us.ud.getPersonId()))
+				{
+					// sThe value is right in the session now, but wrong in the
+					// database. Update the database.
+					oq.updatePi(dat, iDBti, dbPi);
+				}
+				else if (!us.ud.getPersonId().equals(dbPi))
+				{
+					// Alternatively, the PI is wrong in the session, so fix it.
+					((SAMSUserDetails) us.ud).setPersonID(dbPi);
+				}
+			}
 
 			// Find out which question they're on
 			if (!us.isFinished()) {
