@@ -44,6 +44,7 @@ import util.xml.XMLException;
  */
 public class ScoreExportReport implements OmTestReport, OmReport
 {
+	private static final DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 	private static final DateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	private NavigatorServlet ns;
@@ -120,6 +121,8 @@ public class ScoreExportReport implements OmTestReport, OmReport
 			this.reportStartDate = reportStartDate;
 			this.reportEndDate = reportEndDate;
 			title = testId + " score export";
+			batchid = testId + "-" + dateFormat.format(reportStartDate.getTime()) + "-" +
+					dateFormat.format(reportEndDate.getTime());
 		}
 
 		protected void initialiseDateOptions()
