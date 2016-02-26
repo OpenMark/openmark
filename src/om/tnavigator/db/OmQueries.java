@@ -79,7 +79,7 @@ public abstract class OmQueries
 	 * @param dat the transaction within which the query should be executed.
 	 * @param oucu the user's username.
 	 * @param testID the deploy file ID.
-	 * @return the requestedt data.
+	 * @return the requested data.
 	 * @throws SQLException
 	 */
 	public ResultSet queryUnfinishedSessions(DatabaseAccess.Transaction dat,String oucu,String testID) throws SQLException

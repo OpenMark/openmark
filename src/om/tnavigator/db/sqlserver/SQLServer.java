@@ -52,7 +52,7 @@ public class SQLServer extends OmQueries
 	public ResultSet queryUnfinishedSessions(DatabaseAccess.Transaction dat,String oucu,String deploy) throws SQLException
 	{
 		return dat.query(
-			"SELECT TOP 1 ti,rseed,finished,variant,testposition,navigatorversion " +
+			"SELECT TOP 1 ti,rseed,finished,variant,testposition,navigatorversion,pi " +
 			"FROM " + getPrefix() + "tests " +
 			"WHERE oucu="+Strings.sqlQuote(oucu)+" AND deploy="+Strings.sqlQuote(deploy)+" " +
 			"ORDER BY attempt DESC;");
