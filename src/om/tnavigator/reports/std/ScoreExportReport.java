@@ -99,7 +99,7 @@ public class ScoreExportReport implements OmTestReport, OmReport
 			if (reportStartDate == null)
 			{
 				reportStartDate = Calendar.getInstance();
-				reportStartDate.add(Calendar.DAY_OF_MONTH, -1);
+				reportStartDate.add(Calendar.DAY_OF_MONTH, -7);
 			}
 			reportStartDate.set(Calendar.HOUR_OF_DAY, 0);
 			reportStartDate.set(Calendar.MINUTE, 0);
