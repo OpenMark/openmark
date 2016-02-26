@@ -304,7 +304,7 @@ public class ScoreExportReport implements OmTestReport, OmReport
 					{
 						bestScore = thisScore;
 						allScoresForBest = score;
-						baseRow.put("pi", currentPi);
+						baseRow.put("student", currentPi);
 						baseRow.put("oucu", oucu);
 						baseRow.put("starttime", formatDate(startTime));
 						baseRow.put("finishtime", formatDate(finishTime));
