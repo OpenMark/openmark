@@ -302,10 +302,10 @@ html.zoom20 #progress a, html.zoom20 #progress span { padding:0 12px; }
 }
 #progress span.t
 {
-  font-size:10px;
+  font-size:13px;
 }
-html.zoom15 #progress span.t { font-size:15px; }
-html.zoom20 #progress span.t { font-size:20px; }
+html.zoom15 #progress span.t { font-size:19.5px; }
+html.zoom20 #progress span.t { font-size:26px; }
 
 /* Progress on left */
 body.progressleft #progress,
@@ -368,7 +368,7 @@ body.progresswide #progress .sectiontagafter
 /* Singles pages */
 .singleslinks
 {
-  font-size:10px;
+  font-size:13px;
   text-align:right;
   margin-bottom:4px;
 }
