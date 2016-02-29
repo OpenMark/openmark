@@ -481,10 +481,7 @@
 	<target name="javadoc" description="Generate javadoc">
 
 		<delete quiet="true">
-			<fileset dir="${javadoc}">
-				<exclude name="**/cvs/"/>
-				<exclude name="**/cvs"/>
-			</fileset>
+			<fileset dir="${javadoc}"/>
 		</delete>
 
 		<mkdir dir="${javadoc}"/>
