@@ -59,6 +59,31 @@ public class SQLServer extends OmQueries
 	}
 
 	@Override
+	public String queryGuessPiForOucu(Transaction dat, String oucu) throws SQLException
+	{
+		ResultSet rs = dat.query(
+				"SELECT TOP 1 pi " +
+				"FROM " + getPrefix() + "tests " +
+				"WHERE oucu = " + Strings.sqlQuote(oucu) + " AND pi <> oucu " +
+				"ORDER BY clock DESC");
+		try
+		{
+			if (rs.next())
+			{
+				return rs.getString(1);
+			}
+			else
+			{
+				return null;
+			}
+		}
+		finally
+		{
+			rs.close();
+		}
+	}
+
+	@Override
 	protected String alterStringColumnWidthSQL(String table, String column, int newWidth) {
 		return "ALTER TABLE " + getPrefix() + table +" ALTER COLUMN " + column + " NVARCHAR(" + newWidth + ")";
 	}

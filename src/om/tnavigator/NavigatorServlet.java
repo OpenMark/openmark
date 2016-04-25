@@ -3347,7 +3347,7 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 				{
 					// sThe value is right in the session now, but wrong in the
 					// database. Update the database.
-					oq.updatePi(dat, iDBti, dbPi);
+					oq.updatePi(dat, iDBti, us.ud.getPersonId());
 				}
 				else if (!us.ud.getPersonId().equals(dbPi))
 				{
