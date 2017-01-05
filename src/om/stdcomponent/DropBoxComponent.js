@@ -458,6 +458,7 @@ function dragboxLeavingHome(db)
 		newDragbox.homeLeft=db.homeLeft;
 		newDragbox.homeTop=db.homeTop;
 		newDragbox.onmousedown=db.onmousedown;
+		newDragbox.ontouchstart=db.ontouchstart;
 		newDragbox.valueId=db.valueId;
 
 		db.parentNode.insertBefore(newDragbox,db);
