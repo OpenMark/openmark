@@ -17,6 +17,7 @@
  */
 package om.stdcomponent;
 
+import java.text.Normalizer;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -148,11 +149,14 @@ public class DropdownComponent extends QComponent
 	{
 		for(Option o : lOptions)
 		{
-			if(o.sDisplay.equals(sValue))
+			// Normalise the string, because we have been having trouble with Greek characters.
+			if(Normalizer.normalize(o.sDisplay,Normalizer.Form.NFC).equals(
+					Normalizer.normalize(sValue,Normalizer.Form.NFC)))
 			{
-				setString(PROPERTY_SELECTED,o.sValue);
+				setString(PROPERTY_SELECTED,Normalizer.normalize(o.sValue,Normalizer.Form.NFC));
 				return;
 			}
+
 		}
 
 		throw new OmException("Unexpected dropdown value: "+sValue);
