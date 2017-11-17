@@ -7,7 +7,7 @@
 		<dates> - Dates affecting test (optional; if omitted test is always available)
 		<pcdc> - whether to generate a pre-course diagnostic code
 -->	
-<!ELEMENT deploy (definition,supportcontacts?,access,emailstudents,dates,pcdc?,templateset?)>
+<!ELEMENT deploy (definition,supportcontacts?,access,emailstudents,dates,assessed?,pcdc?,templateset?)>
 
 
 <!-- <definition> is just text (test definition ID) -->
@@ -94,8 +94,8 @@
 <!ELEMENT close (#PCDATA)>
 <!ELEMENT forbid (#PCDATA)>
 <!ELEMENT feedback (#PCDATA)>
-<!ATTLIST assessed   authorship (yes|no) #IMPLIED>
-<!ATTLIST assessed type (1,2,3) #IMPLIED>
+
+<!ELEMENT assessed EMPTY>
 
 
 <!-- <templateset> is the name of a folder inside the main template folder where
