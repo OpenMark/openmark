@@ -1,7 +1,5 @@
 var canvasList=new Array();
 
-
-
 function canvasInit(canvasId,idPrefix,enabled,imageOffsetX,imageOffsetY,keyStep,fg,bg,labelSize)
 {
   canvas=new Object()
@@ -17,6 +15,9 @@ function canvasInit(canvasId,idPrefix,enabled,imageOffsetX,imageOffsetY,keyStep,
   canvas.lines=new Array();
   canvas.dynamic=document.getElementById(idPrefix+canvasId+'_dynamic');
 
+  // Record the background position, so we can detect if it changes later.
+  canvas.img.setAttribute("data-top",canvas.img.offsetTop);
+
   canvasList.push(idPrefix+canvasId,canvas);
 }
 
@@ -27,7 +28,6 @@ function getCanvas(canvasId,idPrefix)
     if(canvasList[index]==idPrefix+canvasId) return canvasList[index+1];
   }
 }
-
 
 function canvasMarkerInit(canvasId,idPrefix,labelJS,originX,originY,factorX,factorY)
 {
@@ -510,3 +510,28 @@ function canvasLineInit(canvasId,idPrefix,from,to,labelJS,originX,originY,factor
   line.update();
 }
 
+function canvasHandleResize() {
+  for(var i=1;i<canvasList.length;i+=2)
+  {
+    var canvas=canvasList[i],
+    prevtop=parseFloat(canvas.img.getAttribute('data-top')),
+    newtop=canvas.img.offsetTop;
+
+    if(prevtop===null||prevtop===newtop)
+    {
+      // No change.
+      continue;
+    }
+
+    // Canvas has moved. Save the new top.
+    canvas.img.setAttribute("data-top",newtop);
+
+    // Reposition all markers.
+    for(var j=0;j<canvas.markers.length;j++)
+    {
+      var marker=canvas.markers[j];
+      canvasSetPos(marker,marker.mX.value,marker.mY.value);
+    }
+  }
+}
+window.addEventListener('resize',canvasHandleResize);
