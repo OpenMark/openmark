@@ -1,6 +1,6 @@
 var OBJECT_TO_FOCUS;
-var mysubtype = new Array();
-var suppress = false;
+var mysubtype=mysubtype||new Array();
+var suppress=suppress||false;
 
 function delayedFocus(obj)
 {

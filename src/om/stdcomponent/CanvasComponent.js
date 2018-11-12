@@ -1,4 +1,4 @@
-var canvasList=new Array();
+var canvasList=canvasList||new Array();
 
 function canvasInit(canvasId,idPrefix,enabled,imageOffsetX,imageOffsetY,keyStep,fg,bg,labelSize)
 {

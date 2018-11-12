@@ -3,7 +3,7 @@
 	This software is licensed under the CC-GNU LGPL <http://creativecommons.org/licenses/LGPL/2.1/>
 */
 
-var UFO = {
+var UFO = UFO||{
 	req: ["movie", "width", "height", "majorversion", "build"],
 	opt: ["play", "loop", "menu", "quality", "scale", "salign", "wmode", "bgcolor", "base", "flashvars", "devicefont", "allowscriptaccess", "seamlesstabbing"],
 	optAtt: ["id", "name", "align"],

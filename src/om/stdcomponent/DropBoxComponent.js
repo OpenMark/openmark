@@ -1,5 +1,5 @@
 // Array of all dragboxes
-var dragboxArray=new Array();
+var dragboxArray=dragboxArray||new Array();
 function dragboxInform(id,idPrefix,enabled,group,infinite)
 {
 	var dragbox=document.getElementById(idPrefix+id);
@@ -13,7 +13,7 @@ function dragboxInform(id,idPrefix,enabled,group,infinite)
 }
 
 // Array of all dropboxes
-var dropboxArray=new Array();
+var dropboxArray=dropboxArray||new Array();
 
 function dropboxFix(id,idPrefix,enabled,group,bgcolour)
 {

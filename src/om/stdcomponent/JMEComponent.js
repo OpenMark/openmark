@@ -16,7 +16,7 @@ function jsmeInit(token)
   window.mJSME = token;
 }
 
-var jsmePopup = null;
+var jsmePopup=jsmePopup||null;
 
 function jsmeClick(jsmeurl, id, idprefix)
 {

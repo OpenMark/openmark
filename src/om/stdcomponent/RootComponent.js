@@ -1,5 +1,5 @@
 // Adds to a chain of events that occur onload
-var onLoadEvents=new Array();
+var onLoadEvents=onLoadEvents||new Array();
 function addOnLoad(handler)
 {
 	onLoadEvents.push(handler);
@@ -15,14 +15,17 @@ function myOnLoad()
 	setTimeout(myPostLoad,0);
 }
 
-if (window.addEventListener){
-	window.addEventListener('load', myOnLoad, false);
-} else if (window.attachEvent){
-	window.attachEvent('onload', myOnLoad);
+var onLoadInitialised = onLoadInitialised||false;
+if (!onLoadInitialised) {
+	if (window.addEventListener){
+		window.addEventListener('load', myOnLoad, false);
+	} else if (window.attachEvent){
+		window.attachEvent('onload', myOnLoad);
+	}
+	onLoadInitialised=true;
 }
 
-
-var postLoadEvents=new Array();
+var postLoadEvents=postLoadEvents||new Array();
 function addPostLoad(handler)
 {
 	postLoadEvents.push(handler);
@@ -280,7 +283,7 @@ function isAutoFocusOn()
 }
 
 // Keep track of focusable objects
-var focusList=new Array();
+var focusList=focusList||new Array();
 function addFocusable(id, expr)
 {
 	var o=new Object();

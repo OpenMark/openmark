@@ -1,4 +1,4 @@
-var mysubtype = new Array();
+var mysubtype=mysubtype||new Array();
 
 function editadvancedfieldFix(fieldName,idPrefix,enabled,type,dZoom, sfg,sbg) {
 	if(enabled) {

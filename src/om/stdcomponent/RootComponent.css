@@ -6,6 +6,9 @@
 {
   color: %%COLOUR:text%%
 }
+.om * { /* Override stupid style rule in some Moodle themes. */
+    box-sizing: content-box;
+}
 .om .gridcontainer
 {
   float:left;

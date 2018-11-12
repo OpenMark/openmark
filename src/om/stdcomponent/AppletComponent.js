@@ -17,7 +17,7 @@ function appInit(token)
   window.mJME=token;
 }
 
-var appPopup=null;
+var appPopup=appPopup||null;
 
 function appClick(resourcesPath,id,idprefix,app,clssNm,w,h,params)
 {
