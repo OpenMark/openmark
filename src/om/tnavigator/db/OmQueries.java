@@ -20,7 +20,12 @@ package om.tnavigator.db;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import om.Log;
 import om.OmVersion;
@@ -1324,6 +1329,150 @@ public abstract class OmQueries
 			l.logError("DatabaseUpgrade",e.getMessage() + "Invalid versions in attempt to compare to database version "+version);
 			throw new IllegalArgumentException(e);
 	
+		}
+	}
+
+	/**
+	 * Get old test data
+	 * @param dat
+	 * @return map with key ti and list value oucu and deploy file name.
+	 * @throws SQLException
+	 */
+	public Map<String, List<String>> queryOldAttemptsNeedingCleaning(DatabaseAccess.Transaction dat)
+			  throws SQLException
+	{
+		List<String> lstti;
+		Map<String, List<String>> mpti = new HashMap<String, List<String>>();
+		String sqlstr = "SELECT TOP 1000 t.ti as ti, "+
+						"t.oucu as oucu, t.deploy as deploy "+
+						"FROM "+ getPrefix() + "tests" +" t " +
+							"JOIN #deploy_clean_times dct ON dct.deploy = t.deploy "+
+							"LEFT JOIN "+getPrefix() + "questions q ON q.ti = t.ti "+
+							"LEFT JOIN "+getPrefix() + "actions a ON a.qi = q.qi "+
+						"WHERE t.clock < dct.cleanolderthan AND "+
+							"(t.finishedclock IS NULL OR t.finishedclock < dct.cleanolderthan) "+
+						"GROUP BY t.ti, t.oucu, t.deploy, dct.cleanolderthan HAVING (MAX(q.clock) IS NULL "+
+							"OR MAX(q.clock) < dct.cleanolderthan) "+
+							"AND (MAX(a.clock) IS NULL OR MAX(a.clock) < dct.cleanolderthan)";
+
+		ResultSet rs = dat.query(sqlstr);
+		while (rs.next()) {
+			lstti = new ArrayList<String>();
+			String ti = rs.getString("ti");
+			String oucu = rs.getString("oucu");
+			String deploy = rs.getString("deploy");
+			lstti.addAll(Arrays.asList(oucu, deploy));
+			mpti.put(ti, lstti);
+		}
+		return mpti;
+	}
+
+	/**
+	 * Delete test instance from all the table.
+	 * @param List of testinstances.
+	 * @param dat.
+	 * @param log instance.
+	 */
+	public void deleteEntireTestAttempts(Map<String, List<String>> testInstances, DatabaseAccess.Transaction dat, Log l)
+	{
+		try{
+			for (Map.Entry<String, List<String>> entry : testInstances.entrySet()) {
+				String ti = entry.getKey();
+				List<String> tidetails = entry.getValue();
+				String sqlinfo = "DELETE "+getPrefix()+"infopages WHERE ti in ("+ti+")";
+				dat.update(sqlinfo);
+
+				String sqlsessioninfo = "DELETE "+getPrefix()+"sessioninfo WHERE ti in ("+ti+")";
+				dat.update(sqlsessioninfo);
+
+				String sqltestquestions ="DELETE "+getPrefix()+"testquestions WHERE ti in ("+ti+")";
+				dat.update(sqltestquestions);
+
+				String sqlnavactions="DELETE from "+getPrefix()+"actions WHERE qi in "+
+										"(SELECT qi from "+getPrefix()+"questions WHERE ti in ("+ti+"))";
+				dat.update(sqlnavactions);
+
+				String sqlparams = "DELETE from "+getPrefix()+"params WHERE qi in "+
+										"(SELECT qi from "+getPrefix()+"questions WHERE ti in ("+ti+"))";
+				dat.update(sqlparams);
+
+				String sqlresults = "DELETE from "+getPrefix()+"results WHERE qi in "+
+										"(SELECT qi from "+getPrefix()+"questions WHERE ti in ("+ti+"))";
+				dat.update(sqlresults);
+
+				String sqlscores = "DELETE from "+getPrefix()+"scores WHERE qi in "+
+										"(SELECT qi from "+getPrefix()+"questions WHERE ti in ("+ti+"))";
+				dat.update(sqlscores);
+
+				String sqlquestions ="DELETE "+getPrefix()+"questions WHERE ti in("+ti+")";
+				dat.update(sqlquestions);
+
+				String sqlprecoursediag="DELETE "+getPrefix()+"precoursediag WHERE ti in ("+ti+")";
+				dat.update(sqlprecoursediag);
+
+				String sqltests ="DELETE FROM "+getPrefix()+"tests WHERE ti in ("+ti+")";
+				dat.update(sqltests);
+
+				l.logNormal("Test attempt ti="+ ti + " at test "+ tidetails.get(1)+ " by user="+ tidetails.get(0) +" deleted");
+			}
+		} catch(SQLException ex) {
+			l.logDebug("oldTestDataRemover", "Failure in deleting Record with Exception=="+ex);
+		}
+	}
+
+	/**
+	 * Create a temporary table
+	 * @param dat the transaction within which the query should be executed.
+	 * @param l the log to be used.
+	 */
+	public void createTempDeployTable(DatabaseAccess.Transaction dat, Log l)
+	throws SQLException
+	{
+		try
+		{
+			String sqlcreate = "CREATE TABLE #deploy_clean_times "+
+									"(deploy VARCHAR(64), "+
+									"cleanolderthan DATETIME)";
+			dat.update(sqlcreate);
+		} catch (Exception ex)
+		{
+			l.logDebug("oldTestDataRemover","Exception creating temp table"+ex);
+		}
+	}
+
+	/**
+	 * Insert the temp table with deploy file name and days.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param String cleanolderthan
+	 * @param String deploy file name.
+	 * @param l the log to be used.
+	 */
+	public void insertClnAfterDays(DatabaseAccess.Transaction dat, String cleanolderthan, String deploy, Log l)
+	throws SQLException
+	{
+		try{
+			String sqlinsert = "INSERT INTO dbo.[#deploy_clean_times] (deploy, cleanolderthan) "+
+									"VALUES (\'" + deploy + "\', DATEADD(day,-"+cleanolderthan+",   "+
+											"GetDate()))";
+			dat.update(sqlinsert);
+		} catch(Exception ex) {
+			l.logDebug("oldTestDataRemover","Exception inserting temp table"+ex);
+		}
+	}
+
+	/**
+	 * Drop the temp table.
+	 * @param dat the transaction within which the query should be executed.
+	 * @param l the log to be used.
+	 */
+	public void dropTempDeployTable(DatabaseAccess.Transaction dat, Log l)
+	throws SQLException
+	{
+		try {
+			String sqldrop = "DROP TABLE dbo.[#deploy_clean_times]";
+			dat.update(sqldrop);
+		} catch(Exception ex) {
+			l.logDebug("oldTestDataRemover","Exception dropping temp table"+ex);
 		}
 	}
 }

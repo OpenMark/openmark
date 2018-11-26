@@ -112,6 +112,15 @@ public class NavigatorConfig
 
 	private Class<?> preProcessingRequestHandler;
 
+	/** Parameters for stop file. */
+	private String oldDataDeleteStopFile;
+
+	/** Parameters to check if job needs to run. */
+	private boolean shouldDeleteOldData;
+
+	/** Parameters for time in hrs. */
+	private String deleteDataDelay;
+
 	public Class<?> retrievePreProcessingRequestHandler() {
 		return preProcessingRequestHandler;
 	}
@@ -275,6 +284,9 @@ public class NavigatorConfig
 
 		standardAdmins = Arrays.asList(Strings.splitSensibly(getParam(sc, "standard-admins")));
 
+		shouldDeleteOldData = "yes".equals(getParam(sc, "run-deleteoldtestdata-jobs"));
+		oldDataDeleteStopFile = getParam(sc, "stop-deleteoldtestdata-file");
+		deleteDataDelay = getParam(sc, "run-delete-test-data-every-hours");
 		try
 		{
 			preProcessingRequestHandler = getClass().getClassLoader().loadClass(
@@ -446,5 +458,32 @@ public class NavigatorConfig
 	public String getPublicUrl()
 	{
 		return publicUrl;
+	}
+
+	/**
+	 * The location of the deleting old file on disc.
+	 * If this file exists, the job will not run.
+	 * @return string file path
+	 */
+	public String getDeleteOldDataFilePath()
+	{
+		return oldDataDeleteStopFile;
+	}
+
+	/**
+	 * Should deleting old test data job run
+	 * @return boolean
+	 */
+	public boolean shouldDeleteOldData()
+	{
+		return shouldDeleteOldData;
+	}
+
+	/**
+	 * Get the delete time from config file
+	 * @return time.
+	 */
+	public String getDeleteDataDelay() {
+		return deleteDataDelay;
 	}
 }

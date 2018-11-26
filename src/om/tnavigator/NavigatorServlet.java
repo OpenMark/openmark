@@ -78,6 +78,7 @@ import om.tnavigator.auth.sams.SAMSUserDetails;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.overduenotifier.OverdueTestNotifier;
+import om.tnavigator.scheduler.oldTestDataRemover;
 import om.tnavigator.reports.ReportDispatcher;
 import om.tnavigator.request.tinymce.TinyMCERequestHandler;
 import om.tnavigator.scores.CombinedScore;
@@ -205,6 +206,7 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 
 	private OverdueTestNotifier overdueNotifier;
 
+	private oldTestDataRemover oldTestDataRemover;
 	/**
 	 * Cache of question metadata: String (ID\nversion) -> Document.
 	 * <p>
@@ -366,6 +368,10 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 		if (nc.shouldRunOverdueTestNotifier()) {
 			overdueNotifier = new OverdueTestNotifier(nc, l, da, oq,
 					authentication, templateLoader);
+		}
+		if(nc.shouldDeleteOldData()) {
+			oldTestDataRemover = new oldTestDataRemover(nc, l, da, oq,
+					 nc.getDeleteDataDelay());
 		}
 	}
 

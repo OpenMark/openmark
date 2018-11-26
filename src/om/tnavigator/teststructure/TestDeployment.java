@@ -108,6 +108,16 @@ public class TestDeployment
 
 	private String templateSet = null;
 
+	private String cleanDataAfterDays;
+
+	/**
+	 * Get the days after which testdata to be deleted.
+	 * @return number of days.
+	 **/
+	public String getCleanDataAfterDays() {
+		return this.cleanDataAfterDays;
+	}
+
 	public void setType(int n) {
 		if (TYPE_NOTASSESSED == n || TYPE_ASSESSED == n) {
 			iType = n;
@@ -206,6 +216,11 @@ public class TestDeployment
 			}
 			eDates=XML.getChild(eRoot,"dates");
 			eAccess=XML.getChild(eRoot,"access");
+
+			if(XML.hasChild(eRoot,"cleandataafterdays"))
+			{
+				cleanDataAfterDays=XML.getText(eRoot,"cleandataafterdays");
+			}
 
 			if(XML.hasChild(eRoot, "assessed"))
 			{
