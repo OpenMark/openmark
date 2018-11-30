@@ -21,6 +21,7 @@ import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 import javax.servlet.descriptor.JspConfigDescriptor;
 
+@SuppressWarnings("deprecation")
 public class TestCaseServletContext implements ServletContext {
 
 	private Map<String, Object> attributes = new HashMap<String, Object>();

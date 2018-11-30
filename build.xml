@@ -61,9 +61,7 @@
 				</fileset>
 			</classpath>
 		</javac>
-
 	</target>
-
 
 	<!-- Copy data files from source to build folder -->
 	<target name="copydata">
@@ -83,9 +81,56 @@
 		</propertyfile>
 	</target>
 
+	<!-- Classpath for JUnit tests -->
+	<path id="test.classpath">
+		<pathelement location="${build}/compiled" />
+		<fileset dir="lib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<!-- Run JUnit tests -->
+	<target name="test" depends="compile" unless="skipunittest.enabled">
+		<!-- Compile and copy all test code -->
+		<mkdir dir="${build}/testclasses" />
+		<mkdir dir="${build}/testresults" />
+		<javac destdir="${build}/testclasses"
+			source="1.8" target="1.8" encoding="UTF-8" debug="true"
+			classpathref="test.classpath" includeantruntime="false">
+			<src>
+				<pathelement path="test"/>
+			</src>
+		</javac>
+		<copy todir="${build}/testclasses">
+			<fileset dir="test">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+
+		<!-- Run JUnit -->
+		<junit fork="on" printsummary="on" failureproperty="junit.failed" dir="${build}/testclasses">
+			<formatter type="xml"/>
+			<classpath>
+				<path refid="test.classpath"/>
+				<pathelement location="${build}/testclasses"/>
+			</classpath>
+			<batchtest todir="${build}/testresults">
+				<fileset dir="test">
+					<!-- The files in test have really crappy inconsistent names :-( -->
+					<include name="**/*Test*.java"/>
+					<exclude name="**/*Abstract*.java"/>
+					<exclude name="**/JUnitTestCase*.java"/>
+					<exclude name="**/TestCaseServletContext.java"/>
+					<exclude name="**/TestLabelSet.java"/>
+					<exclude name="**/TestUserCreator.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+		<fail if="junit.failed" message="Stopping the build because some unit tests failed."/>
+	</target>
 
 	<!-- Create jar files -->
-	<target name="jar" depends="compile, copydata">
+	<target name="jar" depends="compile, copydata, test">
 
 		<mkdir dir="${build}/jars"/>
 

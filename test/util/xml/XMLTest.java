@@ -40,7 +40,7 @@ public class XMLTest extends TestCase
 		"<tadpole4>&amp;&#x2222;</tadpole4>"+
 		"</frog>";
 	private String sSampleCanonical=
-		"<frog><tadpole>47</tadpole><tadpole2/><tadpole3>   \r\n" +
+		"<frog><tadpole>47</tadpole><tadpole2/><tadpole3>   " + System.lineSeparator() +
 		"   </tadpole3><tadpole4>&amp;\u2222</tadpole4></frog>";
 
 	File f;
@@ -185,8 +185,8 @@ public class XMLTest extends TestCase
 	 */
 	public void testSaveStringDocumentBoolean() throws Exception
 	{
-		assertEquals(XML.saveString(d,false),sSampleCanonical);
-		assertEquals(XML.saveString(d,true),PROLOG+sSampleCanonical);
+		assertEquals(sSampleCanonical,XML.saveString(d,false));
+		assertEquals(PROLOG+sSampleCanonical,XML.saveString(d,true));
 	}
 
 	/**

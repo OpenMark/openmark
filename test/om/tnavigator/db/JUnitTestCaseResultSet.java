@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
+@SuppressWarnings("deprecation")
 public class JUnitTestCaseResultSet implements ResultSet {
 
 	@Override

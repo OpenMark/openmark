@@ -344,19 +344,18 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 	 *  is make a number of combinations also.
 	 */
 	@Test public void testWithQuestionNumberHeaderBuildUp() throws Exception {
-		recurseOptions(false, "questionNumberHeader", null, false, true, true, true);
+		recurseOptions("questionNumberHeader", false);
 	}
 
 	@Test public void testWithQuestionNumberHeaderEmptyBuildUp() throws Exception {
-		recurseOptions(false, "", null, false, true, true, true);
+		recurseOptions("", false);
 	}
 
 	@Test public void testBuildUpWithPlainNote() throws Exception {
-		recurseOptions(false, "Tester", null, true, true, true, true);
+		recurseOptions("Tester", true);
 	}
 
-	private void recurseOptions(boolean reset, String questionNumberHeader, String labelBit,
-		boolean bPlain, boolean bIncludeQuestions, boolean bIncludeAttempts, boolean bIncludeScores)
+	private void recurseOptions(String questionNumberHeader, boolean bPlain)
 		throws Exception {
 		JUnitTestCaseTestDefinitionOptions options = new JUnitTestCaseTestDefinitionOptions();
 		List<Method> methods = retrieveInterestingMethods(options, "set", getMethodNameIgnoreList());
@@ -365,10 +364,8 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 		if (null != questionNumberHeader) {
 			options.setsQuestionNumberHeader(questionNumberHeader);
 		}
-		if (null != labelBit) {
-			options.setsLabelSet(labelBit);
-		}
 		for (int i = 0 ; i < methods.size() ; i++) {
+			createParentNode();
 			Method m = methods.get(i);
 			assertNotNull(m);
 			invoke(options, m, new Boolean(true));
@@ -380,17 +377,12 @@ public class SummaryTableTesting extends AbstractNavigatorTestCase {
 			CombinedScore cs = dummyScore();
 			JUnitTestCaseUserSession usession = createSession("2", false,
 				System.currentTimeMillis(), 1, cs, options);
-			SummaryDetails sd = createSummaryDetails(usession, bPlain, bIncludeQuestions, bIncludeAttempts, bIncludeScores);
+			SummaryDetails sd = createSummaryDetails(usession, bPlain, true, true, true);
 			assertNotNull(sd);
 			stb.addSummaryTable(sd);
 			String results = XML.saveString(d);
 			assertTrue(results.contains("<div id=\"summarytable\">"));
-			for (int k = 1; k < 6; k++) {
-				assertTrue(results.contains("<tr class=\"answered\"><td>" + k + "</td>"));
-			}
-			if (reset) {
-				invoke(options, m, null);
-			}
+			assertTrue(results.contains("<tr class=\"answered\"><td>1</td>"));
 		}
 	}
 

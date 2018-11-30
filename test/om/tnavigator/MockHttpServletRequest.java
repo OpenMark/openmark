@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
+@SuppressWarnings("deprecation")
 public class MockHttpServletRequest implements HttpServletRequest {
 
 	private Map<String, Cookie> cookies = new HashMap<String, Cookie>();
