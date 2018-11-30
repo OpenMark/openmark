@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -3703,6 +3705,9 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 
 		m.put("LASTRESTART", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(servletStartTime));
 
+		m.put("TOMCATVERSION", getTomcatInfo());
+		m.put("JAVAVERSION", System.getProperty("java.version"));
+
 		getAuthentication().obtainPerformanceInfo(m);
 
 		URL uThis = nc.getThisTN();
@@ -3712,6 +3717,22 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 		m.put("_qeperformance", osb.getPerformanceInfo());
 
 		m.putAll(da.getConnectionStats());
+	}
+
+	/**
+	 * @return version info about the servlet container we are running in.
+	 */
+	private String getTomcatInfo() {
+		try
+		{
+			Class<?> infoClass = Class.forName("org.apache.catalina.util.ServerInfo");
+			Method method = infoClass.getMethod("getServerInfo");
+			return (String) method.invoke(null);
+		}
+		catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+		{
+			return "{Cannot get Tomcat version}";
+		}
 	}
 
 	/**
