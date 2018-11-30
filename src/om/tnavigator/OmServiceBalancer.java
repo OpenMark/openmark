@@ -89,7 +89,7 @@ public class OmServiceBalancer extends ServiceBalancer<OmService> {
 		 * @throws RemoteException If the service gives an error
 		 */
 		void stop(RequestTimings rt) throws RemoteException {
-			doServiceTask(rt, new ServiceTask<Object>() {
+			this.<Object>doServiceTask(rt, new ServiceTask<Object>() {
 				@Override
 				protected Object run(OmService service) throws RemoteException {
 					service.stop(sQuestionSession);
@@ -108,7 +108,7 @@ public class OmServiceBalancer extends ServiceBalancer<OmService> {
 		 */
 		ProcessReturn process(RequestTimings rt, final String[] names, final String[] values)
 				throws RemoteException {
-			return doServiceTask(rt, new ServiceTask<ProcessReturn>() {
+			return this.<ProcessReturn>doServiceTask(rt, new ServiceTask<ProcessReturn>() {
 				@Override
 				protected ProcessReturn run(OmService service) throws RemoteException {
 					return service.process(sQuestionSession,names,values);

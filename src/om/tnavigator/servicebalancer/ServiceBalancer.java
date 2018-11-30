@@ -162,7 +162,7 @@ public abstract class ServiceBalancer<ServiceType extends java.rmi.Remote>
 	protected abstract class ServiceTask<T extends Object>
 	{
 		/**
-		 * @param service The service to use in proforming the service call.
+		 * @param service The service to use in performing the service call.
 		 * @throws RemoteException from the service call.
 		 */
 		protected abstract T run(ServiceType service) throws RemoteException;
@@ -239,7 +239,7 @@ public abstract class ServiceBalancer<ServiceType extends java.rmi.Remote>
 			throw new OmUnexpectedException("Attemtpt to start a StickySession with an unrecognise service.");
 		}
 
-		protected <T extends Object> T doServiceTask(RequestTimings rt, ServiceTask<T> b) throws RemoteException {
+		protected <T> T doServiceTask(RequestTimings rt, ServiceTask<T> b) throws RemoteException {
 			try {
 				long startTime = System.currentTimeMillis();
 

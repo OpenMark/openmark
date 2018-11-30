@@ -59,7 +59,6 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
     private Calendar dateDeleteBeforeNotAssessed=Calendar.getInstance();
 	private String sDateDeleteBeforeIsAssessed;
 	private String sDateDeleteBeforeNotAssessed;
-	private String sqlFileName="SQLDATA";
 
     private NavigatorConfig nc;	
 	private String SQLIDString="";
@@ -121,9 +120,6 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 				}
 				output.append(DisplayUtils.footer());
 				rr.append(output.toString());
-				/*write it to a file*/
-
-				//writeToFile(sqlFileName + HTML_PREFIX, output);
 
 				getLog().logDebug("Finished now rendering back to the user : ");
 			}
@@ -454,14 +450,14 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 		}
 
 	}
-	/* buuild up the where part of the sql string for the test names*/
+	/** build up the where part of the sql string for the test names*/
 	private String getWhereStr(String[] testConditions,String whatWhere)  throws DataDeletionException
 	{
 
 		StringBuilder whereStr=new StringBuilder();
 		try
 		{	
-			String thisOne = String.format(whatWhere, testConditions);
+			String thisOne = String.format(whatWhere, (Object[]) testConditions);
 			whereStr.append(thisOne);
 
 		}
@@ -658,13 +654,7 @@ public class DatabaseDeletionSQLGeneration extends AbstractRequestHandler {
 				/* now split it up as it will be a csv string */
 
 			}
-			/* get the prefi8x of the name to use for the sql statments to be written to */
-			String sqlFileNamePrefix=DatabaseDeletionEnums.sqlFileNamePrefix.toString();
-			Object o5 = tt1.get(sqlFileNamePrefix);
-			if (null != o5 ? o5 instanceof String : false) 
-			{
-				sqlFileName=o5.toString()+"_"+SQLIDString;
-			}
+
 			/* generate sql for all tables, or split it up table by table because sometimes we blow th ejava heap space*/
 			String tbt=DatabaseDeletionEnums.tableByTable.toString();
 			Object o6 = tt1.get(tbt);

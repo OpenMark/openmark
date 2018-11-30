@@ -44,9 +44,6 @@ public class TNTester
 	private final static String[] HOSTS={"pclt166.open.ac.uk","sparrow.open.ac.uk"};
 	private final static int[] PORTS={8080,80};
 
-	/** Sequence number of first user to begin with */
-	private final static int STARTSEQUENCE=0;
-
 	/** If on, runs just a single iteration and displays more info */
 	private final static boolean DEBUG=false;
 
@@ -101,8 +98,6 @@ public class TNTester
 		/** Time taken to load item */
 		long lTime;
 	}
-
-	private int iSequence=STARTSEQUENCE;
 
 	private synchronized String getNextOUCU()
 	{

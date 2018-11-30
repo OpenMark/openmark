@@ -33,6 +33,7 @@ import javax.servlet.descriptor.JspConfigDescriptor;
 /**
  * Implementation of ServletContext used for performance testing.
  */
+@SuppressWarnings("deprecation")
 public class TestServletContext implements ServletContext
 {
 	private File fContextPath;

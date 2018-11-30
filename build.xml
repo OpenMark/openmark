@@ -37,7 +37,8 @@
 		<mkdir dir="${build}/compiled"/>
 
 		<!-- Compile everything -->
-		<javac srcdir="src" destdir="${build}/compiled" debug="on" source="1.6" target="1.6" encoding="UTF-8">
+		<javac srcdir="src" destdir="${build}/compiled" debug="on" source="1.8" target="1.8"
+				encoding="UTF-8" includeantruntime="false">
 			<!-- Include all lib files -->
 			<classpath>
 				<fileset dir="${servletapi}">
@@ -99,6 +100,7 @@
 			<include name="om/question/"/>
 			<include name="om/stdcomponent/"/>
 			<include name="om/stdquestion/"/>
+			<include name="uk/ac/open/samsvalidationws/"/>
 			<include name="util/"/>
 			<include name="om/tnavigator/request/tinymce/" />
 		</jar>
@@ -122,12 +124,13 @@
 			<include name="om/axis/qengine/"/>
 			<include name="om/tnavigator/"/>
 			<include name="om/getOucuInfo/"/>
+			<include name="uk/ac/open/samsvalidationws/"/>
 			<include name="util/"/>
 		</jar>
 
 		<jar jarfile="${build}/jars/om-administration.jar" basedir="${build}/compiled">
 			<include name="om/*"/>
-			<include name="om/abstractservlet/"/>
+			<include name="om/abstractservlet/*"/>
 			<include name="om/administration/*"/>
 			<include name="om/administration/extraction/*"/>
 			<include name="om/administration/questionbank/*"/>
@@ -137,6 +140,7 @@
 			<include name="om/axis/qengine/"/>
 			<include name="om/tnavigator/"/>
 			<include name="om/getOucuInfo/"/>
+			<include name="uk/ac/open/samsvalidationws/"/>
 			<include name="util/"/>
 		</jar>
 
@@ -300,6 +304,7 @@
 		<jar jarfile="${build}/webapps/om-tn.war" basedir="${build}/webapps/om-tn">
 			<include name="**"/>
 		</jar>
+		<copy file="${build}/webapps/om-tn.war" tofile="${build}/webapps/openmark.war"/>
 	</target>
 
 
@@ -418,7 +423,7 @@
 	<!-- The next line may show as a warning because axishome isn't set. -->
 	<taskdef resource="axis-tasks.properties" classpathref="axis.classpath"/>
 
-	
+
 	<!-- Standalone target: not built by all -->
 	<target name="stubs-qengine" depends="init" description="Create question engine stubs using Apache Axis">
 
@@ -486,7 +491,7 @@
 
 		<mkdir dir="${javadoc}"/>
 
-		<javadoc sourcepath="src" destdir="${javadoc}" source="1.6" encoding="UTF-8"
+		<javadoc sourcepath="src" destdir="${javadoc}" source="1.8" encoding="UTF-8"
 			packagenames="om.*, util.*"
 			excludepackagenames="om.equation.generated.*, om.axis.*">
 			<classpath>

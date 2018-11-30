@@ -42,6 +42,11 @@
 	-->
 <!ELEMENT emailstudents (numberofquestions?,forbidextension?,module?,icma?)>
 
+<!ELEMENT numberofquestions (#PCDATA)>
+<!ELEMENT forbidextension (#PCDATA)>
+<!ELEMENT module (#PCDATA)>
+<!ELEMENT icma (#PCDATA)>
+
 
 <!-- Two ways to specify access -->
 <!ENTITY % accessmethods "(oucu|authid)*">

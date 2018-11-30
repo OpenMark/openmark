@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!DOCTYPE web-app
-    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
-    "http://java.sun.com/j2ee/dtds/web-app_2.2.dtd">
-<web-app>
-	
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+		version="3.0">
+
 	<display-name>Om (OpenMark-S) question engine</display-name>
 
 	<servlet>
-		<servlet-name>AxisServlet</servlet-name>
 		<display-name>Apache-Axis Servlet</display-name>
+		<servlet-name>AxisServlet</servlet-name>
 		<servlet-class> org.apache.axis.transport.http.AxisServlet </servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
-  <servlet>
+	<servlet>
+		<display-name>QE status check Servlet</display-name>
 		<servlet-name>CheckServlet</servlet-name>
-		<display-name>QE status check servlet</display-name>
 		<servlet-class>om.qengine.CheckServlet</servlet-class>
 	</servlet>
-		
+
 	<servlet-mapping>
 		<servlet-name>AxisServlet</servlet-name>
 		<url-pattern>/services/*</url-pattern>
 	</servlet-mapping>
 
-  <servlet-mapping>
+	<servlet-mapping>
 		<servlet-name>CheckServlet</servlet-name>
 		<url-pattern>/check</url-pattern>
 	</servlet-mapping>
-	
-  	<!-- currently the W3C havent settled on a media type for WSDL;
+
+	<!-- currently the W3C havent settled on a media type for WSDL;
 	http://www.w3.org/TR/2003/WD-wsdl12-20030303/#ietf-draft
 	for now we go with the basic 'it's XML' response -->
 	<mime-mapping>
@@ -42,17 +42,16 @@
 		<mime-type>text/xml</mime-type>
 	</mime-mapping>
 
-  <security-constraint>
-    <!-- Prevent questionbank access -->
-    <web-resource-collection>
-      <web-resource-name>Question cache</web-resource-name>
-      <url-pattern>/questioncache/*</url-pattern>
-      <http-method>DELETE</http-method>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-      <http-method>PUT</http-method>
-    </web-resource-collection>
-    <auth-constraint/>
-  </security-constraint>
-	
+	<security-constraint>
+		<!-- Prevent questionbank access -->
+		<web-resource-collection>
+			<web-resource-name>Question cache</web-resource-name>
+			<url-pattern>/questioncache/*</url-pattern>
+			<http-method>DELETE</http-method>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+			<http-method>PUT</http-method>
+		</web-resource-collection>
+		<auth-constraint/>
+	</security-constraint>
 </web-app>
