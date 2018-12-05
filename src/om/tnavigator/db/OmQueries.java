@@ -20,12 +20,7 @@ package om.tnavigator.db;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import om.Log;
 import om.OmVersion;
@@ -515,7 +510,7 @@ public abstract class OmQueries
 	 * ordered by number completed.
 	 * @param dat the transaction within which the query should be executed.
 	 * @return the requested data.
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public ResultSet queryTestUsageReport(Transaction dat) throws SQLException {
 		return dat.query(
@@ -533,7 +528,7 @@ public abstract class OmQueries
 	 * Get the number of non-admin attempts that were started and completed, each month.
 	 * @param dat the transaction within which the query should be executed.
 	 * @return the requested data.
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public ResultSet queryMonthlyTestStarts(Transaction dat) throws SQLException {
 		return dat.query(
@@ -551,7 +546,7 @@ public abstract class OmQueries
 	 * Get the number of non-admin attempts that were started and completed, each month.
 	 * @param dat the transaction within which the query should be executed.
 	 * @return the requested data.
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public ResultSet queryMonthlyTestFinishes(Transaction dat) throws SQLException {
 		return dat.query(
@@ -570,11 +565,11 @@ public abstract class OmQueries
 	 * @param dat the transaction within which the query should be executed.
 	 * @param deploy the name of the test (deploy file).
 	 * @return the requested data.
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public ResultSet queryVariantReport(Transaction dat, String deploy) throws SQLException {
 		return dat.query(
-				"SELECT tq.questionnumber, q.question, r.questionline, s.score " + 
+				"SELECT tq.questionnumber, q.question, r.questionline, s.score " +
 				"FROM " + getPrefix() + "tests t " +
 					"JOIN " + getPrefix() + "questions q ON t.ti=q.ti " +
 					"JOIN " + getPrefix() + "testquestions tq on t.ti=tq.ti and q.question=tq.question " +
@@ -834,7 +829,7 @@ public abstract class OmQueries
 	{
 		try
 		{
-			String sqlstr="UPDATE " + getPrefix() + 
+			String sqlstr="UPDATE " + getPrefix() +
 			"precoursediag SET PreCourseDiagCode="+Strings.sqlQuote(pcdc.getPreCourseDiagCode())+
 			",timecodeupdated="+currentDateFunction()+",trafficlights="+Strings.sqlQuote(pcdc.getTrafficlights())+" WHERE ti="+pcdc.getti()+";";
 			dat.update(sqlstr);
@@ -848,7 +843,7 @@ public abstract class OmQueries
 	public void insertTestPreCourseDiagCode(DatabaseAccess.Transaction dat,PreCourseDiagCode pcdc)
 			throws SQLException
 	{
-		String sqlstr="INSERT INTO " + getPrefix() + 
+		String sqlstr="INSERT INTO " + getPrefix() +
 				"precoursediag (ti,precoursediagcode,timecodeupdated,trafficlights) " +
 				"VALUES ("+pcdc.getti()+","+Strings.sqlQuote(pcdc.getPreCourseDiagCode())+
 				","+currentDateFunction()+","+Strings.sqlQuote(pcdc.getTrafficlights())+");";
@@ -1078,7 +1073,7 @@ public abstract class OmQueries
 			l.logDebug("DatabaseUpgrade","Running upgradeDatabaseToAddNavConfig - creating table nav_config");
 			try
 			{
-			dat.update("CREATE TABLE dbo." + getPrefix() + 
+			dat.update("CREATE TABLE dbo." + getPrefix() +
 					"navconfig (  name VARCHAR(64) NOT NULL PRIMARY KEY," +
 					"value VARCHAR(64))");
 			dat.update("INSERT INTO " + getPrefix() + "navconfig VALUES('dbversion','')");
@@ -1114,7 +1109,7 @@ public abstract class OmQueries
 		
 		NameValuePairs navconfigDB=new NameValuePairs();
 		while(rs.next())
-		{ 
+		{
 			navconfigDB.add(rs.getString(1),rs.getString(2));
 		}
 		
@@ -1159,14 +1154,14 @@ public abstract class OmQueries
 	 * @param table the table name
 	 * @param column the column name
 	 * @param newWidth the new width
-	 * @return 
+	 * @return
 	 */
 	protected abstract String alterStringColumnWidthSQL(String table, String column, int newWidth);
 
 	/**
 	 * Checks to see if the we have the preprocessor configured and if we do
 	 *  then we check to see if the database table is correctly setup.  If not
-	 *  then we try to set things up correctly at this point. 
+	 *  then we try to set things up correctly at this point.
 	 * @param dat
 	 * @param l
 	 * @param DBversion
@@ -1202,7 +1197,7 @@ public abstract class OmQueries
 		if(!tableExists(dat,"precoursediag"))
 		{
 			updateDatabase("1.15.1",DBversion,
-					"CREATE TABLE " + getPrefix() + "precoursediag (  ti int NOT NULL PRIMARY KEY," + 
+					"CREATE TABLE " + getPrefix() + "precoursediag (  ti int NOT NULL PRIMARY KEY," +
 					"precoursediagcode VARCHAR(64) NOT NULL," +
 					"timecodeupdated " + dateTimeFieldType() + " NOT NULL DEFAULT CURRENT_TIMESTAMP," +
 					"trafficlights VARCHAR(1024) NOT NULL)",
@@ -1271,7 +1266,7 @@ public abstract class OmQueries
 
 	public void updateQuestionlineAnswerline(DatabaseAccess.Transaction dat, Log l,
 			NavVersion DBversion, NavigatorConfig nc)
-	throws SQLException, IllegalArgumentException 
+	throws SQLException, IllegalArgumentException
 	{
 		/*Bug 11743 - We should increase questionline and answerline from NVARCHAR(255) to NVARCHAR(MAX)*/
 		updateDatabase("1.15",DBversion,
@@ -1297,9 +1292,9 @@ public abstract class OmQueries
 
 	public void updateDatabase(String version, NavVersion dbv, String update,Log l,DatabaseAccess.Transaction dat) throws SQLException,IllegalArgumentException
 	{
-		/* now get the version in the navigator.xml file 
+		/* now get the version in the navigator.xml file
 		/* now apply the updates one at a time , first we apply the historic one */
-		try 
+		try
 		{		
 			if (dbv.isLessThanStr(version))
 			{
@@ -1335,144 +1330,106 @@ public abstract class OmQueries
 	/**
 	 * Get old test data
 	 * @param dat
-	 * @return map with key ti and list value oucu and deploy file name.
+	 * @return A resultSet with three columns, ti, oucu and deploy file name.
 	 * @throws SQLException
 	 */
-	public Map<String, List<String>> queryOldAttemptsNeedingCleaning(DatabaseAccess.Transaction dat)
-			  throws SQLException
+	public ResultSet queryOldAttemptsNeedingCleaning(DatabaseAccess.Transaction dat)
+			throws SQLException
 	{
-		List<String> lstti;
-		Map<String, List<String>> mpti = new HashMap<String, List<String>>();
-		String sqlstr = "SELECT TOP 1000 t.ti as ti, "+
-						"t.oucu as oucu, t.deploy as deploy "+
-						"FROM "+ getPrefix() + "tests" +" t " +
-							"JOIN #deploy_clean_times dct ON dct.deploy = t.deploy "+
-							"LEFT JOIN "+getPrefix() + "questions q ON q.ti = t.ti "+
-							"LEFT JOIN "+getPrefix() + "actions a ON a.qi = q.qi "+
+		String sqlstr = "SELECT TOP 1000 t.ti, t.oucu, t.deploy" +
+						"FROM " + getPrefix() + "tests" +" t " +
+							"JOIN #deploy_clean_times dct ON dct.deploy = t.deploy " +
+							"LEFT JOIN " + getPrefix() + "questions q ON q.ti = t.ti " +
+							"LEFT JOIN " + getPrefix() + "actions a ON a.qi = q.qi " +
 						"WHERE t.clock < dct.cleanolderthan AND "+
-							"(t.finishedclock IS NULL OR t.finishedclock < dct.cleanolderthan) "+
-						"GROUP BY t.ti, t.oucu, t.deploy, dct.cleanolderthan HAVING (MAX(q.clock) IS NULL "+
-							"OR MAX(q.clock) < dct.cleanolderthan) "+
+							"(t.finishedclock IS NULL OR t.finishedclock < dct.cleanolderthan) " +
+						"GROUP BY t.ti, t.oucu, t.deploy, dct.cleanolderthan " +
+						"HAVING (MAX(q.clock) IS NULL OR MAX(q.clock) < dct.cleanolderthan) " +
 							"AND (MAX(a.clock) IS NULL OR MAX(a.clock) < dct.cleanolderthan)";
 
-		ResultSet rs = dat.query(sqlstr);
-		while (rs.next()) {
-			lstti = new ArrayList<String>();
-			String ti = rs.getString("ti");
-			String oucu = rs.getString("oucu");
-			String deploy = rs.getString("deploy");
-			lstti.addAll(Arrays.asList(oucu, deploy));
-			mpti.put(ti, lstti);
-		}
-		return mpti;
+		return dat.query(sqlstr);
 	}
 
 	/**
-	 * Delete test instance from all the table.
-	 * @param List of testinstances.
-	 * @param dat.
-	 * @param log instance.
+	 * Delete an entire test attempt from all tables.
+	 * @param dat the transaction in which to do the work.
+	 * @param ti the unique id of the attempt to delete.
+	 * @throws SQLException
 	 */
-	public void deleteEntireTestAttempts(Map<String, List<String>> testInstances, DatabaseAccess.Transaction dat, Log l)
+	public void deleteEntireTestAttempts(DatabaseAccess.Transaction dat, String ti) throws SQLException
 	{
-		try{
-			for (Map.Entry<String, List<String>> entry : testInstances.entrySet()) {
-				String ti = entry.getKey();
-				List<String> tidetails = entry.getValue();
-				String sqlinfo = "DELETE "+getPrefix()+"infopages WHERE ti in ("+ti+")";
-				dat.update(sqlinfo);
+		String sqlinfo = "DELETE "+getPrefix()+"infopages WHERE ti = "+ti;
+		dat.update(sqlinfo);
 
-				String sqlsessioninfo = "DELETE "+getPrefix()+"sessioninfo WHERE ti in ("+ti+")";
-				dat.update(sqlsessioninfo);
+		String sqlsessioninfo = "DELETE "+getPrefix()+"sessioninfo WHERE ti = "+ti;
+		dat.update(sqlsessioninfo);
 
-				String sqltestquestions ="DELETE "+getPrefix()+"testquestions WHERE ti in ("+ti+")";
-				dat.update(sqltestquestions);
+		String sqltestquestions ="DELETE "+getPrefix()+"testquestions WHERE ti = "+ti;
+		dat.update(sqltestquestions);
 
-				String sqlnavactions="DELETE from "+getPrefix()+"actions WHERE qi in "+
-										"(SELECT qi from "+getPrefix()+"questions WHERE ti in ("+ti+"))";
-				dat.update(sqlnavactions);
+		String sqlnavactions="DELETE from "+getPrefix()+"actions WHERE qi in "+
+								"(SELECT qi from "+getPrefix()+"questions WHERE ti = "+ti+")";
+		dat.update(sqlnavactions);
 
-				String sqlparams = "DELETE from "+getPrefix()+"params WHERE qi in "+
-										"(SELECT qi from "+getPrefix()+"questions WHERE ti in ("+ti+"))";
-				dat.update(sqlparams);
+		String sqlparams = "DELETE from "+getPrefix()+"params WHERE qi in "+
+								"(SELECT qi from "+getPrefix()+"questions WHERE ti = "+ti+")";
+		dat.update(sqlparams);
 
-				String sqlresults = "DELETE from "+getPrefix()+"results WHERE qi in "+
-										"(SELECT qi from "+getPrefix()+"questions WHERE ti in ("+ti+"))";
-				dat.update(sqlresults);
+		String sqlresults = "DELETE from "+getPrefix()+"results WHERE qi in "+
+								"(SELECT qi from "+getPrefix()+"questions WHERE ti = "+ti+")";
+		dat.update(sqlresults);
 
-				String sqlscores = "DELETE from "+getPrefix()+"scores WHERE qi in "+
-										"(SELECT qi from "+getPrefix()+"questions WHERE ti in ("+ti+"))";
-				dat.update(sqlscores);
+		String sqlscores = "DELETE from "+getPrefix()+"scores WHERE qi in "+
+								"(SELECT qi from "+getPrefix()+"questions WHERE ti = "+ti+")";
+		dat.update(sqlscores);
 
-				String sqlquestions ="DELETE "+getPrefix()+"questions WHERE ti in("+ti+")";
-				dat.update(sqlquestions);
+		String sqlquestions ="DELETE "+getPrefix()+"questions WHERE ti = "+ti;
+		dat.update(sqlquestions);
 
-				String sqlprecoursediag="DELETE "+getPrefix()+"precoursediag WHERE ti in ("+ti+")";
-				dat.update(sqlprecoursediag);
+		String sqlprecoursediag="DELETE "+getPrefix()+"precoursediag WHERE ti = "+ti;
+		dat.update(sqlprecoursediag);
 
-				String sqltests ="DELETE FROM "+getPrefix()+"tests WHERE ti in ("+ti+")";
-				dat.update(sqltests);
-
-				l.logNormal("Test attempt ti="+ ti + " at test "+ tidetails.get(1)+ " by user="+ tidetails.get(0) +" deleted");
-			}
-		} catch(SQLException ex) {
-			l.logDebug("oldTestDataRemover", "Failure in deleting Record with Exception=="+ex);
-		}
+		String sqltests ="DELETE FROM "+getPrefix()+"tests WHERE ti = "+ti;
+		dat.update(sqltests);
 	}
 
 	/**
 	 * Create a temporary table
 	 * @param dat the transaction within which the query should be executed.
-	 * @param l the log to be used.
 	 */
 	public void createTempDeployTable(DatabaseAccess.Transaction dat, Log l)
 	throws SQLException
 	{
-		try
-		{
-			String sqlcreate = "CREATE TABLE #deploy_clean_times "+
-									"(deploy VARCHAR(64), "+
-									"cleanolderthan DATETIME)";
-			dat.update(sqlcreate);
-		} catch (Exception ex)
-		{
-			l.logDebug("oldTestDataRemover","Exception creating temp table"+ex);
-		}
+		String sqlcreate = "CREATE TABLE #deploy_clean_times "+
+								"(deploy VARCHAR(64), "+
+								"cleanolderthan DATETIME)";
+		dat.update(sqlcreate);
 	}
 
 	/**
 	 * Insert the temp table with deploy file name and days.
 	 * @param dat the transaction within which the query should be executed.
-	 * @param String cleanolderthan
+	 * @param int cleanolderthan
 	 * @param String deploy file name.
-	 * @param l the log to be used.
 	 */
-	public void insertClnAfterDays(DatabaseAccess.Transaction dat, String cleanolderthan, String deploy, Log l)
+	public void insertClnAfterDays(DatabaseAccess.Transaction dat, int cleanOlderThan, String deploy)
 	throws SQLException
 	{
-		try{
-			String sqlinsert = "INSERT INTO dbo.[#deploy_clean_times] (deploy, cleanolderthan) "+
-									"VALUES (\'" + deploy + "\', DATEADD(day,-"+cleanolderthan+",   "+
-											"GetDate()))";
-			dat.update(sqlinsert);
-		} catch(Exception ex) {
-			l.logDebug("oldTestDataRemover","Exception inserting temp table"+ex);
-		}
+		String sqlinsert =
+				"INSERT INTO dbo.[#deploy_clean_times] (deploy, cleanolderthan) " +
+				"VALUES (" + Strings.sqlQuote(deploy) + ", "
+						+ "DATEADD(day,-" + cleanOlderThan + ", GetDate()))";
+		dat.update(sqlinsert);
 	}
 
 	/**
 	 * Drop the temp table.
 	 * @param dat the transaction within which the query should be executed.
-	 * @param l the log to be used.
 	 */
 	public void dropTempDeployTable(DatabaseAccess.Transaction dat, Log l)
 	throws SQLException
 	{
-		try {
-			String sqldrop = "DROP TABLE dbo.[#deploy_clean_times]";
-			dat.update(sqldrop);
-		} catch(Exception ex) {
-			l.logDebug("oldTestDataRemover","Exception dropping temp table"+ex);
-		}
+		String sqldrop = "DROP TABLE dbo.[#deploy_clean_times]";
+		dat.update(sqldrop);
 	}
 }

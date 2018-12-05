@@ -51,6 +51,10 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import om.Log;
 import om.OmException;
 import om.OmFormatException;
@@ -78,9 +82,9 @@ import om.tnavigator.auth.sams.SAMSUserDetails;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.overduenotifier.OverdueTestNotifier;
-import om.tnavigator.scheduler.oldTestDataRemover;
 import om.tnavigator.reports.ReportDispatcher;
 import om.tnavigator.request.tinymce.TinyMCERequestHandler;
+import om.tnavigator.scheduler.OldTestDataRemover;
 import om.tnavigator.scores.CombinedScore;
 import om.tnavigator.sessions.ClaimedUserDetails;
 import om.tnavigator.sessions.SessionManager;
@@ -97,11 +101,6 @@ import om.tnavigator.teststructure.TestLeaf;
 import om.tnavigator.teststructure.TestQuestion;
 import om.tnavigator.util.IPAddressCheckUtil;
 import om.tnavigator.util.OMVisitor;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import util.misc.ErrorMessageParts;
 import util.misc.GeneralUtils;
 import util.misc.IO;
@@ -206,7 +205,8 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 
 	private OverdueTestNotifier overdueNotifier;
 
-	private oldTestDataRemover oldTestDataRemover;
+	private OldTestDataRemover oldTestDataRemover;
+
 	/**
 	 * Cache of question metadata: String (ID\nversion) -> Document.
 	 * <p>
@@ -370,7 +370,7 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 					authentication, templateLoader);
 		}
 		if(nc.shouldDeleteOldData()) {
-			oldTestDataRemover = new oldTestDataRemover(nc, l, da, oq,
+			oldTestDataRemover = new OldTestDataRemover(nc, l, da, oq,
 					 nc.getDeleteDataDelay());
 		}
 	}
@@ -437,6 +437,9 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 	public void destroy() {
 		if (overdueNotifier != null) {
 			overdueNotifier.close();
+		}
+		if (oldTestDataRemover != null) {
+			oldTestDataRemover.close();
 		}
 
 		// Close the session handler.

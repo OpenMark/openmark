@@ -108,14 +108,14 @@ public class TestDeployment
 
 	private String templateSet = null;
 
-	private String cleanDataAfterDays;
+	private int cleanDataAfterDays = 0;
 
 	/**
-	 * Get the days after which testdata to be deleted.
-	 * @return number of days.
-	 **/
-	public String getCleanDataAfterDays() {
-		return this.cleanDataAfterDays;
+	 * Get the days after which attempts at this test should be automatically deleted.
+	 * @return number of days, or 0 to mean use default.
+	 */
+	public int getCleanDataAfterDays() {
+		return cleanDataAfterDays;
 	}
 
 	public void setType(int n) {
@@ -219,7 +219,7 @@ public class TestDeployment
 
 			if(XML.hasChild(eRoot,"cleandataafterdays"))
 			{
-				cleanDataAfterDays=XML.getText(eRoot,"cleandataafterdays");
+				cleanDataAfterDays=XML.getInt(eRoot,"cleandataafterdays");
 			}
 
 			if(XML.hasChild(eRoot, "assessed"))
