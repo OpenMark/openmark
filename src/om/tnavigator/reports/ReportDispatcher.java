@@ -34,7 +34,9 @@ import om.tnavigator.reports.std.HomeTestReport;
 import om.tnavigator.reports.std.MonthlyUsageReport;
 import om.tnavigator.reports.std.MoodleFormatReport;
 import om.tnavigator.reports.std.QuestionTestReport;
+import om.tnavigator.reports.std.UserQuestionsAttemptReport;
 import om.tnavigator.reports.std.ScoreExportReport;
+import om.tnavigator.reports.std.UserTestAttemptsReport;
 import om.tnavigator.reports.std.TestUsageReport;
 import om.tnavigator.reports.std.UserTestReport;
 import om.tnavigator.reports.std.VariantsTestReport;
@@ -60,6 +62,8 @@ public class ReportDispatcher
 		MonthlyUsageReport.class,
 		VariantsTestReport.class,
 		ScoreExportReport.class,
+		UserTestAttemptsReport.class,
+		UserQuestionsAttemptReport.class,
 	};
 
 	private NavigatorServlet ns;

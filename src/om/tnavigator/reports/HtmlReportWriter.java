@@ -40,6 +40,8 @@ public class HtmlReportWriter extends TabularReportWriter
 	 * "frog_link" key to the data hash. */
 	public static final String LINK_SUFFIX = "_link";
 	public static final String NOWRAP_SUFFIX = "_nowrap";
+	public static final String CHECKBOX_SUFFIX = "_checkbox";
+	public static final String LABEL_SUFFIX = "_label";
 
 	private int row = 0;
 	private Document template;
@@ -127,7 +129,19 @@ public class HtmlReportWriter extends TabularReportWriter
 			if (data.containsKey(column.id + NOWRAP_SUFFIX)) {
 				cell.setAttribute("style" , "white-space:nowrap");
 			}
-			if (data.containsKey(column.id + LINK_SUFFIX)) {
+			if (data.containsKey(column.id + CHECKBOX_SUFFIX))
+			{
+				Element chkbox = XML.createChild(cell, "input");
+				chkbox.setAttribute("type", "checkbox");
+				chkbox.setAttribute("value", data.get(column.id + CHECKBOX_SUFFIX));
+				XML.setText(chkbox, data.get(column.id));
+			} else if (data.containsKey(column.id + LABEL_SUFFIX))
+			{
+				Element label = XML.createChild(cell, "label");
+				label.setAttribute("for", "id_" + data.get(column.id + LABEL_SUFFIX));
+				XML.setText(label, data.get(column.id));
+			} else if (data.containsKey(column.id + LINK_SUFFIX))
+			{
 				Element link = XML.createChild(cell, "a");
 				link.setAttribute("href", data.get(column.id + LINK_SUFFIX));
 				XML.setText(link, data.get(column.id));

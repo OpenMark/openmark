@@ -421,6 +421,14 @@ em.warning
   border:1px solid black;
   margin:0.5em 0;
 }
+.basicpage table tr label
+{
+  cursor: pointer;
+}
+.basicpage div.reportinfo
+{
+  color: #68a4d4;
+}
 .basicpage table.topheaders th
 {
   border-bottom: 1px solid %%FG%%;

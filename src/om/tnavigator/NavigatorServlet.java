@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -713,6 +714,13 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 						request, response))
 					throw new Exception(
 							"Requested URL is not handled by authentication plugin");
+				return;
+			}
+
+
+			// Handle Ajax delete from js file
+			if (bPost && sPath.contains("deletetestattempt") ) {
+				deleteUserTestAttempt(request, response, getDatabaseAccess().newTransaction());
 				return;
 			}
 
@@ -4087,5 +4095,26 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 
 	private File resolveTestbankRelativePath(String relativePath) {
 		return new File(nc.getTestbankPath() + relativePath);
+	}
+
+	/**
+	 * Delete selected TestInstances.
+	 * @param request
+	 * @param response
+	 * @param dat
+	 */
+	private void deleteUserTestAttempt(HttpServletRequest request, HttpServletResponse response, DatabaseAccess.Transaction dat) {
+		try {
+			String tis = request.getParameter("ti");
+			String testDelPass = request.getParameter("testDeletePass");
+			if (testDelPass.equals(nc.getDeletePassword())) {
+				new DeleteUserTestAttempt(this).deleteTestAttempt(request, response, dat, tis, l);
+			} else {
+				PrintWriter out = response.getWriter();
+				out.print("Wrong password");
+			}
+		} catch(Exception ex) {
+			this.getLog().logDebug("The Record cannot be deleted"+ex);
+		}
 	}
 }

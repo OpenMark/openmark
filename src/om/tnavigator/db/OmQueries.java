@@ -1432,4 +1432,37 @@ public abstract class OmQueries
 		String sqldrop = "DROP TABLE dbo.[#deploy_clean_times]";
 		dat.update(sqldrop);
 	}
+
+	/**
+	 * Get the test attempts for the selected OUCU
+	 * @param dat the transaction.
+	 * @param oucu
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
+	public ResultSet queryTestDetails(Transaction dat, String oucu) throws SQLException {
+		String sqlSelectTi = "SELECT t.ti ti, t.oucu oucu, t.deploy title, t.clock starttime, "+
+							"t.finishedclock finishedtime, p.precoursediagcode precoursediagcode " +
+							"FROM "+getPrefix()+"tests t "+
+								"Left JOIN "+getPrefix()+"precoursediag p on t.ti = p.ti "+
+							 "WHERE oucu='"+oucu+"' ORDER BY starttime";
+		return dat.query(sqlSelectTi);
+	}
+
+	/**
+	 * Get the question attempts for the selected OUCU
+	 * @param dat the transaction.
+	 * @param testinstance
+	 * @return the requested data.
+	 * @throws SQLException
+	 */
+	public ResultSet queryQuestionsDetails(Transaction dat, String ti) throws SQLException {
+		String sqlSelectTiQn = "Select q.question questions, r.questionline questionline,"+
+								"r.actions attempt,s.score score " +
+								"FROM "+getPrefix()+"questions q "+
+									"Left join nav_results r on r.qi=q.qi " +
+									"Left Join "+getPrefix()+"scores s on s.qi=q.qi "+
+								"WHERE ti="+ ti +" order by q.clock";
+		return dat.query(sqlSelectTiQn);
+	}
 }

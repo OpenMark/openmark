@@ -118,6 +118,9 @@ public class NavigatorConfig
 	/** Parameters for time in hrs. 0 means don't run. */
 	private int deleteOldDataDelay;
 
+	/** Password to delete test attemp from config**/
+	private String testAttemptDelPassword;
+
 	public Class<?> retrievePreProcessingRequestHandler() {
 		return preProcessingRequestHandler;
 	}
@@ -132,7 +135,11 @@ public class NavigatorConfig
 
 	public String getDBPrefix() {
 		return dbPrefix;
-	}	
+	}
+
+	public String getDeletePassword() {
+		return testAttemptDelPassword;
+	}
 
 	private static Map<String,String> getParams(ServletContext sc) throws IOException
 	{
@@ -295,6 +302,8 @@ public class NavigatorConfig
 		{
 			throw new OmException("Request preprocessor class could not be found.", e);
 		}
+
+		testAttemptDelPassword = getParam(sc, "test-attempt-delete-password");
 	}
 
 	/**
