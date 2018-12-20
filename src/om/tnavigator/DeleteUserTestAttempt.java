@@ -39,7 +39,7 @@ public class DeleteUserTestAttempt {
 					ns.getOmQueries().deleteEntireTestAttempts(dat, testInstance);
 				} catch(SQLException ex)
 				{
-					log.logError("deleteUserTestAttempt", "Error deleting test attempt ti=" + testInstance);
+					log.logError("deleteUserTestAttempt", "Error deleting test attempt ti=" + testInstance, ex);
 					message = String.format("FAILURE");
 				} finally
 				{
