@@ -1419,7 +1419,7 @@ public abstract class OmQueries
 				"INSERT INTO dbo.[#deploy_clean_times] (deploy, cleanolderthan) " +
 				"VALUES (" + Strings.sqlQuote(deploy) + ", "
 						+ "DATEADD(day,-" + cleanOlderThan + ", GetDate()))";
-		dat.update(sqlinsert);
+		dat.update(sqlinsert, false);
 	}
 
 	/**

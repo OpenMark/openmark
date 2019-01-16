@@ -122,6 +122,21 @@ public class DatabaseAccess
 		 */
 		public int update(String sSQL) throws SQLException
 		{
+			return update(sSQL, true);
+		}
+
+		/**
+		 * Runs an SQL update and with the option not to log.
+		 *
+		 * ONLY USE THIS METHOD for inserting into temp tables. Almost always you
+		 * should use update(String sSQL) above.
+		 * @param sSQL SQL update command
+		 * @param shouldLog to print logs.
+		 * @return Number of rows
+		 * @throws SQLException
+		 */
+		public int update(String sSQL, boolean shouldLog) throws SQLException
+		{
 			try
 			{
 				if(ci==null) throw new SQLException("Already commited");
@@ -130,12 +145,16 @@ public class DatabaseAccess
 					rsCurrent.close();
 					rsCurrent=null;
 				}
-				logDebug("[U] "+sSQL);
+				if (shouldLog) {
+					logDebug("[U] "+sSQL);
+				}
 				long lStart=System.currentTimeMillis();
 				int iRows=ci.s.executeUpdate(sSQL);
 				long lElapsed=System.currentTimeMillis()-lStart;
 				lTime+=lElapsed;
-				logDebug("OK ("+lElapsed+"ms)");
+				if (shouldLog) {
+					logDebug("OK ("+lElapsed+"ms)");
+				}
 				return iRows;
 			}
 			catch(SQLException se)
