@@ -1336,7 +1336,7 @@ public abstract class OmQueries
 	public ResultSet queryOldAttemptsNeedingCleaning(DatabaseAccess.Transaction dat)
 			throws SQLException
 	{
-		String sqlstr = "SELECT TOP 1000 t.ti, t.oucu, t.deploy" +
+		String sqlstr = "SELECT TOP 1000 t.ti, t.oucu, t.deploy " +
 						"FROM " + getPrefix() + "tests" +" t " +
 							"JOIN #deploy_clean_times dct ON dct.deploy = t.deploy " +
 							"LEFT JOIN " + getPrefix() + "questions q ON q.ti = t.ti " +
