@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +28,46 @@ public class OldTestDataRemover extends PeriodicThread
 	DatabaseAccess da;
 
 	private OmQueries oq;
+
+	// Inner class for testinstance to delete.
+	private class AttemptToDelete {
+
+		private String ti;
+
+		private String oucu;
+
+		private String deploy;
+
+		public AttemptToDelete(String ti, String oucu, String deploy) {
+			this.ti = ti;
+			this.oucu = oucu;
+			this.deploy = deploy;
+		}
+
+		public String getTi() {
+			return ti;
+		}
+
+		public void setTi(String ti) {
+			this.ti = ti;
+		}
+
+		public String getOucu() {
+			return oucu;
+		}
+
+		public void setOucu(String oucu) {
+			this.oucu = oucu;
+		}
+
+		public String getDeploy() {
+			return deploy;
+		}
+
+		public void setDeploy(String deploy) {
+			this.deploy = deploy;
+		}
+	}
 
 	/**
 	 * Constructor.
@@ -64,27 +105,25 @@ public class OldTestDataRemover extends PeriodicThread
 		try
 		{
 			boolean recordsDeleted = true;
+			ArrayList<AttemptToDelete> testInstancesToDelete = null;
 			long startTime = System.currentTimeMillis();
 			long maxDurationInMilliseconds = 10 * 60 * 1000; // 10 Minutes.
 			while (System.currentTimeMillis() < startTime + maxDurationInMilliseconds && recordsDeleted)
 			{
 				log.logNormal("OldTestDataRemover", "Starting a new batch of up to 1000 test attempts.");
+
+				// First get a list of test attempts to delete in one Transaction.
 				Transaction dat = null;
 				try
 				{
 					dat = da.newTransaction();
-					// Do we want to create the temp table in the loop?
 					oq.createTempDeployTable(dat, this.log);
 					loadCleanAfterDays(dat);
-					recordsDeleted = removeOldTestInstance(dat);
-					if (!recordsDeleted)
-					{
-						log.logDebug("OldTestDataRemover", "No records to delete in this batch.");
-					}
+					testInstancesToDelete = getOldTestInstance(dat);
 				}
 				catch (Exception x)
 				{
-					log.logError("OldTestDataRemover", "Error deleting old test data job.", x);
+					log.logError("OldTestDataRemover", "Error finding old test instances to delete.", x);
 				}
 				finally
 				{
@@ -100,6 +139,13 @@ public class OldTestDataRemover extends PeriodicThread
 						dat.finish();
 					}
 				}
+
+				// Now, delete those attempts one at a time.
+				recordsDeleted = removeOldTestInstances(testInstancesToDelete);
+			}
+			if (!recordsDeleted)
+			{
+				log.logDebug("OldTestDataRemover", "No records to delete in this batch.");
 			}
 			log.logNormal("OldTestDataRemover", "Delete old test data job completed normally.");
 		}
@@ -147,21 +193,37 @@ public class OldTestDataRemover extends PeriodicThread
 	}
 
 	/**
-	 * Remove one batch of up to 1000 test attempts.
+	 * Get one batch of up to 1000 test attempts.
 	 * @param dat the transaction in which to do the work.
-	 * @return true if any records were deleted (so there might be more).
+	 * @return arraylist of old test instance to delete.
 	 */
-	private boolean removeOldTestInstance(Transaction dat)
-			throws SQLException
-	{
-		boolean recordsDeleted = false;
-		ResultSet rs = null;
-		rs = oq.queryOldAttemptsNeedingCleaning(dat);
-		while (rs.next())
-		{
+	private ArrayList<AttemptToDelete> getOldTestInstance(Transaction dat) 
+			throws SQLException {
+		ArrayList<AttemptToDelete> testInstanceToDelete = new ArrayList<AttemptToDelete>();
+		ResultSet rs = oq.queryOldAttemptsNeedingCleaning(dat);
+		while (rs.next()) {
 			String ti = rs.getString("ti");
 			String oucu = rs.getString("oucu");
 			String deploy = rs.getString("deploy");
+			testInstanceToDelete.add(new AttemptToDelete(ti, oucu, deploy));
+		}
+		return testInstanceToDelete;
+	}
+
+	/**
+	 * Remove one batch of up to 1000 test attempts.
+	 * @param ArrayList of AttemptToDelete Object.
+	 * @return true if any records were deleted (so there might be more).
+	 */
+	private boolean removeOldTestInstances(ArrayList<AttemptToDelete> attemptsToDelete)
+			throws SQLException
+	{
+		boolean recordsDeleted = false;
+		for (AttemptToDelete attemptToDelete : attemptsToDelete)
+		{
+			String ti = attemptToDelete.getTi();
+			String deploy = attemptToDelete.getDeploy();
+			String oucu = attemptToDelete.getOucu();
 			Transaction deleteTransaction = null;
 			try
 			{
