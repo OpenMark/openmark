@@ -4,9 +4,8 @@ import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import om.Log;
+import util.misc.Strings;
 import util.xml.XML;
 
 
@@ -210,11 +209,11 @@ public class SQLString {
 			{
 				if(LogIt)
 				{
-					l.logWithTag(StringEscapeUtils.escapeJava(SQLString.append(" ").toString()),tag);
+					l.logWithTag(Strings.sqlQuote(SQLString.append(" ").toString()),tag);
 				}
 				else
 				{
-					fullsqlstring.append(StringEscapeUtils.escapeJava(SQLString.append(" ").toString()));
+					fullsqlstring.append(Strings.sqlQuote(SQLString.append(" ").toString()));
 				}
 			}
 

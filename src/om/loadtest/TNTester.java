@@ -41,7 +41,7 @@ public class TNTester
 
 	/** Which server to use (-1 = both, random pick) */
 	private static int USESERVER=-1;
-	private final static String[] HOSTS={"pclt166.open.ac.uk","sparrow.open.ac.uk"};
+	private final static String[] HOSTS={"example.com","example.org"};
 	private final static int[] PORTS={8080,80};
 
 	/** If on, runs just a single iteration and displays more info */

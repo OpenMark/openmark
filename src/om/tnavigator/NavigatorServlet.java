@@ -81,7 +81,6 @@ import om.axis.qengine.StartReturn;
 import om.tnavigator.auth.Authentication;
 import om.tnavigator.auth.AuthenticationFactory;
 import om.tnavigator.auth.AuthenticationInstantiationException;
-import om.tnavigator.auth.sams.SAMSUserDetails;
 import om.tnavigator.db.DatabaseAccess;
 import om.tnavigator.db.OmQueries;
 import om.tnavigator.overduenotifier.OverdueTestNotifier;
@@ -1186,18 +1185,6 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 			if (us.ud.isLoggedIn())
 			{
 				sPi = us.ud.getPersonId();
-				if (us.sOUCU.equals(sPi) && us.ud instanceof SAMSUserDetails)
-				{
-					// There is a bug with the authentication services where it
-					// sometimes fails to get the right PI, in which case look
-					// for the most recent previous attempt by this users, and
-					// assume the same id.
-					String guessedPi = oq.queryGuessPiForOucu(dat, us.sOUCU);
-					if (guessedPi != null) {
-						sPi = guessedPi;
-						((SAMSUserDetails) us.ud).setPersonID(guessedPi);
-					}
-				}
 			}
 			else
 			{
@@ -3330,7 +3317,6 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 			int iTestVariant = -1;
 			int iPosition = -1;
 			String navigatorversion = "";
-			String dbPi = null;
 			if (rs.next()) {
 				iDBti = rs.getInt(1);
 				lRandomSeed = rs.getLong(2);
@@ -3340,7 +3326,6 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 					iTestVariant = -1;
 				iPosition = rs.getInt(5);
 				navigatorversion = rs.getString(6);
-				dbPi = rs.getString(7);
 			}
 
 			// No match? OK, return false
@@ -3356,24 +3341,6 @@ public class NavigatorServlet extends HttpServlet implements QuestionMetadataSou
 					true, lRandomSeed, iTestVariant);
 			us.setTestPosition(iPosition);
 			us.navigatorVersion = navigatorversion;
-
-			if (us.ud.isLoggedIn() && us.ud instanceof SAMSUserDetails &&
-					!us.ud.getPersonId().equals(dbPi))
-			{
-				// There is a bug with the authentication services where it
-				// sometimes fails to get the right PI.
-				if (!us.sOUCU.equals(us.ud.getPersonId()))
-				{
-					// sThe value is right in the session now, but wrong in the
-					// database. Update the database.
-					oq.updatePi(dat, iDBti, us.ud.getPersonId());
-				}
-				else if (!us.ud.getPersonId().equals(dbPi))
-				{
-					// Alternatively, the PI is wrong in the session, so fix it.
-					((SAMSUserDetails) us.ud).setPersonID(dbPi);
-				}
-			}
 
 			// Find out which question they're on
 			if (!us.isFinished()) {

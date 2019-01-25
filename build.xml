@@ -145,7 +145,6 @@
 			<include name="om/question/"/>
 			<include name="om/stdcomponent/"/>
 			<include name="om/stdquestion/"/>
-			<include name="uk/ac/open/samsvalidationws/"/>
 			<include name="util/"/>
 			<include name="om/tnavigator/request/tinymce/" />
 		</jar>
@@ -169,7 +168,6 @@
 			<include name="om/axis/qengine/"/>
 			<include name="om/tnavigator/"/>
 			<include name="om/getOucuInfo/"/>
-			<include name="uk/ac/open/samsvalidationws/"/>
 			<include name="util/"/>
 		</jar>
 
@@ -185,7 +183,6 @@
 			<include name="om/axis/qengine/"/>
 			<include name="om/tnavigator/"/>
 			<include name="om/getOucuInfo/"/>
-			<include name="uk/ac/open/samsvalidationws/"/>
 			<include name="util/"/>
 		</jar>
 
